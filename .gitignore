@@ -170,6 +170,24 @@ cython_debug/
 # Ruff stuff:
 .ruff_cache/
 
+# PhysioVision AI local runtime
+backend/tmp/
+frontend/node_modules/
+frontend/dist/
+.pnpm-store/
+data/raw/**
+data/processed/**/*.csv
+data/processed/**/*.json
+data/processed/**/*.parquet
+data/samples/**/*.mp4
+data/samples/**/*.mov
+data/samples/**/*.avi
+data/samples/**/*.mkv
+data/samples/**/*.webm
+!data/README.md
+!data/**/
+!data/**/.gitkeep
+
 # PyPI configuration file
 .pypirc
 
