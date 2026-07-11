@@ -1,0 +1,118 @@
+from pathlib import Path
+
+from fastapi.testclient import TestClient
+
+from app.core.config import get_settings
+from app.main import app
+from app.schemas.analysis_schema import AnalysisResponse
+from app.services.pose_estimation_service import PoseEstimationError
+
+
+client = TestClient(app)
+
+
+def assert_error(response, status_code: int, error_code: str) -> None:
+    assert response.status_code == status_code
+    assert response.json()["status"] == "error"
+    assert response.json()["error_code"] == error_code
+    assert isinstance(response.json()["details"], list)
+
+
+def test_missing_video_returns_clean_error():
+    assert_error(client.post("/api/v1/analyze/squat"), 422, "MISSING_FILE")
+
+
+def test_unsupported_extension_returns_clean_error():
+    response = client.post(
+        "/api/v1/analyze/squat",
+        files={"video": ("notes.txt", b"not video", "text/plain")},
+    )
+    assert_error(response, 400, "INVALID_FILE_TYPE")
+
+
+def test_mismatched_mime_type_returns_clean_error():
+    response = client.post(
+        "/api/v1/analyze/squat",
+        files={"video": ("clip.mp4", b"not video", "text/plain")},
+    )
+    assert_error(response, 400, "INVALID_FILE_TYPE")
+
+
+def test_empty_video_returns_clean_error():
+    response = client.post(
+        "/api/v1/analyze/squat",
+        files={"video": ("empty.mp4", b"", "video/mp4")},
+    )
+    assert_error(response, 400, "EMPTY_FILE")
+
+
+def test_file_size_limit_is_enforced(monkeypatch, tmp_path):
+    settings = get_settings()
+    monkeypatch.setattr(settings, "upload_dir", tmp_path)
+    monkeypatch.setattr(settings, "max_upload_size_bytes", 4)
+
+    response = client.post(
+        "/api/v1/analyze/squat",
+        files={"video": ("large.mp4", b"12345", "video/mp4")},
+    )
+
+    assert_error(response, 400, "FILE_TOO_LARGE")
+    assert list(tmp_path.iterdir()) == []
+
+
+def test_broken_video_returns_clean_error_and_is_deleted(monkeypatch, tmp_path):
+    settings = get_settings()
+    monkeypatch.setattr(settings, "upload_dir", tmp_path)
+
+    def fail_pose(_path: Path):
+        raise PoseEstimationError("Unable to open uploaded video.")
+
+    monkeypatch.setattr("app.api.routes.squat_analysis.extract_pose_landmarks", fail_pose)
+    response = client.post(
+        "/api/v1/analyze/squat",
+        files={"video": ("broken.mp4", b"broken", "video/mp4")},
+    )
+
+    assert_error(response, 422, "VIDEO_OPEN_FAILED")
+    assert list(tmp_path.iterdir()) == []
+
+
+def test_no_pose_returns_clean_error(monkeypatch, tmp_path):
+    monkeypatch.setattr(get_settings(), "upload_dir", tmp_path)
+
+    def fail_pose(_path: Path):
+        raise PoseEstimationError("No pose detected in the uploaded video.")
+
+    monkeypatch.setattr("app.api.routes.squat_analysis.extract_pose_landmarks", fail_pose)
+    response = client.post(
+        "/api/v1/analyze/squat",
+        files={"video": ("no-pose.mp4", b"video", "video/mp4")},
+    )
+    assert_error(response, 422, "NO_POSE_DETECTED")
+
+
+def test_success_response_contract_and_cleanup(monkeypatch, tmp_path):
+    monkeypatch.setattr(get_settings(), "upload_dir", tmp_path)
+    monkeypatch.setattr(
+        "app.api.routes.squat_analysis.extract_pose_landmarks",
+        lambda _path: [{"landmarks": {}}],
+    )
+    monkeypatch.setattr(
+        "app.api.routes.squat_analysis.analyze_squat_landmarks",
+        lambda _frames: AnalysisResponse(
+            total_reps=1,
+            movement_score=90,
+            feedback=["Educational only."],
+            limitations=["Does not replace clinical assessment."],
+        ),
+    )
+
+    response = client.post(
+        "/api/v1/analyze/squat",
+        files={"video": ("valid.mp4", b"video", "video/mp4")},
+    )
+
+    assert response.status_code == 200
+    assert response.json()["exercise"] == "bodyweight_squat"
+    assert response.json()["total_reps"] == 1
+    assert list(tmp_path.iterdir()) == []

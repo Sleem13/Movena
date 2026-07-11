@@ -22,8 +22,7 @@
 
 ## Metadata Warnings
 
-- `data\raw\custom_videos\squat_trunk_lean\squat_correct_002.mp4`: Filename suggests squat_correct, but the parent folder maps to squat_trunk_lean.
-- `data\raw\custom_videos\squat_unlabeled\unlabeled.mp4`: Unrecognized label folder: squat_unlabeled.
+- `data\raw\custom_videos\squat_unlabeled\unlabeled.mp4`: Unrecognized label folder: squat_unlabeled. Review-only video; excluded from official supervised-label use until manually curated.
 
 ## Landmark Extraction
 

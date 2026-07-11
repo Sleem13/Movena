@@ -62,7 +62,10 @@ def metadata_row(path: Path) -> dict[str, object]:
         label_note = ""
     else:
         label = "unlabeled"
-        label_note = f"Unrecognized label folder: {path.parent.name}."
+        label_note = (
+            f"Unrecognized label folder: {path.parent.name}. Review-only video; "
+            "excluded from official supervised-label use until manually curated."
+        )
 
     filename_lower = path.stem.lower()
     filename_label = next(

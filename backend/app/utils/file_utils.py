@@ -1,9 +1,16 @@
 from pathlib import Path
 from uuid import uuid4
 
-from fastapi import HTTPException, UploadFile, status
+from fastapi import UploadFile
 
 from app.core.config import get_settings
+
+
+class UploadValidationError(ValueError):
+    def __init__(self, error_code: str, message: str):
+        super().__init__(message)
+        self.error_code = error_code
+        self.message = message
 
 
 def validate_video_file(file: UploadFile) -> None:
@@ -11,9 +18,14 @@ def validate_video_file(file: UploadFile) -> None:
     suffix = Path(file.filename or "").suffix.lower()
     if suffix not in settings.allowed_video_extensions:
         allowed = ", ".join(sorted(settings.allowed_video_extensions))
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Invalid file type. Upload one of: {allowed}.",
+        raise UploadValidationError(
+            "INVALID_FILE_TYPE",
+            f"Only supported video files are accepted: {allowed}.",
+        )
+    if file.content_type and file.content_type.lower() not in settings.allowed_video_mime_types:
+        raise UploadValidationError(
+            "INVALID_FILE_TYPE",
+            "The upload MIME type does not match a supported video format.",
         )
 
 
@@ -28,14 +40,18 @@ async def save_upload_file(file: UploadFile) -> Path:
     with destination.open("wb") as buffer:
         while chunk := await file.read(1024 * 1024):
             total_bytes += len(chunk)
+            if total_bytes > settings.max_upload_size_bytes:
+                buffer.close()
+                destination.unlink(missing_ok=True)
+                raise UploadValidationError(
+                    "FILE_TOO_LARGE",
+                    f"Video exceeds the {settings.max_upload_size_bytes // (1024 * 1024)} MB limit.",
+                )
             buffer.write(chunk)
 
     if total_bytes == 0:
         destination.unlink(missing_ok=True)
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Uploaded video is empty.",
-        )
+        raise UploadValidationError("EMPTY_FILE", "Uploaded video is empty.")
 
     return destination
 

@@ -1,6 +1,16 @@
 from pydantic import BaseModel, Field
 
 
+class FrameAnalysis(BaseModel):
+    frame_index: int
+    timestamp_sec: float
+    knee_angle: float
+    hip_angle: float
+    trunk_angle: float
+    phase: str
+    detected_issue: str | None = None
+
+
 class AnalysisResponse(BaseModel):
     exercise: str = "bodyweight_squat"
     status: str = "success"
@@ -13,7 +23,19 @@ class AnalysisResponse(BaseModel):
     feedback: list[str] = Field(default_factory=list)
     summary: str = ""
     limitations: list[str] = Field(default_factory=list)
+    frame_analysis: list[FrameAnalysis] | None = None
+    report_id: str | None = None
+    report_url: str | None = None
+    overlay_id: str | None = None
+    overlay_url: str | None = None
 
 
 class ErrorResponse(BaseModel):
-    detail: str
+    status: str = "error"
+    error_code: str
+    message: str
+    details: list[str] = Field(default_factory=list)
+
+
+SquatAnalysisResponse = AnalysisResponse
+AnalysisErrorResponse = ErrorResponse

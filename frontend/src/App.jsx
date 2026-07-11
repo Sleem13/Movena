@@ -38,8 +38,8 @@ export default function App() {
       setReport(data);
       setPage(pages.results);
     } catch (requestError) {
-      const detail = requestError.response?.data?.detail;
-      setError(detail || "Unable to analyze this video. Check the backend and try again.");
+      const apiError = requestError.response?.data;
+      setError(apiError?.message || apiError?.detail || "Unable to analyze this video. Check the backend and try again.");
     } finally {
       setIsLoading(false);
     }

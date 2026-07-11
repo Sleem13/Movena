@@ -94,3 +94,20 @@ def test_analyze_squat_detects_trunk_lean_valgus_and_low_confidence():
     assert "possible_knee_valgus" in report.detected_issues
     assert "low_landmark_confidence" in report.detected_issues
     assert 0 <= report.movement_score <= 100
+
+
+def test_good_squat_does_not_produce_severe_movement_warnings():
+    frames = [
+        frame(knee_angle=170),
+        frame(knee_angle=135),
+        frame(knee_angle=95),
+        frame(knee_angle=135),
+        frame(knee_angle=170),
+    ]
+
+    report = analyze_squat_landmarks(frames)
+
+    assert "poor_depth" not in report.detected_issues
+    assert "excessive_trunk_lean" not in report.detected_issues
+    assert "possible_knee_valgus" not in report.detected_issues
+    assert 0 <= report.movement_score <= 100

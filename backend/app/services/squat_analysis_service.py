@@ -2,18 +2,23 @@ from statistics import mean, pstdev
 from typing import Any
 
 from app.schemas.analysis_schema import AnalysisResponse
+from app.core.exercise_thresholds import (
+    INCONSISTENT_DEPTH_STD_DEG,
+    ISSUE_SCORE_DEDUCTIONS,
+    KNEE_VALGUS_FRAME_RATIO,
+    KNEE_VALGUS_MARGIN_NORMALIZED,
+    LOW_CONFIDENCE_FRAME_RATIO,
+    POOR_DEPTH_FRAME_RATIO,
+    SQUAT_DEPTH_KNEE_ANGLE_DEG,
+    STANDING_KNEE_ANGLE_DEG,
+    TRUNK_LEAN_THRESHOLD_DEG,
+)
 from app.services.angle_calculation_service import (
     calculate_hip_angle,
     calculate_knee_angle,
     calculate_trunk_angle,
 )
 from app.services.feedback_service import build_feedback
-
-STANDING_KNEE_ANGLE = 160
-SQUAT_DEPTH_KNEE_ANGLE = 110
-TRUNK_LEAN_THRESHOLD = 35
-KNEE_VALGUS_MARGIN = 0.035
-
 
 def _avg_point(left: dict[str, float], right: dict[str, float]) -> dict[str, float]:
     return {
@@ -41,10 +46,12 @@ def _frame_metrics(frame: dict[str, Any]) -> dict[str, float | bool]:
     trunk_angle = calculate_trunk_angle(mid_shoulder, mid_hip)
 
     left_valgus = landmarks["left_knee"]["x"] > (
-        max(landmarks["left_hip"]["x"], landmarks["left_ankle"]["x"]) + KNEE_VALGUS_MARGIN
+        max(landmarks["left_hip"]["x"], landmarks["left_ankle"]["x"])
+        + KNEE_VALGUS_MARGIN_NORMALIZED
     )
     right_valgus = landmarks["right_knee"]["x"] < (
-        min(landmarks["right_hip"]["x"], landmarks["right_ankle"]["x"]) - KNEE_VALGUS_MARGIN
+        min(landmarks["right_hip"]["x"], landmarks["right_ankle"]["x"])
+        - KNEE_VALGUS_MARGIN_NORMALIZED
     )
 
     return {
@@ -61,9 +68,9 @@ def _count_reps(knee_angles: list[float]) -> int:
     phase = "standing"
 
     for angle in knee_angles:
-        if phase == "standing" and angle < SQUAT_DEPTH_KNEE_ANGLE:
+        if phase == "standing" and angle < SQUAT_DEPTH_KNEE_ANGLE_DEG:
             phase = "depth"
-        elif phase == "depth" and angle > STANDING_KNEE_ANGLE:
+        elif phase == "depth" and angle > STANDING_KNEE_ANGLE_DEG:
             reps += 1
             phase = "standing"
 
@@ -76,41 +83,34 @@ def analyze_squat_landmarks(frames: list[dict[str, Any]]) -> AnalysisResponse:
     hip_angles = [float(item["hip_angle"]) for item in metrics]
     trunk_angles = [float(item["trunk_angle"]) for item in metrics]
 
-    squat_frames = [angle for angle in knee_angles if angle < STANDING_KNEE_ANGLE]
-    depth_frames = [angle for angle in knee_angles if angle < SQUAT_DEPTH_KNEE_ANGLE]
+    squat_frames = [angle for angle in knee_angles if angle < STANDING_KNEE_ANGLE_DEG]
+    depth_frames = [angle for angle in knee_angles if angle < SQUAT_DEPTH_KNEE_ANGLE_DEG]
     total_reps = _count_reps(knee_angles)
     detected_issues: list[str] = []
 
     # Short videos may only include a few bottom-position frames, so keep this conservative.
-    if squat_frames and len(depth_frames) / len(squat_frames) < 0.25:
+    if squat_frames and len(depth_frames) / len(squat_frames) < POOR_DEPTH_FRAME_RATIO:
         detected_issues.append("poor_depth")
     elif not depth_frames:
         detected_issues.append("poor_depth")
 
-    if trunk_angles and mean(trunk_angles) > TRUNK_LEAN_THRESHOLD:
+    if trunk_angles and mean(trunk_angles) > TRUNK_LEAN_THRESHOLD_DEG:
         detected_issues.append("excessive_trunk_lean")
 
     valgus_ratio = sum(bool(item["possible_knee_valgus"]) for item in metrics) / len(metrics)
-    if valgus_ratio > 0.25:
+    if valgus_ratio > KNEE_VALGUS_FRAME_RATIO:
         detected_issues.append("possible_knee_valgus")
 
-    if len(depth_frames) > 1 and pstdev(depth_frames) > 18:
+    if len(depth_frames) > 1 and pstdev(depth_frames) > INCONSISTENT_DEPTH_STD_DEG:
         detected_issues.append("inconsistent_movement")
 
     low_confidence_ratio = sum(bool(item["low_confidence"]) for item in metrics) / len(metrics)
-    if low_confidence_ratio > 0.4:
+    if low_confidence_ratio > LOW_CONFIDENCE_FRAME_RATIO:
         detected_issues.append("low_landmark_confidence")
 
     score = 100
-    penalties = {
-        "poor_depth": 20,
-        "excessive_trunk_lean": 20,
-        "possible_knee_valgus": 20,
-        "inconsistent_movement": 10,
-        "low_landmark_confidence": 10,
-    }
     for issue in detected_issues:
-        score -= penalties.get(issue, 0)
+        score -= ISSUE_SCORE_DEDUCTIONS.get(issue, 0)
     score = max(0, min(100, score))
 
     limitations = [

@@ -341,9 +341,11 @@ This analysis is for exercise monitoring and educational support only. It does n
 
 ## Sprint Status
 
-Sprint 1.5 has been reviewed. The project is **Conditionally Ready for Sprint 2**: the project-local `.venv` passes the test suite, and 17 custom squat videos now have combined landmark and angle outputs. Dataset coverage still needs one `squat_fast_uncontrolled` example, review of one unlabeled video, and resolution of one filename/folder label disagreement before the custom set is treated as fully curated.
+Sprint 2 is **Conditionally Complete**. The final curated run processed 17 videos into 64,152 landmark rows and 1,944 frame-level angle rows (the pre-curation baseline was 64,119/1,943). The live FastAPI endpoint successfully analyzed `squat_correct_001.mp4`, returned one repetition and the documented JSON fields, and handled missing, unsupported, empty, and unreadable uploads with structured 4xx responses. The frontend production build passes and its upload, loading, result, error, and configurable API states are implemented.
 
-Next command checklist (run from the project root in PowerShell):
+The remaining data-coverage condition is the absence of `squat_fast_uncontrolled` examples. The `squat_unlabeled` folder is a review-only quarantine bucket and is not an official supervised label until each video is manually curated.
+
+Exact closure commands (run from the project root in PowerShell):
 
 ```powershell
 python -m venv .venv
@@ -351,9 +353,58 @@ python -m venv .venv
 python -m pip install --upgrade pip
 python -m pip install -r requirements-dev.txt
 python scripts\check_dataset_structure.py
+python scripts\prepare_custom_squat_videos.py
+python scripts\extract_landmarks_from_videos.py
+python scripts\create_angle_features.py
+python -m pytest
+Set-Location backend
+python -m uvicorn app.main:app --reload
+```
+
+In a second PowerShell terminal, start the frontend:
+
+```powershell
+Set-Location frontend
+npm install
+npm run dev
+```
+
+See [the Sprint 2 completion report](docs/sprint_2_completion_report.md) for validation evidence and remaining limitations.
+
+## Sprint 3 Focus
+
+Sprint 3 improves the existing Squat Analyzer MVP through curated squat-video coverage, expert threshold validation, upload hardening, stable API errors, and frontend automated tests. It does **not** add model training, additional exercises, authentication, database complexity, or an architecture redesign.
+
+Run the data and automated checks from the project root:
+
+```powershell
+python scripts/check_dataset_structure.py
+python scripts/prepare_custom_squat_videos.py
+python scripts/extract_landmarks_from_videos.py
+python scripts/create_angle_features.py
 python -m pytest
 ```
 
-After adding licensed local datasets and at least one consented or synthetic test video, run the pipeline commands in [the Sprint 1.5 review report](docs/sprint_1_5_review_report.md). The next sprint focus is the **Squat Analyzer End-to-End MVP**: verify upload, landmark extraction, angles, rep counting, conservative issue flags, JSON feedback, and frontend/backend integration without adding database, authentication, deployment, or multi-exercise scope.
+Start the backend:
 
-See [the Sprint 2 plan](docs/sprint_2_plan.md) for scope and acceptance criteria.
+```powershell
+cd backend
+python -m uvicorn app.main:app --reload
+```
+
+In another terminal, run and test the frontend:
+
+```powershell
+cd frontend
+npm install
+npm run dev
+npm test
+```
+
+Sprint 3 QA artifacts:
+
+- [Custom squat dataset audit](docs/custom_squat_dataset_audit.md)
+- [Squat threshold review](docs/squat_thresholds.md)
+- [API contract](docs/api_contract.md)
+- [Sprint 3 plan](docs/sprint_3_plan.md)
+- [Sprint 3 QA checklist](docs/sprint_3_qa_checklist.md)

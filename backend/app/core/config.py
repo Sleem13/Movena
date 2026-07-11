@@ -9,8 +9,18 @@ class Settings(BaseModel):
     version: str = "0.1.0"
     api_v1_prefix: str = "/api/v1"
     upload_dir: Path = Path("tmp/uploads")
+    max_upload_size_bytes: int = 100 * 1024 * 1024
+    min_readable_video_frames: int = 3
     min_landmark_visibility: float = 0.45
     allowed_video_extensions: set[str] = {".mp4", ".mov", ".avi", ".mkv", ".webm"}
+    allowed_video_mime_types: set[str] = {
+        "video/mp4",
+        "video/quicktime",
+        "video/x-msvideo",
+        "video/x-matroska",
+        "video/webm",
+        "application/octet-stream",
+    }
 
 
 @lru_cache

@@ -100,6 +100,10 @@ def extract_pose_landmarks(video_path: Path) -> list[dict[str, Any]]:
 
     if processed_frames == 0:
         raise PoseEstimationError("Uploaded video has no readable frames.")
+    if processed_frames < settings.min_readable_video_frames:
+        raise PoseEstimationError(
+            f"Video is too short; at least {settings.min_readable_video_frames} readable frames are required."
+        )
     if not frame_landmarks:
         raise PoseEstimationError("No pose detected in the uploaded video.")
 

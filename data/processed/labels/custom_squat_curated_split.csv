@@ -1,0 +1,18 @@
+video_path,label,split,include_in_validation,reason,notes
+data/raw/custom_videos/squat_correct/squat_correct_001.mp4,squat_correct,validation,true,Primary real-video endpoint fixture,Rule validation only; not an ML training split
+data/raw/custom_videos/squat_correct/squat_correct_002.mp4,squat_correct,validation,true,Second correct-form validation reference,Confirm label with physiotherapist
+data/raw/custom_videos/squat_correct/squat_correct_003.mp4,squat_correct,train_like_reference,true,Threshold-tuning reference,Keep independent of holdout decisions
+data/raw/custom_videos/squat_correct/squat_correct_004.mp4,squat_correct,train_like_reference,true,Threshold-tuning reference,Keep independent of holdout decisions
+data/raw/custom_videos/squat_correct/squat_correct_005.mp4,squat_correct,train_like_reference,true,Threshold-tuning reference,Keep independent of holdout decisions
+data/raw/custom_videos/squat_correct/squat_correct_006.mp4,squat_correct,train_like_reference,true,Threshold-tuning reference,Keep independent of holdout decisions
+data/raw/custom_videos/squat_correct/squat_correct_007.mp4,squat_correct,train_like_reference,true,Threshold-tuning reference,Keep independent of holdout decisions
+data/raw/custom_videos/squat_correct/squat_correct_008.mp4,squat_correct,train_like_reference,true,Threshold-tuning reference,Keep independent of holdout decisions
+data/raw/custom_videos/squat_correct/squat_correct_009.mp4,squat_correct,holdout_test,false,Independent end-to-end holdout,Do not tune rules against this clip
+data/raw/custom_videos/squat_knee_valgus/squat_knee_valgus_002.mp4,squat_knee_valgus,validation,true,Only available class example,No independent holdout possible
+data/raw/custom_videos/squat_shallow_depth/squat_shallow_depth_001.mp4,squat_shallow_depth,validation,true,Minority-class rule validation,Confirm depth label with physiotherapist
+data/raw/custom_videos/squat_shallow_depth/squat_shallow_depth_002.mp4,squat_shallow_depth,holdout_test,false,Minority-class holdout,Do not tune rule against this clip
+data/raw/custom_videos/squat_trunk_lean/squat_trunk_lean_001.mp4,squat_trunk_lean,validation,true,Minority-class rule validation,Confirm trunk threshold with physiotherapist
+data/raw/custom_videos/squat_trunk_lean/squat_trunk_lean_002.mp4,squat_trunk_lean,train_like_reference,true,Threshold-tuning reference,Rule validation only
+data/raw/custom_videos/squat_trunk_lean/squat_trunk_lean_003.mp4,squat_trunk_lean,train_like_reference,true,Threshold-tuning reference,Rule validation only
+data/raw/custom_videos/squat_trunk_lean/squat_trunk_lean_004.mp4,squat_trunk_lean,holdout_test,false,Minority-class holdout,Renamed during Sprint 2 curation
+data/raw/custom_videos/squat_unlabeled/unlabeled.mp4,unlabeled,validation,false,Quarantine pending expert label,Excluded from official validation and supervised use
