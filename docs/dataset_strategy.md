@@ -14,16 +14,19 @@ The practical strategy is to use public datasets for research support, benchmark
 
 Primary dataset:
 - Squat Exercise Pose Dataset from Kaggle
+- Zenodo Squat Dataset for image-level posture validation
 
 Goals:
 - Validate squat form labels against the current rule-based analyzer.
 - Stress-test shallow depth, knee valgus, trunk lean, and repetition counting rules.
 - Build first train/validation/test CSV splits for future supervised squat classifiers.
+- Validate image-level `Good`, `Bad Back`, and `Bad Heel` labels against interpretable pose and angle features.
 
 Why first:
 - It is closest to the MVP exercise.
 - It can be used immediately for squat-specific labels and simple form classification.
 - It keeps Sprint 1 focused on one exercise instead of prematurely broadening the platform.
+- The Zenodo image dataset is directly relevant to Sprint 2 posture validation, while custom videos remain necessary for rep counting and movement-phase analysis.
 
 ### Phase 2: Rehabilitation Validation
 
@@ -81,6 +84,24 @@ Limitations:
 - Usually not collected in a clinical rehabilitation setting.
 - May have limited subject diversity, camera consistency, metadata, or label granularity depending on the specific Kaggle version.
 - Manual download is required; do not hardcode credentials or automate Kaggle access in the repo.
+
+### Zenodo Squat Dataset
+
+Source:
+- https://zenodo.org/records/17558630
+- DOI: `10.5281/zenodo.17558630`
+
+Strengths:
+- Side-view squat images align directly with image-level squat posture assessment.
+- `Good`, `Bad Back`, and `Bad Heel` classes can support validation of bad-back and bad-heel feedback rules.
+- MediaPipe landmarks and transparent angle features can be compared across the three source labels.
+- High priority for Sprint 2 posture-rule validation and a possible future supervised image classifier.
+
+Limitations:
+- It is an image dataset, not a video dataset.
+- It cannot validate repetition counting, movement phases, tempo, or temporal consistency.
+- It should not replace custom PhysioVision squat videos, which are required for the upload workflow and temporal analysis.
+- It is not clinical rehabilitation evidence and must not be used to make diagnostic claims.
 
 ### REHAB24-6
 
@@ -178,12 +199,13 @@ How it supports future multimodal AI rehab systems:
 
 ## Recommended First Dataset
 
-Use the Kaggle Squat Exercise Pose Dataset first.
+Use the Kaggle Squat Exercise Pose Dataset and Zenodo Squat Dataset for complementary squat validation, while keeping custom videos as the primary end-to-end Sprint 2 evidence.
 
 Reason:
 - It directly supports the current MVP exercise.
 - It can validate rule-based squat scoring quickly.
 - It keeps engineering effort aligned with Sprint 1 acceptance criteria.
+- The Zenodo dataset adds focused image-level validation for good posture, back alignment, and heel/foot positioning, but it does not cover rep counting.
 
 After the MVP squat pipeline is stable, add REHAB24-6 and UI-PRMD for rehabilitation sequence validation. Then add UCO and DynTherapy for viewpoint and exercise expansion. KIMORE should be reserved for clinical-style scoring research once the platform has stable feature extraction and a well-documented custom data collection protocol.
 

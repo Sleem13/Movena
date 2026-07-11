@@ -19,6 +19,7 @@ data/
 │   ├── squat_kaggle/
 │   ├── uci_physical_therapy_exercises/
 │   ├── rehab24_6/
+│   ├── uco_physical_rehab/
 │   ├── dyntherapy/
 │   ├── ui_prmd/
 │   └── kimore/

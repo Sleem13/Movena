@@ -2,7 +2,7 @@
 
 ## 1. Introduction
 
-PhysioVision AI is an AI-powered physical therapy and rehabilitation platform focused on computer vision-based assessment of therapeutic exercise. The MVP targets knee rehabilitation and lower-limb exercise assessment across six common activities: bodyweight squat, lunge, straight leg raise, glute bridge, step-up, and single-leg balance. These exercises are clinically relevant because they involve lower-limb strength, control, balance, hip-knee-ankle coordination, and observable compensations such as dynamic knee valgus, asymmetrical loading, trunk lean, limited range of motion, and unstable single-limb control.
+PhysioVision AI is an AI-powered physical therapy and rehabilitation platform focused on computer vision-based assessment of therapeutic exercise. The current MVP implements bodyweight squat analysis only. A later research roadmap covers six common activities: bodyweight squat, lunge, straight leg raise, glute bridge, step-up, and single-leg balance. These exercises are clinically relevant because they involve lower-limb strength, control, balance, hip-knee-ankle coordination, and observable compensations such as dynamic knee valgus, asymmetrical loading, trunk lean, limited range of motion, and unstable single-limb control.
 
 The recent literature from 2023 to 2026 shows increasing interest in artificial intelligence, markerless motion capture, and human pose estimation for rehabilitation measurement. The central promise is not to replace physiotherapists, but to improve access to objective movement data, support remote monitoring, reduce manual documentation burden, and provide consistent feedback between clinical visits. In this context, PhysioVision AI should be positioned as a clinical decision-support and progress-tracking tool. It should not be described as a diagnostic system, a substitute for clinical judgment, or a standalone treatment authority.
 
@@ -37,7 +37,7 @@ For rehabilitation exercise assessment, pose estimation supports several MVP-lev
 
 Recent rehabilitation exercise quality assessment research uses public datasets such as KIMORE, UI-PRMD, and IRDS, often relying on skeleton sequences rather than raw video. Karlov et al. (2024) propose supervised contrastive learning for rehabilitation exercise quality assessment, addressing the challenge that many datasets contain limited samples per exercise type. Sherif and Hamdi (2025) propose error-guided pose augmentation to simulate clinically relevant movement errors and improve automated assessment. These studies support the idea that movement-quality scoring can improve when models learn clinically meaningful error patterns rather than only classifying exercise labels.
 
-For PhysioVision AI, this suggests a staged approach. The MVP should start with interpretable pose-derived metrics and rule-based quality indicators for the six selected exercises. Later versions can add supervised learning as validated datasets grow and therapist-labeled examples become available.
+For PhysioVision AI, this suggests a staged approach. The current MVP starts with interpretable pose-derived metrics and rule-based quality indicators for squat; the other five selected exercises remain roadmap items. Later versions can add supervised learning only after validated datasets and therapist-labeled examples become available.
 
 ## 5. Joint Angle Analysis and Movement Quality Scoring
 

@@ -43,7 +43,7 @@ PhysioVision AI addresses the research gap through a clinically scoped MVP:
 
 The project is justified because home exercise performance is difficult to observe between clinic visits, while recent pose-estimation models make low-cost visual movement tracking technically feasible. A focused platform can help bridge this gap by giving physiotherapists structured information about exercise performance outside the clinic. The MVP's value lies in supporting measurement consistency, adherence monitoring, and clearer patient-therapist communication.
 
-The knee rehabilitation focus is appropriate because lower-limb movement patterns are visually observable and clinically meaningful, yet current accessible tools often lack exercise-specific assessment and therapist-facing reporting. By starting with six defined exercises, PhysioVision AI can keep the assessment scope manageable and safer to validate.
+The knee rehabilitation focus is appropriate because lower-limb movement patterns are visually observable and clinically meaningful, yet current accessible tools often lack exercise-specific assessment and therapist-facing reporting. The implemented MVP starts with bodyweight squat only; the six-exercise set is a later research roadmap after the squat workflow is validated.
 
 ## Research Question
 
@@ -51,7 +51,7 @@ How can a single-camera AI system support physiotherapists in assessing lower-li
 
 ## MVP Design Implications
 
-The research gap leads to the following MVP requirements:
+The research gap leads to the following product requirements. Only the squat-specific subset is implemented in the current MVP:
 
 - Exercise-specific assessment profiles for squat, lunge, straight leg raise, glute bridge, step-up, and single-leg balance.
 - Pose-landmark quality checks before scoring.

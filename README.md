@@ -27,6 +27,8 @@ backend/
     tests/
     utils/
   requirements.txt
+requirements.txt
+requirements-dev.txt
 data/
   raw/
   processed/
@@ -42,12 +44,17 @@ scripts/
 
 ## Backend Setup
 
+Create the virtual environment inside the project root. A project-local `.venv` prevents Windows launchers from resolving an old environment from another folder or drive.
+
+If `Get-Command python` or `Get-Command pytest` points to an environment outside this project, close that terminal and open a new PowerShell window in the project root before running the setup commands.
+
 ```powershell
-cd backend
-python -m venv venv
-venv\Scripts\activate
-pip install -r requirements.txt
-uvicorn app.main:app --reload
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+python -m pip install -r requirements-dev.txt
+Set-Location backend
+python -m uvicorn app.main:app --reload
 ```
 
 The backend runs at `http://localhost:8000`.
@@ -66,9 +73,10 @@ If the backend is running somewhere else, set `VITE_API_BASE_URL` before startin
 
 ## Testing
 
+Run tests from the project root. On Windows, use `python -m pytest` so the test runner uses the active `.venv` interpreter instead of a stale `pytest.exe` launcher containing an old absolute path.
+
 ```powershell
-cd backend
-pytest
+python -m pytest
 ```
 
 The tests cover the pure angle calculation functions and core squat analysis rules with synthetic landmarks.
@@ -123,6 +131,7 @@ data/
 │   ├── squat_kaggle/
 │   ├── uci_physical_therapy_exercises/
 │   ├── rehab24_6/
+│   ├── uco_physical_rehab/
 │   ├── dyntherapy/
 │   ├── ui_prmd/
 │   └── kimore/
@@ -162,21 +171,44 @@ Optional explicit input:
 python scripts/prepare_squat_dataset.py --input data/raw/squat_kaggle/squat_dataset.csv
 ```
 
-Extract MediaPipe landmarks from local sample videos:
+Prepare custom squat video metadata and a label-coverage validation report:
+
+```powershell
+python scripts/prepare_custom_squat_videos.py
+```
+
+This scans `data/raw/custom_videos/` and writes:
+
+```text
+data/processed/labels/custom_squat_videos_labels.csv
+data/processed/labels/custom_squat_videos_validation_report.md
+```
+
+Extract one combined MediaPipe landmark CSV from the prepared custom videos:
 
 ```powershell
 python scripts/extract_landmarks_from_videos.py
 ```
 
-This reads from `data/samples/` and `data/raw/custom_videos/` and writes to `data/processed/pose_landmarks/`.
+This uses the metadata CSV when available and writes:
 
-Create angle features from extracted landmarks:
+```text
+data/processed/pose_landmarks/custom_squat_videos_landmarks.csv
+```
+
+Unreadable or no-pose videos are recorded in `data/processed/pose_landmarks/failed_videos.csv` without stopping other videos.
+
+Create frame-level angle features from the combined landmarks:
 
 ```powershell
 python scripts/create_angle_features.py
 ```
 
-This reads from `data/processed/pose_landmarks/` and writes to `data/processed/angle_features/`.
+It writes:
+
+```text
+data/processed/angle_features/custom_squat_videos_angle_features.csv
+```
 
 ### Sensor Pipeline
 
@@ -215,6 +247,27 @@ The sensor pipeline stays independent from the MediaPipe landmark pipeline.
 ### Future Multimodal Pipeline
 
 Future sprints may align camera features and wearable-sensor features by exercise, subject, session, timestamp, or repetition. That fusion step is intentionally not implemented in Sprint 1.5.
+
+## Zenodo Squat Dataset
+
+The [Zenodo Squat Dataset](https://zenodo.org/records/17558630) (DOI `10.5281/zenodo.17558630`) contains side-view `Good`, `Bad Back`, and `Bad Heel` squat images. It is useful for Sprint 2 image-level posture and rule validation, but it cannot support rep counting or temporal movement analysis.
+
+Download `Dataset.zip` manually and extract the class folders under:
+
+```text
+data/raw/zenodo_squat_dataset/
+```
+
+Run from the project root:
+
+```powershell
+python scripts/check_dataset_structure.py --create
+python scripts/prepare_zenodo_squat_dataset.py
+python scripts/extract_landmarks_from_images.py
+python scripts/create_image_angle_features.py
+```
+
+Generated metadata, landmarks, and image-level angle features are written under `data/processed/labels/`, `data/processed/pose_landmarks/zenodo_squat_dataset/`, and `data/processed/angle_features/zenodo_squat_dataset/`. Raw images and generated CSV files remain excluded from Git. See `docs/zenodo_squat_dataset_notes.md` for preprocessing guidance and limitations.
 
 The processed dataframe is normalized around:
 
@@ -286,13 +339,21 @@ Returns:
 
 This analysis is for exercise monitoring and educational support only. It does not replace assessment by a licensed physiotherapist. Users should stop exercising and consult a qualified professional if they experience pain, dizziness, instability, or symptoms that feel unsafe.
 
-## Recommended Sprint 2
+## Sprint Status
 
-- Add side-view and front-view capture guidance.
-- Save analysis reports and metadata in a lightweight database.
-- Add annotated video export with pose overlays.
-- Improve squat phase detection with smoothing and temporal thresholds.
-- Add clinician review notes and a patient progress timeline.
-- Add more validation videos and integration tests for real upload processing.
-- Add dataset-specific adapters for REHAB24-6, UCO Physical Rehabilitation, DynTherapy, UI-PRMD, and KIMORE.
-- Start a consented custom squat dataset using `docs/custom_dataset_collection_protocol.md`.
+Sprint 1.5 has been reviewed. The project is **Conditionally Ready for Sprint 2**: the project-local `.venv` passes the test suite, and 17 custom squat videos now have combined landmark and angle outputs. Dataset coverage still needs one `squat_fast_uncontrolled` example, review of one unlabeled video, and resolution of one filename/folder label disagreement before the custom set is treated as fully curated.
+
+Next command checklist (run from the project root in PowerShell):
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+python -m pip install -r requirements-dev.txt
+python scripts\check_dataset_structure.py
+python -m pytest
+```
+
+After adding licensed local datasets and at least one consented or synthetic test video, run the pipeline commands in [the Sprint 1.5 review report](docs/sprint_1_5_review_report.md). The next sprint focus is the **Squat Analyzer End-to-End MVP**: verify upload, landmark extraction, angles, rep counting, conservative issue flags, JSON feedback, and frontend/backend integration without adding database, authentication, deployment, or multi-exercise scope.
+
+See [the Sprint 2 plan](docs/sprint_2_plan.md) for scope and acceptance criteria.

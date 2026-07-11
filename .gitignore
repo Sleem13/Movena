@@ -179,11 +179,17 @@ data/raw/**
 data/processed/**/*.csv
 data/processed/**/*.json
 data/processed/**/*.parquet
+# Zenodo Squat Dataset: raw images and reproducible image-pipeline outputs
+data/raw/zenodo_squat_dataset/**
+data/processed/labels/zenodo_squat_dataset_labels.csv
+data/processed/pose_landmarks/zenodo_squat_dataset/**
+data/processed/angle_features/zenodo_squat_dataset/**
 data/samples/**/*.mp4
 data/samples/**/*.mov
 data/samples/**/*.avi
 data/samples/**/*.mkv
 data/samples/**/*.webm
+data/samples/metadata.csv
 !data/README.md
 !data/**/
 !data/**/.gitkeep
