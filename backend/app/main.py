@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from app.api.routes.health import router as health_router
+from app.api.routes.artifacts import router as artifacts_router
 from app.api.routes.squat_analysis import router as squat_router
 from app.core.config import get_settings
 from app.core.logging_config import configure_logging
@@ -42,3 +43,4 @@ app.add_middleware(
 
 app.include_router(health_router)
 app.include_router(squat_router)
+app.include_router(artifacts_router)

@@ -52,6 +52,7 @@ def extract_pose_landmarks(video_path: Path) -> list[dict[str, Any]]:
         raise PoseEstimationError("Unable to open uploaded video.")
 
     settings = get_settings()
+    fps = float(cap.get(cv2.CAP_PROP_FPS) or 30.0)
     frame_landmarks: list[dict[str, Any]] = []
     processed_frames = 0
     detected_frames = 0
@@ -85,6 +86,7 @@ def extract_pose_landmarks(video_path: Path) -> list[dict[str, Any]]:
             frame_landmarks.append(
                 {
                     "frame_index": processed_frames - 1,
+                    "timestamp_sec": round((processed_frames - 1) / fps, 6),
                     "landmarks": selected,
                     "average_visibility": average_visibility,
                     "low_confidence": average_visibility < settings.min_landmark_visibility,

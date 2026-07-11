@@ -25,9 +25,9 @@ class AnalysisResponse(BaseModel):
     limitations: list[str] = Field(default_factory=list)
     frame_analysis: list[FrameAnalysis] | None = None
     report_id: str | None = None
-    report_url: str | None = None
+    report_download_url: str | None = None
     overlay_id: str | None = None
-    overlay_url: str | None = None
+    overlay_download_url: str | None = None
 
 
 class ErrorResponse(BaseModel):

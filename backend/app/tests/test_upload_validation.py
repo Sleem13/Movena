@@ -93,13 +93,15 @@ def test_no_pose_returns_clean_error(monkeypatch, tmp_path):
 
 def test_success_response_contract_and_cleanup(monkeypatch, tmp_path):
     monkeypatch.setattr(get_settings(), "upload_dir", tmp_path)
+    artifact_dir = tmp_path / "artifacts"
+    monkeypatch.setattr(get_settings(), "artifact_dir", artifact_dir)
     monkeypatch.setattr(
         "app.api.routes.squat_analysis.extract_pose_landmarks",
         lambda _path: [{"landmarks": {}}],
     )
     monkeypatch.setattr(
         "app.api.routes.squat_analysis.analyze_squat_landmarks",
-        lambda _frames: AnalysisResponse(
+        lambda _frames, include_frame_data=False: AnalysisResponse(
             total_reps=1,
             movement_score=90,
             feedback=["Educational only."],
@@ -108,11 +110,31 @@ def test_success_response_contract_and_cleanup(monkeypatch, tmp_path):
     )
 
     response = client.post(
-        "/api/v1/analyze/squat",
+        "/api/v1/analyze/squat?generate_report=true",
         files={"video": ("valid.mp4", b"video", "video/mp4")},
     )
 
     assert response.status_code == 200
     assert response.json()["exercise"] == "bodyweight_squat"
     assert response.json()["total_reps"] == 1
-    assert list(tmp_path.iterdir()) == []
+    assert response.json()["report_download_url"].startswith("/api/v1/artifacts/reports/")
+    assert not list(tmp_path.glob("*.mp4"))
+
+
+def test_processing_failure_has_clean_message_without_stack_trace(monkeypatch, tmp_path):
+    monkeypatch.setattr(get_settings(), "upload_dir", tmp_path)
+    monkeypatch.setattr(
+        "app.api.routes.squat_analysis.extract_pose_landmarks",
+        lambda _path: [{"landmarks": {}}],
+    )
+
+    def fail_analysis(_frames, include_frame_data=False):
+        raise RuntimeError("sensitive internal path C:/private")
+
+    monkeypatch.setattr("app.api.routes.squat_analysis.analyze_squat_landmarks", fail_analysis)
+    response = client.post(
+        "/api/v1/analyze/squat",
+        files={"video": ("valid.mp4", b"video", "video/mp4")},
+    )
+    assert_error(response, 500, "PROCESSING_ERROR")
+    assert "private" not in response.text

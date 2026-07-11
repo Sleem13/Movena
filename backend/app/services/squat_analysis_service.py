@@ -1,7 +1,7 @@
 from statistics import mean, pstdev
 from typing import Any
 
-from app.schemas.analysis_schema import AnalysisResponse
+from app.schemas.analysis_schema import AnalysisResponse, FrameAnalysis
 from app.core.exercise_thresholds import (
     INCONSISTENT_DEPTH_STD_DEG,
     ISSUE_SCORE_DEDUCTIONS,
@@ -63,6 +63,51 @@ def _frame_metrics(frame: dict[str, Any]) -> dict[str, float | bool]:
     }
 
 
+def _phase_for_angle(angle: float, current_phase: str) -> str:
+    if angle < SQUAT_DEPTH_KNEE_ANGLE_DEG:
+        return "depth"
+    if angle > STANDING_KNEE_ANGLE_DEG:
+        return "standing"
+    return "descent" if current_phase == "standing" else "ascent"
+
+
+def create_frame_analysis(frames: list[dict[str, Any]]) -> list[FrameAnalysis]:
+    """Return conservative per-frame metrics for overlays and optional API detail."""
+    result: list[FrameAnalysis] = []
+    phase = "standing"
+    for frame in frames:
+        metrics = _frame_metrics(frame)
+        knee_angle = float(metrics["knee_angle"])
+        next_phase = _phase_for_angle(knee_angle, phase)
+        issue = None
+        if bool(metrics["low_confidence"]):
+            issue = "low_landmark_confidence"
+        elif bool(metrics["possible_knee_valgus"]):
+            issue = "possible_knee_valgus"
+        elif float(metrics["trunk_angle"]) > TRUNK_LEAN_THRESHOLD_DEG:
+            issue = "excessive_trunk_lean"
+        result.append(
+            FrameAnalysis(
+                frame_index=int(frame.get("frame_index", len(result))),
+                timestamp_sec=float(frame.get("timestamp_sec", 0.0)),
+                knee_angle=knee_angle,
+                hip_angle=float(metrics["hip_angle"]),
+                trunk_angle=float(metrics["trunk_angle"]),
+                phase=next_phase,
+                detected_issue=issue,
+            )
+        )
+        phase = next_phase
+    return result
+
+
+def _sample_frame_analysis(rows: list[FrameAnalysis], limit: int) -> list[FrameAnalysis]:
+    if len(rows) <= limit:
+        return rows
+    indexes = {round(index * (len(rows) - 1) / (limit - 1)) for index in range(limit)}
+    return [rows[index] for index in sorted(indexes)]
+
+
 def _count_reps(knee_angles: list[float]) -> int:
     reps = 0
     phase = "standing"
@@ -77,7 +122,9 @@ def _count_reps(knee_angles: list[float]) -> int:
     return reps
 
 
-def analyze_squat_landmarks(frames: list[dict[str, Any]]) -> AnalysisResponse:
+def analyze_squat_landmarks(
+    frames: list[dict[str, Any]], include_frame_data: bool = False
+) -> AnalysisResponse:
     metrics = [_frame_metrics(frame) for frame in frames]
     knee_angles = [float(item["knee_angle"]) for item in metrics]
     hip_angles = [float(item["hip_angle"]) for item in metrics]
@@ -124,6 +171,16 @@ def analyze_squat_landmarks(frames: list[dict[str, Any]]) -> AnalysisResponse:
         f"{'' if total_reps == 1 else 's'} with a movement score of {score}/100."
     )
 
+    frame_analysis = create_frame_analysis(frames)
+    if include_frame_data:
+        from app.core.config import get_settings
+
+        detailed_rows = _sample_frame_analysis(
+            frame_analysis, get_settings().max_frame_analysis_rows
+        )
+    else:
+        detailed_rows = None
+
     return AnalysisResponse(
         total_reps=total_reps,
         average_knee_angle=round(mean(knee_angles), 2),
@@ -134,4 +191,5 @@ def analyze_squat_landmarks(frames: list[dict[str, Any]]) -> AnalysisResponse:
         feedback=build_feedback(detected_issues),
         summary=summary,
         limitations=limitations,
+        frame_analysis=detailed_rows,
     )

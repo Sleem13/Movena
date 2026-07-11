@@ -1,4 +1,5 @@
 import UploadCard from "../components/UploadCard.jsx";
+import CameraPlacementGuide from "../components/CameraPlacementGuide.jsx";
 
 export default function UploadSquat({
   file,
@@ -15,6 +16,7 @@ export default function UploadSquat({
         </p>
         <h1 className="mt-2 text-3xl font-semibold text-clinical-ink">Upload video</h1>
       </div>
+      <CameraPlacementGuide />
       <UploadCard
         file={file}
         error={error}

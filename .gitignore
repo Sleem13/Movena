@@ -178,6 +178,7 @@ frontend/dist/
 data/raw/**
 data/processed/**/*.csv
 !data/processed/labels/custom_squat_curated_split.csv
+!data/processed/features/squat_video_training_features.csv
 data/processed/**/*.json
 data/processed/**/*.parquet
 # Zenodo Squat Dataset: raw images and reproducible image-pipeline outputs

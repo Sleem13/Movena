@@ -408,3 +408,61 @@ Sprint 3 QA artifacts:
 - [API contract](docs/api_contract.md)
 - [Sprint 3 plan](docs/sprint_3_plan.md)
 - [Sprint 3 QA checklist](docs/sprint_3_qa_checklist.md)
+
+## Sprint 4 Focus
+
+Sprint 4 adds visual feedback and therapist-friendly reporting to the existing Squat Analyzer. Successful analyses can generate a temporary PDF report with `generate_report=true`. Optional query flags add a CPU-friendly skeleton overlay and bounded frame-level angles without changing the default summary workflow. The frontend requests the report and overlay for its results view and adds camera-placement guidance, download controls, annotated preview, and a dedicated educational-use notice.
+
+No model training, new exercise, authentication, database, permanent patient record, or diagnostic claim is included.
+
+Install the updated dependencies and run validation:
+
+```powershell
+python -m pip install -r requirements-dev.txt
+python -m pytest
+cd frontend
+npm install
+npm test
+npm run build
+```
+
+Start the API from `backend/`:
+
+```powershell
+python -m uvicorn app.main:app --reload
+```
+
+Sprint 4 endpoints:
+
+- `POST /api/v1/analyze/squat` — compact summary JSON.
+- `POST /api/v1/analyze/squat?generate_report=true` — adds a temporary PDF report.
+- `POST /api/v1/analyze/squat?include_frame_data=true` — adds at most 300 sampled frame rows.
+- `POST /api/v1/analyze/squat?include_overlay=true` — adds an experimental annotated-video artifact.
+- `GET /api/v1/artifacts/reports/{report_id}` — downloads a non-expired PDF.
+- `GET /api/v1/artifacts/overlays/{overlay_id}` — downloads a non-expired overlay MP4.
+
+Reports and overlays are stored temporarily for one hour by default and cleaned opportunistically. They are not durable or access-controlled clinical records. OpenCV’s CPU-friendly MP4 output may not preview in every browser. See [the Sprint 4 plan](docs/sprint_4_plan.md), [report design](docs/report_generation_design.md), and [visual feedback design](docs/visual_feedback_design.md).
+
+## Sprint 5 Model Baseline
+
+Sprint 5 adds an **offline experimental ML baseline** over aggregated custom-video angle features. It does not replace or modify the rule-based Squat Analyzer, and it is not clinically validated. The Zenodo image dataset is not merged because its prepared angle file is absent and its posture taxonomy differs from the custom-video movement labels.
+
+Run from the project root:
+
+```powershell
+python scripts/prepare_squat_training_dataset.py
+python scripts/train_squat_baseline.py
+python scripts/evaluate_squat_baseline.py
+python scripts/predict_squat_baseline.py --video-path data/raw/custom_videos/squat_correct/squat_correct_009.mp4
+```
+
+Outputs:
+
+- `data/processed/features/squat_video_training_features.csv`
+- `models/squat_baseline/metrics.json`
+- `models/squat_baseline/feature_columns.json`
+- `models/squat_baseline/label_mapping.json`
+- `models/squat_baseline/artifacts/squat_quality_baseline.pkl`
+- `reports/figures/squat_baseline_confusion_matrix.png`
+
+The current experiment contains only 16 labeled videos and a three-video holdout without knee-valgus coverage. Reported scores are pipeline smoke-test evidence, not reliable generalization or clinical accuracy. See [the Sprint 5 plan](docs/sprint_5_plan.md), [training design](docs/model_training_baseline.md), [evaluation report](docs/model_evaluation_report.md), and [model limitations](docs/model_limitations.md).

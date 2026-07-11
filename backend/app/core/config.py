@@ -9,6 +9,9 @@ class Settings(BaseModel):
     version: str = "0.1.0"
     api_v1_prefix: str = "/api/v1"
     upload_dir: Path = Path("tmp/uploads")
+    artifact_dir: Path = Path("tmp/artifacts")
+    artifact_ttl_seconds: int = 60 * 60
+    max_frame_analysis_rows: int = 300
     max_upload_size_bytes: int = 100 * 1024 * 1024
     min_readable_video_frames: int = 3
     min_landmark_visibility: float = 0.45

@@ -1,20 +1,26 @@
 import axios from "axios";
 
+export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || "http://localhost:8000",
+  baseURL: API_BASE_URL,
 });
 
 export async function analyzeSquatVideo(videoFile) {
   const formData = new FormData();
   formData.append("video", videoFile);
 
-  const response = await api.post("/api/v1/analyze/squat", formData, {
+  const response = await api.post("/api/v1/analyze/squat?include_overlay=true&generate_report=true", formData, {
     headers: {
       "Content-Type": "multipart/form-data",
     },
   });
 
   return response.data;
+}
+
+export function artifactUrl(path) {
+  return path ? new URL(path, API_BASE_URL).toString() : null;
 }
 
 export default api;

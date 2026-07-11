@@ -6,6 +6,7 @@ import { analyzeSquatVideo } from "./services/api.js";
 
 vi.mock("./services/api.js", () => ({
   analyzeSquatVideo: vi.fn(),
+  artifactUrl: (path) => path,
 }));
 
 const report = {
@@ -21,6 +22,8 @@ const report = {
   ],
   summary: "Two repetitions analyzed.",
   limitations: ["This does not replace clinical assessment."],
+  report_download_url: "/api/v1/artifacts/reports/test-report",
+  overlay_download_url: "/api/v1/artifacts/overlays/test-overlay",
 };
 
 function openUpload() {
@@ -41,6 +44,9 @@ describe("Squat Analyzer UI", () => {
   it("renders upload controls and disables submit without a file", () => {
     openUpload();
     expect(screen.getByText("Squat video upload")).toBeInTheDocument();
+    expect(screen.getByText("Camera placement guide")).toBeInTheDocument();
+    expect(screen.getByText(/side view for squat depth/i)).toBeInTheDocument();
+    expect(screen.getByText(/avoid very loose clothing/i)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Analyze squat" })).toBeDisabled();
   });
 
@@ -71,5 +77,8 @@ describe("Squat Analyzer UI", () => {
     expect(screen.getByText("poor depth")).toBeInTheDocument();
     expect(screen.getByText("Possible movement issue detected.")).toBeInTheDocument();
     expect(screen.getByText(/does not replace assessment by a licensed physiotherapist/i)).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /download pdf report/i })).toBeInTheDocument();
+    expect(screen.getByText("Annotated movement preview")).toBeInTheDocument();
+    expect(screen.getByText("Educational analysis only")).toBeInTheDocument();
   });
 });
