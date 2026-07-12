@@ -42,6 +42,25 @@ frontend/
 scripts/
 ```
 
+## Python Version
+
+- Recommended Python version: **3.12.x**.
+- Validated with **Python 3.12.10** on Windows.
+- Always use a project-local `.venv`; do not reuse a global environment or a virtual environment from another project.
+- On Windows, run tests with `python -m pytest` after confirming `python` resolves to this repository's `.venv`.
+
+Verify the selected interpreter:
+
+```powershell
+python -c "import sys; print(sys.version); print(sys.executable)"
+```
+
+If PowerShell execution policy blocks `Activate.ps1`, use the project interpreter directly without changing machine policy:
+
+```powershell
+.\.venv\Scripts\python.exe -m pytest
+```
+
 ## Backend Setup
 
 Create the virtual environment inside the project root. A project-local `.venv` prevents Windows launchers from resolving an old environment from another folder or drive.
@@ -49,7 +68,7 @@ Create the virtual environment inside the project root. A project-local `.venv` 
 If `Get-Command python` or `Get-Command pytest` points to an environment outside this project, close that terminal and open a new PowerShell window in the project root before running the setup commands.
 
 ```powershell
-python -m venv .venv
+py -3.12 -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install --upgrade pip
 python -m pip install -r requirements-dev.txt
@@ -466,3 +485,50 @@ Outputs:
 - `reports/figures/squat_baseline_confusion_matrix.png`
 
 The current experiment contains only 16 labeled videos and a three-video holdout without knee-valgus coverage. Reported scores are pipeline smoke-test evidence, not reliable generalization or clinical accuracy. See [the Sprint 5 plan](docs/sprint_5_plan.md), [training design](docs/model_training_baseline.md), [evaluation report](docs/model_evaluation_report.md), and [model limitations](docs/model_limitations.md).
+
+## Sprint 6 — Experimental ML Integration and Video Augmentation
+
+The rule-based analyzer remains the primary product output. Add `include_ml=true` only when an explicitly experimental second opinion is useful:
+
+```text
+POST /api/v1/analyze/squat?include_ml=true
+```
+
+If the trusted Sprint 5 model or compatible features are unavailable, the request still succeeds with the rule-based report and a disabled ML status. ML never overrides rule feedback and is not clinically validated.
+
+The augmentation notebook and helper create mild, lineage-tracked robustness variants under `data/augmented/custom_videos/`. They do not fabricate clinical labels or replace real consented collection.
+
+```powershell
+python scripts/check_dataset_structure.py --create
+python scripts/prepare_custom_squat_videos.py
+python scripts/extract_landmarks_from_videos.py
+python scripts/create_angle_features.py
+python scripts/prepare_squat_training_dataset.py
+python scripts/train_squat_baseline.py
+python scripts/evaluate_squat_baseline.py
+python scripts/predict_squat_baseline.py
+python scripts/prepare_augmented_squat_videos.py
+python -m pytest
+```
+
+Launch the reviewed notebook workflow with:
+
+```powershell
+jupyter notebook notebooks/custom_squat_video_augmentation.ipynb
+```
+
+After generating variants, validate them and use the augmented input/output CLI options documented inside the notebook. See [Sprint 6 plan](docs/sprint_6_plan.md), [ML integration design](docs/ml_integration_design.md), [augmentation strategy](docs/video_augmentation_strategy.md), and [validation checklist](docs/sprint_6_validation_checklist.md).
+
+## Sprint 7 — Dataset Expansion and Model Reliability
+
+Sprint 7 prepares a lineage-aware v2 dataset, optionally includes validated augmented features, trains a separate candidate baseline, and compares it with Sprint 5. The candidate does not replace the current optional Sprint 5 backend model. The rule-based analyzer remains primary.
+
+```powershell
+python scripts/prepare_squat_training_dataset_v2.py --include-augmented
+python scripts/train_squat_baseline_v2.py
+python scripts/evaluate_squat_baseline_v2.py
+python scripts/predict_squat_baseline_v2.py --video-path data/raw/custom_videos/squat_correct/squat_correct_009.mp4
+python -m pytest
+```
+
+The current v2 run contains 23 real videos and zero augmented feature rows. It matches Sprint 5’s three-video holdout metrics rather than demonstrating improvement, so ML remains optional and disabled by default. See the [dataset expansion plan](docs/sprint_7_dataset_expansion_plan.md), [augmented data policy](docs/augmented_data_policy.md), [reliability report](docs/sprint_7_model_reliability_report.md), [v2 evaluation](docs/model_evaluation_report_v2.md), and [model versioning policy](docs/ml_model_versioning_policy.md).

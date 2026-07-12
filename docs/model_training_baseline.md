@@ -2,7 +2,7 @@
 
 ## Feature Preparation
 
-Frame rows are joined to curated labels by normalized `video_path` and aggregated once per video. For left/right knee, left/right hip, and trunk angle, the pipeline calculates mean, population standard deviation, minimum, maximum, range, median, first quartile, and third quartile. Derived features are mean knee asymmetry, mean hip asymmetry, global minimum knee angle, maximum trunk angle, trunk range, and `180 - min_knee_angle` as an estimated depth proxy. This produces 46 ordered numeric features.
+Frame rows are joined to curated labels by normalized `video_path` and aggregated once per video. For left/right knee, left/right hip, and trunk angle, the pipeline calculates mean, population standard deviation, minimum, maximum, range, median, first quartile, and third quartile. Derived features are mean knee asymmetry, mean hip asymmetry, global minimum knee angle, maximum trunk angle, and `180 - min_knee_angle` as an estimated depth proxy. The trunk range is already present in the standard statistics, producing 45 unique ordered numeric features.
 
 Unlabeled videos are excluded. `holdout_test` rows remain protected; other curated rows form the development set. `train_like_reference` is only a historical rule-validation name and does not imply clinical or production training suitability.
 

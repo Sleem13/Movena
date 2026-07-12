@@ -1,7 +1,9 @@
 {
-  "model_version": "sprint_5_baseline",
-  "created_at_utc": "2026-07-12T13:19:02.301778+00:00",
+  "model_version": "sprint_7_baseline_v2",
+  "created_at_utc": "2026-07-12T13:27:55.335752+00:00",
   "dataset_rows": 23,
+  "real_rows": 23,
+  "augmented_rows": 0,
   "development_rows": 20,
   "holdout_rows": 3,
   "class_distribution": {
@@ -22,10 +24,9 @@
     "squat_trunk_lean": 1
   },
   "feature_count": 45,
-  "cross_validation": "skipped_insufficient_per_class_samples",
   "models": {
     "logistic_regression": {
-      "evaluation_status": "protected_holdout",
+      "evaluation_status": "protected_holdout_preliminary",
       "accuracy": 0.6666666666666666,
       "macro_precision": 0.5,
       "macro_recall": 0.6666666666666666,
@@ -108,7 +109,7 @@
       ]
     },
     "random_forest": {
-      "evaluation_status": "protected_holdout",
+      "evaluation_status": "protected_holdout_preliminary",
       "accuracy": 0.3333333333333333,
       "macro_precision": 0.1111111111111111,
       "macro_recall": 0.3333333333333333,
@@ -191,7 +192,7 @@
       ]
     },
     "svc_rbf": {
-      "evaluation_status": "protected_holdout",
+      "evaluation_status": "protected_holdout_preliminary",
       "accuracy": 0.6666666666666666,
       "macro_precision": 0.5,
       "macro_recall": 0.6666666666666666,
@@ -276,14 +277,15 @@
   },
   "best_model": "svc_rbf",
   "selection_metric": "protected_holdout_macro_f1",
+  "metrics_status": "preliminary_small_incomplete_holdout",
   "warnings": [
     "Experimental baseline model. Not clinically validated.",
-    "Stratified cross-validation was skipped because at least one development class has fewer than two videos.",
-    "The holdout does not contain every class, so macro metrics and the confusion matrix are incomplete."
+    "Stratified cross-validation was skipped because a development class has fewer than two videos.",
+    "The protected holdout does not cover every class; metrics are preliminary and incomplete."
   ],
   "saved_model_evaluation": {
     "model_name": "svc_rbf",
-    "evaluation_status": "protected_holdout",
+    "evaluation_status": "protected_holdout_preliminary",
     "accuracy": 0.6666666666666666,
     "macro_precision": 0.5,
     "macro_recall": 0.6666666666666666,

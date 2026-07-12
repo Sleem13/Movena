@@ -11,6 +11,15 @@ class FrameAnalysis(BaseModel):
     detected_issue: str | None = None
 
 
+class MLPrediction(BaseModel):
+    enabled: bool = False
+    predicted_label: str | None = None
+    confidence: float | None = Field(default=None, ge=0, le=1)
+    model_name: str | None = None
+    model_version: str = "sprint_5_baseline"
+    warning: str
+
+
 class AnalysisResponse(BaseModel):
     exercise: str = "bodyweight_squat"
     status: str = "success"
@@ -28,6 +37,7 @@ class AnalysisResponse(BaseModel):
     report_download_url: str | None = None
     overlay_id: str | None = None
     overlay_download_url: str | None = None
+    ml_prediction: MLPrediction | None = None
 
 
 class ErrorResponse(BaseModel):

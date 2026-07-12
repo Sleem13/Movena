@@ -37,7 +37,6 @@ def feature_columns() -> list[str]:
         "hip_angle_asymmetry",
         "min_knee_angle",
         "max_trunk_angle",
-        "trunk_angle_range",
         "estimated_depth_proxy",
     ]
 

@@ -14,6 +14,13 @@ EXPECTED_DATA_DIRS = [
     "data/raw/custom_videos/squat_knee_valgus",
     "data/raw/custom_videos/squat_trunk_lean",
     "data/raw/custom_videos/squat_fast_uncontrolled",
+    "data/augmented",
+    "data/augmented/custom_videos",
+    "data/augmented/custom_videos/squat_correct",
+    "data/augmented/custom_videos/squat_shallow_depth",
+    "data/augmented/custom_videos/squat_knee_valgus",
+    "data/augmented/custom_videos/squat_trunk_lean",
+    "data/augmented/custom_videos/squat_fast_uncontrolled",
     "data/raw/squat_kaggle",
     "data/raw/zenodo_squat_dataset",
     "data/raw/uci_physical_therapy_exercises",
@@ -40,6 +47,7 @@ EXPECTED_DATA_DIRS = [
 
 RAW_DATASET_DIRS = [
     "data/raw/custom_videos",
+    "data/augmented/custom_videos",
     "data/raw/squat_kaggle",
     "data/raw/zenodo_squat_dataset",
     "data/raw/uci_physical_therapy_exercises",

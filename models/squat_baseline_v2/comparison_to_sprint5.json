@@ -1,0 +1,24 @@
+{
+  "sprint5_model": "svc_rbf",
+  "sprint7_model": "svc_rbf",
+  "sprint5_dataset_rows": 23,
+  "sprint7_dataset_rows": 23,
+  "sprint7_augmented_rows": 0,
+  "accuracy": {
+    "sprint5": 0.6666666666666666,
+    "sprint7": 0.6666666666666666,
+    "delta": 0.0
+  },
+  "macro_f1": {
+    "sprint5": 0.5555555555555555,
+    "sprint7": 0.5555555555555555,
+    "delta": 0.0
+  },
+  "weighted_f1": {
+    "sprint5": 0.5555555555555555,
+    "sprint7": 0.5555555555555555,
+    "delta": 0.0
+  },
+  "decision": "Keep ML optional. Dataset and holdout coverage remain insufficient for default enablement.",
+  "warning": "Experimental baseline model. Not clinically validated."
+}

@@ -176,9 +176,12 @@ frontend/node_modules/
 frontend/dist/
 .pnpm-store/
 data/raw/**
+data/augmented/**
 data/processed/**/*.csv
 !data/processed/labels/custom_squat_curated_split.csv
+!data/processed/labels/augmented_custom_squat_videos_labels.csv
 !data/processed/features/squat_video_training_features.csv
+!data/processed/features/squat_video_training_features_v2.csv
 data/processed/**/*.json
 data/processed/**/*.parquet
 # Zenodo Squat Dataset: raw images and reproducible image-pipeline outputs
@@ -195,6 +198,7 @@ data/samples/metadata.csv
 !data/README.md
 !data/**/
 !data/**/.gitkeep
+!data/augmented/**/.gitkeep
 
 # PyPI configuration file
 .pypirc

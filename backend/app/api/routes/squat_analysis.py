@@ -7,6 +7,7 @@ from app.schemas.analysis_schema import AnalysisResponse, ErrorResponse
 from app.services.pose_estimation_service import PoseEstimationError, extract_pose_landmarks
 from app.services.artifact_service import create_artifact
 from app.services.overlay_service import generate_skeleton_overlay
+from app.services.ml_prediction_service import predict_experimental_quality
 from app.services.report_service import generate_session_report
 from app.services.squat_analysis_service import analyze_squat_landmarks, create_frame_analysis
 from app.utils.file_utils import UploadValidationError, remove_file, save_upload_file
@@ -43,6 +44,7 @@ async def analyze_squat(
     include_overlay: bool = Query(False),
     include_frame_data: bool = Query(False),
     generate_report: bool = Query(False),
+    include_ml: bool = Query(False),
 ):
     logger.info("Video received: filename=%s content_type=%s", video.filename, video.content_type)
     try:
@@ -57,6 +59,8 @@ async def analyze_squat(
         report = analyze_squat_landmarks(
             landmarks, include_frame_data=include_frame_data
         )
+        if include_ml:
+            report.ml_prediction = predict_experimental_quality(landmarks)
         if generate_report:
             report_id, report_path = create_artifact("report")
             generated_artifacts.append(report_path)
