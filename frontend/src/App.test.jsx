@@ -6,7 +6,7 @@ import { analyzeSquatVideo } from "./services/api.js";
 
 vi.mock("./services/api.js", () => ({
   analyzeSquatVideo: vi.fn(),
-  artifactUrl: (path) => path,
+  artifactUrl: (path) => path ? `http://127.0.0.1:8000${path}` : null,
 }));
 
 const report = {
@@ -79,6 +79,27 @@ describe("Squat Analyzer UI", () => {
     expect(screen.getByText(/does not replace assessment by a licensed physiotherapist/i)).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /download pdf report/i })).toBeInTheDocument();
     expect(screen.getByText("Annotated movement preview")).toBeInTheDocument();
+    expect(document.querySelector("video source")).toHaveAttribute(
+      "src", "http://127.0.0.1:8000/api/v1/artifacts/overlays/test-overlay"
+    );
     expect(screen.getByText("Educational analysis only")).toBeInTheDocument();
+  });
+
+  it("shows an annotated preview fallback when no overlay URL exists", async () => {
+    analyzeSquatVideo.mockResolvedValue({ ...report, overlay_download_url: null });
+    openUpload();
+    selectVideo();
+    fireEvent.click(screen.getByRole("button", { name: "Analyze squat" }));
+    expect(await screen.findByText("No annotated preview was generated for this analysis.")).toBeInTheDocument();
+  });
+
+  it("shows a helpful fallback when the overlay video fails to load", async () => {
+    analyzeSquatVideo.mockResolvedValue(report);
+    openUpload();
+    selectVideo();
+    fireEvent.click(screen.getByRole("button", { name: "Analyze squat" }));
+    const video = await screen.findByLabelText("Annotated squat movement preview");
+    fireEvent.error(video);
+    expect(screen.getByText(/annotated preview could not be loaded/i)).toBeInTheDocument();
   });
 });

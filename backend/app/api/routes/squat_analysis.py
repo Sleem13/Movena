@@ -6,7 +6,7 @@ from fastapi.responses import JSONResponse
 from app.schemas.analysis_schema import AnalysisResponse, ErrorResponse
 from app.services.pose_estimation_service import PoseEstimationError, extract_pose_landmarks
 from app.services.artifact_service import create_artifact
-from app.services.overlay_service import generate_skeleton_overlay
+from app.services.overlay_video_service import create_overlay_video
 from app.services.ml_prediction_service import predict_experimental_quality
 from app.services.report_service import generate_session_report
 from app.services.squat_analysis_service import analyze_squat_landmarks, create_frame_analysis
@@ -69,16 +69,18 @@ async def analyze_squat(
             report.report_download_url = f"/api/v1/artifacts/reports/{report_id}"
 
         if include_overlay:
-            overlay_id, overlay_path = create_artifact("overlay")
-            generated_artifacts.append(overlay_path)
-            generate_skeleton_overlay(
-                video_path,
-                overlay_path,
-                landmarks,
-                create_frame_analysis(landmarks),
-            )
-            report.overlay_id = overlay_id
-            report.overlay_download_url = f"/api/v1/artifacts/overlays/{overlay_id}"
+            try:
+                overlay = create_overlay_video(
+                    video_path, landmarks, create_frame_analysis(landmarks)
+                )
+                generated_artifacts.append(overlay.overlay_path)
+                report.overlay_id = overlay.overlay_id
+                report.overlay_download_url = overlay.overlay_download_url
+            except Exception as exc:
+                logger.warning("Overlay generation failed; returning analysis without preview: %s", exc)
+                report.limitations.append(
+                    "Annotated movement preview could not be generated for this analysis."
+                )
         logger.info("Analysis completed: reps=%s score=%s", report.total_reps, report.movement_score)
         return report
     except PoseEstimationError as exc:

@@ -3,8 +3,15 @@ import FeedbackList from "../components/FeedbackList.jsx";
 import ScoreCard from "../components/ScoreCard.jsx";
 import { Download, ShieldAlert, Video } from "lucide-react";
 import { artifactUrl } from "../services/api.js";
+import { useEffect, useState } from "react";
 
 export default function Results({ report, onAnalyzeAnother }) {
+  const [overlayLoadFailed, setOverlayLoadFailed] = useState(false);
+
+  useEffect(() => {
+    setOverlayLoadFailed(false);
+  }, [report?.overlay_download_url]);
+
   if (!report) {
     return null;
   }
@@ -47,18 +54,32 @@ export default function Results({ report, onAnalyzeAnother }) {
         <FeedbackList feedback={report.feedback} />
       </div>
 
-      {overlayVideoUrl && (
-        <section className="mt-6 rounded-lg border border-clinical-line bg-white p-5 shadow-panel">
-          <div className="mb-4 flex items-center gap-2">
-            <Video size={20} className="text-clinical-teal" aria-hidden="true" />
-            <h2 className="text-lg font-semibold text-clinical-ink">Annotated movement preview</h2>
-          </div>
-          <video className="w-full max-w-3xl rounded-lg bg-black" controls src={overlayVideoUrl}>
-            Your browser does not support video playback.
-          </video>
-          <p className="mt-3 text-sm text-slate-600">Experimental 2D overlay; markers may shift with occlusion or camera angle.</p>
-        </section>
-      )}
+      <section className="mt-6 rounded-lg border border-clinical-line bg-white p-5 shadow-panel">
+        <div className="mb-4 flex items-center gap-2">
+          <Video size={20} className="text-clinical-teal" aria-hidden="true" />
+          <h2 className="text-lg font-semibold text-clinical-ink">Annotated movement preview</h2>
+        </div>
+        {overlayVideoUrl && !overlayLoadFailed ? (
+          <>
+            <video
+              aria-label="Annotated squat movement preview"
+              className="w-full max-w-3xl rounded-lg bg-black"
+              controls
+              onError={() => setOverlayLoadFailed(true)}
+            >
+              <source src={overlayVideoUrl} type="video/mp4" />
+              Your browser does not support video playback.
+            </video>
+            <p className="mt-3 text-sm text-slate-600">Experimental 2D overlay; markers may shift with occlusion or camera angle.</p>
+          </>
+        ) : (
+          <p className="rounded-lg bg-slate-50 px-4 py-3 text-sm text-slate-600">
+            {overlayLoadFailed
+              ? "The annotated preview could not be loaded. You can retry the analysis or open the artifact URL directly."
+              : "No annotated preview was generated for this analysis."}
+          </p>
+        )}
+      </section>
 
       <section className="mt-6 flex gap-3 rounded-lg border border-amber-200 bg-amber-50 p-5 text-sm text-amber-950">
         <ShieldAlert className="mt-0.5 shrink-0" size={19} aria-hidden="true" />
