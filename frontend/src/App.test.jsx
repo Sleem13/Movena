@@ -126,6 +126,13 @@ describe("Squat Analyzer healthcare dashboard", () => {
     expect(screen.getAllByText("Poor Depth").length).toBeGreaterThanOrEqual(1);
   });
 
+  it("recommends manual review when rep count confidence is low", async () => {
+    await analyzeWith({ ...report, rep_count_confidence: 0.42, ignored_partial_reps: 2 });
+    expect(screen.getByText("Manual review recommended")).toBeInTheDocument();
+    expect(screen.getByText(/movement was detected, but rep count confidence is low/i)).toBeInTheDocument();
+    expect(screen.getByText(/consider trimming the video to only the squat set/i)).toBeInTheDocument();
+  });
+
   it("shows an annotated-video fallback when the overlay URL is missing", async () => {
     await analyzeWith({ ...report, overlay_preview_url: null, overlay_download_url: null });
     expect(screen.getByText("No annotated preview was generated for this analysis.")).toBeInTheDocument();

@@ -69,10 +69,14 @@ def _frame_metrics(frame: dict[str, Any]) -> dict[str, float | bool]:
 def create_frame_analysis(frames: list[dict[str, Any]]) -> list[FrameAnalysis]:
     """Return conservative per-frame metrics for overlays and optional API detail."""
     metrics_rows = [_frame_metrics(frame) for frame in frames]
+    pose_quality = assess_pose_quality(frames)
     rep_result = count_squat_reps(
         [float(item["knee_angle"]) for item in metrics_rows],
         [float(frame.get("timestamp_sec", 0.0)) for frame in frames],
         [int(frame.get("frame_index", index)) for index, frame in enumerate(frames)],
+        [bool(item["low_confidence"]) for item in metrics_rows],
+        pose_quality.score,
+        pose_quality.pose_detection_rate,
     )
     result: list[FrameAnalysis] = []
     for index, (frame, metrics) in enumerate(zip(frames, metrics_rows)):
@@ -120,15 +124,26 @@ def analyze_squat_landmarks(
     trunk_angles = [float(item["trunk_angle"]) for item in metrics]
     timestamps = [float(frame.get("timestamp_sec", 0.0)) for frame in frames]
     frame_indexes = [int(frame.get("frame_index", index)) for index, frame in enumerate(frames)]
-    rep_result = count_squat_reps(raw_knee_angles, timestamps, frame_indexes)
-    knee_angles = rep_result.smoothed_angles
     pose_quality = assess_pose_quality(frames)
+    rep_result = count_squat_reps(
+        raw_knee_angles,
+        timestamps,
+        frame_indexes,
+        [bool(item["low_confidence"]) for item in metrics],
+        pose_quality.score,
+        pose_quality.pose_detection_rate,
+    )
+    knee_angles = rep_result.smoothed_angles
 
     depth_frames = [angle for angle in knee_angles if angle < SQUAT_DEPTH_KNEE_ANGLE_DEG]
     total_reps = rep_result.total_reps
     analysis_confidence = calculate_analysis_confidence(
         pose_quality, rep_result.confidence, knee_angles
     )
+    if rep_result.confidence < 0.5:
+        analysis_confidence.warnings.append(
+            "Rep count confidence is low. Review camera setup and consider trimming the video to only the squat set."
+        )
     input_validity = validate_squat_attempt(
         knee_angles, hip_angles, total_reps, pose_quality, frame_indexes
     )
@@ -163,6 +178,7 @@ def analyze_squat_landmarks(
             summary="The recording did not pass the squat-movement validity checks, so movement quality was not scored.",
             limitations=limitations,
             ignored_partial_reps=rep_result.ignored_partial_reps,
+            partial_rep_events=[event.__dict__ for event in rep_result.partial_rep_events],
             rep_count_confidence=rep_result.confidence,
             pose_quality=pose_quality,
             analysis_confidence=analysis_confidence,
@@ -222,6 +238,7 @@ def analyze_squat_landmarks(
         average_trunk_angle=round(mean(trunk_angles), 2),
         movement_score=score,
         rep_events=[event.__dict__ for event in rep_result.rep_events],
+        partial_rep_events=[event.__dict__ for event in rep_result.partial_rep_events],
         rep_durations=[event.duration_sec for event in rep_result.rep_events if event.duration_sec is not None],
         ignored_partial_reps=rep_result.ignored_partial_reps,
         rep_count_confidence=rep_result.confidence,

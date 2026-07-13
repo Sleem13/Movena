@@ -31,6 +31,12 @@ class RepEvent(BaseModel):
     minimum_knee_angle: float
 
 
+class PartialRepEvent(BaseModel):
+    start_frame: int
+    end_frame: int
+    reason: str
+
+
 class PoseQuality(BaseModel):
     score: float = Field(ge=0, le=1)
     level: str
@@ -86,6 +92,7 @@ class AnalysisResponse(BaseModel):
     average_trunk_angle: float = 0
     movement_score: int | None = Field(default=0, ge=0, le=100)
     rep_events: list[RepEvent] = Field(default_factory=list)
+    partial_rep_events: list[PartialRepEvent] = Field(default_factory=list)
     rep_durations: list[float] = Field(default_factory=list)
     ignored_partial_reps: int = 0
     rep_count_confidence: float = Field(default=0, ge=0, le=1)

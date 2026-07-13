@@ -99,7 +99,7 @@ def test_analyze_squat_detects_poor_depth_after_complete_shallow_attempt():
 
 def test_analyze_squat_detects_trunk_lean_and_possible_valgus_on_valid_attempt():
     frames = squat_sequence(extra_shoulder_offset=0.2)
-    for item in frames[:9]:
+    for item in frames[-9:]:
         landmarks = item["landmarks"]
         landmarks["left_hip"]["x"] = 0.43
         landmarks["left_ankle"]["x"] = 0.43

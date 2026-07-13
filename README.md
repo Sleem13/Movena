@@ -386,6 +386,18 @@ npm test
 
 See [the hardening plan](docs/squat_accuracy_hardening_plan.md), [rep-counting method](docs/squat_rep_counting_method.md), [confidence design](docs/analysis_confidence_design.md), and [score breakdown](docs/squat_scoring_breakdown.md).
 
+### Sprint 6.6 Rep Count Stabilization
+
+Rep counting removes isolated angle spikes, interpolates only short gaps, breaks continuity across long or low-confidence gaps, requires sustained movement phases, aggregates noisy partial candidates, and reports reasoned `partial_rep_events`. Low rep confidence recommends manual review but does not reject an otherwise valid squat attempt.
+
+Create and complete the manual rep-count template, then generate accuracy evidence:
+
+```powershell
+python scripts/validate_rep_counts.py
+```
+
+The first run creates `data/processed/labels/custom_squat_manual_rep_counts.csv`. After manually entering `expected_reps`, rerun to write validation results under `reports/rep_count_validation/`. See [the stabilization report](docs/rep_count_stabilization_report.md).
+
 ## Medical Disclaimer
 
 This analysis is for exercise monitoring and educational support only. It does not replace assessment by a licensed physiotherapist. Users should stop exercising and consult a qualified professional if they experience pain, dizziness, instability, or symptoms that feel unsafe.

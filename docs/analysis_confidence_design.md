@@ -8,6 +8,8 @@ Pose quality combines detection rate, overall visibility, critical-landmark visi
 
 When optional ML is enabled, confidence below 0.65 is labelled low. A disagreement adds: “The experimental ML prediction disagrees with rule-based analysis. Rule-based biomechanical feedback remains primary.” It never changes the rule-derived movement score, issues, or feedback.
 
+When `rep_count_confidence` is below 0.50 for an otherwise valid attempt, analysis remains successful but adds: “Rep count confidence is low. Review camera setup and consider trimming the video to only the squat set.” Low rep confidence alone does not trigger the input-validity rejection gate.
+
 ## Validity gate
 
 Analysis confidence does not make an invalid recording valid. Before movement scoring, `input_validity` requires at least 30 pose-detected frames, 50% pose coverage during the contiguous movement segment, 50% critical-landmark visibility, 30° knee range, 20° hip range, measurable temporal variation, and at least one complete squat cycle. Whole-video pose coverage remains available separately so long intros or outros can lower confidence without automatically invalidating a well-tracked active segment. A failed gate forces confidence to `low`, adds validation warnings, sets `movement_score` to null, and prevents ML inference. Static/profile images encoded as video are expected to fail motion, angle-range, or completed-repetition checks.
