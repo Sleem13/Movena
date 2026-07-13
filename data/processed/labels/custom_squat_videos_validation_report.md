@@ -2,7 +2,7 @@
 
 - Total videos found: 24
 - Unsupported files: 0
-- Videos with extracted landmarks: 17
+- Videos with extracted landmarks: 24
 - Landmark extraction failures: 0
 
 ## Videos Per Label
@@ -26,7 +26,7 @@
 
 ## Landmark Extraction
 
-- Success: 17 video(s).
+- Success: 24 video(s).
 - No failed-video records are currently available.
 
 ## Recommendations
