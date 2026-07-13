@@ -1,0 +1,2 @@
+backend,video_path,label,frames_processed,frames_with_pose,pose_detection_success_rate,missing_landmark_rate,average_landmark_confidence,angle_smoothness_deg,knee_angle_stability_deg,hip_angle_stability_deg,trunk_angle_stability_deg,processing_fps,runtime_sec,issue_detection_agreement,status,error
+mediapipe,C:/Users/Admin/Documents/GitHub/PhysioVision-AI/data/raw/custom_videos/squat_correct/squat_correct_001.mp4,squat_correct,695,112,0.161151,0.838849,0.83969,1.836758,2.864091,1.868818,0.777364,26.836,25.89845,1.0,success,

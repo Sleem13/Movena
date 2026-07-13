@@ -532,3 +532,16 @@ python -m pytest
 ```
 
 The current v2 run contains 23 real videos and zero augmented feature rows. It matches Sprint 5’s three-video holdout metrics rather than demonstrating improvement, so ML remains optional and disabled by default. See the [dataset expansion plan](docs/sprint_7_dataset_expansion_plan.md), [augmented data policy](docs/augmented_data_policy.md), [reliability report](docs/sprint_7_model_reliability_report.md), [v2 evaluation](docs/model_evaluation_report_v2.md), and [model versioning policy](docs/ml_model_versioning_policy.md).
+
+## Pretrained Pose Backbone Benchmarking
+
+PhysioVision AI uses pretrained pose estimation models for landmark detection, while biomechanics interpretation is handled by rule-based and experimental ML layers. Pose landmarks are measurements, not diagnoses or clinically validated decisions. MediaPipe/BlazePose remains the production default and the rule-based analyzer remains primary.
+
+The optional offline benchmark layer compares backbone coverage, confidence, angle stability, speed, and downstream rule agreement without changing the API:
+
+```powershell
+$env:POSE_BACKEND = "mediapipe"
+python scripts/benchmark_pose_backends.py
+```
+
+MoveNet Lightning and Thunder have stable interface placeholders but remain deferred because TensorFlow/model assets are not application dependencies. See [the pretrained pose strategy](docs/pretrained_pose_model_strategy.md) and [benchmark plan](docs/pose_model_benchmark_plan.md).

@@ -1,3 +1,4 @@
+import os
 from functools import lru_cache
 from pathlib import Path
 
@@ -17,6 +18,7 @@ class Settings(BaseModel):
     max_upload_size_bytes: int = 100 * 1024 * 1024
     min_readable_video_frames: int = 3
     min_landmark_visibility: float = 0.45
+    pose_backend: str = os.getenv("POSE_BACKEND", "mediapipe").strip().lower()
     allowed_video_extensions: set[str] = {".mp4", ".mov", ".avi", ".mkv", ".webm"}
     allowed_video_mime_types: set[str] = {
         "video/mp4",
