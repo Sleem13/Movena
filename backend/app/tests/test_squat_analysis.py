@@ -43,14 +43,33 @@ def frame(knee_angle=170, knee_x_offset=0.0, shoulder_x_offset=0.0, low_confiden
     }
 
 
-def test_analyze_squat_counts_repetition_and_returns_report():
+def squat_sequence(minimum_angle=100, knee_x_offset=0.0, extra_shoulder_offset=0.0):
+    angles = (
+        [170] * 6
+        + [155, 145, 135]
+        + [minimum_angle] * 4
+        + [125, 140, 155, 165]
+        + [170] * 13
+    )
     frames = [
-        frame(knee_angle=170),
-        frame(knee_angle=140),
-        frame(knee_angle=95),
-        frame(knee_angle=140),
-        frame(knee_angle=170),
+        frame(
+            knee_angle=angle,
+            knee_x_offset=knee_x_offset,
+            shoulder_x_offset=extra_shoulder_offset + max(0, (170 - angle) / 250),
+        )
+        for angle in angles
     ]
+    for index, item in enumerate(frames):
+        item.update(
+            frame_index=index,
+            timestamp_sec=index / 10,
+            source_total_frames=len(frames),
+        )
+    return frames
+
+
+def test_analyze_squat_counts_repetition_and_returns_report():
+    frames = squat_sequence()
 
     report = analyze_squat_landmarks(frames)
 
@@ -67,47 +86,37 @@ def test_analyze_squat_counts_repetition_and_returns_report():
     assert report.analysis_confidence is not None
 
 
-def test_analyze_squat_detects_poor_depth_when_no_depth_frames():
-    frames = [frame(knee_angle=170), frame(knee_angle=145), frame(knee_angle=170)]
+def test_analyze_squat_detects_poor_depth_after_complete_shallow_attempt():
+    frames = squat_sequence(minimum_angle=125)
 
     report = analyze_squat_landmarks(frames)
 
-    assert report.total_reps == 0
+    assert report.status == "success"
+    assert report.total_reps == 1
     assert "poor_depth" in report.detected_issues
     assert report.movement_score < 100
 
 
-def test_analyze_squat_detects_trunk_lean_valgus_and_low_confidence():
-    frames = [
-        frame(knee_angle=95, knee_x_offset=0.08, shoulder_x_offset=0.35, low_confidence=True),
-        frame(knee_angle=95, knee_x_offset=0.08, shoulder_x_offset=0.35, low_confidence=True),
-        frame(knee_angle=170, knee_x_offset=0.08, shoulder_x_offset=0.35, low_confidence=True),
-    ]
-    for item in frames:
+def test_analyze_squat_detects_trunk_lean_and_possible_valgus_on_valid_attempt():
+    frames = squat_sequence(extra_shoulder_offset=0.2)
+    for item in frames[:9]:
         landmarks = item["landmarks"]
         landmarks["left_hip"]["x"] = 0.43
         landmarks["left_ankle"]["x"] = 0.43
-        landmarks["left_knee"]["x"] = 0.51
+        landmarks["left_knee"]["x"] = 0.47
         landmarks["right_hip"]["x"] = 0.57
         landmarks["right_ankle"]["x"] = 0.57
-        landmarks["right_knee"]["x"] = 0.49
+        landmarks["right_knee"]["x"] = 0.53
 
     report = analyze_squat_landmarks(frames)
 
     assert "excessive_trunk_lean" in report.detected_issues
     assert "possible_knee_valgus" in report.detected_issues
-    assert "low_landmark_confidence" in report.detected_issues
     assert 0 <= report.movement_score <= 100
 
 
 def test_good_squat_does_not_produce_severe_movement_warnings():
-    frames = [
-        frame(knee_angle=170),
-        frame(knee_angle=135),
-        frame(knee_angle=95),
-        frame(knee_angle=135),
-        frame(knee_angle=170),
-    ]
+    frames = squat_sequence()
 
     report = analyze_squat_landmarks(frames)
 

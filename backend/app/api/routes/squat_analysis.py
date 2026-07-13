@@ -7,7 +7,7 @@ from app.schemas.analysis_schema import AnalysisResponse, ErrorResponse
 from app.services.pose_estimation_service import PoseEstimationError, extract_pose_landmarks
 from app.services.artifact_service import create_artifact
 from app.services.overlay_video_service import create_overlay_video
-from app.services.ml_prediction_service import predict_experimental_quality
+from app.services.ml_prediction_service import invalid_squat_prediction, predict_experimental_quality
 from app.services.analysis_confidence_service import (
     apply_ml_confidence_context,
     enrich_ml_prediction,
@@ -64,20 +64,23 @@ async def analyze_squat(
             landmarks, include_frame_data=include_frame_data
         )
         if include_ml:
-            report.ml_prediction = enrich_ml_prediction(
-                predict_experimental_quality(landmarks), report.detected_issues
-            )
-            report.analysis_confidence = apply_ml_confidence_context(
-                report.analysis_confidence, report.ml_prediction
-            )
-        if generate_report:
+            if report.status == "rejected":
+                report.ml_prediction = invalid_squat_prediction()
+            else:
+                report.ml_prediction = enrich_ml_prediction(
+                    predict_experimental_quality(landmarks), report.detected_issues
+                )
+                report.analysis_confidence = apply_ml_confidence_context(
+                    report.analysis_confidence, report.ml_prediction
+                )
+        if generate_report and report.status == "success":
             report_id, report_path = create_artifact("report")
             generated_artifacts.append(report_path)
             generate_session_report(report, report_path)
             report.report_id = report_id
             report.report_download_url = f"/api/v1/artifacts/reports/{report_id}"
 
-        if include_overlay:
+        if include_overlay and report.status == "success":
             try:
                 overlay = create_overlay_video(
                     video_path, landmarks, create_frame_analysis(landmarks)

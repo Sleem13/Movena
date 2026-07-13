@@ -16,11 +16,12 @@ from app.services.angle_calculation_service import (
     calculate_knee_angle,
     calculate_trunk_angle,
 )
-from app.services.feedback_service import build_feedback
+from app.services.feedback_service import DISCLAIMER, build_feedback
 from app.services.analysis_confidence_service import calculate_analysis_confidence
 from app.services.pose_quality_service import assess_pose_quality
 from app.services.rep_counting_service import count_squat_reps
 from app.services.squat_scoring_service import score_squat
+from app.services.squat_validity_service import validate_squat_attempt
 
 def _avg_point(left: dict[str, float], right: dict[str, float]) -> dict[str, float]:
     return {
@@ -125,6 +126,50 @@ def analyze_squat_landmarks(
 
     depth_frames = [angle for angle in knee_angles if angle < SQUAT_DEPTH_KNEE_ANGLE_DEG]
     total_reps = rep_result.total_reps
+    analysis_confidence = calculate_analysis_confidence(
+        pose_quality, rep_result.confidence, knee_angles
+    )
+    input_validity = validate_squat_attempt(
+        knee_angles, hip_angles, total_reps, pose_quality, frame_indexes
+    )
+
+    limitations = [
+        "Rule-based prototype; results depend on camera angle, lighting, and full-body visibility.",
+        "2D pose landmarks cannot fully assess joint loading or pain.",
+        "Clinical decisions should be made with a licensed physiotherapist.",
+    ]
+    limitations.extend(warning for warning in pose_quality.warnings if warning not in limitations)
+
+    if not input_validity.is_valid:
+        analysis_confidence.score = min(analysis_confidence.score, 0.39)
+        analysis_confidence.level = "low"
+        for warning in input_validity.warnings:
+            if warning not in analysis_confidence.warnings:
+                analysis_confidence.warnings.append(warning)
+        return AnalysisResponse(
+            status="rejected",
+            error_code="INVALID_SQUAT_VIDEO",
+            message="No valid squat movement was detected.",
+            total_reps=0,
+            average_knee_angle=round(mean(knee_angles), 2),
+            average_hip_angle=round(mean(hip_angles), 2),
+            average_trunk_angle=round(mean(trunk_angles), 2),
+            movement_score=None,
+            detected_issues=["no_valid_squat_detected"],
+            feedback=[
+                "Please upload a video showing the full body performing 3–5 squat repetitions.",
+                DISCLAIMER,
+            ],
+            summary="The recording did not pass the squat-movement validity checks, so movement quality was not scored.",
+            limitations=limitations,
+            ignored_partial_reps=rep_result.ignored_partial_reps,
+            rep_count_confidence=rep_result.confidence,
+            pose_quality=pose_quality,
+            analysis_confidence=analysis_confidence,
+            input_validity=input_validity,
+            validation_warnings=input_validity.warnings,
+        )
+
     detected_issues: list[str] = []
 
     # Depth is based on the smoothed minimum rather than a fragile frame ratio.
@@ -155,17 +200,6 @@ def analyze_squat_landmarks(
         pose_quality,
         rep_minimums,
     )
-    analysis_confidence = calculate_analysis_confidence(
-        pose_quality, rep_result.confidence, knee_angles
-    )
-
-    limitations = [
-        "Rule-based prototype; results depend on camera angle, lighting, and full-body visibility.",
-        "2D pose landmarks cannot fully assess joint loading or pain.",
-        "Clinical decisions should be made with a licensed physiotherapist.",
-    ]
-    limitations.extend(warning for warning in pose_quality.warnings if warning not in limitations)
-
     summary = (
         f"Analyzed {len(frames)} pose-detected frames and counted {total_reps} squat rep"
         f"{'' if total_reps == 1 else 's'} with a movement score of {score}/100."
@@ -194,6 +228,8 @@ def analyze_squat_landmarks(
         pose_quality=pose_quality,
         score_breakdown=score_breakdown,
         analysis_confidence=analysis_confidence,
+        input_validity=input_validity,
+        validation_warnings=input_validity.warnings,
         detected_issues=detected_issues,
         feedback=build_feedback(detected_issues),
         summary=summary,

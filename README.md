@@ -374,6 +374,8 @@ The squat analyzer now smooths pose-derived angle signals and counts repetitions
 
 The optional experimental ML output can report confidence and agreement, but it never overrides the rule-based analyzer. Low-quality pose evidence and side-view knee-alignment evidence are presented cautiously. These outputs support exercise monitoring and testing; they are not clinically validated assessments.
 
+A squat validity gate runs before scoring and ML prediction. Static/profile-image videos, recordings without sufficient full-body visibility, and recordings with no complete squat repetition return `status: rejected`, `error_code: INVALID_SQUAT_VIDEO`, and `movement_score: null`. They do not receive a normal score or a `squat_correct` ML prediction. Rejected inputs include friendly re-recording guidance, low analysis confidence, `input_validity` measurements, and validation warnings.
+
 Run the complete validation:
 
 ```powershell

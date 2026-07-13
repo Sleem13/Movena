@@ -13,6 +13,7 @@ from app.services.ml_feature_adapter_service import aggregate_pose_frames
 MODEL_VERSION = "sprint_5_baseline"
 EXPERIMENTAL_WARNING = "Experimental baseline model. Not clinically validated."
 UNAVAILABLE_WARNING = "ML baseline unavailable. Rule-based analysis is still available."
+INVALID_SQUAT_WARNING = "ML prediction skipped because no valid squat movement was detected."
 REPO_ROOT = Path(__file__).resolve().parents[3]
 DEFAULT_MODEL_PATH = REPO_ROOT / "models/squat_baseline/artifacts/squat_quality_baseline.pkl"
 DEFAULT_FEATURES_PATH = REPO_ROOT / "models/squat_baseline/feature_columns.json"
@@ -23,6 +24,15 @@ logger = logging.getLogger(__name__)
 def unavailable_prediction(reason: str | None = None) -> MLPrediction:
     warning = UNAVAILABLE_WARNING if not reason else f"{UNAVAILABLE_WARNING} {reason}"
     return MLPrediction(enabled=False, model_version=MODEL_VERSION, warning=warning)
+
+
+def invalid_squat_prediction() -> MLPrediction:
+    return MLPrediction(
+        enabled=False,
+        model_version=MODEL_VERSION,
+        warning=INVALID_SQUAT_WARNING,
+        ml_confidence_level="not_applicable",
+    )
 
 
 def predict_experimental_quality(

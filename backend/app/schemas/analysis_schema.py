@@ -61,14 +61,30 @@ class AnalysisConfidence(BaseModel):
     warnings: list[str] = Field(default_factory=list)
 
 
+class InputValidity(BaseModel):
+    is_valid: bool
+    reason: str | None = None
+    pose_detected_frames: int
+    pose_detection_rate: float = Field(ge=0, le=1)
+    overall_pose_detection_rate: float = Field(ge=0, le=1)
+    critical_landmark_visibility: float = Field(ge=0, le=1)
+    knee_angle_range: float
+    hip_angle_range: float
+    motion_variation: float
+    valid_reps: int
+    warnings: list[str] = Field(default_factory=list)
+
+
 class AnalysisResponse(BaseModel):
     exercise: str = "bodyweight_squat"
     status: str = "success"
+    error_code: str | None = None
+    message: str | None = None
     total_reps: int = 0
     average_knee_angle: float = 0
     average_hip_angle: float = 0
     average_trunk_angle: float = 0
-    movement_score: int = Field(default=0, ge=0, le=100)
+    movement_score: int | None = Field(default=0, ge=0, le=100)
     rep_events: list[RepEvent] = Field(default_factory=list)
     rep_durations: list[float] = Field(default_factory=list)
     ignored_partial_reps: int = 0
@@ -76,6 +92,8 @@ class AnalysisResponse(BaseModel):
     pose_quality: PoseQuality | None = None
     score_breakdown: ScoreBreakdown | None = None
     analysis_confidence: AnalysisConfidence | None = None
+    input_validity: InputValidity | None = None
+    validation_warnings: list[str] = Field(default_factory=list)
     detected_issues: list[str] = Field(default_factory=list)
     feedback: list[str] = Field(default_factory=list)
     summary: str = ""

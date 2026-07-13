@@ -41,6 +41,30 @@ Successful responses also include:
 
 `movement_score` describes rule-based movement observations. `analysis_confidence` describes measurement reliability; the two values are not interchangeable. With `include_ml=true`, the experimental prediction adds `ml_confidence_level`, `agrees_with_rule_based`, and `disagreement_note`. ML never overrides rule-based issues, scoring, or feedback.
 
+### Invalid squat recordings
+
+Before scoring or optional ML inference, the endpoint checks pose-frame count, active-segment pose coverage, whole-video pose coverage, critical-landmark visibility, knee and hip angle ranges, temporal motion variation, and completed squat repetitions. Static/profile-image videos, incomplete-body recordings, and zero-rep recordings return HTTP 200 with `status: "rejected"`, `error_code: "INVALID_SQUAT_VIDEO"`, and `movement_score: null`. They do not receive `poor_depth` as a substitute for a valid attempt.
+
+```json
+{
+  "exercise": "bodyweight_squat",
+  "status": "rejected",
+  "error_code": "INVALID_SQUAT_VIDEO",
+  "message": "No valid squat movement was detected.",
+  "total_reps": 0,
+  "movement_score": null,
+  "detected_issues": ["no_valid_squat_detected"],
+  "input_validity": {
+    "is_valid": false,
+    "reason": "no_valid_squat_detected",
+    "valid_reps": 0,
+    "warnings": ["No complete squat repetition was detected."]
+  }
+}
+```
+
+If `include_ml=true`, the response contains a disabled ML result with the warning `ML prediction skipped because no valid squat movement was detected.` No model prediction is performed. Reports and overlays are also skipped for rejected inputs.
+
 ### Sprint 4 query options and artifacts
 
 - Default: summary JSON only; frame and artifact fields are null.

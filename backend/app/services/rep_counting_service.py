@@ -12,7 +12,7 @@ from app.core.exercise_thresholds import (
     MIN_DEPTH_DELTA_DEG,
     MIN_FRAMES_BETWEEN_REPS,
     MIN_REP_DURATION_SEC,
-    SQUAT_DEPTH_KNEE_ANGLE_DEG,
+    SQUAT_ATTEMPT_KNEE_ANGLE_DEG,
     STANDING_KNEE_ANGLE_DEG,
 )
 from app.services.signal_processing_service import smooth_angle_series
@@ -83,7 +83,7 @@ def count_squat_reps(
         elif state == "descending":
             phases.append("descending")
             minimum = min(minimum, angle)
-            if angle <= SQUAT_DEPTH_KNEE_ANGLE_DEG and standing_peak - minimum >= MIN_DEPTH_DELTA_DEG:
+            if angle <= SQUAT_ATTEMPT_KNEE_ANGLE_DEG and standing_peak - minimum >= MIN_DEPTH_DELTA_DEG:
                 state = "bottom"
                 bottom_index = index
                 bottom_frames = 1
@@ -93,7 +93,7 @@ def count_squat_reps(
                 start_index = None
         elif state == "bottom":
             phases.append("bottom")
-            if angle <= SQUAT_DEPTH_KNEE_ANGLE_DEG + 5:
+            if angle <= SQUAT_ATTEMPT_KNEE_ANGLE_DEG + 5:
                 bottom_frames += 1
                 if angle < minimum:
                     minimum = angle

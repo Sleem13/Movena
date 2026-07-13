@@ -13,3 +13,7 @@ The counter operates on the average left/right knee angle. Non-finite samples ar
 A completed event must have a plausible duration of 0.8–8.0 seconds when timestamps are available and must respect the ten-frame separation rule. Incomplete cycles, premature returns, implausible durations, and repeated descents are reported as `ignored_partial_reps`. Very short legacy/test clips without usable timing use a conservative compatibility path because they cannot support duration validation.
 
 The response includes event start, bottom, and end frames; minimum knee angle; duration when available; ignored partial cycles; and `rep_count_confidence`. This is a signal-processing confidence estimate, not a clinical quality rating.
+
+## Scoring eligibility
+
+Rep completion and squat depth are separate concepts. A completed movement cycle may be counted as an attempt after sufficient excursion even when it does not reach the 115° depth-quality threshold; this allows a valid shallow squat to receive `poor_depth`. A recording with zero completed cycles is rejected instead of being scored as poor depth. Static or near-static recordings therefore receive no movement score and cannot be sent to the optional ML classifier.

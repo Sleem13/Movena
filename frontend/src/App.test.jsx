@@ -32,6 +32,22 @@ const report = {
   frame_analysis: [{ frame_index: 0, timestamp_sec: 0, knee_angle: 98, hip_angle: 75, trunk_angle: 20, phase: "standing", detected_issue: "poor_depth" }],
 };
 
+const rejectedReport = {
+  exercise: "bodyweight_squat",
+  status: "rejected",
+  error_code: "INVALID_SQUAT_VIDEO",
+  message: "No valid squat movement was detected.",
+  total_reps: 0,
+  movement_score: null,
+  detected_issues: ["no_valid_squat_detected"],
+  feedback: ["Please upload a video showing the full body performing 3–5 squat repetitions."],
+  limitations: ["Full-body movement is required."],
+  validation_warnings: ["Video appears static or does not show enough squat movement.", "No complete squat repetition was detected."],
+  input_validity: { is_valid: false, reason: "no_valid_squat_detected", valid_reps: 0 },
+  analysis_confidence: { score: 0.2, level: "low", reasons: [], warnings: [] },
+  ml_prediction: { enabled: false, warning: "ML prediction skipped because no valid squat movement was detected." },
+};
+
 function openUpload() {
   render(<App />);
   fireEvent.click(screen.getByRole("button", { name: "Analyze Squat Video" }));
@@ -47,7 +63,7 @@ async function analyzeWith(response = report) {
   openUpload();
   selectVideo();
   fireEvent.click(screen.getByRole("button", { name: "Analyze squat" }));
-  await screen.findByText("Analysis complete");
+  await screen.findByText(response.status === "rejected" ? "Recording rejected" : "Analysis complete");
 }
 
 describe("Squat Analyzer healthcare dashboard", () => {
@@ -136,5 +152,14 @@ describe("Squat Analyzer healthcare dashboard", () => {
     openUpload(); selectVideo();
     fireEvent.click(screen.getByRole("button", { name: "Analyze squat" }));
     expect(await screen.findByRole("alert")).toHaveTextContent("Video is too large.");
+  });
+
+  it("renders rejected input guidance without score or ML panels", async () => {
+    await analyzeWith(rejectedReport);
+    expect(screen.getByText("No valid squat movement detected")).toBeInTheDocument();
+    expect(screen.getByText(/record full body, 3–5 squat reps, stable camera, good lighting/i)).toBeInTheDocument();
+    expect(screen.getByText("Camera placement guide")).toBeInTheDocument();
+    expect(screen.queryByText("Movement score")).not.toBeInTheDocument();
+    expect(screen.queryByText("ML second opinion")).not.toBeInTheDocument();
   });
 });
