@@ -1,1 +1,2 @@
+# Core application environment. TensorFlow/Keras/TensorBoard are intentionally excluded.
 -r backend/requirements.txt

@@ -6,7 +6,7 @@
 - Successful: 1
 - Failed: 0
 - Mean pose detection success rate: 0.161
-- Mean processing FPS: 26.84
+- Mean processing FPS: 49.06
 - Mean issue-detection agreement: 1.000
 
 Angle stability is mean absolute second difference in degrees (lower is smoother).

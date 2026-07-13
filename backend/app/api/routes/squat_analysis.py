@@ -8,6 +8,10 @@ from app.services.pose_estimation_service import PoseEstimationError, extract_po
 from app.services.artifact_service import create_artifact
 from app.services.overlay_video_service import create_overlay_video
 from app.services.ml_prediction_service import predict_experimental_quality
+from app.services.analysis_confidence_service import (
+    apply_ml_confidence_context,
+    enrich_ml_prediction,
+)
 from app.services.report_service import generate_session_report
 from app.services.squat_analysis_service import analyze_squat_landmarks, create_frame_analysis
 from app.utils.file_utils import UploadValidationError, remove_file, save_upload_file
@@ -60,7 +64,12 @@ async def analyze_squat(
             landmarks, include_frame_data=include_frame_data
         )
         if include_ml:
-            report.ml_prediction = predict_experimental_quality(landmarks)
+            report.ml_prediction = enrich_ml_prediction(
+                predict_experimental_quality(landmarks), report.detected_issues
+            )
+            report.analysis_confidence = apply_ml_confidence_context(
+                report.analysis_confidence, report.ml_prediction
+            )
         if generate_report:
             report_id, report_path = create_artifact("report")
             generated_artifacts.append(report_path)
@@ -73,8 +82,11 @@ async def analyze_squat(
                 overlay = create_overlay_video(
                     video_path, landmarks, create_frame_analysis(landmarks)
                 )
+                if not overlay.overlay_path.is_file() or overlay.overlay_path.stat().st_size <= 0:
+                    raise RuntimeError("Overlay service returned a missing or empty artifact.")
                 generated_artifacts.append(overlay.overlay_path)
                 report.overlay_id = overlay.overlay_id
+                report.overlay_preview_url = overlay.overlay_preview_url
                 report.overlay_download_url = overlay.overlay_download_url
             except Exception as exc:
                 logger.warning("Overlay generation failed; returning analysis without preview: %s", exc)

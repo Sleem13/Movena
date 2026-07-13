@@ -6,7 +6,7 @@ DISCLAIMER = (
 
 ISSUE_FEEDBACK = {
     "poor_depth": "Try to squat deeper only if it is pain-free and safe for your condition.",
-    "excessive_trunk_lean": "Keep your chest lifted and avoid excessive forward trunk lean.",
+    "excessive_trunk_lean": "Possible forward trunk lean was observed; try to keep your chest comfortably lifted.",
     "possible_knee_valgus": "Try to push your knees outward and keep them aligned with your toes.",
     "inconsistent_movement": "Move slowly and aim for a steady depth on each repetition.",
     "low_landmark_confidence": "Record in a well-lit space with your full body visible to improve tracking quality.",

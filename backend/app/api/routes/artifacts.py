@@ -24,9 +24,41 @@ def download_report(report_id: str):
     return FileResponse(path, media_type="application/pdf", filename="physiovision-squat-report.pdf")
 
 
-@router.get("/artifacts/overlays/{overlay_id}")
-def download_overlay(overlay_id: str):
+def overlay_file_or_404(overlay_id: str):
     path = resolve_artifact(overlay_id, "overlay")
     if path is None:
         return artifact_not_found("overlay")
-    return FileResponse(path, media_type="video/mp4", filename="physiovision-squat-overlay.mp4")
+    return path
+
+
+@router.get("/artifacts/overlays/{overlay_id}/preview")
+def preview_overlay(overlay_id: str):
+    path = overlay_file_or_404(overlay_id)
+    if isinstance(path, JSONResponse):
+        return path
+    return FileResponse(
+        path,
+        media_type="video/mp4",
+        headers={
+            "Content-Disposition": f'inline; filename="{path.name}"',
+            "Cache-Control": "no-store",
+        },
+    )
+
+
+@router.get("/artifacts/overlays/{overlay_id}/download")
+def download_overlay(overlay_id: str):
+    path = overlay_file_or_404(overlay_id)
+    if isinstance(path, JSONResponse):
+        return path
+    return FileResponse(
+        path,
+        media_type="video/mp4",
+        filename="physiovision-squat-overlay.mp4",
+    )
+
+
+@router.get("/artifacts/overlays/{overlay_id}")
+def download_overlay_legacy(overlay_id: str):
+    """Preserve the original download URL for existing clients."""
+    return download_overlay(overlay_id)

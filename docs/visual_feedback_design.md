@@ -6,6 +6,8 @@ The overlay reuses the pose frames already extracted for analysis. OpenCV draws 
 
 Frames without a detected pose remain in the output video but are not annotated. This keeps audio-free video timing and avoids interpolating landmarks that MediaPipe did not observe. The output uses the CPU-friendly `mp4v` codec and is marked experimental because browser decoding support and landmark stability vary.
 
+The API exposes separate artifact semantics: `/preview` returns `video/mp4` inline for the HTML video player, while `/download` returns the same temporary file as an attachment. OpenCV-generated MP4 may download correctly but fail to preview in some browsers depending on codec support. A future compatibility enhancement may use an available H.264 encoder or optional FFmpeg conversion, but FFmpeg is not a core dependency.
+
 ## Frame Detail
 
 `include_frame_data=true` returns detected-pose frames containing frame index, seconds, mean knee angle, hip angle, trunk angle, phase, and an optional issue. Responses are capped at 300 evenly sampled rows. The default response omits this list to control payload size.

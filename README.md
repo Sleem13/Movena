@@ -88,7 +88,21 @@ npm run dev
 
 The frontend runs at `http://localhost:5173`.
 
-If the backend is running somewhere else, set `VITE_API_BASE_URL` before starting Vite.
+If the backend is running somewhere else, set `VITE_API_BASE_URL` before starting Vite:
+
+```powershell
+$env:VITE_API_BASE_URL = "http://127.0.0.1:8000"
+npm run dev
+```
+
+Run the automated UI tests and production build from `frontend/`:
+
+```powershell
+npm test
+npm run build
+```
+
+The frontend includes Home, Analyze, Results, and About views; configurable artifact/ML options; original and annotated video review; responsive KPI cards; lightweight angle, issue, radar, score, and rep-quality visualizations; PDF/video/JSON exports; and persistent medical-safety messaging. Relative artifact paths are resolved against `VITE_API_BASE_URL`.
 
 ## Testing
 
@@ -353,6 +367,22 @@ Returns:
 - The app stores uploaded files only temporarily during processing and does not persist analysis history.
 - No database, user accounts, clinician workflows, or multi-exercise analysis are included in Sprint 1.
 - Public datasets support research and benchmarking only; custom consented PhysioVision data is needed for real-world validation.
+
+## Squat Accuracy and Confidence Hardening
+
+The squat analyzer now smooths pose-derived angle signals and counts repetitions with a completed movement state machine rather than a single threshold crossing. Responses separate movement observations from measurement reliability through `movement_score`, `score_breakdown`, `rep_count_confidence`, `pose_quality`, and `analysis_confidence`.
+
+The optional experimental ML output can report confidence and agreement, but it never overrides the rule-based analyzer. Low-quality pose evidence and side-view knee-alignment evidence are presented cautiously. These outputs support exercise monitoring and testing; they are not clinically validated assessments.
+
+Run the complete validation:
+
+```powershell
+python -m pytest
+Set-Location frontend
+npm test
+```
+
+See [the hardening plan](docs/squat_accuracy_hardening_plan.md), [rep-counting method](docs/squat_rep_counting_method.md), [confidence design](docs/analysis_confidence_design.md), and [score breakdown](docs/squat_scoring_breakdown.md).
 
 ## Medical Disclaimer
 

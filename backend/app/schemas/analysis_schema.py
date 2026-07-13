@@ -18,6 +18,47 @@ class MLPrediction(BaseModel):
     model_name: str | None = None
     model_version: str = "sprint_5_baseline"
     warning: str
+    ml_confidence_level: str | None = None
+    agrees_with_rule_based: bool | None = None
+    disagreement_note: str | None = None
+
+
+class RepEvent(BaseModel):
+    start_frame: int
+    bottom_frame: int
+    end_frame: int
+    duration_sec: float | None = None
+    minimum_knee_angle: float
+
+
+class PoseQuality(BaseModel):
+    score: float = Field(ge=0, le=1)
+    level: str
+    total_frames: int
+    pose_detected_frames: int
+    pose_detection_rate: float = Field(ge=0, le=1)
+    average_visibility: float = Field(ge=0, le=1)
+    critical_landmark_visibility: float = Field(ge=0, le=1)
+    missing_critical_landmark_rate: float = Field(ge=0, le=1)
+    low_confidence_frames: int
+    camera_view: str = "unknown"
+    camera_view_warning: str | None = None
+    warnings: list[str] = Field(default_factory=list)
+
+
+class ScoreBreakdown(BaseModel):
+    depth_score: int = Field(ge=0, le=100)
+    knee_alignment_score: int = Field(ge=0, le=100)
+    trunk_control_score: int = Field(ge=0, le=100)
+    consistency_score: int = Field(ge=0, le=100)
+    pose_confidence_score: int = Field(ge=0, le=100)
+
+
+class AnalysisConfidence(BaseModel):
+    score: float = Field(ge=0, le=1)
+    level: str
+    reasons: list[str] = Field(default_factory=list)
+    warnings: list[str] = Field(default_factory=list)
 
 
 class AnalysisResponse(BaseModel):
@@ -28,6 +69,13 @@ class AnalysisResponse(BaseModel):
     average_hip_angle: float = 0
     average_trunk_angle: float = 0
     movement_score: int = Field(default=0, ge=0, le=100)
+    rep_events: list[RepEvent] = Field(default_factory=list)
+    rep_durations: list[float] = Field(default_factory=list)
+    ignored_partial_reps: int = 0
+    rep_count_confidence: float = Field(default=0, ge=0, le=1)
+    pose_quality: PoseQuality | None = None
+    score_breakdown: ScoreBreakdown | None = None
+    analysis_confidence: AnalysisConfidence | None = None
     detected_issues: list[str] = Field(default_factory=list)
     feedback: list[str] = Field(default_factory=list)
     summary: str = ""
@@ -36,6 +84,7 @@ class AnalysisResponse(BaseModel):
     report_id: str | None = None
     report_download_url: str | None = None
     overlay_id: str | None = None
+    overlay_preview_url: str | None = None
     overlay_download_url: str | None = None
     ml_prediction: MLPrediction | None = None
 

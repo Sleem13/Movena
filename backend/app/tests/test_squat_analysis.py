@@ -61,6 +61,10 @@ def test_analyze_squat_counts_repetition_and_returns_report():
     assert report.average_knee_angle > 0
     assert report.feedback
     assert "licensed physiotherapist" in report.feedback[-1]
+    assert report.rep_count_confidence > 0
+    assert report.pose_quality is not None
+    assert report.score_breakdown is not None
+    assert report.analysis_confidence is not None
 
 
 def test_analyze_squat_detects_poor_depth_when_no_depth_frames():

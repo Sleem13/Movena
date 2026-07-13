@@ -6,13 +6,23 @@ const api = axios.create({
   baseURL: API_BASE_URL,
 });
 
-export async function analyzeSquatVideo(videoFile) {
+export async function analyzeSquatVideo(videoFile, options = {}, onProgress) {
   const formData = new FormData();
   formData.append("video", videoFile);
 
-  const response = await api.post("/api/v1/analyze/squat?include_overlay=true&generate_report=true", formData, {
+  const query = new URLSearchParams({
+    include_overlay: String(Boolean(options.include_overlay)),
+    generate_report: String(Boolean(options.generate_report)),
+    include_ml: String(Boolean(options.include_ml)),
+    include_frame_data: String(Boolean(options.include_frame_data)),
+  });
+
+  const response = await api.post(`/api/v1/analyze/squat?${query}`, formData, {
     headers: {
       "Content-Type": "multipart/form-data",
+    },
+    onUploadProgress: (event) => {
+      if (onProgress && event.total) onProgress(Math.round((event.loaded * 100) / event.total));
     },
   });
 

@@ -7,11 +7,13 @@ from app.api.routes.health import router as health_router
 from app.api.routes.artifacts import router as artifacts_router
 from app.api.routes.squat_analysis import router as squat_router
 from app.core.config import get_settings
+from app.services.artifact_service import ensure_artifact_directories
 from app.core.logging_config import configure_logging
 from app.schemas.analysis_schema import ErrorResponse
 
 configure_logging()
 settings = get_settings()
+ensure_artifact_directories()
 
 app = FastAPI(
     title=settings.project_name,

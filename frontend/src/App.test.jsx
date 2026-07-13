@@ -10,20 +10,26 @@ vi.mock("./services/api.js", () => ({
 }));
 
 const report = {
+  exercise: "bodyweight_squat",
+  status: "success",
   total_reps: 2,
   average_knee_angle: 98,
   average_hip_angle: 75,
   average_trunk_angle: 20,
   movement_score: 90,
+  rep_count_confidence: 0.88,
+  ignored_partial_reps: 1,
+  pose_quality: { score: 0.84, level: "high", pose_detection_rate: 0.92, warnings: [] },
+  analysis_confidence: { score: 0.81, level: "high", reasons: [], warnings: [] },
+  score_breakdown: { depth_score: 90, knee_alignment_score: 88, trunk_control_score: 92, consistency_score: 80, pose_confidence_score: 84 },
   detected_issues: ["poor_depth"],
-  feedback: [
-    "Possible movement issue detected.",
-    "This analysis is educational and does not replace assessment by a licensed physiotherapist.",
-  ],
+  feedback: ["Possible movement issue detected."],
   summary: "Two repetitions analyzed.",
   limitations: ["This does not replace clinical assessment."],
   report_download_url: "/api/v1/artifacts/reports/test-report",
-  overlay_download_url: "/api/v1/artifacts/overlays/test-overlay",
+  overlay_preview_url: "/api/v1/artifacts/overlays/test-overlay/preview",
+  overlay_download_url: "/api/v1/artifacts/overlays/test-overlay/download",
+  frame_analysis: [{ frame_index: 0, timestamp_sec: 0, knee_angle: 98, hip_angle: 75, trunk_angle: 20, phase: "standing", detected_issue: "poor_depth" }],
 };
 
 function openUpload() {
@@ -33,73 +39,102 @@ function openUpload() {
 
 function selectVideo() {
   const file = new File(["video"], "squat.mp4", { type: "video/mp4" });
-  fireEvent.change(screen.getByLabelText(/choose a squat exercise video/i), {
-    target: { files: [file] },
-  });
+  fireEvent.change(screen.getByLabelText(/choose a squat exercise video/i), { target: { files: [file] } });
 }
 
-describe("Squat Analyzer UI", () => {
+async function analyzeWith(response = report) {
+  analyzeSquatVideo.mockResolvedValue(response);
+  openUpload();
+  selectVideo();
+  fireEvent.click(screen.getByRole("button", { name: "Analyze squat" }));
+  await screen.findByText("Analysis complete");
+}
+
+describe("Squat Analyzer healthcare dashboard", () => {
   beforeEach(() => vi.clearAllMocks());
 
-  it("renders upload controls and disables submit without a file", () => {
+  it("renders the upload page and analysis options", () => {
     openUpload();
     expect(screen.getByText("Squat video upload")).toBeInTheDocument();
-    expect(screen.getByText("Camera placement guide")).toBeInTheDocument();
-    expect(screen.getByText(/side view for squat depth/i)).toBeInTheDocument();
-    expect(screen.getByText(/avoid very loose clothing/i)).toBeInTheDocument();
+    expect(screen.getByText("Analysis options")).toBeInTheDocument();
+    expect(screen.getByLabelText("Annotated video")).toBeChecked();
     expect(screen.getByRole("button", { name: "Analyze squat" })).toBeDisabled();
   });
 
-  it("accepts a video and shows the loading state", async () => {
+  it("renders the camera placement guide", () => {
+    openUpload();
+    expect(screen.getByText("Camera placement guide")).toBeInTheDocument();
+    expect(screen.getByText("Side view")).toBeInTheDocument();
+    expect(screen.getByText(/best for squat depth and trunk lean/i)).toBeInTheDocument();
+    expect(screen.getByText(/avoid very loose clothing/i)).toBeInTheDocument();
+  });
+
+  it("shows loading progress after a video is submitted", async () => {
     analyzeSquatVideo.mockReturnValue(new Promise(() => {}));
-    openUpload();
-    selectVideo();
+    openUpload(); selectVideo();
     fireEvent.click(screen.getByRole("button", { name: "Analyze squat" }));
-    expect(await screen.findByRole("button", { name: "Analyzing" })).toBeDisabled();
+    expect(await screen.findByText("Analyzing")).toBeInTheDocument();
+    expect(screen.getByText(/uploading video/i)).toBeInTheDocument();
   });
 
-  it("displays a backend API error", async () => {
-    analyzeSquatVideo.mockRejectedValue({ response: { data: { message: "Video is too large." } } });
-    openUpload();
-    selectVideo();
-    fireEvent.click(screen.getByRole("button", { name: "Analyze squat" }));
-    expect(await screen.findByText("Video is too large.")).toBeInTheDocument();
+  it("renders result KPI cards and charts", async () => {
+    await analyzeWith();
+    expect(screen.getAllByText("Movement score").length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByText("Total reps")).toBeInTheDocument();
+    expect(screen.getByText("Average knee")).toBeInTheDocument();
+    expect(screen.getByText("Average hip")).toBeInTheDocument();
+    expect(screen.getByText("Average trunk")).toBeInTheDocument();
+    expect(screen.getAllByText("90").length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByText("Angle trend")).toBeInTheDocument();
+    expect(screen.getByText("Movement profile")).toBeInTheDocument();
+    expect(screen.getByText("Rep quality")).toBeInTheDocument();
+    expect(screen.getAllByText("Analysis confidence").length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByText("Rep count confidence")).toBeInTheDocument();
+    expect(screen.getByText("Score breakdown")).toBeInTheDocument();
+    expect(screen.getByText("88%")).toBeInTheDocument();
   });
 
-  it("displays repetitions, score, issues, feedback, and disclaimer", async () => {
-    analyzeSquatVideo.mockResolvedValue(report);
-    openUpload();
-    selectVideo();
-    fireEvent.click(screen.getByRole("button", { name: "Analyze squat" }));
-    await waitFor(() => expect(screen.getByText("Analysis complete")).toBeInTheDocument());
-    expect(screen.getByText("2")).toBeInTheDocument();
-    expect(screen.getByText("90")).toBeInTheDocument();
-    expect(screen.getByText("poor depth")).toBeInTheDocument();
-    expect(screen.getByText("Possible movement issue detected.")).toBeInTheDocument();
-    expect(screen.getByText(/does not replace assessment by a licensed physiotherapist/i)).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /download pdf report/i })).toBeInTheDocument();
-    expect(screen.getByText("Annotated movement preview")).toBeInTheDocument();
-    expect(document.querySelector("video source")).toHaveAttribute(
-      "src", "http://127.0.0.1:8000/api/v1/artifacts/overlays/test-overlay"
+  it("renders the ML second opinion only when returned", async () => {
+    await analyzeWith({ ...report, ml_prediction: { enabled: true, predicted_label: "squat_correct", confidence: 0.82, model_name: "svc_rbf", model_version: "sprint_5_baseline", warning: "Experimental baseline model. Not clinically validated." } });
+    expect(screen.getByText("ML second opinion")).toBeInTheDocument();
+    expect(screen.getByText("Squat Correct")).toBeInTheDocument();
+    expect(screen.getByText("82%")).toBeInTheDocument();
+    expect(screen.getByText("svc_rbf")).toBeInTheDocument();
+    expect(screen.getByText(/rule-based analysis remains primary/i)).toBeInTheDocument();
+  });
+
+  it("shows the safe ML disagreement note without replacing rule results", async () => {
+    await analyzeWith({ ...report, ml_prediction: { enabled: true, predicted_label: "squat_correct", confidence: 0.9, model_name: "svc_rbf", model_version: "sprint_5_baseline", warning: "Experimental baseline.", disagreement_note: "The experimental ML prediction disagrees with rule-based analysis. Rule-based biomechanical feedback remains primary." } });
+    expect(screen.getByText("Experimental ML disagreement")).toBeInTheDocument();
+    expect(screen.getByText(/rule-based biomechanical feedback remains primary/i)).toBeInTheDocument();
+    expect(screen.getAllByText("Poor Depth").length).toBeGreaterThanOrEqual(1);
+  });
+
+  it("shows an annotated-video fallback when the overlay URL is missing", async () => {
+    await analyzeWith({ ...report, overlay_preview_url: null, overlay_download_url: null });
+    expect(screen.getByText("No annotated preview was generated for this analysis.")).toBeInTheDocument();
+  });
+
+  it("renders the annotated video with a full backend URL", async () => {
+    await analyzeWith();
+    const video = screen.getByLabelText("Annotated squat movement preview");
+    expect(video).toHaveAttribute("preload", "metadata");
+    expect(video.querySelector("source")).toHaveAttribute("src", "http://127.0.0.1:8000/api/v1/artifacts/overlays/test-overlay/preview");
+    expect(screen.getAllByRole("link", { name: "Download annotated video" })[0]).toHaveAttribute(
+      "href", "http://127.0.0.1:8000/api/v1/artifacts/overlays/test-overlay/download"
     );
-    expect(screen.getByText("Educational analysis only")).toBeInTheDocument();
   });
 
-  it("shows an annotated preview fallback when no overlay URL exists", async () => {
-    analyzeSquatVideo.mockResolvedValue({ ...report, overlay_download_url: null });
-    openUpload();
-    selectVideo();
-    fireEvent.click(screen.getByRole("button", { name: "Analyze squat" }));
-    expect(await screen.findByText("No annotated preview was generated for this analysis.")).toBeInTheDocument();
+  it("shows a fallback when annotated video playback fails", async () => {
+    await analyzeWith();
+    fireEvent.error(screen.getByLabelText("Annotated squat movement preview"));
+    expect(screen.getByText("Annotated preview could not be loaded")).toBeInTheDocument();
   });
 
-  it("shows a helpful fallback when the overlay video fails to load", async () => {
-    analyzeSquatVideo.mockResolvedValue(report);
-    openUpload();
-    selectVideo();
+  it("renders an API error state", async () => {
+    analyzeSquatVideo.mockRejectedValue({ response: { data: { message: "Video is too large." } } });
+    openUpload(); selectVideo();
     fireEvent.click(screen.getByRole("button", { name: "Analyze squat" }));
-    const video = await screen.findByLabelText("Annotated squat movement preview");
-    fireEvent.error(video);
-    expect(screen.getByText(/annotated preview could not be loaded/i)).toBeInTheDocument();
+    expect(await screen.findByRole("alert")).toHaveTextContent("Video is too large.");
   });
 });

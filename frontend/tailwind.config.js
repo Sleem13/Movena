@@ -5,15 +5,18 @@ export default {
     extend: {
       colors: {
         clinical: {
-          ink: "#14213d",
-          teal: "#0f766e",
-          mint: "#dff7ef",
-          line: "#d7e1ea",
+          ink: "#10243e",
+          navy: "#173b63",
+          blue: "#2563eb",
+          teal: "#0f8f83",
+          mint: "#e8f8f4",
+          line: "#dce6ee",
           panel: "#f7fafc",
         },
       },
       boxShadow: {
-        panel: "0 12px 30px rgba(15, 23, 42, 0.08)",
+        panel: "0 12px 32px rgba(31, 62, 89, 0.08)",
+        lift: "0 20px 50px rgba(31, 62, 89, 0.12)",
       },
     },
   },

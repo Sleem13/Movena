@@ -1,18 +1,21 @@
 """Clinically reviewable constants for the rule-based squat prototype."""
 
 STANDING_KNEE_ANGLE_DEG = 160.0
-SQUAT_DEPTH_KNEE_ANGLE_DEG = 110.0
+SQUAT_DEPTH_KNEE_ANGLE_DEG = 115.0
 TRUNK_LEAN_THRESHOLD_DEG = 35.0
 KNEE_VALGUS_MARGIN_NORMALIZED = 0.035
-POOR_DEPTH_FRAME_RATIO = 0.25
 KNEE_VALGUS_FRAME_RATIO = 0.25
 LOW_CONFIDENCE_FRAME_RATIO = 0.40
 INCONSISTENT_DEPTH_STD_DEG = 18.0
 
-ISSUE_SCORE_DEDUCTIONS = {
-    "poor_depth": 20,
-    "excessive_trunk_lean": 20,
-    "possible_knee_valgus": 20,
-    "inconsistent_movement": 10,
-    "low_landmark_confidence": 10,
-}
+# Rep state-machine thresholds. These are reviewable prototype defaults, not
+# clinically validated cut-offs.
+MIN_DEPTH_DELTA_DEG = 35.0
+MIN_REP_DURATION_SEC = 0.8
+MAX_REP_DURATION_SEC = 8.0
+MIN_FRAMES_BETWEEN_REPS = 10
+BOTTOM_HOLD_MIN_FRAMES = 2
+ANGLE_DIRECTION_EPSILON_DEG = 1.5
+ANGLE_SMOOTHING_WINDOW = 5
+
+ML_LOW_CONFIDENCE_THRESHOLD = 0.65

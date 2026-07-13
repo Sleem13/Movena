@@ -1,10 +1,9 @@
 import os
 from functools import lru_cache
 from pathlib import Path
-
 from pydantic import BaseModel
 
-BACKEND_ROOT = Path(__file__).resolve().parents[2]
+from app.core.artifact_config import ARTIFACTS_DIR, BACKEND_ROOT
 
 
 class Settings(BaseModel):
@@ -12,7 +11,7 @@ class Settings(BaseModel):
     version: str = "0.1.0"
     api_v1_prefix: str = "/api/v1"
     upload_dir: Path = BACKEND_ROOT / "tmp/uploads"
-    artifact_dir: Path = BACKEND_ROOT / "artifacts"
+    artifact_dir: Path = ARTIFACTS_DIR
     artifact_ttl_seconds: int = 60 * 60
     max_frame_analysis_rows: int = 300
     max_upload_size_bytes: int = 100 * 1024 * 1024

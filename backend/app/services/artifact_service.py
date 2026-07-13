@@ -6,6 +6,7 @@ import time
 from pathlib import Path
 from uuid import UUID, uuid4
 
+from app.core import artifact_config
 from app.core.config import get_settings
 
 
@@ -15,7 +16,10 @@ ARTIFACT_SUBDIRS = {"report": "reports", "overlay": "overlays"}
 
 def ensure_artifact_directories() -> Path:
     root = get_settings().artifact_dir
-    root.mkdir(parents=True, exist_ok=True)
+    if root.resolve() == artifact_config.ARTIFACTS_DIR.resolve():
+        artifact_config.ensure_default_artifact_directories()
+    else:
+        root.mkdir(parents=True, exist_ok=True)
     for subdir in ARTIFACT_SUBDIRS.values():
         (root / subdir).mkdir(parents=True, exist_ok=True)
     return root
@@ -44,14 +48,18 @@ def create_artifact(kind: str) -> tuple[str, Path]:
 
 
 def resolve_artifact(artifact_id: str, kind: str) -> Path | None:
+    suffix = ARTIFACT_SUFFIXES[kind]
+    normalized_input = Path(artifact_id).name
+    if normalized_input.lower().endswith(suffix):
+        normalized_input = normalized_input[: -len(suffix)]
     try:
-        normalized_id = UUID(artifact_id).hex
+        normalized_id = UUID(normalized_input).hex
     except ValueError:
         return None
     cleanup_expired_artifacts()
     path = (
         get_settings().artifact_dir
         / ARTIFACT_SUBDIRS[kind]
-        / f"{normalized_id}{ARTIFACT_SUFFIXES[kind]}"
+        / f"{normalized_id}{suffix}"
     )
     return path if path.is_file() else None

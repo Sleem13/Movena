@@ -16,6 +16,10 @@ LANDMARK_NAMES = {
     26: "right_knee",
     27: "left_ankle",
     28: "right_ankle",
+    29: "left_heel",
+    30: "right_heel",
+    31: "left_foot_index",
+    32: "right_foot_index",
 }
 
 
@@ -94,6 +98,9 @@ def extract_pose_landmarks(video_path: Path) -> list[dict[str, Any]]:
             )
 
     cap.release()
+    for frame in frame_landmarks:
+        frame["source_total_frames"] = processed_frames
+        frame["source_pose_detected_frames"] = detected_frames
     logger.info(
         "Frames processed=%s, landmarks detected=%s",
         processed_frames,

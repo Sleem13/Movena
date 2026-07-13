@@ -1,48 +1,6 @@
-import { ArrowRight, BrainCircuit } from "lucide-react";
+import { ArrowRight, BarChart3, BrainCircuit, CheckCircle2, ShieldCheck, Video } from "lucide-react";
+import { Badge, Button, Card } from "../components/common/UI.jsx";
 
 export default function Home({ onStart }) {
-  return (
-    <main className="mx-auto flex min-h-[calc(100vh-80px)] w-full max-w-6xl items-center px-6 py-10">
-      <section className="grid w-full gap-8 lg:grid-cols-[1fr_360px] lg:items-center">
-        <div>
-          <div className="mb-5 inline-flex items-center gap-2 rounded-lg border border-clinical-line bg-white px-3 py-2 text-sm font-medium text-clinical-teal">
-            <BrainCircuit size={17} aria-hidden="true" />
-            Sprint 1 Squat Analyzer MVP
-          </div>
-          <h1 className="max-w-3xl text-4xl font-semibold leading-tight text-clinical-ink md:text-5xl">
-            PhysioVision AI
-          </h1>
-          <p className="mt-5 max-w-2xl text-lg leading-8 text-slate-600">
-            Upload a bodyweight squat video and receive a rule-based computer vision report with rep count, joint angle estimates, movement flags, and patient-friendly feedback.
-          </p>
-          <button
-            type="button"
-            onClick={onStart}
-            className="mt-7 inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-clinical-teal px-5 text-sm font-semibold text-white transition hover:bg-teal-800"
-          >
-            Analyze Squat Video
-            <ArrowRight size={18} aria-hidden="true" />
-          </button>
-        </div>
-
-        <aside className="rounded-lg border border-clinical-line bg-white p-6 shadow-panel">
-          <h2 className="text-base font-semibold text-clinical-ink">MVP report includes</h2>
-          <dl className="mt-5 space-y-4">
-            <div>
-              <dt className="text-sm font-medium text-slate-800">Pose-based metrics</dt>
-              <dd className="mt-1 text-sm text-slate-600">Knee, hip, and trunk angle estimates.</dd>
-            </div>
-            <div>
-              <dt className="text-sm font-medium text-slate-800">Movement quality</dt>
-              <dd className="mt-1 text-sm text-slate-600">Depth, trunk lean, knee alignment, and consistency flags.</dd>
-            </div>
-            <div>
-              <dt className="text-sm font-medium text-slate-800">Safety-first feedback</dt>
-              <dd className="mt-1 text-sm text-slate-600">Educational guidance with a clinical disclaimer.</dd>
-            </div>
-          </dl>
-        </aside>
-      </section>
-    </main>
-  );
+  return <main><section className="mx-auto grid min-h-[650px] max-w-7xl items-center gap-10 px-6 py-16 lg:grid-cols-[1.05fr_.95fr]"><div><Badge tone="teal"><ShieldCheck className="mr-1.5" size={14} aria-hidden="true" />Safety-first movement support</Badge><h1 className="mt-6 max-w-3xl text-5xl font-bold leading-[1.08] tracking-tight text-clinical-ink sm:text-6xl">See movement more clearly. <span className="bg-gradient-to-r from-clinical-blue to-clinical-teal bg-clip-text text-transparent">Coach with context.</span></h1><p className="mt-6 max-w-2xl text-lg leading-8 text-slate-600">Transform a squat video into an approachable, rule-based movement report with angle trends, visual review, feedback, and therapist-friendly exports.</p><div className="mt-8 flex flex-wrap gap-3"><Button type="button" onClick={onStart} className="min-h-12 px-5">Analyze Squat Video<ArrowRight size={18} aria-hidden="true" /></Button><span className="inline-flex min-h-12 items-center px-2 text-xs font-medium text-slate-500">No diagnosis · No permanent patient record</span></div><ul className="mt-8 grid gap-3 text-sm text-slate-600 sm:grid-cols-3">{["Rule-based primary analysis", "Optional visual overlay", "Educational feedback"].map((item) => <li key={item} className="flex items-center gap-2"><CheckCircle2 size={16} className="text-clinical-teal" aria-hidden="true" />{item}</li>)}</ul></div><div className="relative"><div className="absolute -inset-5 rounded-[2rem] bg-gradient-to-br from-blue-200/50 to-teal-100/50 blur-2xl" /><Card className="relative overflow-hidden p-3 shadow-lift"><div className="rounded-2xl bg-gradient-to-br from-clinical-navy to-[#155e75] p-6 text-white"><div className="flex items-center justify-between"><div><p className="text-xs font-semibold uppercase tracking-widest text-blue-200">Latest analysis</p><p className="mt-2 text-xl font-bold">Bodyweight squat</p></div><Badge className="bg-white/15 text-white ring-white/20">Complete</Badge></div><div className="mt-8 grid grid-cols-2 gap-3"><div className="rounded-2xl bg-white/10 p-4"><p className="text-xs text-blue-100">Movement score</p><p className="mt-2 text-4xl font-bold">88</p></div><div className="rounded-2xl bg-white/10 p-4"><p className="text-xs text-blue-100">Repetitions</p><p className="mt-2 text-4xl font-bold">5</p></div></div><div className="mt-4 flex h-36 items-end gap-2 rounded-2xl bg-white/10 px-4 pt-6">{[38, 58, 46, 82, 65, 91, 72, 88, 60, 78].map((height, index) => <span key={index} className="flex-1 rounded-t-md bg-gradient-to-t from-teal-300 to-blue-200" style={{ height: `${height}%` }} />)}</div></div><div className="grid gap-3 p-3 sm:grid-cols-3"><div className="flex items-center gap-2 rounded-xl bg-slate-50 p-3 text-xs font-semibold text-slate-700"><Video size={16} className="text-clinical-blue" />Video review</div><div className="flex items-center gap-2 rounded-xl bg-slate-50 p-3 text-xs font-semibold text-slate-700"><BarChart3 size={16} className="text-clinical-teal" />Angle trends</div><div className="flex items-center gap-2 rounded-xl bg-slate-50 p-3 text-xs font-semibold text-slate-700"><BrainCircuit size={16} className="text-violet-600" />ML optional</div></div></Card></div></section></main>;
 }

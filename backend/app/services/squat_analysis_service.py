@@ -4,11 +4,9 @@ from typing import Any
 from app.schemas.analysis_schema import AnalysisResponse, FrameAnalysis
 from app.core.exercise_thresholds import (
     INCONSISTENT_DEPTH_STD_DEG,
-    ISSUE_SCORE_DEDUCTIONS,
     KNEE_VALGUS_FRAME_RATIO,
     KNEE_VALGUS_MARGIN_NORMALIZED,
     LOW_CONFIDENCE_FRAME_RATIO,
-    POOR_DEPTH_FRAME_RATIO,
     SQUAT_DEPTH_KNEE_ANGLE_DEG,
     STANDING_KNEE_ANGLE_DEG,
     TRUNK_LEAN_THRESHOLD_DEG,
@@ -19,6 +17,10 @@ from app.services.angle_calculation_service import (
     calculate_trunk_angle,
 )
 from app.services.feedback_service import build_feedback
+from app.services.analysis_confidence_service import calculate_analysis_confidence
+from app.services.pose_quality_service import assess_pose_quality
+from app.services.rep_counting_service import count_squat_reps
+from app.services.squat_scoring_service import score_squat
 
 def _avg_point(left: dict[str, float], right: dict[str, float]) -> dict[str, float]:
     return {
@@ -63,22 +65,18 @@ def _frame_metrics(frame: dict[str, Any]) -> dict[str, float | bool]:
     }
 
 
-def _phase_for_angle(angle: float, current_phase: str) -> str:
-    if angle < SQUAT_DEPTH_KNEE_ANGLE_DEG:
-        return "depth"
-    if angle > STANDING_KNEE_ANGLE_DEG:
-        return "standing"
-    return "descent" if current_phase == "standing" else "ascent"
-
-
 def create_frame_analysis(frames: list[dict[str, Any]]) -> list[FrameAnalysis]:
     """Return conservative per-frame metrics for overlays and optional API detail."""
+    metrics_rows = [_frame_metrics(frame) for frame in frames]
+    rep_result = count_squat_reps(
+        [float(item["knee_angle"]) for item in metrics_rows],
+        [float(frame.get("timestamp_sec", 0.0)) for frame in frames],
+        [int(frame.get("frame_index", index)) for index, frame in enumerate(frames)],
+    )
     result: list[FrameAnalysis] = []
-    phase = "standing"
-    for frame in frames:
-        metrics = _frame_metrics(frame)
-        knee_angle = float(metrics["knee_angle"])
-        next_phase = _phase_for_angle(knee_angle, phase)
+    for index, (frame, metrics) in enumerate(zip(frames, metrics_rows)):
+        knee_angle = rep_result.smoothed_angles[index]
+        next_phase = rep_result.phases[index]
         issue = None
         if bool(metrics["low_confidence"]):
             issue = "low_landmark_confidence"
@@ -97,7 +95,6 @@ def create_frame_analysis(frames: list[dict[str, Any]]) -> list[FrameAnalysis]:
                 detected_issue=issue,
             )
         )
-        phase = next_phase
     return result
 
 
@@ -108,63 +105,66 @@ def _sample_frame_analysis(rows: list[FrameAnalysis], limit: int) -> list[FrameA
     return [rows[index] for index in sorted(indexes)]
 
 
-def _count_reps(knee_angles: list[float]) -> int:
-    reps = 0
-    phase = "standing"
-
-    for angle in knee_angles:
-        if phase == "standing" and angle < SQUAT_DEPTH_KNEE_ANGLE_DEG:
-            phase = "depth"
-        elif phase == "depth" and angle > STANDING_KNEE_ANGLE_DEG:
-            reps += 1
-            phase = "standing"
-
-    return reps
-
-
 def analyze_squat_landmarks(
     frames: list[dict[str, Any]], include_frame_data: bool = False
 ) -> AnalysisResponse:
+    if not frames:
+        return AnalysisResponse(
+            status="insufficient_data",
+            limitations=["No pose-detected frames were available for squat analysis."],
+        )
     metrics = [_frame_metrics(frame) for frame in frames]
-    knee_angles = [float(item["knee_angle"]) for item in metrics]
+    raw_knee_angles = [float(item["knee_angle"]) for item in metrics]
     hip_angles = [float(item["hip_angle"]) for item in metrics]
     trunk_angles = [float(item["trunk_angle"]) for item in metrics]
+    timestamps = [float(frame.get("timestamp_sec", 0.0)) for frame in frames]
+    frame_indexes = [int(frame.get("frame_index", index)) for index, frame in enumerate(frames)]
+    rep_result = count_squat_reps(raw_knee_angles, timestamps, frame_indexes)
+    knee_angles = rep_result.smoothed_angles
+    pose_quality = assess_pose_quality(frames)
 
-    squat_frames = [angle for angle in knee_angles if angle < STANDING_KNEE_ANGLE_DEG]
     depth_frames = [angle for angle in knee_angles if angle < SQUAT_DEPTH_KNEE_ANGLE_DEG]
-    total_reps = _count_reps(knee_angles)
+    total_reps = rep_result.total_reps
     detected_issues: list[str] = []
 
-    # Short videos may only include a few bottom-position frames, so keep this conservative.
-    if squat_frames and len(depth_frames) / len(squat_frames) < POOR_DEPTH_FRAME_RATIO:
-        detected_issues.append("poor_depth")
-    elif not depth_frames:
+    # Depth is based on the smoothed minimum rather than a fragile frame ratio.
+    if knee_angles and min(knee_angles) > SQUAT_DEPTH_KNEE_ANGLE_DEG:
         detected_issues.append("poor_depth")
 
-    if trunk_angles and mean(trunk_angles) > TRUNK_LEAN_THRESHOLD_DEG:
+    movement_trunk = [trunk for trunk, knee in zip(trunk_angles, knee_angles) if knee < STANDING_KNEE_ANGLE_DEG]
+    if movement_trunk and mean(movement_trunk) > TRUNK_LEAN_THRESHOLD_DEG:
         detected_issues.append("excessive_trunk_lean")
 
     valgus_ratio = sum(bool(item["possible_knee_valgus"]) for item in metrics) / len(metrics)
     if valgus_ratio > KNEE_VALGUS_FRAME_RATIO:
         detected_issues.append("possible_knee_valgus")
 
-    if len(depth_frames) > 1 and pstdev(depth_frames) > INCONSISTENT_DEPTH_STD_DEG:
+    rep_minimums = [event.minimum_knee_angle for event in rep_result.rep_events]
+    consistency_values = rep_minimums or depth_frames
+    if len(consistency_values) > 1 and pstdev(consistency_values) > INCONSISTENT_DEPTH_STD_DEG:
         detected_issues.append("inconsistent_movement")
 
-    low_confidence_ratio = sum(bool(item["low_confidence"]) for item in metrics) / len(metrics)
+    low_confidence_ratio = pose_quality.low_confidence_frames / max(1, pose_quality.pose_detected_frames)
     if low_confidence_ratio > LOW_CONFIDENCE_FRAME_RATIO:
         detected_issues.append("low_landmark_confidence")
 
-    score = 100
-    for issue in detected_issues:
-        score -= ISSUE_SCORE_DEDUCTIONS.get(issue, 0)
-    score = max(0, min(100, score))
+    score, score_breakdown = score_squat(
+        knee_angles,
+        trunk_angles,
+        [bool(item["possible_knee_valgus"]) for item in metrics],
+        pose_quality,
+        rep_minimums,
+    )
+    analysis_confidence = calculate_analysis_confidence(
+        pose_quality, rep_result.confidence, knee_angles
+    )
 
     limitations = [
         "Rule-based prototype; results depend on camera angle, lighting, and full-body visibility.",
         "2D pose landmarks cannot fully assess joint loading or pain.",
         "Clinical decisions should be made with a licensed physiotherapist.",
     ]
+    limitations.extend(warning for warning in pose_quality.warnings if warning not in limitations)
 
     summary = (
         f"Analyzed {len(frames)} pose-detected frames and counted {total_reps} squat rep"
@@ -187,6 +187,13 @@ def analyze_squat_landmarks(
         average_hip_angle=round(mean(hip_angles), 2),
         average_trunk_angle=round(mean(trunk_angles), 2),
         movement_score=score,
+        rep_events=[event.__dict__ for event in rep_result.rep_events],
+        rep_durations=[event.duration_sec for event in rep_result.rep_events if event.duration_sec is not None],
+        ignored_partial_reps=rep_result.ignored_partial_reps,
+        rep_count_confidence=rep_result.confidence,
+        pose_quality=pose_quality,
+        score_breakdown=score_breakdown,
+        analysis_confidence=analysis_confidence,
         detected_issues=detected_issues,
         feedback=build_feedback(detected_issues),
         summary=summary,

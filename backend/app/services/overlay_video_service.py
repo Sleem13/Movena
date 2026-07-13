@@ -2,11 +2,14 @@
 
 from __future__ import annotations
 
+import logging
 from dataclasses import dataclass
 from pathlib import Path
 
 from app.schemas.analysis_schema import FrameAnalysis
 from app.services.artifact_service import create_artifact
+
+logger = logging.getLogger(__name__)
 
 
 SKELETON_CONNECTIONS = [
@@ -29,6 +32,7 @@ class OverlayGenerationError(RuntimeError):
 class OverlayArtifact:
     overlay_id: str
     overlay_path: Path
+    overlay_preview_url: str
     overlay_download_url: str
 
 
@@ -43,6 +47,8 @@ def generate_skeleton_overlay(
     except ImportError as exc:
         raise OverlayGenerationError("OpenCV is required for overlay generation.") from exc
 
+    logger.info("Overlay input video path: %s", input_path.resolve())
+    logger.info("Overlay output path: %s", output_path.resolve())
     capture = cv2.VideoCapture(str(input_path))
     if not capture.isOpened():
         raise OverlayGenerationError("Unable to reopen video for overlay generation.")
@@ -54,10 +60,13 @@ def generate_skeleton_overlay(
         raise OverlayGenerationError("Video dimensions are invalid.")
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
+    codec = "mp4v"
     writer = cv2.VideoWriter(
-        str(output_path), cv2.VideoWriter_fourcc(*"mp4v"), fps, (width, height)
+        str(output_path), cv2.VideoWriter_fourcc(*codec), fps, (width, height)
     )
-    if not writer.isOpened():
+    writer_opened = writer.isOpened()
+    logger.info("Overlay codec=%s video writer opened=%s", codec, writer_opened)
+    if not writer_opened:
         capture.release()
         raise OverlayGenerationError("Unable to create MP4 annotated video.")
 
@@ -102,7 +111,15 @@ def generate_skeleton_overlay(
         capture.release()
         writer.release()
 
-    if frames_written == 0 or not output_path.exists() or output_path.stat().st_size == 0:
+    file_exists = output_path.is_file()
+    file_size = output_path.stat().st_size if file_exists else 0
+    logger.info(
+        "Overlay frames written=%s final file exists=%s final file size bytes=%s",
+        frames_written,
+        file_exists,
+        file_size,
+    )
+    if frames_written == 0 or not file_exists or file_size <= 0:
         output_path.unlink(missing_ok=True)
         raise OverlayGenerationError("Annotated MP4 output is empty.")
     return output_path
@@ -119,8 +136,12 @@ def create_overlay_video(
     except Exception:
         overlay_path.unlink(missing_ok=True)
         raise
+    if not overlay_path.is_file() or overlay_path.stat().st_size <= 0:
+        overlay_path.unlink(missing_ok=True)
+        raise OverlayGenerationError("Annotated MP4 was not created successfully.")
     return OverlayArtifact(
         overlay_id=overlay_id,
         overlay_path=overlay_path,
-        overlay_download_url=f"/api/v1/artifacts/overlays/{overlay_id}",
+        overlay_preview_url=f"/api/v1/artifacts/overlays/{overlay_id}/preview",
+        overlay_download_url=f"/api/v1/artifacts/overlays/{overlay_id}/download",
     )

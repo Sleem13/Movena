@@ -30,6 +30,17 @@ Current codes are `MISSING_FILE`, `INVALID_FILE_TYPE`, `FILE_TOO_LARGE`, `EMPTY_
 
 This API uses rule-based 2D pose analysis. It is sensitive to viewpoint, visibility, lighting, and movement context. It does not diagnose injury or replace assessment by a licensed physiotherapist.
 
+### Accuracy and confidence fields
+
+Successful responses also include:
+
+- `rep_events`, `rep_durations`, `ignored_partial_reps`, and a 0–1 `rep_count_confidence`;
+- `pose_quality` with detection coverage, critical-landmark visibility, view warning, score, and level;
+- `score_breakdown` for depth, knee alignment, trunk control, consistency, and pose confidence;
+- a separate 0–1 `analysis_confidence` with level, reasons, and warnings.
+
+`movement_score` describes rule-based movement observations. `analysis_confidence` describes measurement reliability; the two values are not interchangeable. With `include_ml=true`, the experimental prediction adds `ml_confidence_level`, `agrees_with_rule_based`, and `disagreement_note`. ML never overrides rule-based issues, scoring, or feedback.
+
 ### Sprint 4 query options and artifacts
 
 - Default: summary JSON only; frame and artifact fields are null.
