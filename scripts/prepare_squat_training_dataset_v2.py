@@ -17,10 +17,12 @@ DEFAULT_REAL_LABELS = Path("data/processed/labels/custom_squat_videos_labels.csv
 DEFAULT_SPLIT = Path("data/processed/labels/custom_squat_curated_split.csv")
 DEFAULT_AUGMENTED_ANGLES = Path("data/processed/angle_features/augmented_custom_squat_angle_features.csv")
 DEFAULT_AUGMENTED_LABELS = Path("data/processed/labels/augmented_custom_squat_videos_labels.csv")
+DEFAULT_MANUAL_REPS = Path("data/processed/labels/custom_squat_manual_rep_counts.csv")
 DEFAULT_OUTPUT = Path("data/processed/features/squat_video_training_features_v2.csv")
 META_COLUMNS = [
     "video_path", "label", "split", "source_dataset", "source_type",
-    "original_label", "augmented_label",
+    "original_label", "augmented_label", "manual_expected_reps",
+    "manual_rep_count_validated",
 ]
 
 
@@ -74,6 +76,8 @@ def _aggregate_rows(rows: pd.DataFrame, metadata: pd.DataFrame) -> pd.DataFrame:
             "source_type": first["source_type"],
             "original_label": first["original_label"],
             "augmented_label": first["augmented_label"],
+            "manual_expected_reps": first["manual_expected_reps"],
+            "manual_rep_count_validated": bool(first["manual_rep_count_validated"]),
             **_aggregate(group),
         })
     return pd.DataFrame(output)
@@ -87,6 +91,7 @@ def prepare_training_dataset_v2(
     include_augmented: bool = False,
     augmented_angles_path: Path = DEFAULT_AUGMENTED_ANGLES,
     augmented_labels_path: Path = DEFAULT_AUGMENTED_LABELS,
+    manual_reps_path: Path = DEFAULT_MANUAL_REPS,
 ) -> pd.DataFrame:
     real_angles = pd.read_csv(real_angles_path)
     real_labels = pd.read_csv(real_labels_path)
@@ -108,6 +113,17 @@ def prepare_training_dataset_v2(
     real_meta["source_type"] = "real"
     real_meta["original_label"] = real_meta["label"]
     real_meta["augmented_label"] = ""
+    manual = pd.DataFrame(columns=["video_key", "manual_expected_reps"])
+    if manual_reps_path.exists():
+        manual = pd.read_csv(manual_reps_path)
+        required_manual = {"video_path", "expected_reps"}
+        if missing := required_manual.difference(manual.columns):
+            raise ValueError("Manual rep-count CSV is missing: " + ", ".join(sorted(missing)))
+        manual["video_key"] = manual["video_path"].map(normalize_video_path)
+        manual["manual_expected_reps"] = pd.to_numeric(manual["expected_reps"], errors="coerce")
+        manual = manual[["video_key", "manual_expected_reps"]].drop_duplicates("video_key")
+    real_meta = real_meta.merge(manual, on="video_key", how="left")
+    real_meta["manual_rep_count_validated"] = real_meta["manual_expected_reps"].notna()
     frames = [_aggregate_rows(real_angles, real_meta)]
 
     if include_augmented:
@@ -131,6 +147,9 @@ def prepare_training_dataset_v2(
             aug_meta["label"] = aug_meta["augmented_label"]
             aug_meta["source_dataset_meta"] = "augmented_custom_squat_videos"
             aug_meta["source_type"] = "augmented"
+            source_manual = manual.rename(columns={"video_key": "source_key"})
+            aug_meta = aug_meta.merge(source_manual, on="source_key", how="left")
+            aug_meta["manual_rep_count_validated"] = aug_meta["manual_expected_reps"].notna()
             frames.append(_aggregate_rows(augmented_angles, aug_meta))
 
     result = pd.concat(frames, ignore_index=True)
@@ -148,6 +167,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--split", type=Path, default=DEFAULT_SPLIT)
     parser.add_argument("--augmented-angles", type=Path, default=DEFAULT_AUGMENTED_ANGLES)
     parser.add_argument("--augmented-labels", type=Path, default=DEFAULT_AUGMENTED_LABELS)
+    parser.add_argument("--manual-reps", type=Path, default=DEFAULT_MANUAL_REPS)
     parser.add_argument("--include-augmented", action="store_true")
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
     return parser.parse_args()
@@ -159,12 +179,16 @@ def main() -> int:
         data = prepare_training_dataset_v2(
             args.real_angles, args.real_labels, args.split, args.output,
             args.include_augmented, args.augmented_angles, args.augmented_labels,
+            args.manual_reps,
         )
     except Exception as exc:
         print(f"Training dataset v2 preparation failed: {exc}", file=sys.stderr)
         return 1
     print(f"Saved {len(data)} v2 video rows to {args.output}")
     print(data.groupby(["source_type", "label"]).size().to_string())
+    real = data[data["source_type"] == "real"]
+    validated = int(real["manual_rep_count_validated"].astype(bool).sum())
+    print(f"Manual rep counts validated: {validated}/{len(real)} real videos")
     return 0
 
 

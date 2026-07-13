@@ -568,6 +568,8 @@ After generating variants, validate them and use the augmented input/output CLI 
 Sprint 7 prepares a lineage-aware v2 dataset, optionally includes validated augmented features, trains a separate candidate baseline, and compares it with Sprint 5. The candidate does not replace the current optional Sprint 5 backend model. The rule-based analyzer remains primary.
 
 ```powershell
+python scripts/prepare_augmented_squat_videos.py
+python scripts/validate_rep_counts.py
 python scripts/prepare_squat_training_dataset_v2.py --include-augmented
 python scripts/train_squat_baseline_v2.py
 python scripts/evaluate_squat_baseline_v2.py
@@ -575,7 +577,7 @@ python scripts/predict_squat_baseline_v2.py --video-path data/raw/custom_videos/
 python -m pytest
 ```
 
-The current v2 run contains 23 real videos and zero augmented feature rows. It matches Sprint 5’s three-video holdout metrics rather than demonstrating improvement, so ML remains optional and disabled by default. See the [dataset expansion plan](docs/sprint_7_dataset_expansion_plan.md), [augmented data policy](docs/augmented_data_policy.md), [reliability report](docs/sprint_7_model_reliability_report.md), [v2 evaluation](docs/model_evaluation_report_v2.md), and [model versioning policy](docs/ml_model_versioning_policy.md).
+The current v2 run contains 23 real videos, zero augmented feature rows, and zero completed manual rep-count reviews. It classified all three real protected clips correctly, versus two of three for the immutable 16-video Sprint 5 reference. This sample is far too small and incomplete to demonstrate generalization, so ML remains optional and disabled by default. Augmented holdout variants are never treated as independent evaluation samples. See the [dataset expansion plan](docs/sprint_7_dataset_expansion_plan.md), [augmented data policy](docs/augmented_data_policy.md), [reliability report](docs/sprint_7_model_reliability_report.md), [v2 evaluation](docs/model_evaluation_report_v2.md), and [model versioning policy](docs/ml_model_versioning_policy.md).
 
 ## Pretrained Pose Backbone Benchmarking
 

@@ -35,3 +35,20 @@ def test_v2_training_saves_models_metrics_and_comparison(tmp_path):
     assert (model_dir / "comparison_to_sprint5.json").exists()
     assert comparison["sprint7_dataset_rows"] == 9
     assert comparison["accuracy"]["delta"] is not None
+    assert metrics["selection_metric"] == "pre_registered_candidate_family"
+
+
+def test_augmented_holdout_is_not_used_as_independent_evaluation(tmp_path):
+    data = tmp_path / "v2.csv"
+    dummy_v2(data)
+    rows = pd.read_csv(data)
+    augmented = rows.iloc[0].copy()
+    augmented["video_path"] = "augmented-holdout.mp4"
+    augmented["split"] = "holdout_test"
+    augmented["source_type"] = "augmented"
+    pd.concat([rows, augmented.to_frame().T], ignore_index=True).to_csv(data, index=False)
+
+    metrics, _ = train_baselines_v2(data, tmp_path / "models", tmp_path / "missing.json")
+
+    assert metrics["holdout_rows"] == 3
+    assert metrics["excluded_augmented_holdout_rows"] == 1

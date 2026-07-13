@@ -15,8 +15,22 @@ The current metadata contains 24 supported real videos: 23 officially labeled an
 
 At least 32 additional independently reviewed real videos are needed to reach these minimum targets. Shallow-depth and fast/uncontrolled are the largest gaps. The fast/uncontrolled label is entirely missing. Knee-valgus and trunk-lean remain small and sensitive to camera view. Correct-form recordings still dominate.
 
+Class-weighted classical models are used to reduce majority-class influence. Augmented variants are not counted as independent class coverage and are not used to manufacture a missing class. Collection of real, independently reviewed examples remains the balancing strategy.
+
+## Real, Augmented, and Rep-Count Audit
+
+- Real labeled videos eligible for v2: 23.
+- Quarantined unlabeled videos: 1, excluded from supervised training.
+- Augmented registry rows and angle-feature rows: 0.
+- Manually verified rep counts: 0 of 23 training-eligible real videos.
+- Protected holdout: 3 real videos; augmented variants are excluded from holdout metrics.
+
+The v2 feature table records `manual_expected_reps` and `manual_rep_count_validated` as audit-only metadata. Neither field is a model feature. Missing rep-count review does not invent a label or silently imply validation; complete the manual template and rerun `scripts/validate_rep_counts.py` before rep-count accuracy is reported.
+
 ## Split and Collection Policy
 
 The curated split covers the original collection. Seven newly available official videos are marked `development_unassigned`; they are not silently added to the protected holdout. Before a future reliability claim, assign participant-grouped validation and holdout splits without placing variants or repeated sessions from one source across partitions.
 
 Record front and side views only under safe instructions, with full-body visibility, varied devices/lighting/body proportions, and independent physiotherapist label review. Do not ask participants to perform painful or unsafe technique to manufacture issue classes.
+
+Augmented variants inherit the source split. Variants derived from protected holdout videos are excluded from both development training and protected-holdout evaluation. Candidate selection is pre-registered as RBF SVC so the three-video holdout is not reused to choose among model families.

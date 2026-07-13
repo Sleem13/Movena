@@ -1,17 +1,30 @@
 {
   "model_version": "sprint_7_baseline_v2",
-  "created_at_utc": "2026-07-12T13:27:55.335752+00:00",
+  "created_at_utc": "2026-07-13T16:59:35.108083+00:00",
   "dataset_rows": 23,
   "real_rows": 23,
   "augmented_rows": 0,
   "development_rows": 20,
   "holdout_rows": 3,
+  "excluded_augmented_holdout_rows": 0,
+  "manual_rep_counts_validated": 0,
+  "manual_rep_counts_pending": 23,
+  "missing_expected_labels": [
+    "squat_fast_uncontrolled"
+  ],
   "class_distribution": {
     "squat_correct": 13,
     "squat_knee_valgus": 4,
     "squat_shallow_depth": 2,
     "squat_trunk_lean": 4
   },
+  "real_class_distribution": {
+    "squat_correct": 13,
+    "squat_knee_valgus": 4,
+    "squat_shallow_depth": 2,
+    "squat_trunk_lean": 4
+  },
+  "augmented_class_distribution": {},
   "development_class_distribution": {
     "squat_correct": 12,
     "squat_knee_valgus": 4,
@@ -27,11 +40,11 @@
   "models": {
     "logistic_regression": {
       "evaluation_status": "protected_holdout_preliminary",
-      "accuracy": 0.6666666666666666,
-      "macro_precision": 0.5,
-      "macro_recall": 0.6666666666666666,
-      "macro_f1": 0.5555555555555555,
-      "weighted_f1": 0.5555555555555555,
+      "accuracy": 1.0,
+      "macro_precision": 1.0,
+      "macro_recall": 1.0,
+      "macro_f1": 1.0,
+      "weighted_f1": 1.0,
       "confusion_matrix": [
         [
           1,
@@ -46,9 +59,9 @@
           0
         ],
         [
+          0,
+          0,
           1,
-          0,
-          0,
           0
         ],
         [
@@ -60,9 +73,9 @@
       ],
       "classification_report": {
         "squat_correct": {
-          "precision": 0.5,
+          "precision": 1.0,
           "recall": 1.0,
-          "f1-score": 0.6666666666666666,
+          "f1-score": 1.0,
           "support": 1.0
         },
         "squat_knee_valgus": {
@@ -72,9 +85,9 @@
           "support": 0.0
         },
         "squat_shallow_depth": {
-          "precision": 0.0,
-          "recall": 0.0,
-          "f1-score": 0.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
           "support": 1.0
         },
         "squat_trunk_lean": {
@@ -83,17 +96,17 @@
           "f1-score": 1.0,
           "support": 1.0
         },
-        "accuracy": 0.6666666666666666,
+        "accuracy": 1.0,
         "macro avg": {
-          "precision": 0.375,
-          "recall": 0.5,
-          "f1-score": 0.41666666666666663,
+          "precision": 0.75,
+          "recall": 0.75,
+          "f1-score": 0.75,
           "support": 3.0
         },
         "weighted avg": {
-          "precision": 0.5,
-          "recall": 0.6666666666666666,
-          "f1-score": 0.5555555555555555,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
           "support": 3.0
         }
       },
@@ -104,95 +117,12 @@
       ],
       "y_pred": [
         "squat_correct",
-        "squat_correct",
+        "squat_shallow_depth",
         "squat_trunk_lean"
       ]
     },
     "random_forest": {
       "evaluation_status": "protected_holdout_preliminary",
-      "accuracy": 0.3333333333333333,
-      "macro_precision": 0.1111111111111111,
-      "macro_recall": 0.3333333333333333,
-      "macro_f1": 0.16666666666666666,
-      "weighted_f1": 0.16666666666666666,
-      "confusion_matrix": [
-        [
-          1,
-          0,
-          0,
-          0
-        ],
-        [
-          0,
-          0,
-          0,
-          0
-        ],
-        [
-          1,
-          0,
-          0,
-          0
-        ],
-        [
-          1,
-          0,
-          0,
-          0
-        ]
-      ],
-      "classification_report": {
-        "squat_correct": {
-          "precision": 0.3333333333333333,
-          "recall": 1.0,
-          "f1-score": 0.5,
-          "support": 1.0
-        },
-        "squat_knee_valgus": {
-          "precision": 0.0,
-          "recall": 0.0,
-          "f1-score": 0.0,
-          "support": 0.0
-        },
-        "squat_shallow_depth": {
-          "precision": 0.0,
-          "recall": 0.0,
-          "f1-score": 0.0,
-          "support": 1.0
-        },
-        "squat_trunk_lean": {
-          "precision": 0.0,
-          "recall": 0.0,
-          "f1-score": 0.0,
-          "support": 1.0
-        },
-        "accuracy": 0.3333333333333333,
-        "macro avg": {
-          "precision": 0.08333333333333333,
-          "recall": 0.25,
-          "f1-score": 0.125,
-          "support": 3.0
-        },
-        "weighted avg": {
-          "precision": 0.1111111111111111,
-          "recall": 0.3333333333333333,
-          "f1-score": 0.16666666666666666,
-          "support": 3.0
-        }
-      },
-      "y_true": [
-        "squat_correct",
-        "squat_shallow_depth",
-        "squat_trunk_lean"
-      ],
-      "y_pred": [
-        "squat_correct",
-        "squat_correct",
-        "squat_correct"
-      ]
-    },
-    "svc_rbf": {
-      "evaluation_status": "protected_holdout_preliminary",
       "accuracy": 0.6666666666666666,
       "macro_precision": 0.5,
       "macro_recall": 0.6666666666666666,
@@ -212,16 +142,16 @@
           0
         ],
         [
+          0,
+          0,
+          1,
+          0
+        ],
+        [
           1,
           0,
           0,
           0
-        ],
-        [
-          0,
-          0,
-          0,
-          1
         ]
       ],
       "classification_report": {
@@ -238,15 +168,15 @@
           "support": 0.0
         },
         "squat_shallow_depth": {
-          "precision": 0.0,
-          "recall": 0.0,
-          "f1-score": 0.0,
-          "support": 1.0
-        },
-        "squat_trunk_lean": {
           "precision": 1.0,
           "recall": 1.0,
           "f1-score": 1.0,
+          "support": 1.0
+        },
+        "squat_trunk_lean": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1-score": 0.0,
           "support": 1.0
         },
         "accuracy": 0.6666666666666666,
@@ -270,13 +200,96 @@
       ],
       "y_pred": [
         "squat_correct",
+        "squat_shallow_depth",
+        "squat_correct"
+      ]
+    },
+    "svc_rbf": {
+      "evaluation_status": "protected_holdout_preliminary",
+      "accuracy": 1.0,
+      "macro_precision": 1.0,
+      "macro_recall": 1.0,
+      "macro_f1": 1.0,
+      "weighted_f1": 1.0,
+      "confusion_matrix": [
+        [
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1
+        ]
+      ],
+      "classification_report": {
+        "squat_correct": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 1.0
+        },
+        "squat_knee_valgus": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1-score": 0.0,
+          "support": 0.0
+        },
+        "squat_shallow_depth": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 1.0
+        },
+        "squat_trunk_lean": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 1.0
+        },
+        "accuracy": 1.0,
+        "macro avg": {
+          "precision": 0.75,
+          "recall": 0.75,
+          "f1-score": 0.75,
+          "support": 3.0
+        },
+        "weighted avg": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 3.0
+        }
+      },
+      "y_true": [
         "squat_correct",
+        "squat_shallow_depth",
+        "squat_trunk_lean"
+      ],
+      "y_pred": [
+        "squat_correct",
+        "squat_shallow_depth",
         "squat_trunk_lean"
       ]
     }
   },
   "best_model": "svc_rbf",
-  "selection_metric": "protected_holdout_macro_f1",
+  "selection_metric": "pre_registered_candidate_family",
   "metrics_status": "preliminary_small_incomplete_holdout",
   "warnings": [
     "Experimental baseline model. Not clinically validated.",
@@ -286,11 +299,11 @@
   "saved_model_evaluation": {
     "model_name": "svc_rbf",
     "evaluation_status": "protected_holdout_preliminary",
-    "accuracy": 0.6666666666666666,
-    "macro_precision": 0.5,
-    "macro_recall": 0.6666666666666666,
-    "macro_f1": 0.5555555555555555,
-    "weighted_f1": 0.5555555555555555,
+    "accuracy": 1.0,
+    "macro_precision": 1.0,
+    "macro_recall": 1.0,
+    "macro_f1": 1.0,
+    "weighted_f1": 1.0,
     "confusion_matrix": [
       [
         1,
@@ -305,9 +318,9 @@
         0
       ],
       [
+        0,
+        0,
         1,
-        0,
-        0,
         0
       ],
       [
@@ -319,9 +332,9 @@
     ],
     "classification_report": {
       "squat_correct": {
-        "precision": 0.5,
+        "precision": 1.0,
         "recall": 1.0,
-        "f1-score": 0.6666666666666666,
+        "f1-score": 1.0,
         "support": 1.0
       },
       "squat_knee_valgus": {
@@ -331,9 +344,9 @@
         "support": 0.0
       },
       "squat_shallow_depth": {
-        "precision": 0.0,
-        "recall": 0.0,
-        "f1-score": 0.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
         "support": 1.0
       },
       "squat_trunk_lean": {
@@ -342,17 +355,17 @@
         "f1-score": 1.0,
         "support": 1.0
       },
-      "accuracy": 0.6666666666666666,
+      "accuracy": 1.0,
       "macro avg": {
-        "precision": 0.375,
-        "recall": 0.5,
-        "f1-score": 0.41666666666666663,
+        "precision": 0.75,
+        "recall": 0.75,
+        "f1-score": 0.75,
         "support": 3.0
       },
       "weighted avg": {
-        "precision": 0.5,
-        "recall": 0.6666666666666666,
-        "f1-score": 0.5555555555555555,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
         "support": 3.0
       }
     },
@@ -363,7 +376,7 @@
     ],
     "y_pred": [
       "squat_correct",
-      "squat_correct",
+      "squat_shallow_depth",
       "squat_trunk_lean"
     ]
   }

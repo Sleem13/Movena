@@ -24,7 +24,7 @@ DEFAULT_FIGURE = Path("reports/figures/squat_baseline_v2_confusion_matrix.png")
 def evaluate_v2(input_path: Path, model_path: Path, metrics_path: Path, report_path: Path, figure_path: Path):
     bundle = joblib.load(model_path)
     data = pd.read_csv(input_path)
-    holdout = data[data["split"] == "holdout_test"]
+    holdout = data[(data["split"] == "holdout_test") & (data["source_type"] == "real")]
     if holdout.empty:
         raise ValueError("No protected holdout is available for v2 evaluation.")
     labels = sorted(bundle["label_mapping"])
@@ -52,9 +52,13 @@ def evaluate_v2(input_path: Path, model_path: Path, metrics_path: Path, report_p
     plt.savefig(figure_path, dpi=160)
     plt.close()
 
+    holdout_classes = sorted(holdout["label"].unique())
+    missing_classes = sorted(set(labels).difference(holdout_classes))
     report_path.write_text("\n".join([
         "# Model Evaluation Report v2", "", "## Status", "",
-        "Preliminary experimental baseline; not clinically validated. The holdout contains three real videos and does not cover every class.", "",
+        f"Preliminary experimental baseline; not clinically validated. The holdout contains {len(holdout)} real videos.", "",
+        f"- Holdout classes: {', '.join(holdout_classes)}",
+        f"- Missing holdout classes: {', '.join(missing_classes) if missing_classes else 'none'}",
         f"- Candidate: `{bundle['model_name']}`",
         f"- Accuracy: {evaluation['accuracy']:.4f}",
         f"- Macro precision: {evaluation['macro_precision']:.4f}",

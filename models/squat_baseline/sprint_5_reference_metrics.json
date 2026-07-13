@@ -1,0 +1,18 @@
+{
+  "model_version": "sprint_5_baseline",
+  "reference_status": "immutable_historical_comparison",
+  "source_commit": "3a5a86e",
+  "dataset_rows": 16,
+  "development_rows": 13,
+  "holdout_rows": 3,
+  "feature_count": 46,
+  "best_model": "svc_rbf",
+  "saved_model_evaluation": {
+    "model_name": "svc_rbf",
+    "evaluation_status": "protected_holdout",
+    "accuracy": 0.6666666666666666,
+    "macro_f1": 0.5555555555555555,
+    "weighted_f1": 0.5555555555555555
+  },
+  "warning": "Historical engineering baseline only. Not clinically validated."
+}
