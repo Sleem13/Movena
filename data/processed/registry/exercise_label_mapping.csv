@@ -1,0 +1,49 @@
+raw_dataset_name,raw_label,normalized_exercise,normalized_issue_label,confidence,notes
+custom_videos,squat_correct,bodyweight_squat,squat_correct,high,Exact approved folder-label match.
+custom_videos,squat_fast_uncontrolled,bodyweight_squat,squat_fast_uncontrolled,high,Exact approved folder-label match.
+custom_videos,squat_knee_valgus,bodyweight_squat,squat_knee_valgus,high,Exact approved folder-label match.
+custom_videos,squat_shallow_depth,bodyweight_squat,squat_shallow_depth,high,Exact approved folder-label match.
+custom_videos,squat_trunk_lean,bodyweight_squat,squat_trunk_lean,high,Exact approved folder-label match.
+custom_videos,squat_unlabeled,squat,unknown,medium,Exercise inferred from an explicit folder token; issue meaning remains unverified.
+dyntherapy,dataset_root,unknown,unknown,low,Uncertain folder label; dataset-specific documentation and adapter required.
+kimore,dataset_root,unknown,unknown,low,Uncertain folder label; dataset-specific documentation and adapter required.
+Physical-therapy exercises,dataset_root,unknown,unknown,low,Uncertain folder label; dataset-specific documentation and adapter required.
+rehab24_6,2d_joints,unknown,unknown,low,Uncertain folder label; dataset-specific documentation and adapter required.
+rehab24_6,2d_markers,unknown,unknown,low,Uncertain folder label; dataset-specific documentation and adapter required.
+rehab24_6,3d_joints,unknown,unknown,low,Uncertain folder label; dataset-specific documentation and adapter required.
+rehab24_6,3d_markers,unknown,unknown,low,Uncertain folder label; dataset-specific documentation and adapter required.
+rehab24_6,Ex1,unknown,unknown,low,Uncertain folder label; dataset-specific documentation and adapter required.
+rehab24_6,Ex2,unknown,unknown,low,Uncertain folder label; dataset-specific documentation and adapter required.
+rehab24_6,Ex3,unknown,unknown,low,Uncertain folder label; dataset-specific documentation and adapter required.
+rehab24_6,Ex4,unknown,unknown,low,Uncertain folder label; dataset-specific documentation and adapter required.
+rehab24_6,Ex5,unknown,unknown,low,Uncertain folder label; dataset-specific documentation and adapter required.
+rehab24_6,Ex6,unknown,unknown,low,Uncertain folder label; dataset-specific documentation and adapter required.
+rehab24_6,videos,unknown,unknown,low,Uncertain folder label; dataset-specific documentation and adapter required.
+squat_kaggle,dataset_root,unknown,unknown,low,Uncertain folder label; dataset-specific documentation and adapter required.
+uci_physical_therapy_exercises,e1,unknown,unknown,low,Uncertain folder label; dataset-specific documentation and adapter required.
+uci_physical_therapy_exercises,e2,unknown,unknown,low,Uncertain folder label; dataset-specific documentation and adapter required.
+uci_physical_therapy_exercises,e3,unknown,unknown,low,Uncertain folder label; dataset-specific documentation and adapter required.
+uci_physical_therapy_exercises,e4,unknown,unknown,low,Uncertain folder label; dataset-specific documentation and adapter required.
+uci_physical_therapy_exercises,e5,unknown,unknown,low,Uncertain folder label; dataset-specific documentation and adapter required.
+uci_physical_therapy_exercises,e6,unknown,unknown,low,Uncertain folder label; dataset-specific documentation and adapter required.
+uci_physical_therapy_exercises,e7,unknown,unknown,low,Uncertain folder label; dataset-specific documentation and adapter required.
+uci_physical_therapy_exercises,e8,unknown,unknown,low,Uncertain folder label; dataset-specific documentation and adapter required.
+uci_physical_therapy_exercises,s1,unknown,unknown,low,Uncertain folder label; dataset-specific documentation and adapter required.
+uci_physical_therapy_exercises,s2,unknown,unknown,low,Uncertain folder label; dataset-specific documentation and adapter required.
+uci_physical_therapy_exercises,s3,unknown,unknown,low,Uncertain folder label; dataset-specific documentation and adapter required.
+uci_physical_therapy_exercises,s4,unknown,unknown,low,Uncertain folder label; dataset-specific documentation and adapter required.
+uci_physical_therapy_exercises,s5,unknown,unknown,low,Uncertain folder label; dataset-specific documentation and adapter required.
+uci_physical_therapy_exercises,u1,unknown,unknown,low,Uncertain folder label; dataset-specific documentation and adapter required.
+uci_physical_therapy_exercises,u2,unknown,unknown,low,Uncertain folder label; dataset-specific documentation and adapter required.
+uci_physical_therapy_exercises,u3,unknown,unknown,low,Uncertain folder label; dataset-specific documentation and adapter required.
+uci_physical_therapy_exercises,u4,unknown,unknown,low,Uncertain folder label; dataset-specific documentation and adapter required.
+uci_physical_therapy_exercises,u5,unknown,unknown,low,Uncertain folder label; dataset-specific documentation and adapter required.
+uco_physical_rehab,dataset_root,unknown,unknown,low,Uncertain folder label; dataset-specific documentation and adapter required.
+ui_prmd,dataset_root,unknown,unknown,low,Uncertain folder label; dataset-specific documentation and adapter required.
+zenodo_squat_dataset,Bad Back,squat,unknown,low,"Squat context is clear, but the source label is not mapped to a clinical issue without documentation review."
+zenodo_squat_dataset,Bad Heel,squat,unknown,low,"Squat context is clear, but the source label is not mapped to a clinical issue without documentation review."
+zenodo_squat_dataset,Bad back,squat,unknown,low,"Squat context is clear, but the source label is not mapped to a clinical issue without documentation review."
+zenodo_squat_dataset,Bad heel,squat,unknown,low,"Squat context is clear, but the source label is not mapped to a clinical issue without documentation review."
+zenodo_squat_dataset,Good,squat,unknown,low,"Squat context is clear, but the source label is not mapped to a clinical issue without documentation review."
+zenodo_squat_dataset,test,unknown,unknown,low,Uncertain folder label; dataset-specific documentation and adapter required.
+zenodo_squat_dataset,train,unknown,unknown,low,Uncertain folder label; dataset-specific documentation and adapter required.

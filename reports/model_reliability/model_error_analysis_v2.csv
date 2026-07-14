@@ -1,0 +1,4 @@
+video_path,actual_label,predicted_label,confidence,is_error,error_type,false_negative_for,false_positive_for,view_type,recording_quality,participant_id,split
+data/raw/custom_videos/squat_correct/squat_correct_009.mp4,squat_correct,squat_correct,0.5329608367700549,False,correct,,,unknown,unknown,unknown,holdout_test
+data/raw/custom_videos/squat_shallow_depth/squat_shallow_depth_002.mp4,squat_shallow_depth,squat_shallow_depth,0.505228283783899,False,correct,,,unknown,unknown,unknown,holdout_test
+data/raw/custom_videos/squat_trunk_lean/squat_trunk_lean_004.mp4,squat_trunk_lean,squat_trunk_lean,0.5146062165006352,False,correct,,,unknown,unknown,unknown,holdout_test

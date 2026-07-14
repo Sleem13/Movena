@@ -105,11 +105,14 @@ def read_csv_rows(path: Path) -> list[dict[str, str]]:
 
 def landmark_video_paths(landmarks_path: Path) -> set[str]:
     """Return unique video paths represented in a combined landmark CSV."""
-    return {
-        row.get("video_path", "")
-        for row in read_csv_rows(landmarks_path)
-        if row.get("video_path")
-    }
+    if not landmarks_path.exists():
+        return set()
+    paths: set[str] = set()
+    with landmarks_path.open("r", newline="", encoding="utf-8") as csv_file:
+        for row in csv.DictReader(csv_file):
+            if video_path := row.get("video_path", ""):
+                paths.add(video_path)
+    return paths
 
 
 def write_validation_report(

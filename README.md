@@ -1,6 +1,25 @@
 # PhysioVision AI
 
-PhysioVision AI is an AI-assisted physical therapy exercise analysis prototype. Sprint 1 implements a focused Squat Analyzer MVP that accepts a bodyweight squat video, extracts pose landmarks with MediaPipe, estimates basic joint angles, counts repetitions, flags common movement issues, and returns patient-friendly feedback.
+PhysioVision AI is a physiotherapy-informed movement-analysis and rehabilitation-support product in development. Its current working vertical slice is a focused Squat Analyzer MVP that accepts a bodyweight squat video, extracts pose landmarks with MediaPipe, estimates basic joint angles, counts repetitions, flags possible movement patterns, and returns educational feedback with validity, confidence, and limitations.
+
+## Squat MVP → Full Product Roadmap
+
+The Squat Analyzer is the MVP, not the final product. The long-term architecture supports a patient web/mobile experience, therapist dashboard, exercise-specific analysis engine, consent-aware session history, report generation, dataset/model governance, and a shared safety/confidence layer. Web remains first; a React Native + Expo companion is the recommended initial mobile route, with analysis staying on the FastAPI backend before any on-device feasibility work.
+
+No additional exercise is active today. Sit-to-stand is the recommended next rule-based pilot after dedicated recording guidance, data collection, expert threshold review, and safety tests. The current rule-based squat analyzer remains primary, and optional ML remains experimental.
+
+Product planning documents:
+
+- [Product vision](docs/product_vision.md)
+- [Full product roadmap](docs/full_product_roadmap.md)
+- [Backend exercise engine architecture](docs/backend_exercise_engine_architecture.md)
+- [Product API design](docs/product_api_design.md)
+- [Database schema plan](docs/database_schema_plan.md)
+- [Mobile strategy](docs/mobile_strategy.md) and [deployment roadmap](docs/mobile_app_deployment_roadmap.md)
+- [Therapist dashboard roadmap](docs/therapist_dashboard_roadmap.md)
+- [Frontend refinement plan](docs/frontend_product_refinement_plan.md)
+- [Product safety policy](docs/product_safety_policy.md) and [clinical positioning](docs/clinical_positioning_and_limitations.md)
+- [Next exercise selection](docs/next_exercise_selection.md)
 
 ## Sprint 1 Scope
 
@@ -578,6 +597,37 @@ python -m pytest
 ```
 
 The current v2 run contains 23 real videos, zero augmented feature rows, and zero completed manual rep-count reviews. It classified all three real protected clips correctly, versus two of three for the immutable 16-video Sprint 5 reference. This sample is far too small and incomplete to demonstrate generalization, so ML remains optional and disabled by default. Augmented holdout variants are never treated as independent evaluation samples. See the [dataset expansion plan](docs/sprint_7_dataset_expansion_plan.md), [augmented data policy](docs/augmented_data_policy.md), [reliability report](docs/sprint_7_model_reliability_report.md), [v2 evaluation](docs/model_evaluation_report_v2.md), and [model versioning policy](docs/ml_model_versioning_policy.md).
+
+## Sprint 7.5 - Multi-Dataset Integration and Registry
+
+Sprint 7.5 audits heterogeneous raw datasets and adds a conservative registry, starter label mapping, dataset adapters, modality guard, v3 candidate inventory, and dashboard JSON export. It does not train v3, add exercises, or mix sensor/skeleton data into the squat video model.
+
+```powershell
+python scripts/audit_raw_datasets.py
+python scripts/build_dataset_registry.py
+python scripts/create_exercise_label_mapping.py
+python scripts/prepare_squat_training_dataset_v3.py
+python scripts/export_dataset_dashboard_summary.py
+python -m pytest
+```
+
+Only `custom_videos` currently passes all squat-video compatibility gates. REHAB24-6 is mixed, Zenodo is image-only, UCI is sensor time series, UI-PRMD/DynTherapy/KiMoRe require source-specific adapters, Squat Kaggle needs label/provenance review, and UCO plus the physical-therapy folder are missing or incomplete. See the [integration plan](docs/sprint_7_5_multi_dataset_integration_plan.md), [registry design](docs/dataset_registry_design.md), [adapter policy](docs/dataset_adapter_policy.md), [modality guard](docs/modality_guard_policy.md), and [v3 candidate policy](docs/squat_training_dataset_v3_candidate_policy.md).
+
+## Sprint 8A - Clinical/Data Validation and Model Reliability
+
+Sprint 8A adds a privacy-conscious human annotation registry, validation reporting, participant-grouped split preparation, and error analysis for the existing squat v2 candidate. It does not add exercises or clinical claims. The rule-based analyzer remains primary and v2 remains experimental.
+
+Run from the project root:
+
+```powershell
+python scripts/create_manual_annotation_template.py
+python scripts/validate_manual_rep_annotations.py
+python scripts/create_participant_grouped_split.py
+python scripts/analyze_model_errors_v2.py
+python -m pytest
+```
+
+Blank human fields are never inferred. Until participant IDs and manual rep counts are completed, the grouped split records rows as unassigned and model promotion remains blocked. See the [Sprint 8A plan](docs/sprint_8a_clinical_data_validation_plan.md), [annotation protocol](docs/manual_annotation_protocol.md), [participant-grouped evaluation](docs/participant_grouped_evaluation.md), and [promotion criteria](docs/model_promotion_criteria.md).
 
 ## Pretrained Pose Backbone Benchmarking
 

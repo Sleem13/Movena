@@ -1,0 +1,112 @@
+[
+  {
+    "dataset_name": "custom_videos",
+    "status": "compatible_candidate",
+    "modality": "video",
+    "usable_for_current_squat_mvp": true,
+    "requires_adapter": false,
+    "file_count": 24,
+    "video_count": 24,
+    "priority": "high",
+    "notes": ""
+  },
+  {
+    "dataset_name": "dyntherapy",
+    "status": "adapter_required",
+    "modality": "skeleton_csv",
+    "usable_for_current_squat_mvp": false,
+    "requires_adapter": true,
+    "file_count": 1,
+    "video_count": 0,
+    "priority": "medium",
+    "notes": "Do not feed into the squat video pipeline without a dataset-specific adapter."
+  },
+  {
+    "dataset_name": "kimore",
+    "status": "adapter_required",
+    "modality": "skeleton_csv",
+    "usable_for_current_squat_mvp": false,
+    "requires_adapter": true,
+    "file_count": 1,
+    "video_count": 0,
+    "priority": "medium",
+    "notes": "Do not feed into the squat video pipeline without a dataset-specific adapter."
+  },
+  {
+    "dataset_name": "Physical-therapy exercises",
+    "status": "missing_or_incomplete",
+    "modality": "missing",
+    "usable_for_current_squat_mvp": false,
+    "requires_adapter": false,
+    "file_count": 0,
+    "video_count": 0,
+    "priority": "medium",
+    "notes": "Folder contains no dataset files beyond placeholders. Canonical name mapped to existing folder `Pyhsical-therapy exercises`."
+  },
+  {
+    "dataset_name": "rehab24_6",
+    "status": "adapter_required",
+    "modality": "mixed",
+    "usable_for_current_squat_mvp": false,
+    "requires_adapter": true,
+    "file_count": 914,
+    "video_count": 130,
+    "priority": "medium",
+    "notes": "Do not feed into the squat video pipeline without a dataset-specific adapter."
+  },
+  {
+    "dataset_name": "squat_kaggle",
+    "status": "adapter_required",
+    "modality": "unknown",
+    "usable_for_current_squat_mvp": false,
+    "requires_adapter": true,
+    "file_count": 2,
+    "video_count": 0,
+    "priority": "high",
+    "notes": "Do not feed into the squat video pipeline without a dataset-specific adapter. High-priority source is not currently compatible with the squat video pipeline."
+  },
+  {
+    "dataset_name": "uci_physical_therapy_exercises",
+    "status": "adapter_required",
+    "modality": "sensor_timeseries",
+    "usable_for_current_squat_mvp": false,
+    "requires_adapter": true,
+    "file_count": 441,
+    "video_count": 0,
+    "priority": "medium",
+    "notes": "Do not feed into the squat video pipeline without a dataset-specific adapter."
+  },
+  {
+    "dataset_name": "uco_physical_rehab",
+    "status": "missing_or_incomplete",
+    "modality": "missing",
+    "usable_for_current_squat_mvp": false,
+    "requires_adapter": false,
+    "file_count": 0,
+    "video_count": 0,
+    "priority": "low",
+    "notes": "Folder contains no dataset files beyond placeholders."
+  },
+  {
+    "dataset_name": "ui_prmd",
+    "status": "adapter_required",
+    "modality": "skeleton_csv",
+    "usable_for_current_squat_mvp": false,
+    "requires_adapter": true,
+    "file_count": 4,
+    "video_count": 0,
+    "priority": "medium",
+    "notes": "Do not feed into the squat video pipeline without a dataset-specific adapter."
+  },
+  {
+    "dataset_name": "zenodo_squat_dataset",
+    "status": "adapter_required",
+    "modality": "image",
+    "usable_for_current_squat_mvp": false,
+    "requires_adapter": true,
+    "file_count": 3806,
+    "video_count": 0,
+    "priority": "high",
+    "notes": "High-priority source is not currently compatible with the squat video pipeline."
+  }
+]
