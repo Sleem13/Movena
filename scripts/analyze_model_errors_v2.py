@@ -10,8 +10,12 @@ from pathlib import Path
 
 import pandas as pd
 
-from create_manual_annotation_template import normalize_path
-from predict_squat_baseline_v2 import DEFAULT_MODEL, predict_rows_v2
+try:
+    from .create_manual_annotation_template import normalize_path
+    from .predict_squat_baseline_v2 import DEFAULT_MODEL, predict_rows_v2
+except ImportError:  # Direct CLI execution from scripts/.
+    from create_manual_annotation_template import normalize_path
+    from predict_squat_baseline_v2 import DEFAULT_MODEL, predict_rows_v2
 
 
 DEFAULT_FEATURES = Path("data/processed/features/squat_video_training_features_v2.csv")
@@ -21,7 +25,8 @@ DEFAULT_OUTPUT_MD = Path("reports/model_reliability/model_error_analysis_v2.md")
 OUTPUT_COLUMNS = [
     "video_path", "actual_label", "predicted_label", "confidence", "is_error",
     "error_type", "false_negative_for", "false_positive_for", "view_type",
-    "recording_quality", "participant_id", "split",
+    "recording_quality", "participant_id", "dataset_source", "split",
+    "is_low_confidence", "rule_based_label", "ml_rule_disagreement",
 ]
 
 
@@ -50,8 +55,22 @@ def analyze_model_errors(
     evaluation = features[
         (features["split"] == "holdout_test") & (features["source_type"] == "real")
     ].copy()
+    output_csv.parent.mkdir(parents=True, exist_ok=True)
     if evaluation.empty:
-        raise ValueError("No real protected holdout rows are available for error analysis.")
+        result = pd.DataFrame(columns=OUTPUT_COLUMNS)
+        result.to_csv(output_csv, index=False)
+        summary = {"evaluated_rows": 0, "correct_rows": 0, "error_rows": 0,
+                   "false_negatives_by_class": {}, "false_positives_by_class": {},
+                   "errors_by_view": {}, "errors_by_recording_quality": {},
+                   "promotion_supported": False}
+        output_md.parent.mkdir(parents=True, exist_ok=True)
+        output_md.write_text(
+            "# Sprint 8A Model Error Analysis v2\n\n"
+            "## Reliability Decision\n\nInsufficient evidence for promotion: no real protected "
+            "holdout rows are available. The model remains experimental and the rule-based analyzer remains primary.\n",
+            encoding="utf-8",
+        )
+        return result, summary
     predictions = pd.DataFrame(predictor(model_path, features_path, None))
     if missing := {"video_path", "predicted_label"}.difference(predictions.columns):
         raise ValueError("Prediction output is missing: " + ", ".join(sorted(missing)))
@@ -75,6 +94,8 @@ def analyze_model_errors(
     for column in ["view_type", "recording_quality", "participant_id"]:
         merged[column] = merged[column].fillna("").replace("", "unknown")
 
+    dataset_column = "source_dataset" if "source_dataset" in merged.columns else None
+    rule_column = next((name for name in ("rule_based_label", "rule_label") if name in merged.columns), None)
     rows = []
     for row in merged.itertuples(index=False):
         is_error = str(row.label) != str(row.predicted_label)
@@ -90,10 +111,13 @@ def analyze_model_errors(
             "view_type": row.view_type,
             "recording_quality": row.recording_quality,
             "participant_id": row.participant_id,
+            "dataset_source": str(getattr(row, dataset_column, "unknown")) if dataset_column else "unknown",
             "split": str(row.split),
+            "is_low_confidence": float(row.confidence) < 0.5,
+            "rule_based_label": str(getattr(row, rule_column, "")) if rule_column else "",
+            "ml_rule_disagreement": bool(rule_column and str(getattr(row, rule_column, "")) != str(row.predicted_label)),
         })
     result = pd.DataFrame(rows, columns=OUTPUT_COLUMNS)
-    output_csv.parent.mkdir(parents=True, exist_ok=True)
     result.to_csv(output_csv, index=False)
 
     errors = result[result["is_error"]]
@@ -109,6 +133,9 @@ def analyze_model_errors(
         "false_positives_by_class": dict(false_positives),
         "errors_by_view": dict(errors_by_view),
         "errors_by_recording_quality": dict(errors_by_quality),
+        "errors_by_dataset_source": dict(Counter(errors["dataset_source"])),
+        "low_confidence_predictions": int(result["is_low_confidence"].sum()),
+        "promotion_supported": False,
     }
     lines = [
         "# Sprint 8A Model Error Analysis v2",
@@ -125,16 +152,21 @@ def analyze_model_errors(
     _counts(lines, "False Positives by Predicted Class", false_positives)
     _counts(lines, "Errors by View Type", errors_by_view)
     _counts(lines, "Errors by Recording Quality", errors_by_quality)
+    _counts(lines, "Errors by Dataset Source", Counter(errors["dataset_source"]))
+    confusion_lines = [line.rstrip() for line in pd.crosstab(
+        result["actual_label"], result["predicted_label"], rownames=["actual"], colnames=["predicted"]
+    ).to_string().splitlines()]
+    lines.extend(["", "## Confusion Matrix", "", "```", *confusion_lines, "```"])
     lines.extend([
         "",
         "## Reliability Decision",
         "",
-        "The v2 model remains experimental. Three holdout videos, unknown participant grouping, incomplete manual annotations, and missing class coverage do not satisfy promotion criteria.",
+        "Insufficient evidence for promotion. The v2 model remains experimental because the current holdout is small, participant grouping is incomplete, manual annotations are incomplete, and class coverage is insufficient.",
         "",
         "The rule-based analyzer remains primary. No diagnostic or treatment claim is supported.",
         "",
     ])
-    output_md.write_text("\n".join(lines), encoding="utf-8")
+    output_md.write_text("\n".join(line.rstrip() for line in lines), encoding="utf-8")
     return result, summary
 
 

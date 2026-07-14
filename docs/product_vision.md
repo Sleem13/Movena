@@ -1,10 +1,16 @@
 # PhysioVision AI Product Vision
 
+**Positioning:** “A physiotherapist-informed AI movement analysis and rehabilitation support platform.”
+
 ## Product Direction
 
 PhysioVision AI is intended to become a physiotherapy-informed movement-analysis and rehabilitation-support platform. The bodyweight Squat Analyzer is the first production-shaped vertical slice: it proves video capture, pose extraction, validity gating, confidence communication, movement metrics, visual feedback, and therapist-readable reporting. It is the MVP, not the final product.
 
 The product supports exercise monitoring and structured review. It does not diagnose conditions, prescribe treatment, replace examination by a licensed professional, or claim clinical effectiveness.
+
+## Current MVP and Long-Term Vision
+
+The current MVP is the video-based bodyweight Squat Analyzer. The long-term vision is a multi-exercise rehabilitation-monitoring platform spanning patient web/mobile clients, therapist review, session history, reports, and governed analysis modules.
 
 ## Target Users
 
@@ -23,6 +29,21 @@ The product supports exercise monitoring and structured review. It does not diag
 6. **Dataset/model management:** versioned datasets, mappings, evaluation evidence, model status, and rollback.
 7. **Safety/confidence layer:** input validity, pose quality, measurement confidence, conservative language, and escalation guidance.
 
+## Core Value
+
+- Movement-quality observations expressed in understandable, non-diagnostic language.
+- Stabilized repetition counting with uncertainty warnings.
+- Confidence-aware analysis that can reject invalid recordings.
+- Progress monitoring after consent-aware session storage exists.
+- Structured evidence and reports that support therapist review.
+
+## Non-Goals
+
+- Diagnosing injuries, diseases, impairments, or movement disorders.
+- Replacing physiotherapists or other licensed healthcare professionals.
+- Independently prescribing or modifying treatment.
+- Guaranteeing recovery, adherence, safety, or clinical outcomes.
+
 ## Product Principles
 
 - Rule-based biomechanics remains primary until stronger evidence supports another role.
@@ -31,4 +52,3 @@ The product supports exercise monitoring and structured review. It does not diag
 - Web ships first. Mobile reuses the backend before on-device analysis is considered.
 - Privacy, consent, deletion, provenance, and least-privilege access are architectural requirements.
 - Product metrics distinguish usability, engineering reliability, and clinical research evidence.
-

@@ -2,10 +2,11 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import App from "./App.jsx";
-import { analyzeSquatVideo } from "./services/api.js";
+import { analyzeSitToStandVideo, analyzeSquatVideo } from "./services/api.js";
 
 vi.mock("./services/api.js", () => ({
   analyzeSquatVideo: vi.fn(),
+  analyzeSitToStandVideo: vi.fn(),
   artifactUrl: (path) => path ? `http://127.0.0.1:8000${path}` : null,
 }));
 
@@ -75,6 +76,31 @@ describe("Squat Analyzer healthcare dashboard", () => {
     expect(screen.getByText("Analysis options")).toBeInTheDocument();
     expect(screen.getByLabelText("Annotated video")).toBeChecked();
     expect(screen.getByRole("button", { name: "Analyze squat" })).toBeDisabled();
+    expect(screen.getByLabelText("Exercise selector")).toHaveValue("bodyweight_squat");
+    expect(screen.getByRole("option", { name: "Sit-to-Stand" })).toBeInTheDocument();
+  });
+
+  it("selects sit-to-stand, shows chair guidance, and calls its endpoint service", async () => {
+    const sitReport = {
+      ...report,
+      exercise: "sit_to_stand",
+      total_reps: 3,
+      summary: "Three sit-to-stand repetitions analyzed.",
+      ml_prediction: { enabled: false, model_version: "not_applicable", warning: "ML prediction is not available for sit-to-stand yet." },
+      score_breakdown: { completion_score: 100, control_score: 88, trunk_control_score: 90, consistency_score: 85, pose_confidence_score: 84 },
+    };
+    analyzeSitToStandVideo.mockResolvedValue(sitReport);
+    openUpload();
+    fireEvent.change(screen.getByLabelText("Exercise selector"), { target: { value: "sit_to_stand" } });
+    expect(screen.getByText("Use a stable chair")).toBeInTheDocument();
+    expect(screen.getByLabelText("ML second opinion")).toBeDisabled();
+    const file = new File(["video"], "chair.mp4", { type: "video/mp4" });
+    fireEvent.change(screen.getByLabelText(/choose a sit-to-stand exercise video/i), { target: { files: [file] } });
+    fireEvent.click(screen.getByRole("button", { name: "Analyze sit-to-stand" }));
+    await screen.findByText("Sit-to-Stand report");
+    expect(analyzeSitToStandVideo).toHaveBeenCalledTimes(1);
+    expect(screen.getByText(/not available for sit-to-stand yet/i)).toBeInTheDocument();
+    expect(screen.getByText("Completion")).toBeInTheDocument();
   });
 
   it("renders the camera placement guide", () => {

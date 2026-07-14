@@ -1,45 +1,35 @@
 # Full Product Roadmap
 
-## Phase 0 - Squat MVP (Current)
+## Phase 1 - Squat Analyzer MVP (Current)
 
-Maintain the working squat upload, validity gate, rule analysis, confidence, overlay, PDF report, optional experimental ML, and responsive web dashboard. Freeze its API contract while architectural seams are introduced.
+Maintain the working squat upload, rule-based biomechanics, validity gate, repetition counting, confidence scoring, overlay/PDF generation, optional experimental ML second opinion, and responsive web dashboard. Freeze its API contract while architectural seams are introduced.
 
-## Phase 1 - Product Foundation
+## Phase 2 - Product Foundation
 
-- Define the exercise-engine interface and registry without migrating behavior prematurely.
+- Define the exercise-engine interface and catalog without migrating behavior prematurely.
+- Plan user profiles, patient/therapist roles, session history, PostgreSQL persistence, media storage, and stored reports.
 - Complete manual annotations, participant grouping, dataset provenance, and model governance.
-- Introduce session contracts and persistence only after privacy and retention requirements are approved.
-- Add observability for processing failures, latency, artifact cleanup, and confidence distributions without storing sensitive media in logs.
+- Introduce persistence only after privacy, authorization, consent, deletion, and retention requirements are approved.
 
 **Exit gate:** existing squat regression suite passes; no API behavior drift; data-governance review complete.
 
-## Phase 2 - Second Exercise Pilot
+## Phase 3 - Multi-Exercise Engine
 
-Implement sit-to-stand as a separate rule-based analyzer using the shared pose and confidence services. Collect dedicated videos and validate rep boundaries, chair visibility, camera placement, and invalid-input behavior. Do not reuse squat thresholds.
+Add exercises one at a time through the registry: sit-to-stand, knee extension, shoulder abduction, hip abduction, balance, then gait/walking screening. Each receives dedicated data, recording instructions, validity, phases, thresholds, feedback, and tests. Sit-to-stand is the first pilot; squat thresholds are not reused.
 
 **Exit gate:** exercise-specific tests, expert threshold review, bounded pilot evidence, and explicit limitations.
 
-## Phase 3 - Session Experience
+## Phase 4 - Therapist Dashboard
 
-Add consent-aware session creation, history, report indexing, media retention choices, and export/delete controls. Keep uploads temporary by default until durable storage is explicitly enabled.
+Add therapist login, patient list/profile, exercise assignment, session review, progress and adherence tracking, confidence warnings, detected-observation history, notes, and PDF export. This phase requires authentication, authorization, tenancy boundaries, and privacy review.
 
-## Phase 4 - Therapist Dashboard Pilot
+## Phase 5 - Mobile App
 
-Add patient invitations, assigned exercise plans, review queues, longitudinal charts, therapist notes, and audit trails. This phase requires authentication, authorization, tenancy boundaries, and privacy review.
+Ship a React Native + Expo client, with Flutter retained as an alternative if future staffing justifies it. The mobile app captures/uploads video, displays session results and exercise programs, provides history and therapist sharing, and retains safety notices. Backend-side analysis remains the initial architecture.
 
-## Phase 5 - Mobile Companion
+## Phase 6 - Validation and Deployment
 
-Ship a React Native + Expo client that captures or selects video, uploads to the existing backend, displays analysis and safety notices, and provides session history. Backend-side analysis remains the initial architecture.
+Complete manual annotations and participant-grouped evaluation; publish model cards and limitations; conduct safety, privacy, and security review; deploy the web/backend stack to approved cloud infrastructure; and establish backups, incident response, accessibility, performance, and cost controls. Experimental ML may be promoted only through the model-promotion policy. Production deployment remains distinct from clinical validation.
+# Sprint 9 Delivery Note
 
-## Phase 6 - Broader Exercise Library
-
-Add knee extension, shoulder abduction, hip abduction, balance, then gait screening one at a time. Each exercise requires its own clinical rationale, recording protocol, validity logic, dataset, rules, feedback, and release gate.
-
-## Phase 7 - Reliability and Research
-
-Run participant-grouped, multi-device, multi-view, and subgroup evaluations. Experimental ML may be promoted only through the versioning and promotion policies. Clinical-study claims require a separate research, ethics, and regulatory program.
-
-## Phase 8 - Production Operations
-
-Harden identity, encrypted storage, regional deployment, backups, incident response, support, accessibility, performance, cost controls, and regulatory classification review. Production readiness is distinct from clinical validation.
-
+The product now supports two selectable rule-based movements: bodyweight squat and sit-to-stand. Sit-to-stand ML is explicitly unavailable, and the new analyzer remains an engineering prototype pending real-video, participant, and PT-informed threshold validation. No additional exercise should be activated until this validation is complete.

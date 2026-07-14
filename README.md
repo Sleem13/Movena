@@ -2,7 +2,7 @@
 
 PhysioVision AI is a physiotherapy-informed movement-analysis and rehabilitation-support product in development. Its current working vertical slice is a focused Squat Analyzer MVP that accepts a bodyweight squat video, extracts pose landmarks with MediaPipe, estimates basic joint angles, counts repetitions, flags possible movement patterns, and returns educational feedback with validity, confidence, and limitations.
 
-## Squat MVP → Full Product Roadmap
+## From Squat MVP to Full Product Roadmap
 
 The Squat Analyzer is the MVP, not the final product. The long-term architecture supports a patient web/mobile experience, therapist dashboard, exercise-specific analysis engine, consent-aware session history, report generation, dataset/model governance, and a shared safety/confidence layer. Web remains first; a React Native + Expo companion is the recommended initial mobile route, with analysis staying on the FastAPI backend before any on-device feasibility work.
 
@@ -622,12 +622,40 @@ Run from the project root:
 ```powershell
 python scripts/create_manual_annotation_template.py
 python scripts/validate_manual_rep_annotations.py
+python scripts/create_participant_metadata_template.py
 python scripts/create_participant_grouped_split.py
+python scripts/evaluate_rep_count_accuracy.py
 python scripts/analyze_model_errors_v2.py
 python -m pytest
 ```
 
-Blank human fields are never inferred. Until participant IDs and manual rep counts are completed, the grouped split records rows as unassigned and model promotion remains blocked. See the [Sprint 8A plan](docs/sprint_8a_clinical_data_validation_plan.md), [annotation protocol](docs/manual_annotation_protocol.md), [participant-grouped evaluation](docs/participant_grouped_evaluation.md), and [promotion criteria](docs/model_promotion_criteria.md).
+Blank human fields are never inferred. Manual annotations and a real participant-grouped holdout are required before model promotion. Until participant IDs and manual rep counts are completed, the grouped split records rows as unassigned and ML remains experimental. The rule-based analyzer remains primary. See the [Sprint 8A plan](docs/sprint_8a_clinical_data_validation_plan.md), [validation report](docs/sprint_8a_clinical_data_validation_report.md), [annotation protocol](docs/manual_annotation_protocol.md), [participant-grouped evaluation](docs/participant_grouped_evaluation.md), and [promotion criteria](docs/model_promotion_criteria.md).
+
+## Sprint 9 - Sit-to-Stand Analyzer
+
+PhysioVision AI now includes a second selectable, rule-based movement analyzer for repeated sit-to-stand exercise. The existing squat endpoint and UI remain available. Sit-to-stand ML is not available; it returns an explicit disabled result, and rule-based interpretation remains primary.
+
+```powershell
+python -m pytest
+Set-Location backend
+python -m uvicorn app.main:app --reload
+```
+
+In another terminal:
+
+```powershell
+Set-Location frontend
+npm install
+npm test
+npm run dev
+```
+
+API endpoints:
+
+- `POST /api/v1/analyze/squat`
+- `POST /api/v1/analyze/sit-to-stand`
+
+Both accept optional overlay, report, and frame-data query flags. Sit-to-stand uses engineering thresholds, not clinically validated cutoffs, and does not diagnose fall risk, disease, or impairment. See the [analyzer design](docs/sit_to_stand_analyzer_design.md), [threshold notes](docs/sit_to_stand_thresholds.md), and [safety notes](docs/sit_to_stand_safety_notes.md).
 
 ## Pretrained Pose Backbone Benchmarking
 

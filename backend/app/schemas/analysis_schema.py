@@ -25,10 +25,12 @@ class MLPrediction(BaseModel):
 
 class RepEvent(BaseModel):
     start_frame: int
-    bottom_frame: int
+    bottom_frame: int | None = None
+    standing_frame: int | None = None
     end_frame: int
     duration_sec: float | None = None
-    minimum_knee_angle: float
+    minimum_knee_angle: float | None = None
+    maximum_knee_angle: float | None = None
 
 
 class PartialRepEvent(BaseModel):
@@ -53,11 +55,14 @@ class PoseQuality(BaseModel):
 
 
 class ScoreBreakdown(BaseModel):
-    depth_score: int = Field(ge=0, le=100)
-    knee_alignment_score: int = Field(ge=0, le=100)
-    trunk_control_score: int = Field(ge=0, le=100)
-    consistency_score: int = Field(ge=0, le=100)
-    pose_confidence_score: int = Field(ge=0, le=100)
+    depth_score: int = Field(default=0, ge=0, le=100)
+    knee_alignment_score: int = Field(default=0, ge=0, le=100)
+    trunk_control_score: int = Field(default=0, ge=0, le=100)
+    consistency_score: int = Field(default=0, ge=0, le=100)
+    pose_confidence_score: int = Field(default=0, ge=0, le=100)
+    completion_score: int | None = Field(default=None, ge=0, le=100)
+    control_score: int | None = Field(default=None, ge=0, le=100)
+    symmetry_placeholder_score: int | None = Field(default=None, ge=0, le=100)
 
 
 class AnalysisConfidence(BaseModel):

@@ -1,0 +1,1 @@
+video_path,expected_reps,predicted_reps,absolute_error,within_exact_match,within_plus_minus_1,rep_count_confidence,ignored_partial_reps,analysis_status,validation_warnings

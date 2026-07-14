@@ -24,8 +24,22 @@ This analysis covers only the existing real protected holdout. It is engineering
 
 - None
 
+## Errors by Dataset Source
+
+- None
+
+## Confusion Matrix
+
+```
+predicted            squat_correct  squat_shallow_depth  squat_trunk_lean
+actual
+squat_correct                    1                    0                 0
+squat_shallow_depth              0                    1                 0
+squat_trunk_lean                 0                    0                 1
+```
+
 ## Reliability Decision
 
-The v2 model remains experimental. Three holdout videos, unknown participant grouping, incomplete manual annotations, and missing class coverage do not satisfy promotion criteria.
+Insufficient evidence for promotion. The v2 model remains experimental because the current holdout is small, participant grouping is incomplete, manual annotations are incomplete, and class coverage is insufficient.
 
 The rule-based analyzer remains primary. No diagnostic or treatment claim is supported.

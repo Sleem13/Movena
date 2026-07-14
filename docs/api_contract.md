@@ -76,3 +76,10 @@ If `include_ml=true`, the response contains a disabled ML result with the warnin
 - `include_overlay=true`: generates an experimental annotated MP4 and returns `overlay_id` and `overlay_download_url`.
 
 `GET /api/v1/artifacts/reports/{report_id}` downloads the generated PDF. `GET /api/v1/artifacts/overlays/{overlay_id}` downloads or previews the annotated MP4. IDs are opaque UUIDs, files expire after one hour by default, and missing/expired IDs return 404.
+# Sit-to-Stand Analysis (Sprint 9)
+
+`POST /api/v1/analyze/sit-to-stand` accepts the same multipart `video` upload and optional `include_overlay`, `include_frame_data`, and `generate_report` flags as the squat endpoint. `include_ml` is accepted for client compatibility but returns a disabled result because no sit-to-stand model exists.
+
+Successful responses use `exercise: "sit_to_stand"` and include rep events with `start_frame`, `standing_frame`, `end_frame`, duration, and knee-angle extrema. Invalid or zero-repetition recordings return `status: "rejected"`, `error_code: "INVALID_SIT_TO_STAND_VIDEO"`, and `movement_score: null`.
+
+The existing `POST /api/v1/analyze/squat` contract is unchanged. Both endpoints provide educational, non-diagnostic output.

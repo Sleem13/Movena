@@ -44,3 +44,21 @@ def test_model_error_analysis_groups_false_results_and_metadata(tmp_path):
     assert summary["false_positives_by_class"] == {"squat_correct": 1}
     assert summary["errors_by_view"] == {"front": 1}
     assert "remains experimental" in (tmp_path / "errors.md").read_text(encoding="utf-8")
+
+
+def test_model_error_analysis_handles_insufficient_holdout_data(tmp_path):
+    features = tmp_path / "features.csv"
+    pd.DataFrame([{
+        "video_path": "a.mp4", "label": "squat_correct", "split": "train",
+        "source_type": "real",
+    }]).to_csv(features, index=False)
+
+    result, summary = analyze_model_errors(
+        features, tmp_path / "model.pkl", tmp_path / "missing_annotations.csv",
+        tmp_path / "errors.csv", tmp_path / "errors.md",
+        lambda *_args: [],
+    )
+
+    assert result.empty
+    assert summary["promotion_supported"] is False
+    assert "Insufficient evidence for promotion" in (tmp_path / "errors.md").read_text(encoding="utf-8")

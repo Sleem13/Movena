@@ -4,7 +4,7 @@ import About from "./pages/About.jsx";
 import Home from "./pages/Home.jsx";
 import Results from "./pages/Results.jsx";
 import UploadSquat from "./pages/UploadSquat.jsx";
-import { analyzeSquatVideo } from "./services/api.js";
+import { analyzeSitToStandVideo, analyzeSquatVideo } from "./services/api.js";
 
 const DEFAULT_OPTIONS = { include_overlay: true, generate_report: true, include_ml: false, include_frame_data: true };
 
@@ -17,6 +17,7 @@ export default function App() {
   const [progress, setProgress] = useState(0);
   const [options, setOptions] = useState(DEFAULT_OPTIONS);
   const [originalVideoUrl, setOriginalVideoUrl] = useState(null);
+  const [exercise, setExercise] = useState("bodyweight_squat");
 
   useEffect(() => {
     if (!file || typeof URL.createObjectURL !== "function") { setOriginalVideoUrl(null); return undefined; }
@@ -33,7 +34,8 @@ export default function App() {
     if (!file) { setError("Select a video before starting analysis."); return; }
     setIsLoading(true); setProgress(0); setError("");
     try {
-      const data = await analyzeSquatVideo(file, options, setProgress);
+      const analyze = exercise === "sit_to_stand" ? analyzeSitToStandVideo : analyzeSquatVideo;
+      const data = await analyze(file, options, setProgress);
       setReport(data); setPage("results");
     } catch (requestError) {
       const apiError = requestError.response?.data;
@@ -45,7 +47,7 @@ export default function App() {
 
   return <AppShell currentPage={page} hasReport={Boolean(report)} onNavigate={setPage}>
     {page === "home" && <Home onStart={() => setPage("analyze")} />}
-    {page === "analyze" && <UploadSquat file={file} error={error} isLoading={isLoading} progress={progress} options={options} onOptionsChange={setOptions} onFileChange={handleFileChange} onFileSelect={selectFile} onSubmit={handleSubmit} />}
+    {page === "analyze" && <UploadSquat exercise={exercise} onExerciseChange={(value) => { setExercise(value); setFile(null); setError(""); if (value === "sit_to_stand") setOptions((current) => ({ ...current, include_ml: false })); }} file={file} error={error} isLoading={isLoading} progress={progress} options={options} onOptionsChange={setOptions} onFileChange={handleFileChange} onFileSelect={selectFile} onSubmit={handleSubmit} />}
     {page === "results" && <Results report={report} originalVideoUrl={originalVideoUrl} onAnalyzeAnother={handleAnalyzeAnother} onGoAnalyze={() => setPage("analyze")} />}
     {page === "about" && <About onStart={() => setPage("analyze")} />}
   </AppShell>;

@@ -72,15 +72,14 @@ Sit-to-stand must not inherit squat depth thresholds merely because both involve
 
 ## Migration Plan
 
-1. **Characterize:** retain the current tests as golden behavior for squat.
-2. **Define contracts:** add `base.py` and an explicit registry with squat as the only active entry.
-3. **Facade:** wrap `analyze_squat_landmarks` behind `SquatAnalyzer` without moving internal logic.
-4. **Route convergence:** implement future `POST /api/v1/analyze/{exercise_id}` through the registry while retaining `/api/v1/analyze/squat` as a backward-compatible alias.
-5. **Module extraction:** move squat thresholds, feedback, schema, then analyzer code one boundary at a time; run parity tests after each step.
-6. **Second exercise:** add sit-to-stand as an independent module only after dedicated data and expert review.
-7. **Deprecation:** consider retiring the legacy route only through a versioned API change and published migration window.
+1. **Keep the current route unchanged:** retain `/api/v1/analyze/squat` and its tests as golden behavior.
+2. **Introduce the base interface:** add `base.py` and an explicit registry with squat as the only active entry.
+3. **Wrap squat behind the interface:** delegate to `analyze_squat_landmarks` without moving or rewriting its internal logic.
+4. **Add sit-to-stand later:** implement it as an independent module only after dedicated data, protocol, and expert review.
+5. **Expose a generic route later:** route `POST /api/v1/analyze/{exercise_id}` through the registry while retaining the squat endpoint as a backward-compatible alias.
+
+After parity is established, move squat thresholds, feedback, schemas, and analyzer code one boundary at a time. Any legacy-route deprecation requires a versioned API change and migration window.
 
 ## Testing and Observability
 
 Every analyzer needs unit tests for geometry, validity, phases, confidence, safety wording, and valid/invalid fixtures; contract tests across all active analyzers; endpoint compatibility tests; and resource/timeout tests. Logs include exercise ID, analyzer version, processing stage, duration, and opaque request ID, never raw media or personal data.
-

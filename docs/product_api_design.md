@@ -2,6 +2,15 @@
 
 This document describes future contracts. It does not implement identity, authorization, persistence, therapist access, or new exercise analyzers.
 
+## Current Active APIs
+
+- `POST /api/v1/analyze/squat`
+- `GET /api/v1/artifacts/reports/{report_id}`
+- `GET /api/v1/artifacts/overlays/{overlay_id}/preview`
+- `GET /api/v1/artifacts/overlays/{overlay_id}/download`
+
+The current squat API remains supported throughout the planned migration.
+
 ## Design Principles
 
 - `/api/v1` remains backward compatible.
@@ -72,4 +81,3 @@ No error exposes stack traces, filesystem paths, model internals, patient existe
 ## Versioning
 
 API version, analyzer version, threshold version, pose-backend version, report version, and optional ML version are separate. A session records each one so historical results remain interpretable after upgrades.
-

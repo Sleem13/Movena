@@ -2,22 +2,29 @@
 
 **Status: INCOMPLETE**
 
-This report validates annotation completeness and structure. It is not clinical validation.
+This is an engineering/data-quality review, not clinical validation.
 
-## Summary
+## Completion
 
 - Total rows: 24
-- Structurally complete rows: 0
-- Missing expected reps: 24
-- Invalid expected reps: 0
-- Missing participant IDs: 24
-- Invalid participant IDs: 0
-- Rows involved in duplicate video paths: 0
-- Invalid view types: 0
-- Invalid recording-quality values: 0
-- Invalid annotation-confidence values: 0
+- Completed annotations: 0
+- Annotation completion: 0.00%
 
-## Class Distribution
+## Missing and Invalid Fields
+
+- Missing Expected Reps: 24
+- Invalid Expected Reps: 0
+- Missing Participant Id: 24
+- Invalid Participant Id: 0
+- Missing Session Id: 24
+- Duplicate Video Path: 0
+- Invalid View Type: 24
+- Invalid Recording Quality: 24
+- Invalid Annotation Confidence: 24
+- Invalid Visible Body Region: 24
+- Missing Exercise Label: 0
+
+## Class Balance
 
 - `squat_correct`: 13
 - `squat_knee_valgus`: 4
@@ -29,10 +36,21 @@ This report validates annotation completeness and structure. It is not clinical 
 
 - None
 
-## Missing Supported Classes
+## Dataset Source Distribution
 
-- `squat_fast_uncontrolled`
+- `custom_squat_videos`: 24
 
-## Readiness Decision
+## Expected Reps Distribution
 
-Annotations are not ready for reliability claims. Complete manual rep counts and pseudonymous participant IDs, then rerun validation.
+- `missing`: 24
+
+## Recording Quality Distribution
+
+- `missing`: 24
+
+## Recommendations
+
+- Complete rep counts and pseudonymous participant/session metadata through manual review.
+- Use only the documented categorical values and resolve duplicate paths before freezing a split.
+- Collect real videos for every missing or underrepresented class.
+- Keep the model experimental until the promotion gates are met.

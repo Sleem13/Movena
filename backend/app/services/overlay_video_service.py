@@ -1,4 +1,4 @@
-"""Generate CPU-friendly, temporary annotated squat videos."""
+"""Generate CPU-friendly, temporary annotated movement videos."""
 
 from __future__ import annotations
 

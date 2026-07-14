@@ -4,6 +4,8 @@
 
 PhysioVision AI supports exercise monitoring and educational movement review. It can summarize visible movement patterns, repetitions, selected joint-angle estimates, input quality, and measurement confidence. It is not a diagnostic device, a substitute for examination, or an autonomous treatment-planning system.
 
+With appropriate consent and access controls, it may help physiotherapists review exercise execution remotely. It should not be relied upon for high-risk patients, medically unstable users, or activities requiring close guarding without appropriate professional supervision and an approved care context.
+
 ## Appropriate Language
 
 Use:
@@ -22,7 +24,7 @@ Avoid:
 
 ## Measurement Limitations
 
-Single-camera pose estimates are affected by view, camera height/tilt, distance, lighting, clothing, occlusion, frame rate, video edits, body proportions, assistive devices, and landmark-model errors. Two-dimensional angles do not represent full three-dimensional joint motion or force. A movement score is an educational rule summary, not a health score.
+Single-camera pose estimates are affected by view, camera height/tilt, distance, lighting, clothing, occlusion, frame rate, video edits, body proportions, assistive devices, and landmark-model errors. Two-dimensional angles do not represent full three-dimensional joint motion and cannot measure joint loading, pain, fatigue, or internal tissue stress. A movement score is an educational rule summary, not a health score.
 
 Rule thresholds are exercise-, view-, and protocol-specific. Optional ML is experimental, trained on limited data, and cannot supersede the validity gate or rule-based observations. A confident model output can still be wrong.
 
@@ -35,4 +37,3 @@ The product should not algorithmically determine whether symptoms are an emergen
 ## Professional Use
 
 Therapists should review the original recording, protocol, patient context, validity, visibility, confidence, and limitations before using measurements as supporting information. Decisions about diagnosis, progression, regression, precautions, referral, or treatment remain with appropriately licensed professionals.
-

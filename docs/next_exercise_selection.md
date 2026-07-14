@@ -17,6 +17,8 @@ Exercises are ranked by physiotherapy usefulness, ease of consistent video captu
 
 Sit-to-stand is functionally meaningful, familiar to users, recordable with a fixed front or side camera, and shares reusable concepts with squat—hip/knee flexion, trunk motion, phases, repetitions, visibility, and confidence—without being the same exercise. It demonstrates that the engine can support an external object (chair), a different start/end posture, and exercise-specific rules.
 
+It is relevant to functional-mobility monitoring in older-adult, orthopedic, and neurological rehabilitation contexts, while remaining simpler to capture and segment than gait. That relevance does not make the app suitable for unsupervised high-risk testing; chair stability, guarding needs, assistive-device use, and professional supervision must be addressed in the protocol.
+
 The analyzer must define chair visibility, seated stability, lift-off, standing completion, controlled return, hand support, camera view, and partial attempts. Squat thresholds and scores must not be copied.
 
 ## Later Exercises
@@ -30,3 +32,6 @@ The analyzer must define chair visibility, seated stability, lift-off, standing 
 ## Sit-to-Stand Entry Gate
 
 Before implementation: approve a recording/safety protocol, collect participant-grouped real examples, define expert-reviewed validity and rep labels, document hand-support handling, establish rule thresholds, and add invalid-input/low-confidence tests. No new model training is required for the first rule-based pilot.
+# Sprint 9 Selection Update
+
+Sit-to-stand is now the second active rule-based exercise analyzer. The choice reflects a visually distinct, repeatable movement that can reuse the established pose, validity, artifact, and reporting infrastructure. This implementation does not claim functional-test validity or fall-risk assessment. Additional exercises remain deferred until sit-to-stand receives real-video and PT-informed validation.

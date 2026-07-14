@@ -1,28 +1,35 @@
 # Manual Squat Annotation Protocol
 
-## Safety and Privacy
+## Purpose and Safety
 
-Use pseudonymous identifiers only. Do not enter names, dates of birth, contact details, diagnoses, or other directly identifying or medical information. Annotation supports engineering evaluation and is not a clinical assessment.
+This protocol supports reproducible engineering evaluation of squat videos. It does not diagnose an impairment, establish treatment, or validate clinical effectiveness. Use pseudonymous participant and session identifiers; never enter names, dates of birth, contact information, diagnoses, or other directly identifying health information.
 
-## Required Fields
+## Counting One Squat Rep
 
-- `participant_id`: stable pseudonym matching `P[A-Za-z0-9_-]{2,31}`, such as `P001`.
-- `session_id`: pseudonymous recording-session identifier, stable for clips from one session.
-- `exercise_label`: one approved squat-quality label or `unlabeled` pending review.
-- `expected_reps`: integer count of complete repetitions observed through frame review.
-- `view_type`: `front`, `side`, `front_oblique`, or `side_oblique`.
-- `recording_quality`: `poor`, `fair`, `good`, or `excellent`.
-- `annotator`: pseudonymous reviewer identifier.
-- `annotation_confidence`: `low`, `medium`, or `high`.
-- `notes`: concise ambiguity, occlusion, editing, or counting-boundary notes without personal information.
+Count one complete repetition only when the visible movement cycle:
 
-## Rep Counting
+1. starts from standing or near-standing;
+2. descends with visible hip and knee flexion;
+3. reaches a lowest controlled position; and
+4. returns to standing or near-standing.
 
-A complete rep begins from a stable standing position, descends through a meaningful squat excursion, reaches the bottom region, ascends, and returns to stable standing. Do not count setup motion, partial demonstrations, edit transitions, or camera movement. Review slow motion and frame boundaries when uncertain. Record disagreement in notes and request a second reviewer instead of guessing.
+The cycle must be visible enough to identify its start, bottom, and end. Do not count setup movements, camera movement, edit transitions, or repeated oscillations at the bottom as separate reps.
 
-## Augmented Videos
+Partial attempts should be described in `notes` but not included in `expected_reps` unless the full movement-cycle definition is met. When the beginning or end is clipped, record whether `has_clear_start_position` and `has_clear_end_position` are false and request review rather than guessing.
 
-An augmented variant inherits the source participant, session, exercise label, and expected rep count only after lineage is confirmed. It is not an independent participant or validation sample. If a transformation obscures movement or changes interpretation, mark it unsuitable in the augmentation registry rather than forcing an annotation.
+## Required Labels
 
-Run the validator after every annotation batch. A structurally valid file does not establish clinical validity or label correctness.
+- `view_type`: `front`, `side`, `oblique`, or `unknown`.
+- `recording_quality`: `high`, `medium`, `low`, or `unusable`.
+- `visible_body_region`: `full_body`, `lower_body`, `partial_body`, or `unknown`.
+- `annotation_confidence`: `high`, `medium`, or `low`.
+- `camera_position`: concise controlled description such as `waist_height_side`; use `unknown` when not established.
+- Visibility/start/end flags: use consistent boolean values (`true`/`false`) only after review.
 
+Use `side` when the camera is predominantly perpendicular to the frontal plane, `front` when facing the participant, and `oblique` for intermediate views. Mark quality `unusable` when occlusion, framing, corruption, or lighting prevents a defensible movement count. Notes should explain ambiguity, partial attempts, occlusion, editing, or disagreement without adding clinical interpretation.
+
+## Review Procedure
+
+Review the complete clip, then inspect ambiguous boundaries frame by frame or at reduced speed. A second annotator should independently review low-confidence, poor-visibility, or disputed videos. Record disagreement and adjudication in notes; do not manufacture consensus. Augmented variants inherit source metadata only after lineage is confirmed and never count as independent holdout participants.
+
+Run the validator after each annotation batch. A structurally complete file still does not establish clinical validity or justify clinical claims.

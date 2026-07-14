@@ -31,7 +31,7 @@ def test_participant_grouped_split_has_no_participant_leakage(tmp_path):
 
     assert summary["participant_leakage"] is False
     assert summary["is_ready"] is True
-    assert set(result["split"]) == {"train", "validation", "holdout"}
+    assert set(result["split"]) == {"train", "validation", "holdout_test"}
     assert result.groupby("participant_id")["split"].nunique().max() == 1
 
 
@@ -45,4 +45,3 @@ def test_incomplete_participants_are_explicitly_unassigned(tmp_path):
 
     assert result.iloc[0]["split"] == "unassigned"
     assert summary["is_ready"] is False
-
