@@ -9,6 +9,6 @@
     "exercise_id": {"type": "string"}, "raw_label": {"type": ["string", "null"]}, "normalized_label": {"type": ["string", "null"]}, "issue_label": {"type": ["string", "null"]},
     "participant_id": {"type": ["string", "null"]}, "session_id": {"type": ["string", "null"]}, "view_type": {"type": ["string", "null"]}, "recording_quality": {"type": ["string", "null"]},
     "duration_sec": {"type": ["number", "null"]}, "fps": {"type": ["number", "null"]}, "frame_count": {"type": ["integer", "null"]}, "has_manual_rep_count": {"type": "boolean"}, "expected_reps": {"type": ["integer", "null"]},
-    "split": {"type": ["string", "null"]}, "is_augmented": {"type": "boolean"}, "adapter_name": {"type": ["string", "null"]}, "processing_status": {"type": "string"}, "requires_manual_review": {"type": "boolean"}, "notes": {"type": ["string", "null"]}
+    "split": {"type": ["string", "null"]}, "is_augmented": {"type": "boolean"}, "adapter_name": {"type": ["string", "null"]}, "processing_status": {"type": "string"}, "requires_manual_review": {"type": "boolean"}, "label_quality": {"enum": ["high", "medium", "low", "unknown"]}, "notes": {"type": ["string", "null"]}
   }, "additionalProperties": true
 }

@@ -29,3 +29,5 @@ Each exercise needs its own camera protocol, schema, validity gate, rep/phase lo
 8. Adapt overlay and report output.
 9. Train ML/DL only when labels, participants, and modality support it.
 10. Keep the model experimental until promotion criteria pass.
+
+Sprint 15 coverage and readiness reports inform steps 1–2 only. They do not satisfy the exercise-specific validity, phase, scoring, confidence, frontend, artifact, or expert-review gates. Consequently, the current application still exposes only bodyweight squat and sit-to-stand.

@@ -766,3 +766,20 @@ python -m pytest
 ```
 
 Only bodyweight squat and sit-to-stand are supported in the app. Other taxonomy exercises are planned. Rule-based analyzers remain primary; every ML/DL model remains experimental until manual annotations, participant-grouped evaluation, model-card, safety, and promotion criteria pass. Outputs do not diagnose or prescribe treatment. See the [Sprint 14 architecture](docs/sprint_14_multi_dataset_ml_dl_expansion.md), [training tracks](docs/ml_dl_training_tracks.md), [taxonomy](docs/exercise_taxonomy.md), [adapter policy](docs/dataset_adapter_policy.md), and [model registry policy](docs/model_registry_policy.md).
+
+## Sprint 15 — Exercise-Specific Dataset Adapters
+
+All registered datasets are now inspected through named adapters. Sources are not blindly merged: unknown/coded labels remain pending manual review, missing datasets return zero samples safely, and modality guards keep video/image, skeleton, sensor, and tabular tracks separate. Training readiness is not application readiness.
+
+```powershell
+python scripts/audit_raw_datasets.py
+python scripts/build_dataset_registry.py
+python scripts/create_exercise_label_mapping.py
+python scripts/validate_dataset_adapters.py
+python scripts/export_unified_dataset_metadata.py
+python scripts/build_exercise_coverage_matrix.py
+python scripts/build_training_readiness_report.py
+python -m pytest
+```
+
+Use `python scripts/export_unified_dataset_metadata.py --limit-per-dataset 20` for a bounded debug export. The app still supports only bodyweight squat and sit-to-stand. Future exercises require their own rule-based analyzer, validity and phase logic, safety review, and representative testing even if research data exists. ML/DL remains experimental and no report generated here authorizes clinical use or model promotion. See the [Sprint 15 notes](docs/sprint_15_dataset_adapters.md), [dataset notes](docs/dataset_specific_adapter_notes.md), [coverage design](docs/exercise_coverage_matrix.md), [readiness design](docs/training_readiness_report.md), and [mapping protocol](docs/label_mapping_review_protocol.md).

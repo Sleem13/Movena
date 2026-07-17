@@ -1,49 +1,49 @@
-raw_dataset_name,raw_label,normalized_exercise,normalized_issue_label,confidence,notes
-custom_videos,squat_correct,bodyweight_squat,squat_correct,high,Exact approved folder-label match.
-custom_videos,squat_fast_uncontrolled,bodyweight_squat,squat_fast_uncontrolled,high,Exact approved folder-label match.
-custom_videos,squat_knee_valgus,bodyweight_squat,squat_knee_valgus,high,Exact approved folder-label match.
-custom_videos,squat_shallow_depth,bodyweight_squat,squat_shallow_depth,high,Exact approved folder-label match.
-custom_videos,squat_trunk_lean,bodyweight_squat,squat_trunk_lean,high,Exact approved folder-label match.
-custom_videos,squat_unlabeled,squat,unknown,medium,Exercise inferred from an explicit folder token; issue meaning remains unverified.
-dyntherapy,dataset_root,unknown,unknown,low,Uncertain folder label; dataset-specific documentation and adapter required.
-kimore,dataset_root,unknown,unknown,low,Uncertain folder label; dataset-specific documentation and adapter required.
-Physical-therapy exercises,dataset_root,unknown,unknown,low,Uncertain folder label; dataset-specific documentation and adapter required.
-rehab24_6,2d_joints,unknown,unknown,low,Uncertain folder label; dataset-specific documentation and adapter required.
-rehab24_6,2d_markers,unknown,unknown,low,Uncertain folder label; dataset-specific documentation and adapter required.
-rehab24_6,3d_joints,unknown,unknown,low,Uncertain folder label; dataset-specific documentation and adapter required.
-rehab24_6,3d_markers,unknown,unknown,low,Uncertain folder label; dataset-specific documentation and adapter required.
-rehab24_6,Ex1,unknown,unknown,low,Uncertain folder label; dataset-specific documentation and adapter required.
-rehab24_6,Ex2,unknown,unknown,low,Uncertain folder label; dataset-specific documentation and adapter required.
-rehab24_6,Ex3,unknown,unknown,low,Uncertain folder label; dataset-specific documentation and adapter required.
-rehab24_6,Ex4,unknown,unknown,low,Uncertain folder label; dataset-specific documentation and adapter required.
-rehab24_6,Ex5,unknown,unknown,low,Uncertain folder label; dataset-specific documentation and adapter required.
-rehab24_6,Ex6,unknown,unknown,low,Uncertain folder label; dataset-specific documentation and adapter required.
-rehab24_6,videos,unknown,unknown,low,Uncertain folder label; dataset-specific documentation and adapter required.
-squat_kaggle,dataset_root,unknown,unknown,low,Uncertain folder label; dataset-specific documentation and adapter required.
-uci_physical_therapy_exercises,e1,unknown,unknown,low,Uncertain folder label; dataset-specific documentation and adapter required.
-uci_physical_therapy_exercises,e2,unknown,unknown,low,Uncertain folder label; dataset-specific documentation and adapter required.
-uci_physical_therapy_exercises,e3,unknown,unknown,low,Uncertain folder label; dataset-specific documentation and adapter required.
-uci_physical_therapy_exercises,e4,unknown,unknown,low,Uncertain folder label; dataset-specific documentation and adapter required.
-uci_physical_therapy_exercises,e5,unknown,unknown,low,Uncertain folder label; dataset-specific documentation and adapter required.
-uci_physical_therapy_exercises,e6,unknown,unknown,low,Uncertain folder label; dataset-specific documentation and adapter required.
-uci_physical_therapy_exercises,e7,unknown,unknown,low,Uncertain folder label; dataset-specific documentation and adapter required.
-uci_physical_therapy_exercises,e8,unknown,unknown,low,Uncertain folder label; dataset-specific documentation and adapter required.
-uci_physical_therapy_exercises,s1,unknown,unknown,low,Uncertain folder label; dataset-specific documentation and adapter required.
-uci_physical_therapy_exercises,s2,unknown,unknown,low,Uncertain folder label; dataset-specific documentation and adapter required.
-uci_physical_therapy_exercises,s3,unknown,unknown,low,Uncertain folder label; dataset-specific documentation and adapter required.
-uci_physical_therapy_exercises,s4,unknown,unknown,low,Uncertain folder label; dataset-specific documentation and adapter required.
-uci_physical_therapy_exercises,s5,unknown,unknown,low,Uncertain folder label; dataset-specific documentation and adapter required.
-uci_physical_therapy_exercises,u1,unknown,unknown,low,Uncertain folder label; dataset-specific documentation and adapter required.
-uci_physical_therapy_exercises,u2,unknown,unknown,low,Uncertain folder label; dataset-specific documentation and adapter required.
-uci_physical_therapy_exercises,u3,unknown,unknown,low,Uncertain folder label; dataset-specific documentation and adapter required.
-uci_physical_therapy_exercises,u4,unknown,unknown,low,Uncertain folder label; dataset-specific documentation and adapter required.
-uci_physical_therapy_exercises,u5,unknown,unknown,low,Uncertain folder label; dataset-specific documentation and adapter required.
-uco_physical_rehab,dataset_root,unknown,unknown,low,Uncertain folder label; dataset-specific documentation and adapter required.
-ui_prmd,dataset_root,unknown,unknown,low,Uncertain folder label; dataset-specific documentation and adapter required.
-zenodo_squat_dataset,Bad Back,squat,unknown,low,"Squat context is clear, but the source label is not mapped to a clinical issue without documentation review."
-zenodo_squat_dataset,Bad Heel,squat,unknown,low,"Squat context is clear, but the source label is not mapped to a clinical issue without documentation review."
-zenodo_squat_dataset,Bad back,squat,unknown,low,"Squat context is clear, but the source label is not mapped to a clinical issue without documentation review."
-zenodo_squat_dataset,Bad heel,squat,unknown,low,"Squat context is clear, but the source label is not mapped to a clinical issue without documentation review."
-zenodo_squat_dataset,Good,squat,unknown,low,"Squat context is clear, but the source label is not mapped to a clinical issue without documentation review."
-zenodo_squat_dataset,test,unknown,unknown,low,Uncertain folder label; dataset-specific documentation and adapter required.
-zenodo_squat_dataset,train,unknown,unknown,low,Uncertain folder label; dataset-specific documentation and adapter required.
+dataset_name,raw_label,raw_folder_or_code,inferred_exercise_id,inferred_issue_label,mapping_confidence,requires_review,reviewed_by,review_status,notes,raw_dataset_name,normalized_exercise,normalized_issue_label,confidence
+custom_videos,squat_correct,squat_correct,bodyweight_squat,squat_correct,high,False,,approved,Exact approved folder-label match.,custom_videos,bodyweight_squat,squat_correct,high
+custom_videos,squat_fast_uncontrolled,squat_fast_uncontrolled,bodyweight_squat,squat_fast_uncontrolled,high,False,,approved,Exact approved folder-label match.,custom_videos,bodyweight_squat,squat_fast_uncontrolled,high
+custom_videos,squat_knee_valgus,squat_knee_valgus,bodyweight_squat,squat_knee_valgus,high,False,,approved,Exact approved folder-label match.,custom_videos,bodyweight_squat,squat_knee_valgus,high
+custom_videos,squat_shallow_depth,squat_shallow_depth,bodyweight_squat,squat_shallow_depth,high,False,,approved,Exact approved folder-label match.,custom_videos,bodyweight_squat,squat_shallow_depth,high
+custom_videos,squat_trunk_lean,squat_trunk_lean,bodyweight_squat,squat_trunk_lean,high,False,,approved,Exact approved folder-label match.,custom_videos,bodyweight_squat,squat_trunk_lean,high
+custom_videos,squat_unlabeled,squat_unlabeled,bodyweight_squat,unknown,medium,True,,pending,Exercise inferred from a folder token; human review is required.,custom_videos,bodyweight_squat,unknown,medium
+dyntherapy,dataset_root,dataset_root,unknown,unknown,low,True,,needs_more_info,Uncertain folder/code; dataset documentation and manual mapping are required.,dyntherapy,unknown,unknown,low
+kimore,dataset_root,dataset_root,unknown,unknown,low,True,,needs_more_info,Uncertain folder/code; dataset documentation and manual mapping are required.,kimore,unknown,unknown,low
+Physical-therapy exercises,dataset_root,dataset_root,unknown,unknown,low,True,,needs_more_info,Uncertain folder/code; dataset documentation and manual mapping are required.,Physical-therapy exercises,unknown,unknown,low
+rehab24_6,2d_joints,2d_joints,unknown,unknown,low,True,,needs_more_info,Uncertain folder/code; dataset documentation and manual mapping are required.,rehab24_6,unknown,unknown,low
+rehab24_6,2d_markers,2d_markers,unknown,unknown,low,True,,needs_more_info,Uncertain folder/code; dataset documentation and manual mapping are required.,rehab24_6,unknown,unknown,low
+rehab24_6,3d_joints,3d_joints,unknown,unknown,low,True,,needs_more_info,Uncertain folder/code; dataset documentation and manual mapping are required.,rehab24_6,unknown,unknown,low
+rehab24_6,3d_markers,3d_markers,unknown,unknown,low,True,,needs_more_info,Uncertain folder/code; dataset documentation and manual mapping are required.,rehab24_6,unknown,unknown,low
+rehab24_6,Ex1,Ex1,unknown,unknown,low,True,,needs_more_info,Uncertain folder/code; dataset documentation and manual mapping are required.,rehab24_6,unknown,unknown,low
+rehab24_6,Ex2,Ex2,unknown,unknown,low,True,,needs_more_info,Uncertain folder/code; dataset documentation and manual mapping are required.,rehab24_6,unknown,unknown,low
+rehab24_6,Ex3,Ex3,unknown,unknown,low,True,,needs_more_info,Uncertain folder/code; dataset documentation and manual mapping are required.,rehab24_6,unknown,unknown,low
+rehab24_6,Ex4,Ex4,unknown,unknown,low,True,,needs_more_info,Uncertain folder/code; dataset documentation and manual mapping are required.,rehab24_6,unknown,unknown,low
+rehab24_6,Ex5,Ex5,unknown,unknown,low,True,,needs_more_info,Uncertain folder/code; dataset documentation and manual mapping are required.,rehab24_6,unknown,unknown,low
+rehab24_6,Ex6,Ex6,unknown,unknown,low,True,,needs_more_info,Uncertain folder/code; dataset documentation and manual mapping are required.,rehab24_6,unknown,unknown,low
+rehab24_6,videos,videos,unknown,unknown,low,True,,needs_more_info,Uncertain folder/code; dataset documentation and manual mapping are required.,rehab24_6,unknown,unknown,low
+squat_kaggle,dataset_root,dataset_root,unknown,unknown,low,True,,needs_more_info,Uncertain folder/code; dataset documentation and manual mapping are required.,squat_kaggle,unknown,unknown,low
+uci_physical_therapy_exercises,e1,e1,unknown,unknown,low,True,,needs_more_info,Uncertain folder/code; dataset documentation and manual mapping are required.,uci_physical_therapy_exercises,unknown,unknown,low
+uci_physical_therapy_exercises,e2,e2,unknown,unknown,low,True,,needs_more_info,Uncertain folder/code; dataset documentation and manual mapping are required.,uci_physical_therapy_exercises,unknown,unknown,low
+uci_physical_therapy_exercises,e3,e3,unknown,unknown,low,True,,needs_more_info,Uncertain folder/code; dataset documentation and manual mapping are required.,uci_physical_therapy_exercises,unknown,unknown,low
+uci_physical_therapy_exercises,e4,e4,unknown,unknown,low,True,,needs_more_info,Uncertain folder/code; dataset documentation and manual mapping are required.,uci_physical_therapy_exercises,unknown,unknown,low
+uci_physical_therapy_exercises,e5,e5,unknown,unknown,low,True,,needs_more_info,Uncertain folder/code; dataset documentation and manual mapping are required.,uci_physical_therapy_exercises,unknown,unknown,low
+uci_physical_therapy_exercises,e6,e6,unknown,unknown,low,True,,needs_more_info,Uncertain folder/code; dataset documentation and manual mapping are required.,uci_physical_therapy_exercises,unknown,unknown,low
+uci_physical_therapy_exercises,e7,e7,unknown,unknown,low,True,,needs_more_info,Uncertain folder/code; dataset documentation and manual mapping are required.,uci_physical_therapy_exercises,unknown,unknown,low
+uci_physical_therapy_exercises,e8,e8,unknown,unknown,low,True,,needs_more_info,Uncertain folder/code; dataset documentation and manual mapping are required.,uci_physical_therapy_exercises,unknown,unknown,low
+uci_physical_therapy_exercises,s1,s1,unknown,unknown,low,True,,needs_more_info,Uncertain folder/code; dataset documentation and manual mapping are required.,uci_physical_therapy_exercises,unknown,unknown,low
+uci_physical_therapy_exercises,s2,s2,unknown,unknown,low,True,,needs_more_info,Uncertain folder/code; dataset documentation and manual mapping are required.,uci_physical_therapy_exercises,unknown,unknown,low
+uci_physical_therapy_exercises,s3,s3,unknown,unknown,low,True,,needs_more_info,Uncertain folder/code; dataset documentation and manual mapping are required.,uci_physical_therapy_exercises,unknown,unknown,low
+uci_physical_therapy_exercises,s4,s4,unknown,unknown,low,True,,needs_more_info,Uncertain folder/code; dataset documentation and manual mapping are required.,uci_physical_therapy_exercises,unknown,unknown,low
+uci_physical_therapy_exercises,s5,s5,unknown,unknown,low,True,,needs_more_info,Uncertain folder/code; dataset documentation and manual mapping are required.,uci_physical_therapy_exercises,unknown,unknown,low
+uci_physical_therapy_exercises,u1,u1,unknown,unknown,low,True,,needs_more_info,Uncertain folder/code; dataset documentation and manual mapping are required.,uci_physical_therapy_exercises,unknown,unknown,low
+uci_physical_therapy_exercises,u2,u2,unknown,unknown,low,True,,needs_more_info,Uncertain folder/code; dataset documentation and manual mapping are required.,uci_physical_therapy_exercises,unknown,unknown,low
+uci_physical_therapy_exercises,u3,u3,unknown,unknown,low,True,,needs_more_info,Uncertain folder/code; dataset documentation and manual mapping are required.,uci_physical_therapy_exercises,unknown,unknown,low
+uci_physical_therapy_exercises,u4,u4,unknown,unknown,low,True,,needs_more_info,Uncertain folder/code; dataset documentation and manual mapping are required.,uci_physical_therapy_exercises,unknown,unknown,low
+uci_physical_therapy_exercises,u5,u5,unknown,unknown,low,True,,needs_more_info,Uncertain folder/code; dataset documentation and manual mapping are required.,uci_physical_therapy_exercises,unknown,unknown,low
+uco_physical_rehab,dataset_root,dataset_root,unknown,unknown,low,True,,needs_more_info,Uncertain folder/code; dataset documentation and manual mapping are required.,uco_physical_rehab,unknown,unknown,low
+ui_prmd,dataset_root,dataset_root,unknown,unknown,low,True,,needs_more_info,Uncertain folder/code; dataset documentation and manual mapping are required.,ui_prmd,unknown,unknown,low
+zenodo_squat_dataset,Bad Back,Bad Back,bodyweight_squat,unknown,low,True,,needs_more_info,"Squat context is clear, but the issue label requires source-document review.",zenodo_squat_dataset,bodyweight_squat,unknown,low
+zenodo_squat_dataset,Bad Heel,Bad Heel,bodyweight_squat,unknown,low,True,,needs_more_info,"Squat context is clear, but the issue label requires source-document review.",zenodo_squat_dataset,bodyweight_squat,unknown,low
+zenodo_squat_dataset,Bad back,Bad back,bodyweight_squat,unknown,low,True,,needs_more_info,"Squat context is clear, but the issue label requires source-document review.",zenodo_squat_dataset,bodyweight_squat,unknown,low
+zenodo_squat_dataset,Bad heel,Bad heel,bodyweight_squat,unknown,low,True,,needs_more_info,"Squat context is clear, but the issue label requires source-document review.",zenodo_squat_dataset,bodyweight_squat,unknown,low
+zenodo_squat_dataset,Good,Good,bodyweight_squat,unknown,low,True,,needs_more_info,"Squat context is clear, but the issue label requires source-document review.",zenodo_squat_dataset,bodyweight_squat,unknown,low
+zenodo_squat_dataset,test,test,unknown,unknown,low,True,,needs_more_info,Uncertain folder/code; dataset documentation and manual mapping are required.,zenodo_squat_dataset,unknown,unknown,low
+zenodo_squat_dataset,train,train,unknown,unknown,low,True,,needs_more_info,Uncertain folder/code; dataset documentation and manual mapping are required.,zenodo_squat_dataset,unknown,unknown,low

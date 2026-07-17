@@ -37,3 +37,7 @@ Pose estimation, biomechanics interpretation, and clinical decision-making are d
 ## Non-negotiable data rule
 
 Do not blindly merge video, skeleton, sensor, image, and tabular datasets into one model. Every source first requires modality, provenance, licensing, taxonomy, participant, leakage, quality, and training-readiness review through a dataset-specific adapter.
+
+## Sprint 15 routing status
+
+Named adapters now route video/image, skeleton, sensor, and tabular artifacts to their matching research tracks. Mixed Rehab24-6 samples are classified per file where the folder and extension provide evidence. Unknown exercise codes remain excluded from training candidates. A technically compatible modality is not sufficient: reviewed labels and participant-grouped splits remain mandatory for serious evaluation.
