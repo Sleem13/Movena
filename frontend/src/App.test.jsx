@@ -2,7 +2,7 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import App from "./App.jsx";
-import { analyzeKneeExtensionVideo, analyzeSitToStandVideo, analyzeSquatVideo } from "./services/api.js";
+import { analyzeKneeExtensionVideo, analyzeShoulderAbductionVideo, analyzeSitToStandVideo, analyzeSquatVideo } from "./services/api.js";
 import { getSavedSession, listSavedSessions } from "./services/api.js";
 import { createPatientProfile, getPatientProfile, getPatientProgress, getTherapistDashboard, listPatientProfiles, listPatientSessions } from "./services/api.js";
 
@@ -15,6 +15,7 @@ vi.mock("./services/api.js", () => ({
   analyzeSquatVideo: vi.fn(),
   analyzeSitToStandVideo: vi.fn(),
   analyzeKneeExtensionVideo: vi.fn(),
+  analyzeShoulderAbductionVideo: vi.fn(),
   listSavedSessions: vi.fn(),
   getSavedSession: vi.fn(),
   deleteSavedSession: vi.fn(),
@@ -148,6 +149,33 @@ describe("Squat Analyzer healthcare dashboard", () => {
     await screen.findByText("Knee Extension report");
     expect(analyzeKneeExtensionVideo).toHaveBeenCalledTimes(1);
     expect(screen.getByText("Extension range")).toBeInTheDocument();
+  });
+
+  it("selects shoulder abduction, shows front-view guidance, and renders its rule-based result", async () => {
+    const shoulderReport = {
+      ...report,
+      exercise: "shoulder_abduction",
+      exercise_id: "shoulder_abduction",
+      exercise_name: "Shoulder Abduction",
+      average_shoulder_angle: 82,
+      valid_reps: 2,
+      summary: "Two complete shoulder abduction repetitions analyzed.",
+      ml_prediction: { enabled: false, model_version: "not_applicable", warning: "ML prediction is not applicable for shoulder abduction." },
+      score_breakdown: { abduction_range_score: 90, control_score: 88, consistency_score: 85, posture_visibility_score: 92, rep_completion_score: 100 },
+      frame_analysis: [{ frame_index: 0, timestamp_sec: 0, knee_angle: 0, hip_angle: 0, shoulder_angle: 25, trunk_angle: 5, phase: "lowered", detected_issue: null }],
+    };
+    analyzeShoulderAbductionVideo.mockResolvedValue(shoulderReport);
+    openUpload();
+    fireEvent.change(screen.getByLabelText("Exercise selector"), { target: { value: "shoulder_abduction" } });
+    expect(screen.getByText("Upper body visible")).toBeInTheDocument();
+    expect(screen.getByLabelText("ML second opinion")).toBeDisabled();
+    const file = new File(["video"], "shoulder.mp4", { type: "video/mp4" });
+    fireEvent.change(screen.getByLabelText(/choose a shoulder abduction exercise video/i), { target: { files: [file] } });
+    fireEvent.click(screen.getByRole("button", { name: "Analyze shoulder abduction" }));
+    await screen.findByText("Shoulder Abduction report");
+    expect(analyzeShoulderAbductionVideo).toHaveBeenCalledTimes(1);
+    expect(screen.getByText("Average shoulder")).toBeInTheDocument();
+    expect(screen.getByText("Abduction range")).toBeInTheDocument();
   });
 
   it("renders the camera placement guide", () => {

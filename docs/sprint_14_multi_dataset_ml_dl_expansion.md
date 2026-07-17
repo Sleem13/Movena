@@ -2,7 +2,7 @@
 
 Sprint 14 establishes modality-aware discovery, taxonomy, unified sample metadata, fail-closed adapters/guards, separate feature tracks, a governed model registry, and CPU-safe ML/DL scaffolds. It does not merge all sources, train deep models, promote a model, or activate new exercises.
 
-The current application supports only bodyweight squat and sit-to-stand. Rule-based biomechanics remains primary. All ML/DL output remains experimental and non-diagnostic.
+The current application supports bodyweight squat, sit-to-stand, knee extension, and shoulder abduction. Rule-based biomechanics remains primary. All ML/DL output remains experimental and non-diagnostic.
 
 ## Reproducible dry run
 

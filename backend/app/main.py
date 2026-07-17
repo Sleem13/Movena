@@ -9,6 +9,7 @@ from app.api.routes.artifacts import router as artifacts_router
 from app.api.routes.squat_analysis import router as squat_router
 from app.api.routes.sit_to_stand_analysis import router as sit_to_stand_router
 from app.api.routes.knee_extension_analysis import router as knee_extension_router
+from app.api.routes.shoulder_abduction_analysis import router as shoulder_abduction_router
 from app.api.routes.sessions import router as sessions_router
 from app.api.routes.exercise_recognition import router as exercise_recognition_router
 from app.api.v1.therapist import router as therapist_router
@@ -75,6 +76,7 @@ app.include_router(health_router)
 app.include_router(squat_router)
 app.include_router(sit_to_stand_router)
 app.include_router(knee_extension_router)
+app.include_router(shoulder_abduction_router)
 app.include_router(artifacts_router)
 app.include_router(exercise_recognition_router)
 app.include_router(auth_router)

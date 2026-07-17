@@ -93,7 +93,11 @@ def generate_skeleton_overlay(
                     cv2.circle(image, point, 6, color, -1)
                 detail = metrics.get(frame_index)
                 if detail:
-                    label = f"{detail.phase} | knee {detail.knee_angle:.0f} deg"
+                    label = (
+                        f"{detail.phase} | shoulder {detail.shoulder_angle:.0f} deg"
+                        if detail.shoulder_angle is not None
+                        else f"{detail.phase} | knee {detail.knee_angle:.0f} deg"
+                    )
                     cv2.putText(
                         image, label, (20, 32), cv2.FONT_HERSHEY_SIMPLEX,
                         0.7, (255, 255, 255), 2,

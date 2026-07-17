@@ -44,3 +44,11 @@ Use `POST /api/v1/analyze/knee-extension`. Manual selection remains primary, and
 ```json
 {"session_id":"session-id","exercise":"knee_extension","exercise_id":"knee_extension","exercise_name":"Knee Extension","status":"success","total_reps":3,"valid_reps":3,"movement_score":84,"analysis_confidence":{"level":"medium"},"ml_prediction":{"enabled":false,"model_version":"not_applicable"}}
 ```
+
+## Shoulder-abduction endpoint
+
+Use `POST /api/v1/analyze/shoulder-abduction`. Manual selection remains primary, and ML is explicitly not applicable.
+
+```json
+{"exercise":"shoulder_abduction","exercise_id":"shoulder_abduction","exercise_name":"Shoulder Abduction","status":"success","total_reps":3,"valid_reps":3,"average_shoulder_angle":86,"movement_score":84,"analysis_confidence":{"level":"medium"},"ml_prediction":{"enabled":false,"model_version":"not_applicable"}}
+```

@@ -29,6 +29,7 @@ def generate_session_report(report: AnalysisResponse, output_path: Path) -> Path
         "bodyweight_squat": "Bodyweight Squat",
         "sit_to_stand": "Sit-to-Stand",
         "knee_extension": "Knee Extension",
+        "shoulder_abduction": "Shoulder Abduction",
     }
     exercise_name = report.exercise_name or display_names.get(report.exercise, report.exercise.replace("_", " ").title())
     story = [
@@ -48,10 +49,12 @@ def generate_session_report(report: AnalysisResponse, output_path: Path) -> Path
         ["Exercise", exercise_name],
         ["Total repetitions", str(report.total_reps)],
         ["Movement score", "Not scored" if report.movement_score is None else f"{report.movement_score}/100"],
-        ["Average knee angle", f"{report.average_knee_angle:.2f} deg"],
-        ["Average hip angle", f"{report.average_hip_angle:.2f} deg"],
         ["Average trunk angle", f"{report.average_trunk_angle:.2f} deg"],
     ]
+    if report.exercise == "shoulder_abduction":
+        data.insert(3, ["Average shoulder angle", f"{(report.average_shoulder_angle or 0):.2f} deg"])
+    else:
+        data[3:3] = [["Average knee angle", f"{report.average_knee_angle:.2f} deg"], ["Average hip angle", f"{report.average_hip_angle:.2f} deg"]]
     table = Table(data, colWidths=[55 * mm, 110 * mm])
     table.setStyle(TableStyle([
         ("GRID", (0, 0), (-1, -1), 0.5, colors.lightgrey),

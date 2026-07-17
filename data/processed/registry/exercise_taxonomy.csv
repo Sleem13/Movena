@@ -2,7 +2,7 @@ exercise_id,display_name,exercise_family,body_region,primary_joints,movement_pat
 bodyweight_squat,Bodyweight Squat,lower_body,lower_body,"hip;knee;ankle",squat,True,active,experimental,side_or_front,Educational monitoring only,custom_videos,high,supported
 sit_to_stand,Sit-to-Stand,functional_transfer,lower_body,"hip;knee;ankle",sit_to_stand,True,active,not_applicable,side,Use a stable chair and appropriate supervision,unknown,high,supported
 knee_extension,Knee Extension,lower_limb_rehab,lower_limb,"hip;knee;ankle",seated_knee_extension,True,implemented,not_available,side_view,Educational movement monitoring only; do not infer pain strength or safe loading,"kimore;ui_prmd",high,implemented_mvp
-shoulder_abduction,Shoulder Abduction,upper_body,shoulder,"shoulder;elbow;wrist",arm_raise,False,planned,none,front,Do not infer impingement,"kimore;ui_prmd",high,planned
+shoulder_abduction,Shoulder Abduction,upper_limb_rehab,upper_limb,"shoulder;elbow;wrist;hip",shoulder_abduction,True,implemented,not_available,front_view,Educational movement monitoring only; do not infer injury weakness impingement or pathology,"kimore;ui_prmd",high,implemented_mvp
 shoulder_flexion,Shoulder Flexion,upper_body,shoulder,"shoulder;elbow;hip",arm_raise,False,planned,none,side,Professional review for symptoms,kimore,medium,planned
 shoulder_external_rotation,Shoulder External Rotation,upper_body,shoulder,"shoulder;elbow;wrist",rotation,False,planned,none,front,2D rotation is limited,unknown,medium,planned
 hip_abduction,Hip Abduction,lower_body,hip,"hip;knee;ankle",open_chain_abduction,False,planned,none,front,Provide support when balance is limited,"kimore;ui_prmd",high,planned

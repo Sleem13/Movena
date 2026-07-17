@@ -7,8 +7,9 @@ Current supported analyzers:
 - `bodyweight_squat`
 - `sit_to_stand`
 - `knee_extension`
+- `shoulder_abduction`
 
-Planned analyzers—not implemented or production-ready—include `shoulder_abduction`, `hip_abduction`, `balance`, and `walking_gait_screen`. Heel raise, lunge, and step-up are later planned candidates. Knee extension has exercise-specific validity, phase, scoring, and feedback rules.
+Planned analyzers—not implemented or production-ready—include `hip_abduction`, `balance`, and `walking_gait_screen`. Heel raise, lunge, and step-up are later planned candidates. Knee extension and shoulder abduction have exercise-specific validity, phase, scoring, and feedback rules.
 
 ## Exercise contract
 

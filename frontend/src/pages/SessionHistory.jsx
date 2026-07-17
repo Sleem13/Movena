@@ -85,6 +85,7 @@ export default function SessionHistory() {
           <option value="bodyweight_squat">Bodyweight Squat</option>
           <option value="sit_to_stand">Sit-to-Stand</option>
           <option value="knee_extension">Knee Extension</option>
+          <option value="shoulder_abduction">Shoulder Abduction</option>
         </select>
       </div>
       {error && <Alert title="History unavailable">{error}</Alert>}

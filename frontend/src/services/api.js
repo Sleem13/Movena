@@ -28,6 +28,7 @@ export async function analyzeExerciseVideo(exerciseId, videoFile, options = {}, 
     bodyweight_squat: "squat",
     sit_to_stand: "sit-to-stand",
     knee_extension: "knee-extension",
+    shoulder_abduction: "shoulder-abduction",
   }[exerciseId];
   if (!endpoint) throw new Error(`Unsupported exercise: ${exerciseId}`);
   const response = await api.post(`/api/v1/analyze/${endpoint}?${query}`, formData, {
@@ -52,6 +53,10 @@ export function analyzeSitToStandVideo(videoFile, options = {}, onProgress) {
 
 export function analyzeKneeExtensionVideo(videoFile, options = {}, onProgress) {
   return analyzeExerciseVideo("knee_extension", videoFile, options, onProgress);
+}
+
+export function analyzeShoulderAbductionVideo(videoFile, options = {}, onProgress) {
+  return analyzeExerciseVideo("shoulder_abduction", videoFile, options, onProgress);
 }
 
 export function artifactUrl(path) {

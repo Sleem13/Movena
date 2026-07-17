@@ -42,6 +42,10 @@ ML/DL predictions are experimental unless a model has passed documented promotio
 ## Knee-extension boundary
 
 The system may describe visible extension range, complete cycles, tempo consistency, landmark visibility, and possible trunk movement. It must not infer joint stiffness, muscle weakness, pain, injury, passive range, safe resistance, or treatment progression.
+
+## Shoulder-abduction boundary
+
+The system may describe visible arm-raise range, complete cycles, tempo consistency, landmark visibility, possible trunk movement, and possible upward shoulder movement. It must not infer impingement, frozen shoulder, rotator-cuff weakness, injury, pain source, passive range, or treatment suitability.
 # Deployment privacy boundary
 
 Deployment readiness does not imply clinical or patient-data readiness. Without authentication, authorization, consent, encryption governance, retention controls, and formal privacy/security review, this MVP must use synthetic or non-identifiable evaluation data only. Movement outputs are educational support and must not be represented as diagnosis or prescribed treatment.
