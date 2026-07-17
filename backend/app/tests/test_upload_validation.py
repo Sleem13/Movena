@@ -27,7 +27,7 @@ def test_unsupported_extension_returns_clean_error():
         "/api/v1/analyze/squat",
         files={"video": ("notes.txt", b"not video", "text/plain")},
     )
-    assert_error(response, 400, "INVALID_FILE_TYPE")
+    assert_error(response, 400, "UNSUPPORTED_FILE_TYPE")
 
 
 def test_mismatched_mime_type_returns_clean_error():
@@ -35,7 +35,7 @@ def test_mismatched_mime_type_returns_clean_error():
         "/api/v1/analyze/squat",
         files={"video": ("clip.mp4", b"not video", "text/plain")},
     )
-    assert_error(response, 400, "INVALID_FILE_TYPE")
+    assert_error(response, 400, "UNSUPPORTED_FILE_TYPE")
 
 
 def test_empty_video_returns_clean_error():

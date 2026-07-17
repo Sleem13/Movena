@@ -4,12 +4,26 @@ import About from "./pages/About.jsx";
 import Home from "./pages/Home.jsx";
 import Results from "./pages/Results.jsx";
 import UploadSquat from "./pages/UploadSquat.jsx";
+import SessionHistory from "./pages/SessionHistory.jsx";
+import TherapistDashboard from "./pages/TherapistDashboard.jsx";
+import Login from "./pages/Login.jsx";
+import Register from "./pages/Register.jsx";
+import Profile from "./pages/Profile.jsx";
+import { AuthProvider, useAuth } from "./context/AuthContext.jsx";
 import { analyzeSitToStandVideo, analyzeSquatVideo } from "./services/api.js";
 
-const DEFAULT_OPTIONS = { include_overlay: true, generate_report: true, include_ml: false, include_frame_data: true };
+const DEFAULT_OPTIONS = { include_overlay: true, generate_report: true, include_ml: false, include_frame_data: true, save_session: false };
+const PAGE_PATHS = { home: "/", analyze: "/analyze", results: "/results", history: "/history", therapist: "/therapist", about: "/about", login: "/login", register: "/register", profile: "/profile" };
 
-export default function App() {
-  const [page, setPage] = useState("home");
+function initialPage() {
+  const path = window.location.pathname;
+  if (path.startsWith("/therapist")) return "therapist";
+  return Object.entries(PAGE_PATHS).find(([, value]) => value === path)?.[0] || "home";
+}
+
+function AppContent() {
+  const { user } = useAuth();
+  const [page, setPage] = useState(initialPage);
   const [file, setFile] = useState(null);
   const [report, setReport] = useState(null);
   const [error, setError] = useState("");
@@ -27,6 +41,7 @@ export default function App() {
   }, [file]);
 
   function selectFile(selected) { setError(""); setFile(selected || null); }
+  function navigate(nextPage) { setPage(nextPage); window.history.pushState({}, "", PAGE_PATHS[nextPage] || "/"); }
   function handleFileChange(event) { selectFile(event.target.files?.[0]); }
 
   async function handleSubmit(event) {
@@ -45,10 +60,17 @@ export default function App() {
 
   function handleAnalyzeAnother() { setFile(null); setReport(null); setError(""); setProgress(0); setPage("analyze"); }
 
-  return <AppShell currentPage={page} hasReport={Boolean(report)} onNavigate={setPage}>
-    {page === "home" && <Home onStart={() => setPage("analyze")} />}
+  return <AppShell currentPage={page} hasReport={Boolean(report)} onNavigate={navigate} user={user}>
+    {page === "home" && <Home onStart={() => navigate("analyze")} />}
     {page === "analyze" && <UploadSquat exercise={exercise} onExerciseChange={(value) => { setExercise(value); setFile(null); setError(""); if (value === "sit_to_stand") setOptions((current) => ({ ...current, include_ml: false })); }} file={file} error={error} isLoading={isLoading} progress={progress} options={options} onOptionsChange={setOptions} onFileChange={handleFileChange} onFileSelect={selectFile} onSubmit={handleSubmit} />}
-    {page === "results" && <Results report={report} originalVideoUrl={originalVideoUrl} onAnalyzeAnother={handleAnalyzeAnother} onGoAnalyze={() => setPage("analyze")} />}
-    {page === "about" && <About onStart={() => setPage("analyze")} />}
+    {page === "results" && <Results report={report} originalVideoUrl={originalVideoUrl} onAnalyzeAnother={handleAnalyzeAnother} onGoAnalyze={() => setPage("analyze")} onViewHistory={() => setPage("history")} />}
+    {page === "history" && <SessionHistory />}
+    {page === "therapist" && <TherapistDashboard />}
+    {page === "about" && <About onStart={() => navigate("analyze")} />}
+    {page === "login" && <Login onSuccess={() => navigate("profile")} onRegister={() => navigate("register")} />}
+    {page === "register" && <Register onLogin={() => navigate("login")} />}
+    {page === "profile" && (user ? <Profile onLogout={() => navigate("home")} /> : <Login onSuccess={() => navigate("profile")} onRegister={() => navigate("register")} />)}
   </AppShell>;
 }
+
+export default function App(){return <AuthProvider><AppContent/></AuthProvider>;}

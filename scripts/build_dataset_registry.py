@@ -1,105 +1,34 @@
-"""Build a conservative compatibility registry from the raw dataset audit."""
-
+"""Build the conservative, modality-aware PhysioVision dataset registry."""
 from __future__ import annotations
-
-import argparse
-import json
+import argparse,json
 from pathlib import Path
-
 import pandas as pd
 
-
-DEFAULT_INPUT = Path("reports/dataset_audit/dataset_file_inventory.csv")
-DEFAULT_OUTPUT = Path("data/processed/registry/dataset_registry.csv")
-DEFAULT_SUMMARY = Path("reports/dataset_audit/dataset_registry_summary.md")
-HIGH_PRIORITY = {"custom_videos", "squat_kaggle", "zenodo_squat_dataset"}
-ADAPTER_REQUIRED = {
-    "uci_physical_therapy_exercises", "ui_prmd", "kimore", "dyntherapy",
-    "rehab24_6", "Physical-therapy exercises",
-}
-REGISTRY_COLUMNS = [
-    "dataset_name", "source_path", "status", "data_modality", "file_count",
-    "video_count", "image_count", "csv_count", "json_count", "npy_count", "mat_count",
-    "annotation_files", "has_labels", "exercise_types", "usable_for_current_squat_mvp",
-    "requires_adapter", "priority", "notes",
-]
-
-
-def _bool(value: object) -> bool:
-    return str(value).strip().lower() in {"true", "1", "yes"}
-
-
-def build_registry(inventory_path: Path, output_path: Path, summary_path: Path) -> pd.DataFrame:
-    if not inventory_path.exists():
-        raise FileNotFoundError(f"Dataset inventory not found: {inventory_path}")
-    inventory = pd.read_csv(inventory_path)
-    required = {"dataset_name", "dataset_path", "likely_status", "likely_modality", "total_file_count", "video_count", "image_count", "csv_count", "json_count", "npy_count", "mat_count", "annotation_candidate_files", "notes"}
-    if missing := required.difference(inventory.columns):
-        raise ValueError("Dataset inventory is missing: " + ", ".join(sorted(missing)))
-    rows = []
-    for row in inventory.itertuples(index=False):
-        name = str(row.dataset_name)
-        missing = str(row.likely_status) == "missing_or_incomplete" or int(row.total_file_count) == 0
-        requires_adapter = name in ADAPTER_REQUIRED or str(row.likely_modality) in {"sensor_timeseries", "skeleton_csv", "mixed", "unknown"}
-        video_usable = int(row.video_count) > 0 and str(row.likely_modality) == "video"
-        usable = bool(not missing and name in HIGH_PRIORITY and video_usable)
-        annotations = str(row.annotation_candidate_files)
-        try:
-            has_annotation_files = bool(json.loads(annotations))
-        except (json.JSONDecodeError, TypeError):
-            has_annotation_files = False
-        has_labels = has_annotation_files or name == "custom_videos"
-        exercise = "bodyweight_squat" if name == "custom_videos" else ("squat" if name in {"squat_kaggle", "zenodo_squat_dataset"} else "unknown")
-        status = "missing_or_incomplete" if missing else ("compatible_candidate" if usable else "adapter_required")
-        priority = "high" if name in HIGH_PRIORITY else ("medium" if name in ADAPTER_REQUIRED else "low")
-        notes = str(row.notes) if pd.notna(row.notes) else ""
-        if name in HIGH_PRIORITY and not video_usable:
-            notes += " High-priority source is not currently compatible with the squat video pipeline."
-        rows.append({
-            "dataset_name": name, "source_path": row.dataset_path, "status": status,
-            "data_modality": row.likely_modality, "file_count": int(row.total_file_count),
-            "video_count": int(row.video_count), "image_count": int(row.image_count),
-            "csv_count": int(row.csv_count), "json_count": int(row.json_count),
-            "npy_count": int(row.npy_count), "mat_count": int(row.mat_count),
-            "annotation_files": annotations, "has_labels": has_labels,
-            "exercise_types": exercise, "usable_for_current_squat_mvp": usable,
-            "requires_adapter": bool(not missing and (requires_adapter or not usable)),
-            "priority": priority, "notes": notes.strip(),
-        })
-    result = pd.DataFrame(rows, columns=REGISTRY_COLUMNS)
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    result.to_csv(output_path, index=False)
-    usable_names = result[result.usable_for_current_squat_mvp]["dataset_name"].tolist()
-    adapter_names = result[result.requires_adapter]["dataset_name"].tolist()
-    missing_names = result[result.status == "missing_or_incomplete"]["dataset_name"].tolist()
-    lines = [
-        "# Dataset Registry Summary", "",
-        f"- Registered datasets: {len(result)}",
-        f"- Current squat-video compatible candidates: {len(usable_names)}",
-        f"- Require adapters or explicit compatibility work: {len(adapter_names)}",
-        f"- Missing/incomplete: {len(missing_names)}", "",
-        "## Compatible Candidates", "",
-        *([f"- `{name}`" for name in usable_names] or ["- None"]), "",
-        "## Adapter Required", "",
-        *([f"- `{name}`" for name in adapter_names] or ["- None"]), "",
-        "## Missing or Incomplete", "",
-        *([f"- `{name}`" for name in missing_names] or ["- None"]), "",
-        "Registry compatibility is an engineering gate, not evidence that source labels are clinically equivalent.", "",
-    ]
-    summary_path.write_text("\n".join(lines), encoding="utf-8")
-    return result
-
-
-def main() -> int:
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--input", type=Path, default=DEFAULT_INPUT)
-    parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
-    parser.add_argument("--summary", type=Path, default=DEFAULT_SUMMARY)
-    args = parser.parse_args()
-    data = build_registry(args.input, args.output, args.summary)
-    print(f"Registered {len(data)} datasets. Registry: {args.output}")
-    return 0
-
-
-if __name__ == "__main__":
-    raise SystemExit(main())
+DEFAULT_INPUT=Path("reports/dataset_audit/dataset_file_inventory.csv");DEFAULT_OUTPUT=Path("data/processed/registry/dataset_registry.csv");DEFAULT_SUMMARY=Path("reports/dataset_audit/dataset_modality_summary.md")
+HIGH={"custom_videos","squat_kaggle","zenodo_squat_dataset"};COMPLEX={"kimore","ui_prmd","uci_physical_therapy_exercises","dyntherapy","rehab24_6","Physical-therapy exercises"}
+REGISTRY_COLUMNS=["dataset_name","source_path","status","primary_modality","secondary_modalities","file_count","video_count","image_count","csv_count","json_count","mat_count","npy_count","annotation_file_count","has_labels","label_source","known_exercises","likely_exercise_family","usable_for_video_pose_pipeline","usable_for_skeleton_pipeline","usable_for_sensor_pipeline","usable_for_image_pose_pipeline","usable_for_tabular_feature_pipeline","usable_for_current_app","usable_for_current_squat_mvp","requires_adapter","requires_manual_label_mapping","priority","risks_or_limitations","notes"]
+def normalize_modality(value,name):
+    value=str(value)
+    if value in {"missing","missing_or_incomplete"}:return "missing_or_incomplete"
+    if value=="skeleton_csv":return "skeleton_3d"
+    return value if value in {"video","image","skeleton_2d","skeleton_3d","sensor_timeseries","tabular_features","mixed","unknown"} else "unknown"
+def build_registry(inventory_path,output_path,summary_path):
+    inv=pd.read_csv(inventory_path);rows=[]
+    for r in inv.itertuples(index=False):
+        name=str(r.dataset_name);files=int(r.total_file_count);mod=normalize_modality(r.likely_modality,name);missing=files==0 or name=="uco_physical_rehab" or mod=="missing_or_incomplete"
+        try: annotations=json.loads(str(r.annotation_candidate_files));ann_count=len(annotations)
+        except Exception: annotations=[];ann_count=0
+        labels=bool(ann_count or name=="custom_videos");known="bodyweight_squat" if name in HIGH and labels else "unknown"
+        manual=not labels or name in COMPLEX or known=="unknown";adapter=name in COMPLEX or mod in {"mixed","unknown","skeleton_2d","skeleton_3d","sensor_timeseries"}
+        video=mod=="video" and int(r.video_count)>0;image=mod=="image" and int(r.image_count)>0;skeleton=mod in {"skeleton_2d","skeleton_3d"};sensor=mod=="sensor_timeseries";tabular=mod=="tabular_features"
+        understood=labels and not manual;status="missing_or_incomplete" if missing else ("ready" if name=="custom_videos" else "needs_manual_mapping" if manual else "usable_with_adapter" if adapter else "research_only")
+        risks="Do not train until modality, labels, participants, licensing, and split leakage are reviewed."
+        current=bool(name=="custom_videos" and understood)
+        rows.append(dict(dataset_name=name,source_path=r.dataset_path,status=status,primary_modality=mod,secondary_modalities="",file_count=files,video_count=int(r.video_count),image_count=int(r.image_count),csv_count=int(r.csv_count),json_count=int(r.json_count),mat_count=int(r.mat_count),npy_count=int(r.npy_count),annotation_file_count=ann_count,has_labels=labels,label_source="folder/metadata" if labels else "unknown",known_exercises=known,likely_exercise_family="lower_body" if known=="bodyweight_squat" else "unknown",usable_for_video_pose_pipeline=video,usable_for_skeleton_pipeline=skeleton,usable_for_sensor_pipeline=sensor,usable_for_image_pose_pipeline=image,usable_for_tabular_feature_pipeline=tabular,usable_for_current_app=current,usable_for_current_squat_mvp=current,requires_adapter=bool(not missing and adapter),requires_manual_label_mapping=bool(not missing and manual),priority="high" if name in HIGH else "medium" if name in COMPLEX else "low",risks_or_limitations=risks,notes=str(r.notes) if pd.notna(r.notes) else ""))
+    out=pd.DataFrame(rows,columns=REGISTRY_COLUMNS);output_path.parent.mkdir(parents=True,exist_ok=True);out.to_csv(output_path,index=False)
+    modality_csv=summary_path.with_suffix(".csv");modality_csv.parent.mkdir(parents=True,exist_ok=True);out.groupby(["primary_modality","status"],dropna=False).size().reset_index(name="dataset_count").to_csv(modality_csv,index=False)
+    lines=["# Dataset Modality Summary","",f"- Datasets: {len(out)}",f"- Ready: {(out.status=='ready').sum()}",f"- Missing/incomplete: {(out.status=='missing_or_incomplete').sum()}","","| Dataset | Status | Modality | Labels | Adapter |","|---|---|---|---|---|"]+[f"| {x.dataset_name} | {x.status} | {x.primary_modality} | {x.has_labels} | {x.requires_adapter} |" for x in out.itertuples()]+["","Training-ready is not inferred from file presence. Unknown labels remain unknown."]
+    summary_path.write_text("\n".join(lines),encoding="utf-8");return out
+def main():
+    p=argparse.ArgumentParser();p.add_argument("--input",type=Path,default=DEFAULT_INPUT);p.add_argument("--output",type=Path,default=DEFAULT_OUTPUT);p.add_argument("--summary",type=Path,default=DEFAULT_SUMMARY);a=p.parse_args();d=build_registry(a.input,a.output,a.summary);print(f"Registered {len(d)} datasets. Registry: {a.output}");return 0
+if __name__=="__main__":raise SystemExit(main())

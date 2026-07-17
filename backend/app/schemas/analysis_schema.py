@@ -1,4 +1,5 @@
 from pydantic import BaseModel, Field
+from app.schemas.error_schema import ErrorResponse
 
 
 class FrameAnalysis(BaseModel):
@@ -87,6 +88,7 @@ class InputValidity(BaseModel):
 
 
 class AnalysisResponse(BaseModel):
+    session_id: str | None = None
     exercise: str = "bodyweight_squat"
     status: str = "success"
     error_code: str | None = None
@@ -117,13 +119,6 @@ class AnalysisResponse(BaseModel):
     overlay_preview_url: str | None = None
     overlay_download_url: str | None = None
     ml_prediction: MLPrediction | None = None
-
-
-class ErrorResponse(BaseModel):
-    status: str = "error"
-    error_code: str
-    message: str
-    details: list[str] = Field(default_factory=list)
 
 
 SquatAnalysisResponse = AnalysisResponse

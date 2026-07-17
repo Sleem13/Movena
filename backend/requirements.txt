@@ -12,3 +12,6 @@ python-multipart==0.0.20
 reportlab==4.4.3
 scikit-learn==1.7.0
 joblib==1.5.1
+SQLAlchemy==2.0.41
+bcrypt==4.2.1
+PyJWT==2.10.1

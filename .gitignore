@@ -172,9 +172,13 @@ cython_debug/
 
 # PhysioVision AI local runtime
 backend/tmp/
+backend/physiovision_dev.db*
+physiovision_dev.db*
 frontend/node_modules/
 frontend/dist/
 backend/artifacts/**
+!backend/artifacts/
+!backend/artifacts/**/
 !backend/artifacts/**/.gitkeep
 .pnpm-store/
 data/raw/**
@@ -186,8 +190,11 @@ data/processed/**/*.csv
 !data/processed/features/squat_video_training_features_v2.csv
 !data/processed/registry/dataset_registry.csv
 !data/processed/registry/exercise_label_mapping.csv
+!data/processed/registry/exercise_taxonomy.csv
+!data/processed/registry/model_registry.csv
 !data/processed/labels/squat_training_dataset_v3_candidates.csv
 data/processed/**/*.json
+!data/processed/registry/unified_sample_schema.json
 data/processed/**/*.parquet
 # Zenodo Squat Dataset: raw images and reproducible image-pipeline outputs
 data/raw/zenodo_squat_dataset/**

@@ -1,12 +1,12 @@
 # PhysioVision AI
 
-PhysioVision AI is a physiotherapy-informed movement-analysis and rehabilitation-support product in development. Its current working vertical slice is a focused Squat Analyzer MVP that accepts a bodyweight squat video, extracts pose landmarks with MediaPipe, estimates basic joint angles, counts repetitions, flags possible movement patterns, and returns educational feedback with validity, confidence, and limitations.
+PhysioVision AI is a physiotherapy-informed movement-analysis and rehabilitation-support product in development. Its current working MVP supports bodyweight squat and sit-to-stand video analysis with MediaPipe pose landmarks, exercise-specific rule-based biomechanics, repetition counting, validity and confidence checks, and educational feedback.
 
 ## From Squat MVP to Full Product Roadmap
 
-The Squat Analyzer is the MVP, not the final product. The long-term architecture supports a patient web/mobile experience, therapist dashboard, exercise-specific analysis engine, consent-aware session history, report generation, dataset/model governance, and a shared safety/confidence layer. Web remains first; a React Native + Expo companion is the recommended initial mobile route, with analysis staying on the FastAPI backend before any on-device feasibility work.
+Squat and sit-to-stand are the current MVP, not the final product. The long-term architecture supports a patient web/mobile experience, therapist dashboard, exercise-specific analysis engine, consent-aware session history, report generation, dataset/model governance, and a shared safety/confidence layer. API, auth/privacy, and data architecture foundations precede the React Native + Expo mobile MVP; analysis stays on FastAPI before any on-device feasibility work.
 
-No additional exercise is active today. Sit-to-stand is the recommended next rule-based pilot after dedicated recording guidance, data collection, expert threshold review, and safety tests. The current rule-based squat analyzer remains primary, and optional ML remains experimental.
+No exercise beyond bodyweight squat and sit-to-stand is active today. Rule-based analyzers remain primary, and optional ML/DL remains experimental.
 
 Product planning documents:
 
@@ -20,6 +20,7 @@ Product planning documents:
 - [Frontend refinement plan](docs/frontend_product_refinement_plan.md)
 - [Product safety policy](docs/product_safety_policy.md) and [clinical positioning](docs/clinical_positioning_and_limitations.md)
 - [Next exercise selection](docs/next_exercise_selection.md)
+- [ML/DL training tracks](docs/ml_dl_training_tracks.md), [multi-exercise expansion](docs/multi_exercise_app_expansion_plan.md), and [roadmap decisions](docs/roadmap_decision_log.md)
 
 ## Sprint 1 Scope
 
@@ -352,7 +353,7 @@ Returns:
 {
   "status": "ok",
   "project": "PhysioVision AI",
-  "version": "0.1.0"
+  "version": "0.12.0"
 }
 ```
 
@@ -523,7 +524,7 @@ Sprint 4 endpoints:
 - `GET /api/v1/artifacts/reports/{report_id}` — downloads a non-expired PDF.
 - `GET /api/v1/artifacts/overlays/{overlay_id}` — downloads a non-expired overlay MP4.
 
-Reports and overlays are stored temporarily for one hour by default and cleaned opportunistically. They are not durable or access-controlled clinical records. OpenCV’s CPU-friendly MP4 output may not preview in every browser. See [the Sprint 4 plan](docs/sprint_4_plan.md), [report design](docs/report_generation_design.md), and [visual feedback design](docs/visual_feedback_design.md).
+Reports and overlays are temporary and follow the configured retention period, currently 24 hours by default. They are not durable or access-controlled clinical records. OpenCV’s CPU-friendly MP4 output may not preview in every browser. See [the Sprint 4 plan](docs/sprint_4_plan.md), [report design](docs/report_generation_design.md), and [visual feedback design](docs/visual_feedback_design.md).
 
 ## Sprint 5 Model Baseline
 
@@ -657,6 +658,34 @@ API endpoints:
 
 Both accept optional overlay, report, and frame-data query flags. Sit-to-stand uses engineering thresholds, not clinically validated cutoffs, and does not diagnose fall risk, disease, or impairment. See the [analyzer design](docs/sit_to_stand_analyzer_design.md), [threshold notes](docs/sit_to_stand_thresholds.md), and [safety notes](docs/sit_to_stand_safety_notes.md).
 
+## Sprint 10 — Local Session History
+
+Analysis metadata can now be saved locally for squat and sit-to-stand. SQLite is used by default; a future deployment can provide `DATABASE_URL`. Initialize and validate from the project root:
+
+```powershell
+python -m pip install -r requirements-dev.txt
+python scripts/init_database.py
+python -m pytest
+```
+
+Opt-in API examples:
+
+```text
+POST /api/v1/analyze/squat?save_session=true
+POST /api/v1/analyze/sit-to-stand?save_session=true
+GET /api/v1/sessions
+GET /api/v1/sessions/{session_id}
+DELETE /api/v1/sessions/{session_id}
+```
+
+The frontend Analyze page includes **Save session history**, and the History page lists locally saved sessions. This stores analysis metadata—not raw uploaded videos or full clinical records. No authentication exists. Do not store names, diagnoses, or personally identifiable patient data, and do not use the development database as a production patient record system. See the [Sprint 10 notes](docs/sprint_10_sessions_database_history.md), [database design](docs/database_persistence_design.md), and [history API](docs/session_history_api.md).
+
+## Sprint 11 — Therapist Dashboard Prototype
+
+The frontend Therapist workspace groups locally saved sessions under development-only placeholder profiles and shows aggregate session, exercise, issue, score, and confidence summaries. Profiles and assignments are available through `/api/v1/therapist/*`. A saved analysis may include `patient_id` with `save_session=true`; unknown IDs are saved unassigned with a warning.
+
+This feature has no authentication and must not contain real patient-identifiable information. It is not a clinical record system and does not make diagnostic or treatment decisions. See the [Sprint 11 overview](docs/sprint_11_therapist_dashboard_mvp.md), [API](docs/therapist_dashboard_api.md), [profile data policy](docs/patient_profile_data_policy.md), and [privacy notes](docs/therapist_dashboard_privacy_notes.md).
+
 ## Pretrained Pose Backbone Benchmarking
 
 PhysioVision AI uses pretrained pose estimation models for landmark detection, while biomechanics interpretation is handled by rule-based and experimental ML layers. Pose landmarks are measurements, not diagnoses or clinically validated decisions. MediaPipe/BlazePose remains the production default and the rule-based analyzer remains primary.
@@ -669,3 +698,71 @@ python scripts/benchmark_pose_backends.py
 ```
 
 MoveNet Lightning and Thunder have stable interface placeholders but remain deferred because TensorFlow/model assets are not application dependencies. See [the pretrained pose strategy](docs/pretrained_pose_model_strategy.md) and [benchmark plan](docs/pose_model_benchmark_plan.md).
+
+## Sprint 12 — Deployment and mobile-ready API hardening
+
+Runtime configuration is environment-driven; copy values from `.env.example` into your shell or deployment platform and never commit secrets. Uploads default to 100 MB and MP4, MOV, AVI, MKV, or WebM. CORS uses explicit origins, temporary report/overlay retention defaults to 24 hours, and feature availability is visible without exposing secrets.
+
+```powershell
+python -m pytest
+python scripts/cleanup_artifacts.py --dry-run
+Set-Location backend
+..\.venv\Scripts\python.exe -m uvicorn app.main:app --reload
+```
+
+Check `GET /health` for service status and `GET /ready` for database/artifact readiness. Frontend setup uses `frontend/.env.example` and `VITE_API_BASE_URL`:
+
+```powershell
+Set-Location frontend
+npm install
+npm test
+npm run dev
+```
+
+For a local container, run `docker compose build` and `docker compose up`. The container setup is development-oriented; SQLite and local artifacts are not production patient-data infrastructure. Authentication, consent, encrypted managed storage, authorization, and a privacy/security review are required before handling real patient information. See the [deployment guide](docs/deployment_readiness.md), [environment reference](docs/environment_configuration.md), [API hardening notes](docs/api_hardening.md), [privacy boundary](docs/deployment_privacy_notes.md), and [mobile contract](docs/mobile_api_contract.md).
+
+## Main Development Path
+
+```text
+Sprint 12 — Deployment & Mobile-Ready API Hardening
+Sprint 13 — Auth + Roles + Privacy Foundation
+Sprint 14 — Multi-Dataset ML/DL Expansion Architecture
+Sprint 15 — Exercise-Specific Dataset Adapters
+Sprint 16 — Mobile App MVP
+Sprint 17 — Cloud Deployment
+Sprint 18+ — Multi-Exercise Expansion
+```
+
+Current supported exercises are bodyweight squat and sit-to-stand. Planned expansion includes knee extension, shoulder abduction, hip abduction, balance, walking/gait screening, heel raise, lunge, and step-up; these planned exercises are not currently working analyzers.
+
+Rule-based biomechanics remains primary. ML/DL models remain experimental until exercise-specific validation and documented promotion criteria are met. Video, skeleton, sensor, image, and tabular datasets are not blindly merged: each source requires modality classification, provenance and licensing review, taxonomy mapping, participant-safe splitting, and a dataset-specific adapter. PhysioVision AI supports exercise monitoring and educational feedback; it does not diagnose, replace a licensed physiotherapist, or independently prescribe treatment.
+
+## Sprint 13 — Auth + Roles + Privacy Foundation
+
+Local development auth uses bcrypt password hashing and short-lived JWT access tokens. Roles are `admin`, `therapist`, `patient`, and `researcher_demo`; public registration defaults to researcher/demo and cannot create privileged roles. Session history requires login and is owner-scoped for patient/demo users. Therapist APIs require therapist or admin.
+
+Anonymous analysis remains available by default with `REQUIRE_AUTH_FOR_ANALYSIS=false`. Anonymous session saving is refused unless `ENABLE_PUBLIC_DEMO_MODE=true`; authenticated saves attach ownership. Configure `SECRET_KEY`, token expiry, and JWT algorithm through the environment.
+
+```powershell
+python scripts/init_database.py
+$env:ADMIN_EMAIL="admin@example.com"
+$env:ADMIN_PASSWORD="ChooseAStrongPassword123"
+python scripts/seed_admin_user.py
+python -m pytest
+```
+
+Do not enter real patient-identifiable data. This is not enterprise authentication, production consent, or a medical record. See the [auth strategy](docs/auth_strategy.md), [role policy](docs/role_based_access_policy.md), [privacy foundation](docs/privacy_foundation.md), and [consent plan](docs/consent_workflow_plan.md).
+
+## Sprint 14 — Multi-Dataset ML/DL Expansion Architecture
+
+The registry now classifies multiple rehab datasets by modality and pipeline compatibility. Not all registered sources are used by current models: complex, missing, mixed, sensor, skeleton, image, and uncertain-label datasets remain adapter/manual-review work. Sources are never blindly merged.
+
+```powershell
+python scripts/audit_raw_datasets.py
+python scripts/build_dataset_registry.py
+python scripts/export_unified_dataset_metadata.py
+python scripts/train_ml_track.py --dry-run --track video_pose --exercise bodyweight_squat
+python -m pytest
+```
+
+Only bodyweight squat and sit-to-stand are supported in the app. Other taxonomy exercises are planned. Rule-based analyzers remain primary; every ML/DL model remains experimental until manual annotations, participant-grouped evaluation, model-card, safety, and promotion criteria pass. Outputs do not diagnose or prescribe treatment. See the [Sprint 14 architecture](docs/sprint_14_multi_dataset_ml_dl_expansion.md), [training tracks](docs/ml_dl_training_tracks.md), [taxonomy](docs/exercise_taxonomy.md), [adapter policy](docs/dataset_adapter_policy.md), and [model registry policy](docs/model_registry_policy.md).

@@ -3,10 +3,26 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import App from "./App.jsx";
 import { analyzeSitToStandVideo, analyzeSquatVideo } from "./services/api.js";
+import { getSavedSession, listSavedSessions } from "./services/api.js";
+import { createPatientProfile, getPatientProfile, getPatientProgress, getTherapistDashboard, listPatientProfiles, listPatientSessions } from "./services/api.js";
+
+vi.mock("./context/AuthContext.jsx", () => ({
+  AuthProvider: ({ children }) => children,
+  useAuth: () => ({ user: { user_id: "test-admin", email: "admin@example.com", role: "admin" }, login: vi.fn(), register: vi.fn(), logout: vi.fn() }),
+}));
 
 vi.mock("./services/api.js", () => ({
   analyzeSquatVideo: vi.fn(),
   analyzeSitToStandVideo: vi.fn(),
+  listSavedSessions: vi.fn(),
+  getSavedSession: vi.fn(),
+  deleteSavedSession: vi.fn(),
+  getTherapistDashboard: vi.fn(),
+  listPatientProfiles: vi.fn(),
+  createPatientProfile: vi.fn(),
+  getPatientProfile: vi.fn(),
+  listPatientSessions: vi.fn(),
+  getPatientProgress: vi.fn(),
   artifactUrl: (path) => path ? `http://127.0.0.1:8000${path}` : null,
 }));
 
@@ -68,7 +84,13 @@ async function analyzeWith(response = report) {
 }
 
 describe("Squat Analyzer healthcare dashboard", () => {
-  beforeEach(() => vi.clearAllMocks());
+  beforeEach(() => {
+    window.history.replaceState({}, "", "/");
+    vi.clearAllMocks();
+    listSavedSessions.mockResolvedValue({ items: [], total: 0, limit: 50, offset: 0 });
+    getTherapistDashboard.mockResolvedValue({ total_patients: 0, total_sessions: 0, low_confidence_sessions: 0, recent_sessions: [], common_detected_issues: [], sessions_by_exercise: {}, prototype_warning: "Prototype" });
+    listPatientProfiles.mockResolvedValue([]);
+  });
 
   it("renders the upload page and analysis options", () => {
     openUpload();
@@ -117,6 +139,66 @@ describe("Squat Analyzer healthcare dashboard", () => {
     fireEvent.click(screen.getByRole("button", { name: "Analyze squat" }));
     expect(await screen.findByText("Analyzing")).toBeInTheDocument();
     expect(screen.getByText(/uploading video/i)).toBeInTheDocument();
+  });
+
+  it("sends save_session when the local history option is enabled", async () => {
+    analyzeSquatVideo.mockResolvedValue({ ...report, session_id: "12345678-test-session" });
+    openUpload(); selectVideo();
+    fireEvent.click(screen.getByLabelText("Save session history"));
+    fireEvent.click(screen.getByRole("button", { name: "Analyze squat" }));
+    await screen.findByText("Saved session");
+    expect(analyzeSquatVideo.mock.calls[0][1].save_session).toBe(true);
+    expect(screen.getByRole("button", { name: "View Session History" })).toBeInTheDocument();
+  });
+
+  it("shows the session history empty state", async () => {
+    render(<App />);
+    fireEvent.click(screen.getByRole("button", { name: "History" }));
+    expect(await screen.findByText(/No saved sessions yet/i)).toBeInTheDocument();
+  });
+
+  it("renders saved sessions and opens detail", async () => {
+    const saved = {
+      session_id: "abcdef12-session", exercise_id: "sit_to_stand",
+      exercise_display_name: "Sit-to-Stand", status: "success",
+      created_at: "2026-07-14T12:00:00Z", total_reps: 3, movement_score: 86,
+      analysis_confidence_level: "medium", detected_issues: ["poor_control"],
+    };
+    listSavedSessions.mockResolvedValue({ items: [saved], total: 1, limit: 50, offset: 0 });
+    getSavedSession.mockResolvedValue({ ...saved, summary: "Three repetitions analyzed.", feedback: ["Move steadily."] });
+    render(<App />);
+    fireEvent.click(screen.getByRole("button", { name: "History" }));
+    expect(await screen.findByText("Sit-to-Stand")).toBeInTheDocument();
+    expect(screen.getByText("Poor Control")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "View details" }));
+    expect(await screen.findByText("Three repetitions analyzed.")).toBeInTheDocument();
+  });
+
+  it("renders therapist dashboard summary, empty profiles, and privacy warning", async () => {
+    render(<App />);
+    fireEvent.click(screen.getByRole("button", { name: "Therapist" }));
+    expect(await screen.findByText("Total patients")).toBeInTheDocument();
+    expect(screen.getByText(/prototype dashboard for development use only/i)).toBeInTheDocument();
+    expect(screen.getByText(/do not enter real patient-identifiable information/i)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Patient profiles" }));
+    expect(screen.getByText("No development patient profiles yet")).toBeInTheDocument();
+  });
+
+  it("renders a development profile and patient session detail", async () => {
+    const patient = { patient_id: "patient-1234", display_name: "Demo Profile A", age_group: "adult", clinical_group: "unknown", session_count: 1 };
+    listPatientProfiles.mockResolvedValue([patient]);
+    getPatientProfile.mockResolvedValue({ ...patient, notes: null });
+    listPatientSessions.mockResolvedValue([{ session_id: "session-1", exercise_display_name: "Bodyweight Squat", total_reps: 3, movement_score: 88 }]);
+    getPatientProgress.mockResolvedValue({ total_sessions: 1, average_movement_score: 88, average_analysis_confidence: 0.8, low_confidence_session_count: 0, detected_issue_counts: [{ issue_code: "poor_depth", count: 1 }] });
+    render(<App />);
+    fireEvent.click(screen.getByRole("button", { name: "Therapist" }));
+    await screen.findByText("Total patients");
+    fireEvent.click(screen.getByRole("button", { name: "Patient profiles" }));
+    expect(screen.getByText("Demo Profile A")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "View profile" }));
+    expect(await screen.findByText("Exercise session history")).toBeInTheDocument();
+    expect(screen.getByText(/Bodyweight Squat · 3 reps · score 88/i)).toBeInTheDocument();
+    expect(screen.getByText("Poor Depth: 1")).toBeInTheDocument();
   });
 
   it("renders result KPI cards and charts", async () => {

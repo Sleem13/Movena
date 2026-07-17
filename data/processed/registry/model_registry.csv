@@ -1,0 +1,2 @@
+model_id,model_name,exercise_id,modality,training_track,dataset_sources,version,status,macro_f1,accuracy,per_class_recall_summary,participant_grouped_holdout,manual_annotations_used,promoted_to_app,app_usage,warnings,created_at
+squat_svc_v2,squat_baseline_svc,bodyweight_squat,video,video_pose,custom_videos,v2,experimental,,,,False,False,False,optional_research_second_opinion,"Limited data; rule-based analyzer remains primary",

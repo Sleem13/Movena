@@ -49,7 +49,7 @@ def _likely_modality(name: str, counts: Counter[str]) -> str:
     if "uci" in key:
         return "sensor_timeseries"
     if key in {"dyntherapy", "kimore", "ui_prmd"}:
-        return "skeleton_csv"
+        return "skeleton_3d"
     if counts[".csv"] or counts[".txt"] or counts[".npy"] or counts[".mat"] or counts[".pkl"]:
         return "unknown"
     return "unknown"

@@ -1,0 +1,8 @@
+primary_modality,status,dataset_count
+image,needs_manual_mapping,1
+missing_or_incomplete,missing_or_incomplete,2
+mixed,needs_manual_mapping,1
+sensor_timeseries,needs_manual_mapping,1
+skeleton_3d,needs_manual_mapping,3
+unknown,usable_with_adapter,1
+video,ready,1

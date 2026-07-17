@@ -9,6 +9,11 @@ class GenericDatasetAdapter(DatasetAdapter):
     dataset_name = "generic_dataset"
     modality = "unknown"
 
+    def __init__(self, source_path, dataset_name=None, modality=None):
+        super().__init__(source_path)
+        if dataset_name: self.dataset_name = dataset_name
+        if modality: self.modality = modality
+
     def list_samples(self) -> list[Path]:
         if not self.source_path.exists():
             return []
@@ -22,4 +27,3 @@ class GenericDatasetAdapter(DatasetAdapter):
 
     def is_compatible_with_current_pipeline(self) -> bool:
         return False
-

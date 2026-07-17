@@ -81,3 +81,11 @@ No error exposes stack traces, filesystem paths, model internals, patient existe
 ## Versioning
 
 API version, analyzer version, threshold version, pose-backend version, report version, and optional ML version are separate. A session records each one so historical results remain interpretable after upgrades.
+# Therapist Prototype API
+
+Sprint 11 adds unauthenticated local-development routes under `/api/v1/therapist` for placeholder profiles, session assignment, progress aggregation, and dashboard summaries. Unknown `patient_id` values during analysis produce an unassigned saved session plus warning. Production exposure is blocked on authentication, role-based authorization, consent, auditing, and privacy review.
+# Deployment and mobile contract note
+
+Clients configure one API base URL and may use `GET /health`, `GET /ready`, analysis, artifact, session, and therapist routes. Errors follow `{status, error_code, message, details}`. Mobile clients should upload multipart video, accept optional response fields, and resolve relative artifact URLs against the API base. Future access to history and therapist resources requires token-based authorization.
+
+Sprint 13 adds `/api/v1/auth/register`, `/login`, `/me`, and `/logout`. Session routes require authentication; therapist routes require therapist/admin. Analysis is configurable through `REQUIRE_AUTH_FOR_ANALYSIS`, while authenticated session saves record ownership. Auth failures use `AUTH_REQUIRED`, `INVALID_TOKEN`, `TOKEN_EXPIRED`, `INSUFFICIENT_ROLE`, or `USER_INACTIVE`.

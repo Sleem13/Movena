@@ -1,4 +1,4 @@
-import { BrainCircuit, ChartNoAxesCombined, FileText, ScanSearch } from "lucide-react";
+import { BrainCircuit, ChartNoAxesCombined, Database, FileText, ScanSearch } from "lucide-react";
 import { Card, Badge } from "../common/UI.jsx";
 
 const options = [
@@ -6,6 +6,7 @@ const options = [
   { key: "generate_report", title: "PDF session report", description: "Create a temporary downloadable report.", icon: FileText },
   { key: "include_frame_data", title: "Angle trend data", description: "Include sampled frame-level angles for charts.", icon: ChartNoAxesCombined },
   { key: "include_ml", title: "ML second opinion", description: "Add the optional experimental baseline output.", icon: BrainCircuit, experimental: true },
+  { key: "save_session", title: "Save session history", description: "Session history is stored locally in the current development database.", icon: Database },
 ];
 
 export default function AnalysisOptions({ exercise = "bodyweight_squat", value, onChange, disabled }) {

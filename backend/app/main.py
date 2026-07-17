@@ -2,24 +2,31 @@ from fastapi import FastAPI, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from sqlalchemy.exc import SQLAlchemyError
 
 from app.api.routes.health import router as health_router
 from app.api.routes.artifacts import router as artifacts_router
 from app.api.routes.squat_analysis import router as squat_router
 from app.api.routes.sit_to_stand_analysis import router as sit_to_stand_router
+from app.api.routes.sessions import router as sessions_router
+from app.api.v1.therapist import router as therapist_router
+from app.api.v1.auth import router as auth_router
+from app.api.dependencies.auth import AuthError
 from app.core.config import get_settings
 from app.services.artifact_service import ensure_artifact_directories
+from app.db.database import init_db
 from app.core.logging_config import configure_logging
 from app.schemas.analysis_schema import ErrorResponse
 
 configure_logging()
 settings = get_settings()
 ensure_artifact_directories()
+init_db()
 
 app = FastAPI(
     title=settings.project_name,
     version=settings.version,
-    description="Sprint 1 MVP for AI-assisted squat exercise analysis.",
+    description="Movement-analysis API for the PhysioVision AI educational MVP.",
 )
 
 
@@ -36,9 +43,27 @@ async def validation_exception_handler(_request, exc: RequestValidationError) ->
         content=payload.model_dump(),
     )
 
+
+@app.exception_handler(SQLAlchemyError)
+async def database_exception_handler(_request, _exc: SQLAlchemyError) -> JSONResponse:
+    payload = ErrorResponse(
+        error_code="DATABASE_UNAVAILABLE",
+        message="The database is temporarily unavailable.",
+    )
+
+
+@app.exception_handler(AuthError)
+async def auth_exception_handler(_request, exc: AuthError) -> JSONResponse:
+    payload = ErrorResponse(error_code=exc.error_code, message=exc.message)
+    return JSONResponse(status_code=exc.status_code, content=payload.model_dump())
+    return JSONResponse(
+        status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+        content=payload.model_dump(),
+    )
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+    allow_origins=settings.effective_cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -48,3 +73,8 @@ app.include_router(health_router)
 app.include_router(squat_router)
 app.include_router(sit_to_stand_router)
 app.include_router(artifacts_router)
+app.include_router(auth_router)
+if settings.enable_session_history:
+    app.include_router(sessions_router)
+if settings.enable_therapist_dashboard:
+    app.include_router(therapist_router)

@@ -1,85 +1,31 @@
 # Backend Exercise Engine Architecture
 
-## Current-to-Target Strategy
+## Analyzer catalog
 
-The existing squat services remain the reference implementation. Migration should be incremental and behavior-preserving; a directory move is not worth destabilizing validity, counting, feedback, artifacts, or the API.
+Current supported analyzers:
 
-Target structure:
+- `bodyweight_squat`
+- `sit_to_stand`
 
-```text
-backend/app/exercises/
-  base.py
-  registry.py
-  squat/
-    analyzer.py
-    thresholds.py
-    feedback.py
-    schemas.py
-  sit_to_stand/
-    analyzer.py
-    thresholds.py
-    feedback.py
-    schemas.py
-  knee_extension/
-    analyzer.py
-    thresholds.py
-    feedback.py
-    schemas.py
-```
+Planned analyzers—not implemented or production-ready—include `knee_extension`, `shoulder_abduction`, `hip_abduction`, `balance`, and `walking_gait_screen`. Heel raise, lunge, and step-up are later planned candidates.
 
-Only `squat` should be registered as active until the next exercise completes its own validation gates.
+## Exercise contract
 
-## Core Contracts
+Each analyzer should expose stable metadata and return a shared result envelope containing exercise/version, validity, status, repetitions or duration, exercise-specific metrics, score or null, detected observations, educational feedback, confidence, limitations, and optional frame details. A registry resolves only explicitly activated exercise IDs and rejects unknown or planned-only entries.
 
-`ExerciseAnalyzer` should expose immutable metadata and one analysis operation:
+## Required pipeline for every future analyzer
 
-```python
-class ExerciseAnalyzer(Protocol):
-    exercise_id: str
-    display_name: str
-    version: str
-    supported_views: tuple[str, ...]
+1. **Validity gate:** exercise-specific pose coverage, view, body visibility, motion, and complete-attempt criteria.
+2. **State machine / phase detection:** explicit phases with hysteresis, timing, partial-attempt handling, and rep/event confidence.
+3. **Movement scoring:** transparent, versioned rule components supported by the recording view; invalid attempts receive no normal score.
+4. **Confidence scoring:** pose quality, signal stability, protocol/view fit, event confidence, and warnings.
+5. **Safety feedback:** observational and educational wording, stop guidance, limitations, and professional-review advice.
+6. **Optional ML/DL:** only after exercise- and modality-specific validation; never overrides validity or the primary rule-based analyzer.
 
-    def analyze(self, pose_sequence, options) -> ExerciseAnalysisResult: ...
-```
+## Shared versus exercise-specific responsibilities
 
-The shared result envelope contains exercise, analyzer version, status, repetitions, metrics, score or null, detected observations, feedback, confidence, validity, limitations, and optional frame details. Exercise-specific metrics live in a typed `metrics` object so knee/hip/trunk fields are not falsely required for every movement.
+Shared services cover upload validation, temporary media, pose backends, geometry primitives, artifact/report handling, logging, errors, and confidence mechanisms. Each exercise owns its required landmarks/views, validity thresholds, phases, scoring, observations, feedback, dataset evidence, and version provenance. Squat thresholds must not be reused for sit-to-stand or future exercises merely because landmarks overlap.
 
-The registry resolves a documented exercise ID to one analyzer instance and rejects unknown or inactive exercises. Registration is explicit at startup; dynamic imports and user-supplied module names are prohibited.
+## Activation and testing gate
 
-## Shared Services
-
-- Upload validation and temporary media lifecycle.
-- Pose estimation backend and landmark contracts.
-- Signal filtering/interpolation primitives.
-- Common geometry and angle calculations.
-- Pose visibility and recording-quality assessment.
-- Confidence composition framework.
-- Artifact, overlay, report, logging, and error-envelope infrastructure.
-
-Shared code provides mechanisms, not universal biomechanics thresholds.
-
-## Exercise-Specific Responsibilities
-
-- Required landmarks and supported camera views.
-- Input-validity and complete-attempt definition.
-- Phase/state machine and repetition logic.
-- Threshold values and their version/provenance.
-- Metrics, observations, score composition, and feedback wording.
-- Frame warnings, overlay emphasis, and report sections.
-
-Sit-to-stand must not inherit squat depth thresholds merely because both involve knee flexion.
-
-## Migration Plan
-
-1. **Keep the current route unchanged:** retain `/api/v1/analyze/squat` and its tests as golden behavior.
-2. **Introduce the base interface:** add `base.py` and an explicit registry with squat as the only active entry.
-3. **Wrap squat behind the interface:** delegate to `analyze_squat_landmarks` without moving or rewriting its internal logic.
-4. **Add sit-to-stand later:** implement it as an independent module only after dedicated data, protocol, and expert review.
-5. **Expose a generic route later:** route `POST /api/v1/analyze/{exercise_id}` through the registry while retaining the squat endpoint as a backward-compatible alias.
-
-After parity is established, move squat thresholds, feedback, schemas, and analyzer code one boundary at a time. Any legacy-route deprecation requires a versioned API change and migration window.
-
-## Testing and Observability
-
-Every analyzer needs unit tests for geometry, validity, phases, confidence, safety wording, and valid/invalid fixtures; contract tests across all active analyzers; endpoint compatibility tests; and resource/timeout tests. Logs include exercise ID, analyzer version, processing stage, duration, and opaque request ID, never raw media or personal data.
+Activation requires representative valid/invalid real-video fixtures, geometry and state-machine tests, API contract tests, expert threshold review, confidence/safety checks, bounded performance evaluation, and explicit limitations. A dataset adapter or taxonomy entry alone does not activate an analyzer.

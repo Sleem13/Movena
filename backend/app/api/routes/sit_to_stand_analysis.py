@@ -2,7 +2,7 @@
 
 import logging
 
-from fastapi import APIRouter, File, Query, UploadFile, status
+from fastapi import APIRouter, Depends, File, Query, UploadFile, status
 
 from app.api.routes.squat_analysis import error_response, pose_error_code
 from app.exercises.sit_to_stand.analyzer import sit_to_stand_analyzer
@@ -11,7 +11,11 @@ from app.services.overlay_video_service import create_overlay_video
 from app.services.pose_estimation_service import PoseEstimationError, extract_pose_landmarks
 from app.services.report_service import generate_session_report
 from app.schemas.analysis_schema import AnalysisResponse, ErrorResponse
+from app.services.session_persistence_service import save_analysis_session
 from app.utils.file_utils import UploadValidationError, remove_file, save_upload_file
+from app.core.config import get_settings
+from app.api.dependencies.auth import analysis_current_user
+from app.db.models import User
 
 
 logger = logging.getLogger(__name__)
@@ -33,7 +37,11 @@ async def analyze_sit_to_stand(
     include_frame_data: bool = Query(False),
     generate_report: bool = Query(False),
     include_ml: bool = Query(False),
+    save_session: bool = Query(False),
+    patient_id: str | None = Query(None),
+    current_user: User | None = Depends(analysis_current_user),
 ):
+    settings = get_settings()
     del include_ml  # Explicitly unavailable for this exercise in Sprint 9.
     try:
         video_path = await save_upload_file(video)
@@ -45,13 +53,15 @@ async def analyze_sit_to_stand(
         report = sit_to_stand_analyzer.analyze_landmarks(
             landmarks, include_frame_data=include_frame_data or include_overlay
         )
-        if generate_report and report.status == "success":
+        if generate_report and settings.enable_report_generation and report.status == "success":
             report_id, report_path = create_artifact("report")
             generated_artifacts.append(report_path)
             generate_session_report(report, report_path)
             report.report_id = report_id
             report.report_download_url = f"/api/v1/artifacts/reports/{report_id}"
-        if include_overlay and report.status == "success" and report.frame_analysis:
+        elif generate_report and not settings.enable_report_generation:
+            report.limitations.append("PDF report generation is disabled by deployment configuration.")
+        if include_overlay and settings.enable_overlay_generation and report.status == "success" and report.frame_analysis:
             try:
                 overlay = create_overlay_video(video_path, landmarks, report.frame_analysis)
                 generated_artifacts.append(overlay.overlay_path)
@@ -61,8 +71,32 @@ async def analyze_sit_to_stand(
             except Exception as exc:
                 logger.warning("Sit-to-stand overlay generation failed: %s", exc)
                 report.limitations.append("Annotated movement preview could not be generated for this analysis.")
+        elif include_overlay and not settings.enable_overlay_generation:
+            report.limitations.append("Annotated overlays are disabled by deployment configuration.")
         if not include_frame_data:
             report.frame_analysis = None
+        can_save = current_user is not None or settings.enable_public_demo_mode
+        if save_session and settings.enable_session_history and can_save:
+            try:
+                saved = save_analysis_session(
+                    report, source_filename=video.filename,
+                    media_metadata={
+                        "content_type": video.content_type,
+                        "size_bytes": video_path.stat().st_size if video_path.exists() else None,
+                    }, patient_id=patient_id,
+                    owner_user_id=current_user.user_id if current_user else None,
+                    created_by_user_id=current_user.user_id if current_user else None,
+                )
+                report.session_id = saved.session_id
+                if getattr(saved, "patient_assignment_warning", False):
+                    report.validation_warnings.append("Patient profile was not found; session was saved unassigned.")
+            except Exception as exc:
+                logger.warning("Session persistence failed; analysis remains available: %s", exc)
+                report.validation_warnings.append("Session could not be saved.")
+        elif save_session:
+            report.validation_warnings.append(
+                "Log in to save this session." if not can_save else "Session history is disabled by deployment configuration."
+            )
         return report
     except PoseEstimationError as exc:
         return error_response(status.HTTP_422_UNPROCESSABLE_ENTITY, pose_error_code(str(exc)), str(exc))

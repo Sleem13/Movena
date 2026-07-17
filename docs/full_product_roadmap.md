@@ -1,35 +1,57 @@
-# Full Product Roadmap
+# PhysioVision AI Full Product Roadmap
 
-## Phase 1 - Squat Analyzer MVP (Current)
+PhysioVision AI currently supports only `bodyweight_squat` and `sit_to_stand`. All other exercises below are planned and are not production-ready. Rule-based biomechanics remains primary; ML/DL remains experimental until documented validation and promotion criteria are satisfied.
 
-Maintain the working squat upload, rule-based biomechanics, validity gate, repetition counting, confidence scoring, overlay/PDF generation, optional experimental ML second opinion, and responsive web dashboard. Freeze its API contract while architectural seams are introduced.
+## Sprint 12 — Deployment & Mobile-Ready API Hardening
 
-## Phase 2 - Product Foundation
+Purpose: environment configuration, explicit CORS, upload validation, standardized errors, health/readiness endpoints, a mobile API contract, artifact cleanup, and deployment preparation.
 
-- Define the exercise-engine interface and catalog without migrating behavior prematurely.
-- Plan user profiles, patient/therapist roles, session history, PostgreSQL persistence, media storage, and stored reports.
-- Complete manual annotations, participant grouping, dataset provenance, and model governance.
-- Introduce persistence only after privacy, authorization, consent, deletion, and retention requirements are approved.
+Status: engineering complete. This does not authorize processing real patient data.
 
-**Exit gate:** existing squat regression suite passes; no API behavior drift; data-governance review complete.
+## Sprint 13 — Auth + Roles + Privacy Foundation
 
-## Phase 3 - Multi-Exercise Engine
+Purpose: establish user identity and patient, therapist, and administrator roles; protect sessions; separate therapist and patient access; define privacy and consent placeholders; and document production safety requirements.
 
-Add exercises one at a time through the registry: sit-to-stand, knee extension, shoulder abduction, hip abduction, balance, then gait/walking screening. Each receives dedicated data, recording instructions, validity, phases, thresholds, feedback, and tests. Sit-to-stand is the first pilot; squat thresholds are not reused.
+Exit gate: authenticated and authorized resource access, privacy-reviewed retention/deletion behavior, audit foundations, and tests. Development/demo data must remain non-identifiable.
 
-**Exit gate:** exercise-specific tests, expert threshold review, bounded pilot evidence, and explicit limitations.
+Status: local JWT development foundation implemented. Production identity, consent, tenancy, audit operations, and privacy approval remain gated work.
 
-## Phase 4 - Therapist Dashboard
+## Sprint 14 — Multi-Dataset ML/DL Expansion Architecture
 
-Add therapist login, patient list/profile, exercise assignment, session review, progress and adherence tracking, confidence warnings, detected-observation history, notes, and PDF export. This phase requires authentication, authorization, tenancy boundaries, and privacy review.
+Purpose: classify dataset modalities, establish an exercise taxonomy and unified sample schema, define the dataset-adapter interface, separate ML/DL training tracks, introduce a model registry, and create a model-card template.
 
-## Phase 5 - Mobile App
+No datasets are blindly merged and no model becomes primary during this sprint.
 
-Ship a React Native + Expo client, with Flutter retained as an alternative if future staffing justifies it. The mobile app captures/uploads video, displays session results and exercise programs, provides history and therapist sharing, and retains safety notices. Backend-side analysis remains the initial architecture.
+Status: architecture and safe dry-run scaffolds implemented; exercise-specific parsing and training readiness remain Sprint 15 work.
 
-## Phase 6 - Validation and Deployment
+## Sprint 15 — Exercise-Specific Dataset Adapters
 
-Complete manual annotations and participant-grouped evaluation; publish model cards and limitations; conduct safety, privacy, and security review; deploy the web/backend stack to approved cloud infrastructure; and establish backups, incident response, accessibility, performance, and cost controls. Experimental ML may be promoted only through the model-promotion policy. Production deployment remains distinct from clinical validation.
-# Sprint 9 Delivery Note
+Purpose: implement governed adapters for KIMORE, UI-PRMD, UCI physical-therapy data, DynTherapy, Rehab24-6, and available physical-therapy exercise datasets. Each adapter produces a dataset-specific training-readiness report covering modality, labels, provenance, participants, splits, quality, licensing, and limitations.
 
-The product now supports two selectable rule-based movements: bodyweight squat and sit-to-stand. Sit-to-stand ML is explicitly unavailable, and the new analyzer remains an engineering prototype pending real-video, participant, and PT-informed threshold validation. No additional exercise should be activated until this validation is complete.
+Adapter availability does not mean the related exercise analyzer is supported.
+
+## Sprint 16 — Mobile App MVP
+
+Purpose: build a React Native + Expo client with login/demo mode, exercise selection, video recording/upload, progress, analysis results, session history, and safety/about content. Analysis remains backend-side initially.
+
+Only supported backend exercises may appear as active choices.
+
+## Sprint 17 — Cloud Deployment
+
+Purpose: deploy backend, frontend, database, and secure media/object storage; configure environment variables and production CORS; and establish logging, monitoring, backup, security, and privacy procedures.
+
+Cloud deployment follows API hardening, auth/privacy, stable session contracts, and dataset/model registry clarity. It is separate from clinical validation.
+
+## Sprint 18+ — Multi-Exercise Expansion
+
+Planned analyzers include knee extension, shoulder abduction, hip abduction, balance, walking/gait screening, heel raise, lunge, and step-up. Future research may evaluate exercise recognition and validated sequence-model candidates.
+
+Every exercise requires its own recording protocol, validity gate, phase/state logic, scoring, confidence, feedback, dataset evidence, expert review, and regression tests. Planned exercises must never be presented as working until those gates pass.
+
+## Product-wide boundaries
+
+- The product supports exercise monitoring and educational review; it does not diagnose or prescribe treatment.
+- A licensed physiotherapist retains clinical judgment.
+- Rule-based analyzers remain primary until model promotion criteria are met.
+- Video, skeleton, sensor, image, and tabular datasets remain modality-separated unless a validated fusion study explicitly justifies combination.
+- Mobile and cloud scale a governed product; they do not substitute for data, safety, privacy, or clinical validation.

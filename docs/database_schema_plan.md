@@ -58,3 +58,15 @@ Manual annotations belong to an immutable dataset version and sample identity. M
 - Use opaque IDs, short-lived signed artifact URLs, secret rotation, least privilege, audit logging, and deletion propagation.
 - Define regional retention, backup, legal hold, export, correction, and account-deletion policies before persistence.
 - Never place diagnoses or sensitive notes in logs, object keys, filenames, analytics events, or model features without an approved purpose.
+# Sprint 11 Profile Extension
+
+`patient_profiles` stores synthetic development profiles. `analysis_sessions.patient_id` is nullable and uses a logical `SET NULL` relationship; profile deletion explicitly unassigns sessions. A narrow SQLite compatibility migration adds the nullable column to existing local databases. Versioned Alembic migrations remain required before production deployment.
+# Deployment note
+
+SQLite remains appropriate only for local development. A hosted deployment should use managed PostgreSQL (for example Neon, Supabase, or Railway), migrations, encrypted backups, least-privilege credentials, and per-user authorization. The current schema must not be treated as a production clinical record.
+
+Sprint 13 adds development users, optional versioned consent records, audit-log foundations, and nullable `owner_user_id` / `created_by_user_id` session ownership. The compatibility initializer adds missing SQLite ownership columns, but production requires versioned migrations and reviewed foreign-key/tenancy constraints.
+
+## Sprint 14 research registry boundary
+
+The Sprint 14 dataset, exercise-taxonomy, unified-sample, and model registries are versioned research and engineering metadata files. They do not create patient records, activate a runtime exercise analyzer, or authorize a model for production use. If these registries later move into persistent storage, their schema migrations, checksums, provenance, review status, and promotion history must remain separate from patient/session tables and be governed through an audited release process.

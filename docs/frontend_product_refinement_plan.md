@@ -38,4 +38,7 @@ Retain the current common UI primitives and AppShell, then add route-based pages
 - Clinical decisions and treatment changes are always directed to a qualified professional.
 
 No placeholder pages are implemented in this roadmap task; the working squat frontend remains unchanged.
+# Therapist Workspace Prototype
+
+Sprint 11 adds dashboard summary cards, recent sessions, issue counts, exercise distribution, placeholder-profile creation/list/detail, progress summaries, and visible privacy warnings using the existing component system. Heavy chart and routing dependencies remain deferred. Accessibility, responsive tables, authenticated deep links, and production empty/error-state research remain future refinement work.
 

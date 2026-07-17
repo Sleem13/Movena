@@ -1,54 +1,34 @@
 # PhysioVision AI Product Vision
 
-**Positioning:** “A physiotherapist-informed AI movement analysis and rehabilitation support platform.”
+**Positioning:** “PhysioVision AI is a physiotherapist-informed movement analysis and rehabilitation support platform that combines rule-based biomechanics, confidence-aware feedback, and validated ML/DL support for multi-exercise rehab monitoring.”
 
-## Product Direction
+## Product direction
 
-PhysioVision AI is intended to become a physiotherapy-informed movement-analysis and rehabilitation-support platform. The bodyweight Squat Analyzer is the first production-shaped vertical slice: it proves video capture, pose extraction, validity gating, confidence communication, movement metrics, visual feedback, and therapist-readable reporting. It is the MVP, not the final product.
+The current MVP supports video-based bodyweight squat and sit-to-stand analysis. It demonstrates capture/upload, pose extraction, input validity, confidence communication, repetition and movement metrics, visual feedback, reporting, session history, and therapist-oriented review foundations. The long-term vision is a governed multi-exercise therapy platform across web, mobile, and therapist workflows. All additional exercises remain planned until exercise-specific engineering and validation gates pass.
 
-The product supports exercise monitoring and structured review. It does not diagnose conditions, prescribe treatment, replace examination by a licensed professional, or claim clinical effectiveness.
+## Target users
 
-## Current MVP and Long-Term Vision
+- Patients and exercise participants seeking understandable monitoring of assigned exercises.
+- Physiotherapists reviewing recordings, measurements, confidence, and trends while retaining clinical judgment.
+- Clinics adopting governed workflows after authentication, consent, privacy, and secure storage exist.
+- Researchers and students studying transparent biomechanics, dataset provenance, and experimental model evidence.
 
-The current MVP is the video-based bodyweight Squat Analyzer. The long-term vision is a multi-exercise rehabilitation-monitoring platform spanning patient web/mobile clients, therapist review, session history, reports, and governed analysis modules.
+## Product role
 
-## Target Users
+PhysioVision AI provides exercise monitoring and educational support. Rule-based biomechanics is primary. Confidence-aware feedback exposes input and measurement limitations. ML/DL may provide optional support only after track-specific evidence and documented promotion criteria are satisfied.
 
-- **Patients and exercise participants:** record an assigned movement, receive understandable educational observations, and share a session report.
-- **Physiotherapists:** review sessions, measurement quality, movement trends, and patient-reported context while retaining clinical judgment.
-- **Clinics:** coordinate programs, governance, retention, and audit policies after identity, consent, and access controls exist.
-- **Students and researchers:** inspect transparent biomechanics, confidence, dataset provenance, and experimental model comparisons without treating outputs as clinical truth.
+## Non-goals
 
-## Product Modules
+- No diagnosis of injury, disease, impairment, or movement disorder.
+- No replacement for a licensed physiotherapist or healthcare professional.
+- No independent prescription, progression, or modification of treatment.
+- No unsupported clinical accuracy, outcome, safety, or effectiveness claims.
 
-1. **Patient app:** guidance, capture/upload, results, safety notices, history, and sharing.
-2. **Therapist dashboard:** patient queues, session review, exercise plans, annotations, and exports.
-3. **Exercise analysis engine:** shared pose/signal infrastructure plus exercise-specific validity, metrics, rules, feedback, and schemas.
-4. **Session history:** consent-aware storage of session metadata, results, media references, and trends.
-5. **Report generation:** patient-friendly and therapist-readable artifacts with limitations and provenance.
-6. **Dataset/model management:** versioned datasets, mappings, evaluation evidence, model status, and rollback.
-7. **Safety/confidence layer:** input validity, pose quality, measurement confidence, conservative language, and escalation guidance.
+## Product principles
 
-## Core Value
-
-- Movement-quality observations expressed in understandable, non-diagnostic language.
-- Stabilized repetition counting with uncertainty warnings.
-- Confidence-aware analysis that can reject invalid recordings.
-- Progress monitoring after consent-aware session storage exists.
-- Structured evidence and reports that support therapist review.
-
-## Non-Goals
-
-- Diagnosing injuries, diseases, impairments, or movement disorders.
-- Replacing physiotherapists or other licensed healthcare professionals.
-- Independently prescribing or modifying treatment.
-- Guaranteeing recovery, adherence, safety, or clinical outcomes.
-
-## Product Principles
-
-- Rule-based biomechanics remains primary until stronger evidence supports another role.
-- Every exercise is independently validated; adding an endpoint is not proof of safety or usefulness.
-- Confidence and limitations are first-class outputs, never hidden behind a score.
-- Web ships first. Mobile reuses the backend before on-device analysis is considered.
-- Privacy, consent, deletion, provenance, and least-privilege access are architectural requirements.
-- Product metrics distinguish usability, engineering reliability, and clinical research evidence.
+- Validate every exercise independently.
+- Reject or qualify inadequate recordings instead of manufacturing certainty.
+- Keep confidence and limitations visible.
+- Do not blindly merge incompatible dataset modalities.
+- Complete API, identity/privacy, and data architecture foundations before scaling through mobile and cloud.
+- Treat product release, model promotion, and clinical research validation as distinct approvals.
