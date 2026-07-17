@@ -9,6 +9,7 @@ from app.api.routes.artifacts import router as artifacts_router
 from app.api.routes.squat_analysis import router as squat_router
 from app.api.routes.sit_to_stand_analysis import router as sit_to_stand_router
 from app.api.routes.sessions import router as sessions_router
+from app.api.routes.exercise_recognition import router as exercise_recognition_router
 from app.api.v1.therapist import router as therapist_router
 from app.api.v1.auth import router as auth_router
 from app.api.dependencies.auth import AuthError
@@ -73,6 +74,7 @@ app.include_router(health_router)
 app.include_router(squat_router)
 app.include_router(sit_to_stand_router)
 app.include_router(artifacts_router)
+app.include_router(exercise_recognition_router)
 app.include_router(auth_router)
 if settings.enable_session_history:
     app.include_router(sessions_router)

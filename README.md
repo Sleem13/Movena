@@ -783,3 +783,18 @@ python -m pytest
 ```
 
 Use `python scripts/export_unified_dataset_metadata.py --limit-per-dataset 20` for a bounded debug export. The app still supports only bodyweight squat and sit-to-stand. Future exercises require their own rule-based analyzer, validity and phase logic, safety review, and representative testing even if research data exists. ML/DL remains experimental and no report generated here authorizes clinical use or model promotion. See the [Sprint 15 notes](docs/sprint_15_dataset_adapters.md), [dataset notes](docs/dataset_specific_adapter_notes.md), [coverage design](docs/exercise_coverage_matrix.md), [readiness design](docs/training_readiness_report.md), and [mapping protocol](docs/label_mapping_review_protocol.md).
+
+## Sprint 16A — Experimental Exercise Recognition
+
+Exercise recognition is an optional research foundation for suggesting an exercise type. Manual selection remains primary, recognition never auto-routes or runs an analyzer, and no recognition model is required for startup. Current app-supported exercises remain `bodyweight_squat` and `sit_to_stand`; all other taxonomy exercises are planned only.
+
+```powershell
+python scripts/build_exercise_recognition_dataset.py --dry-run
+python scripts/build_exercise_recognition_dataset.py
+python scripts/build_exercise_recognition_features.py --dry-run
+python scripts/build_exercise_recognition_features.py
+python scripts/train_exercise_recognition_baseline.py --dry-run --track video_pose_recognition --model random_forest
+python -m pytest
+```
+
+Experimental endpoints are `GET /api/v1/recognition/models` and `POST /api/v1/recognition/exercise`. The POST endpoint accepts precomputed features only; it does not process uploads or provide clinical feedback. Recognition does not diagnose, prescribe, or replace professional assessment. See the [strategy](docs/exercise_recognition_strategy.md), [routing design](docs/exercise_auto_routing_design.md), and [Sprint 16A notes](docs/sprint_16a_exercise_recognition_foundation.md).

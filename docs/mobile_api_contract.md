@@ -29,3 +29,10 @@ Session and therapist calls now require `Authorization: Bearer <access_token>`. 
 ```
 
 Clients must tolerate optional fields, treat relative artifact URLs as relative to the configured API base, and never interpret scores as diagnosis or treatment advice.
+
+## Experimental recognition endpoints
+
+- `GET /api/v1/recognition/models` lists optional experimental artifacts and supported tracks.
+- `POST /api/v1/recognition/exercise` currently accepts precomputed feature JSON only.
+
+Mobile clients must not auto-route from recognition. They may show a suggestion only with its experimental warning and a confirmation step. `analyzer_available=false` means the exercise is planned or unsupported and must not produce feedback. Upload-to-recognition extraction is not enabled in this foundation.

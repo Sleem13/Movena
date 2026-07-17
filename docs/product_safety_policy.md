@@ -45,3 +45,7 @@ Deployment readiness does not imply clinical or patient-data readiness. Without 
 Authentication controls access but does not validate clinical use, professional identity, consent, or appropriateness of an exercise. Role labels never grant clinical authority, and the development therapist dashboard is not a medical record.
 
 Dataset availability, taxonomy mapping, model training, and app integration are separate gates. Unknown or weak labels require manual review, incompatible modalities cannot enter a pipeline, and no ML/DL model may automatically become an app or clinical output.
+
+## Exercise-recognition boundary
+
+Exercise recognition is an experimental routing aid, not clinical interpretation. It must never overwrite explicit selection, automatically invoke an analyzer, or provide feedback for an unsupported exercise. Suggestions require confirmation; absent or low-confidence output falls back to manual selection. Recognition confidence thresholds are product thresholds, not clinical safety thresholds.

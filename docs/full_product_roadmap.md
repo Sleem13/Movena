@@ -36,6 +36,10 @@ Purpose: build a React Native + Expo client with login/demo mode, exercise selec
 
 Only supported backend exercises may appear as active choices.
 
+### Sprint 16A â€” Exercise Recognition Model Foundation
+
+Status: engineering foundation implemented. Recognition metadata and features remain modality-separated, baseline training is gated, and the optional API returns experimental suggestions only. Current reviewed features contain one exercise class, so no recognition model is trained or promoted. Manual selection remains primary; only squat and sit-to-stand have analyzers.
+
 ## Sprint 17 — Cloud Deployment
 
 Purpose: deploy backend, frontend, database, and secure media/object storage; configure environment variables and production CORS; and establish logging, monitoring, backup, security, and privacy procedures.

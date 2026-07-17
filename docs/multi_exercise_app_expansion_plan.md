@@ -30,4 +30,6 @@ Each exercise needs its own camera protocol, schema, validity gate, rep/phase lo
 9. Train ML/DL only when labels, participants, and modality support it.
 10. Keep the model experimental until promotion criteria pass.
 
+Sprint 16A recognition may suggest a taxonomy label, but it does not activate an expansion step or analyzer. Unsupported predictions remain planned-only, and the user must confirm an available exercise manually.
+
 Sprint 15 coverage and readiness reports inform steps 1–2 only. They do not satisfy the exercise-specific validity, phase, scoring, confidence, frontend, artifact, or expert-review gates. Consequently, the current application still exposes only bodyweight squat and sit-to-stand.

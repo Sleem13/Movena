@@ -41,3 +41,7 @@ Do not blindly merge video, skeleton, sensor, image, and tabular datasets into o
 ## Sprint 15 routing status
 
 Named adapters now route video/image, skeleton, sensor, and tabular artifacts to their matching research tracks. Mixed Rehab24-6 samples are classified per file where the folder and extension provide evidence. Unknown exercise codes remain excluded from training candidates. A technically compatible modality is not sufficient: reviewed labels and participant-grouped splits remain mandatory for serious evaluation.
+
+## Exercise-recognition layer
+
+Sprint 16A adds parallel recognition tracks for video pose, skeleton sequences, sensor time series, image pose, and tabular features. Recognition predicts an exercise label only; it does not assess movement quality. Track identity is preserved and incompatible modalities are not combined. Every output is an experimental suggestion requiring manual confirmation.
