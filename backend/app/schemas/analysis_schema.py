@@ -64,6 +64,9 @@ class ScoreBreakdown(BaseModel):
     completion_score: int | None = Field(default=None, ge=0, le=100)
     control_score: int | None = Field(default=None, ge=0, le=100)
     symmetry_placeholder_score: int | None = Field(default=None, ge=0, le=100)
+    extension_range_score: int | None = Field(default=None, ge=0, le=100)
+    posture_visibility_score: int | None = Field(default=None, ge=0, le=100)
+    rep_completion_score: int | None = Field(default=None, ge=0, le=100)
 
 
 class AnalysisConfidence(BaseModel):
@@ -90,10 +93,13 @@ class InputValidity(BaseModel):
 class AnalysisResponse(BaseModel):
     session_id: str | None = None
     exercise: str = "bodyweight_squat"
+    exercise_id: str | None = None
+    exercise_name: str | None = None
     status: str = "success"
     error_code: str | None = None
     message: str | None = None
     total_reps: int = 0
+    valid_reps: int | None = None
     average_knee_angle: float = 0
     average_hip_angle: float = 0
     average_trunk_angle: float = 0
@@ -103,6 +109,7 @@ class AnalysisResponse(BaseModel):
     rep_durations: list[float] = Field(default_factory=list)
     ignored_partial_reps: int = 0
     rep_count_confidence: float = Field(default=0, ge=0, le=1)
+    phase_transitions: list[str] = Field(default_factory=list)
     pose_quality: PoseQuality | None = None
     score_breakdown: ScoreBreakdown | None = None
     analysis_confidence: AnalysisConfidence | None = None

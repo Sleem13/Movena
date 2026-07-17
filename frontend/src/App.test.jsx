@@ -2,7 +2,7 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import App from "./App.jsx";
-import { analyzeSitToStandVideo, analyzeSquatVideo } from "./services/api.js";
+import { analyzeKneeExtensionVideo, analyzeSitToStandVideo, analyzeSquatVideo } from "./services/api.js";
 import { getSavedSession, listSavedSessions } from "./services/api.js";
 import { createPatientProfile, getPatientProfile, getPatientProgress, getTherapistDashboard, listPatientProfiles, listPatientSessions } from "./services/api.js";
 
@@ -14,6 +14,7 @@ vi.mock("./context/AuthContext.jsx", () => ({
 vi.mock("./services/api.js", () => ({
   analyzeSquatVideo: vi.fn(),
   analyzeSitToStandVideo: vi.fn(),
+  analyzeKneeExtensionVideo: vi.fn(),
   listSavedSessions: vi.fn(),
   getSavedSession: vi.fn(),
   deleteSavedSession: vi.fn(),
@@ -123,6 +124,30 @@ describe("Squat Analyzer healthcare dashboard", () => {
     expect(analyzeSitToStandVideo).toHaveBeenCalledTimes(1);
     expect(screen.getByText(/not available for sit-to-stand yet/i)).toBeInTheDocument();
     expect(screen.getByText("Completion")).toBeInTheDocument();
+  });
+
+  it("selects knee extension, shows side-view guidance, and renders its rule-based result", async () => {
+    const kneeReport = {
+      ...report,
+      exercise: "knee_extension",
+      exercise_id: "knee_extension",
+      exercise_name: "Knee Extension",
+      valid_reps: 2,
+      summary: "Two complete knee extension repetitions analyzed.",
+      ml_prediction: { enabled: false, model_version: "not_applicable", warning: "ML prediction is not applicable for knee extension." },
+      score_breakdown: { extension_range_score: 90, control_score: 88, consistency_score: 85, posture_visibility_score: 92, rep_completion_score: 100 },
+    };
+    analyzeKneeExtensionVideo.mockResolvedValue(kneeReport);
+    openUpload();
+    fireEvent.change(screen.getByLabelText("Exercise selector"), { target: { value: "knee_extension" } });
+    expect(screen.getByText("Seated position visible")).toBeInTheDocument();
+    expect(screen.getByLabelText("ML second opinion")).toBeDisabled();
+    const file = new File(["video"], "extension.mp4", { type: "video/mp4" });
+    fireEvent.change(screen.getByLabelText(/choose a knee extension exercise video/i), { target: { files: [file] } });
+    fireEvent.click(screen.getByRole("button", { name: "Analyze knee extension" }));
+    await screen.findByText("Knee Extension report");
+    expect(analyzeKneeExtensionVideo).toHaveBeenCalledTimes(1);
+    expect(screen.getByText("Extension range")).toBeInTheDocument();
   });
 
   it("renders the camera placement guide", () => {

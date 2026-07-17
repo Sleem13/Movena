@@ -1,12 +1,12 @@
 # PhysioVision AI
 
-PhysioVision AI is a physiotherapy-informed movement-analysis and rehabilitation-support product in development. Its current working MVP supports bodyweight squat and sit-to-stand video analysis with MediaPipe pose landmarks, exercise-specific rule-based biomechanics, repetition counting, validity and confidence checks, and educational feedback.
+PhysioVision AI is a physiotherapy-informed movement-analysis and rehabilitation-support product in development. Its current working MVP supports bodyweight squat, sit-to-stand, and seated knee-extension video analysis with MediaPipe pose landmarks, exercise-specific rule-based biomechanics, repetition counting, validity and confidence checks, and educational feedback.
 
 ## From Squat MVP to Full Product Roadmap
 
 Squat and sit-to-stand are the current MVP, not the final product. The long-term architecture supports a patient web/mobile experience, therapist dashboard, exercise-specific analysis engine, consent-aware session history, report generation, dataset/model governance, and a shared safety/confidence layer. API, auth/privacy, and data architecture foundations precede the React Native + Expo mobile MVP; analysis stays on FastAPI before any on-device feasibility work.
 
-No exercise beyond bodyweight squat and sit-to-stand is active today. Rule-based analyzers remain primary, and optional ML/DL remains experimental.
+Bodyweight squat, sit-to-stand, and knee extension are active today. Rule-based analyzers remain primary, and optional ML/DL remains experimental; no knee-extension ML model is available.
 
 Product planning documents:
 
@@ -733,7 +733,7 @@ Sprint 17 — Cloud Deployment
 Sprint 18+ — Multi-Exercise Expansion
 ```
 
-Current supported exercises are bodyweight squat and sit-to-stand. Planned expansion includes knee extension, shoulder abduction, hip abduction, balance, walking/gait screening, heel raise, lunge, and step-up; these planned exercises are not currently working analyzers.
+Current supported exercises are bodyweight squat, sit-to-stand, and seated knee extension. Planned expansion includes shoulder abduction, hip abduction, balance, walking/gait screening, heel raise, lunge, and step-up; these planned exercises are not currently working analyzers.
 
 Rule-based biomechanics remains primary. ML/DL models remain experimental until exercise-specific validation and documented promotion criteria are met. Video, skeleton, sensor, image, and tabular datasets are not blindly merged: each source requires modality classification, provenance and licensing review, taxonomy mapping, participant-safe splitting, and a dataset-specific adapter. PhysioVision AI supports exercise monitoring and educational feedback; it does not diagnose, replace a licensed physiotherapist, or independently prescribe treatment.
 
@@ -782,11 +782,11 @@ python scripts/build_training_readiness_report.py
 python -m pytest
 ```
 
-Use `python scripts/export_unified_dataset_metadata.py --limit-per-dataset 20` for a bounded debug export. The app still supports only bodyweight squat and sit-to-stand. Future exercises require their own rule-based analyzer, validity and phase logic, safety review, and representative testing even if research data exists. ML/DL remains experimental and no report generated here authorizes clinical use or model promotion. See the [Sprint 15 notes](docs/sprint_15_dataset_adapters.md), [dataset notes](docs/dataset_specific_adapter_notes.md), [coverage design](docs/exercise_coverage_matrix.md), [readiness design](docs/training_readiness_report.md), and [mapping protocol](docs/label_mapping_review_protocol.md).
+Use `python scripts/export_unified_dataset_metadata.py --limit-per-dataset 20` for a bounded debug export. The app supports bodyweight squat, sit-to-stand, and knee extension. Future exercises require their own rule-based analyzer, validity and phase logic, safety review, and representative testing even if research data exists. ML/DL remains experimental and no report generated here authorizes clinical use or model promotion. See the [Sprint 15 notes](docs/sprint_15_dataset_adapters.md), [dataset notes](docs/dataset_specific_adapter_notes.md), [coverage design](docs/exercise_coverage_matrix.md), [readiness design](docs/training_readiness_report.md), and [mapping protocol](docs/label_mapping_review_protocol.md).
 
 ## Sprint 16A — Experimental Exercise Recognition
 
-Exercise recognition is an optional research foundation for suggesting an exercise type. Manual selection remains primary, recognition never auto-routes or runs an analyzer, and no recognition model is required for startup. Current app-supported exercises remain `bodyweight_squat` and `sit_to_stand`; all other taxonomy exercises are planned only.
+Exercise recognition is an optional research foundation for suggesting an exercise type. Manual selection remains primary, recognition never auto-routes or runs an analyzer, and no recognition model is required for startup. Current app-supported exercises are `bodyweight_squat`, `sit_to_stand`, and `knee_extension`; all other taxonomy exercises are planned only.
 
 ```powershell
 python scripts/build_exercise_recognition_dataset.py --dry-run
@@ -798,3 +798,19 @@ python -m pytest
 ```
 
 Experimental endpoints are `GET /api/v1/recognition/models` and `POST /api/v1/recognition/exercise`. The POST endpoint accepts precomputed features only; it does not process uploads or provide clinical feedback. Recognition does not diagnose, prescribe, or replace professional assessment. See the [strategy](docs/exercise_recognition_strategy.md), [routing design](docs/exercise_auto_routing_design.md), and [Sprint 16A notes](docs/sprint_16a_exercise_recognition_foundation.md).
+
+## Sprint 17 — Knee Extension Analyzer MVP
+
+The manually selected `knee_extension` workflow uses its own rule-based validity, flexed–extended–flexed repetition counting, explainable scoring, and safe feedback. It supports shared overlay, report, frame-data, and session options. No knee-extension ML model was trained or promoted.
+
+```powershell
+python scripts/prepare_knee_extension_training_candidates.py
+cd backend
+python -m uvicorn app.main:app --reload
+# POST /api/v1/analyze/knee-extension
+cd ../frontend
+npm install
+npm run dev
+```
+
+Use a stable side view showing the seated hip, knee, ankle, and lower-leg motion for 3–5 complete repetitions. Engineering thresholds are not clinically validated. See the [Sprint notes](docs/sprint_17_knee_extension_analyzer.md), [analyzer design](docs/knee_extension_analyzer_design.md), and [annotation protocol](docs/knee_extension_annotation_protocol.md).

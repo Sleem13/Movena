@@ -25,11 +25,15 @@ def generate_session_report(report: AnalysisResponse, output_path: Path) -> Path
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
     styles = getSampleStyleSheet()
+    display_names = {
+        "bodyweight_squat": "Bodyweight Squat",
+        "sit_to_stand": "Sit-to-Stand",
+        "knee_extension": "Knee Extension",
+    }
+    exercise_name = report.exercise_name or display_names.get(report.exercise, report.exercise.replace("_", " ").title())
     story = [
         Paragraph(
-            "PhysioVision AI - "
-            + ("Sit-to-Stand" if report.exercise == "sit_to_stand" else "Squat")
-            + " Session Report",
+            f"PhysioVision AI - {exercise_name} Session Report",
             styles["Title"],
         ),
         Spacer(1, 5 * mm),
@@ -41,7 +45,7 @@ def generate_session_report(report: AnalysisResponse, output_path: Path) -> Path
         Spacer(1, 5 * mm),
     ]
     data = [
-        ["Exercise", "Sit-to-Stand" if report.exercise == "sit_to_stand" else "Bodyweight squat"],
+        ["Exercise", exercise_name],
         ["Total repetitions", str(report.total_reps)],
         ["Movement score", "Not scored" if report.movement_score is None else f"{report.movement_score}/100"],
         ["Average knee angle", f"{report.average_knee_angle:.2f} deg"],

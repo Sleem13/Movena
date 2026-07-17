@@ -1,0 +1,1 @@
+sample_id,dataset_name,file_path,modality,exercise_id,raw_label,normalized_label,participant_id,session_id,view_type,recording_quality,requires_manual_review,training_ready,candidate_reason,notes

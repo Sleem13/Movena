@@ -1,10 +1,10 @@
 # Multi-Exercise Application Expansion Plan
 
-Only `bodyweight_squat` and `sit_to_stand` are currently supported. Every entry below is **planned**, not production-ready. Thresholds remain undefined until data and physiotherapy review exist.
+`bodyweight_squat`, `sit_to_stand`, and the rule-based `knee_extension` MVP are currently supported. Every other entry below is **planned**, not production-ready. Knee-extension thresholds remain engineering defaults pending representative physiotherapy review.
 
 | Priority / exercise | Modality and landmarks | Suggested view | Rule, validity, and phase needs | Data sources / difficulty / safety |
 |---|---|---|---|---|
-| 1. `knee_extension` | Video/skeleton; hip, knee, ankle | Side | Range/visibility gate; flexion → extension → return; seated-position validation | KIMORE, UI-PRMD, compatible PT collections after label review. Medium. Do not infer pain or safe load. Planned. |
+| Implemented MVP: `knee_extension` | Video/skeleton; hip, knee, ankle | Side | Range/visibility gate; flexion → extension → return; seated-position validation | Rule-based only. Data candidates require manual review. Do not infer pain or safe load. |
 | 2. `shoulder_abduction` | Video/skeleton; shoulders, elbows, wrists, hips | Front | Bilateral visibility and trunk-compensation gate; raise → peak → lower | KIMORE/UI-PRMD if protocols match. Medium. Do not infer impingement or safe range. Planned. |
 | 3. `hip_abduction` | Video/skeleton; shoulders, hips, knees, ankles | Front | Support/body visibility; outward → peak → return; balance/trunk confidence | KIMORE/UI-PRMD/rehab sources after mapping. Medium-high; supervision protocol needed. Planned. |
 | 4. `single_leg_balance` / `balance` | Video/skeleton; optional separate sensor track; shoulders through ankles | Front/oblique | Duration rather than reps; stance and foot visibility; loss-of-balance event definitions | Rehab24-6/KIMORE; sensor datasets stay separate. High. Never diagnose fall risk. Planned. |
@@ -32,4 +32,4 @@ Each exercise needs its own camera protocol, schema, validity gate, rep/phase lo
 
 Sprint 16A recognition may suggest a taxonomy label, but it does not activate an expansion step or analyzer. Unsupported predictions remain planned-only, and the user must confirm an available exercise manually.
 
-Sprint 15 coverage and readiness reports inform steps 1–2 only. They do not satisfy the exercise-specific validity, phase, scoring, confidence, frontend, artifact, or expert-review gates. Consequently, the current application still exposes only bodyweight squat and sit-to-stand.
+Sprint 15 coverage and readiness reports inform steps 1–2 only. Sprint 17 separately implemented the exercise-specific knee-extension gates; this does not clinically validate its thresholds or make candidate data training-ready.

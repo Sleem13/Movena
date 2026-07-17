@@ -1,0 +1,21 @@
+{
+  "status": "success",
+  "dry_run": false,
+  "torch_version": "2.6.0+cu124",
+  "cuda_available": true,
+  "device_name": "NVIDIA RTX 2000 Ada Generation",
+  "config": {
+    "steps": 20,
+    "batch_size": 64,
+    "input_dim": 128,
+    "classes": 4,
+    "hidden_dim": 128
+  },
+  "cpu_time_sec": 0.018695,
+  "gpu_time_sec": 0.101085,
+  "cpu_steps_per_sec": 1069.828,
+  "gpu_steps_per_sec": 197.853,
+  "gpu_speedup": 0.185,
+  "gpu_memory_allocated_mb": 17.51,
+  "gpu_memory_reserved_mb": 22.0
+}

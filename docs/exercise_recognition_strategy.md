@@ -11,13 +11,12 @@ Experimental exercise recognition estimates the likely exercise represented by m
 - Recognition never changes the selected analyzer, triggers analysis, or produces clinical feedback.
 - If no validated model or compatible features exist, the service returns `not_available` or `not_implemented` without affecting app startup.
 
-The only app-supported analyzers are `bodyweight_squat` and `sit_to_stand`.
+The app-supported analyzers are `bodyweight_squat`, `sit_to_stand`, and `knee_extension`. Manual selection remains primary and knee extension has no trained recognition or biomechanics model.
 
 ## Future behavior
 
 A high-confidence result may suggest an available analyzer, but the user must confirm it. A low-confidence result asks for manual selection. A predicted exercise without an implemented analyzer is described as planned and cannot produce feedback.
 
-Planned taxonomy labels include `knee_extension`, `shoulder_abduction`, `hip_abduction`, `heel_raise`, `balance`, `walking_gait_screen`, `lunge`, and `step_up`. Dataset coverage for these labels does not mean the exercise works in the app.
+Planned taxonomy labels include `shoulder_abduction`, `hip_abduction`, `heel_raise`, `balance`, `walking_gait_screen`, `lunge`, and `step_up`. Dataset coverage for these labels does not mean an exercise works in the app.
 
 Recognition datasets and features remain separated into video pose, skeleton sequence, sensor time-series, image pose, and tabular-feature tracks. Participant-grouped evaluation and adequate per-class recall are required before any candidate routing experiment. No recognition model is clinically validated, and rule-based analyzers remain primary.
-

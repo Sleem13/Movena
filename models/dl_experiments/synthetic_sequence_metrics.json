@@ -1,0 +1,19 @@
+{
+  "status": "success",
+  "experimental": true,
+  "warning": "This is an experimental synthetic DL sandbox. It is not a production model.",
+  "device": "cuda",
+  "device_name": "NVIDIA RTX 2000 Ada Generation",
+  "epochs": 2,
+  "batch_size": 16,
+  "train_samples": 76,
+  "test_samples": 20,
+  "classes": 3,
+  "epoch_losses": [
+    1.105289,
+    1.093853
+  ],
+  "test_accuracy": 0.35,
+  "promoted_to_app": false,
+  "device_warning": null
+}

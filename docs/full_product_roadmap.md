@@ -1,6 +1,6 @@
 # PhysioVision AI Full Product Roadmap
 
-PhysioVision AI currently supports only `bodyweight_squat` and `sit_to_stand`. All other exercises below are planned and are not production-ready. Rule-based biomechanics remains primary; ML/DL remains experimental until documented validation and promotion criteria are satisfied.
+PhysioVision AI currently supports `bodyweight_squat`, `sit_to_stand`, and the Sprint 17 `knee_extension` rule-based MVP. All other exercises below are planned and are not production-ready. Rule-based biomechanics remains primary; ML/DL remains experimental until documented validation and promotion criteria are satisfied.
 
 ## Sprint 12 — Deployment & Mobile-Ready API Hardening
 
@@ -40,7 +40,11 @@ Only supported backend exercises may appear as active choices.
 
 Status: engineering foundation implemented. Recognition metadata and features remain modality-separated, baseline training is gated, and the optional API returns experimental suggestions only. Current reviewed features contain one exercise class, so no recognition model is trained or promoted. Manual selection remains primary; only squat and sit-to-stand have analyzers.
 
-## Sprint 17 — Cloud Deployment
+## Sprint 17 — Knee Extension Analyzer MVP
+
+Status: engineering implementation complete. The manually selected workflow has exercise-specific validity, phase logic, scoring, feedback, API/UI support, and shared artifacts. Candidate data remains manual-review-only and no ML model was trained or promoted.
+
+## Sprint 17B — Cloud Deployment
 
 Purpose: deploy backend, frontend, database, and secure media/object storage; configure environment variables and production CORS; and establish logging, monitoring, backup, security, and privacy procedures.
 
@@ -48,7 +52,7 @@ Cloud deployment follows API hardening, auth/privacy, stable session contracts, 
 
 ## Sprint 18+ — Multi-Exercise Expansion
 
-Planned analyzers include knee extension, shoulder abduction, hip abduction, balance, walking/gait screening, heel raise, lunge, and step-up. Future research may evaluate exercise recognition and validated sequence-model candidates.
+Planned analyzers include shoulder abduction, hip abduction, balance, walking/gait screening, heel raise, lunge, and step-up. Future research may evaluate exercise recognition and validated sequence-model candidates.
 
 Every exercise requires its own recording protocol, validity gate, phase/state logic, scoring, confidence, feedback, dataset evidence, expert review, and regression tests. Planned exercises must never be presented as working until those gates pass.
 

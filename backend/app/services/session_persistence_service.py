@@ -14,7 +14,11 @@ from app.db.database import SessionLocal
 from app.db.models import AnalysisSession, DetectedIssue, PatientProfile, SessionMetric, UploadedMedia
 
 
-DISPLAY_NAMES = {"bodyweight_squat": "Bodyweight Squat", "sit_to_stand": "Sit-to-Stand"}
+DISPLAY_NAMES = {
+    "bodyweight_squat": "Bodyweight Squat",
+    "sit_to_stand": "Sit-to-Stand",
+    "knee_extension": "Knee Extension",
+}
 
 
 def _value(source: Any, name: str, default=None):

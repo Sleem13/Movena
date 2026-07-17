@@ -193,6 +193,8 @@ data/processed/**/*.csv
 !data/processed/registry/exercise_taxonomy.csv
 !data/processed/registry/model_registry.csv
 !data/processed/labels/squat_training_dataset_v3_candidates.csv
+!data/processed/labels/knee_extension_annotation_template.csv
+!data/processed/labels/knee_extension_training_candidates.csv
 data/processed/**/*.json
 !data/processed/registry/unified_sample_schema.json
 data/processed/**/*.parquet

@@ -1,0 +1,18 @@
+# GPU Environment Report
+
+Experimental infrastructure report; not a model-readiness decision.
+
+- **python_version**: 3.12.10
+- **torch_installed**: True
+- **torch_version**: 2.6.0+cu124
+- **cuda_available**: True
+- **torch_cuda_version**: 12.4
+- **cudnn_available**: True
+- **cudnn_version**: 90100
+- **gpu_name**: NVIDIA RTX 2000 Ada Generation
+- **gpu_count**: 1
+- **gpu_total_memory_mb**: 16379.5
+- **gpu_allocated_memory_mb**: 0.0
+- **gpu_reserved_memory_mb**: 0.0
+- **device_capability**: [8, 9]
+- **gpu_ready**: True

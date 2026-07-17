@@ -38,6 +38,10 @@ Therapist review is preferred for clinical decisions, persistent symptoms, uncer
 Each exercise, threshold, feedback rule, model, and user-facing safety statement requires versioning, regression tests, expert review, and rollback. Product release approval and clinical research approval are separate decisions.
 
 ML/DL predictions are experimental unless a model has passed documented promotion criteria. They must remain visibly subordinate to the validity gate and primary rule-based biomechanics. Low-confidence analyses require manual review and must not be presented as reliable clinical conclusions.
+
+## Knee-extension boundary
+
+The system may describe visible extension range, complete cycles, tempo consistency, landmark visibility, and possible trunk movement. It must not infer joint stiffness, muscle weakness, pain, injury, passive range, safe resistance, or treatment progression.
 # Deployment privacy boundary
 
 Deployment readiness does not imply clinical or patient-data readiness. Without authentication, authorization, consent, encryption governance, retention controls, and formal privacy/security review, this MVP must use synthetic or non-identifiable evaluation data only. Movement outputs are educational support and must not be represented as diagnosis or prescribed treatment.

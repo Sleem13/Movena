@@ -10,7 +10,7 @@ import Login from "./pages/Login.jsx";
 import Register from "./pages/Register.jsx";
 import Profile from "./pages/Profile.jsx";
 import { AuthProvider, useAuth } from "./context/AuthContext.jsx";
-import { analyzeSitToStandVideo, analyzeSquatVideo } from "./services/api.js";
+import { analyzeKneeExtensionVideo, analyzeSitToStandVideo, analyzeSquatVideo } from "./services/api.js";
 
 const DEFAULT_OPTIONS = { include_overlay: true, generate_report: true, include_ml: false, include_frame_data: true, save_session: false };
 const PAGE_PATHS = { home: "/", analyze: "/analyze", results: "/results", history: "/history", therapist: "/therapist", about: "/about", login: "/login", register: "/register", profile: "/profile" };
@@ -49,7 +49,7 @@ function AppContent() {
     if (!file) { setError("Select a video before starting analysis."); return; }
     setIsLoading(true); setProgress(0); setError("");
     try {
-      const analyze = exercise === "sit_to_stand" ? analyzeSitToStandVideo : analyzeSquatVideo;
+      const analyze = exercise === "sit_to_stand" ? analyzeSitToStandVideo : exercise === "knee_extension" ? analyzeKneeExtensionVideo : analyzeSquatVideo;
       const data = await analyze(file, options, setProgress);
       setReport(data); setPage("results");
     } catch (requestError) {
@@ -62,7 +62,7 @@ function AppContent() {
 
   return <AppShell currentPage={page} hasReport={Boolean(report)} onNavigate={navigate} user={user}>
     {page === "home" && <Home onStart={() => navigate("analyze")} />}
-    {page === "analyze" && <UploadSquat exercise={exercise} onExerciseChange={(value) => { setExercise(value); setFile(null); setError(""); if (value === "sit_to_stand") setOptions((current) => ({ ...current, include_ml: false })); }} file={file} error={error} isLoading={isLoading} progress={progress} options={options} onOptionsChange={setOptions} onFileChange={handleFileChange} onFileSelect={selectFile} onSubmit={handleSubmit} />}
+    {page === "analyze" && <UploadSquat exercise={exercise} onExerciseChange={(value) => { setExercise(value); setFile(null); setError(""); if (value !== "bodyweight_squat") setOptions((current) => ({ ...current, include_ml: false })); }} file={file} error={error} isLoading={isLoading} progress={progress} options={options} onOptionsChange={setOptions} onFileChange={handleFileChange} onFileSelect={selectFile} onSubmit={handleSubmit} />}
     {page === "results" && <Results report={report} originalVideoUrl={originalVideoUrl} onAnalyzeAnother={handleAnalyzeAnother} onGoAnalyze={() => setPage("analyze")} onViewHistory={() => setPage("history")} />}
     {page === "history" && <SessionHistory />}
     {page === "therapist" && <TherapistDashboard />}

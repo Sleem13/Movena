@@ -36,3 +36,11 @@ Clients must tolerate optional fields, treat relative artifact URLs as relative 
 - `POST /api/v1/recognition/exercise` currently accepts precomputed feature JSON only.
 
 Mobile clients must not auto-route from recognition. They may show a suggestion only with its experimental warning and a confirmation step. `analyzer_available=false` means the exercise is planned or unsupported and must not produce feedback. Upload-to-recognition extraction is not enabled in this foundation.
+
+## Knee-extension endpoint
+
+Use `POST /api/v1/analyze/knee-extension`. Manual selection remains primary, and ML is explicitly not applicable.
+
+```json
+{"session_id":"session-id","exercise":"knee_extension","exercise_id":"knee_extension","exercise_name":"Knee Extension","status":"success","total_reps":3,"valid_reps":3,"movement_score":84,"analysis_confidence":{"level":"medium"},"ml_prediction":{"enabled":false,"model_version":"not_applicable"}}
+```

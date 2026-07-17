@@ -8,8 +8,8 @@ from app.exercises.registry import registry
 from app.exercises.base import ExerciseAnalyzer
 
 
-def test_registry_contains_squat_and_sit_to_stand():
-    assert registry.available_exercises() == ("bodyweight_squat", "sit_to_stand")
+def test_registry_contains_all_supported_rule_based_exercises():
+    assert registry.available_exercises() == ("bodyweight_squat", "knee_extension", "sit_to_stand")
     assert isinstance(registry.get("bodyweight_squat"), ExerciseAnalyzer)
     assert isinstance(registry.get("sit_to_stand"), ExerciseAnalyzer)
     assert registry.get("sit_to_stand").exercise_id == "sit_to_stand"

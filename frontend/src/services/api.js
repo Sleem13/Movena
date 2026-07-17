@@ -24,7 +24,12 @@ export async function analyzeExerciseVideo(exerciseId, videoFile, options = {}, 
     save_session: String(Boolean(options.save_session)),
   });
 
-  const endpoint = exerciseId === "sit_to_stand" ? "sit-to-stand" : "squat";
+  const endpoint = {
+    bodyweight_squat: "squat",
+    sit_to_stand: "sit-to-stand",
+    knee_extension: "knee-extension",
+  }[exerciseId];
+  if (!endpoint) throw new Error(`Unsupported exercise: ${exerciseId}`);
   const response = await api.post(`/api/v1/analyze/${endpoint}?${query}`, formData, {
     headers: {
       "Content-Type": "multipart/form-data",
@@ -43,6 +48,10 @@ export function analyzeSquatVideo(videoFile, options = {}, onProgress) {
 
 export function analyzeSitToStandVideo(videoFile, options = {}, onProgress) {
   return analyzeExerciseVideo("sit_to_stand", videoFile, options, onProgress);
+}
+
+export function analyzeKneeExtensionVideo(videoFile, options = {}, onProgress) {
+  return analyzeExerciseVideo("knee_extension", videoFile, options, onProgress);
 }
 
 export function artifactUrl(path) {
