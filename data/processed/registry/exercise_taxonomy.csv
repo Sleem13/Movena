@@ -5,7 +5,7 @@ knee_extension,Knee Extension,lower_limb_rehab,lower_limb,"hip;knee;ankle",seate
 shoulder_abduction,Shoulder Abduction,upper_limb_rehab,upper_limb,"shoulder;elbow;wrist;hip",shoulder_abduction,True,implemented,not_available,front_view,Educational movement monitoring only; do not infer injury weakness impingement or pathology,"kimore;ui_prmd",high,implemented_mvp
 shoulder_flexion,Shoulder Flexion,upper_body,shoulder,"shoulder;elbow;hip",arm_raise,False,planned,none,side,Professional review for symptoms,kimore,medium,planned
 shoulder_external_rotation,Shoulder External Rotation,upper_body,shoulder,"shoulder;elbow;wrist",rotation,False,planned,none,front,2D rotation is limited,unknown,medium,planned
-hip_abduction,Hip Abduction,lower_body,hip,"hip;knee;ankle",open_chain_abduction,False,planned,none,front,Provide support when balance is limited,"kimore;ui_prmd",high,planned
+hip_abduction,Hip Abduction,lower_limb_rehab,lower_limb,"shoulder;hip;knee;ankle",standing_hip_abduction,True,implemented,not_available,front_view,Educational movement monitoring only; do not infer injury weakness instability or pathology,"kimore;ui_prmd",high,implemented_mvp
 hip_flexion,Hip Flexion,lower_body,hip,"hip;knee;shoulder",open_chain_flexion,False,planned,none,side,No pathology inference,unknown,medium,planned
 heel_raise,Heel Raise,lower_body,ankle,"knee;ankle;heel",plantar_flexion,False,planned,none,side_or_rear,Small motion and balance require care,unknown,high,planned
 lunge,Lunge,lower_body,lower_body,"hip;knee;ankle",lunge,False,planned,none,side_or_front,Variants require separate protocols,ui_prmd,medium,planned

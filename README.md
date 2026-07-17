@@ -1,12 +1,12 @@
 # PhysioVision AI
 
-PhysioVision AI is a physiotherapy-informed movement-analysis and rehabilitation-support product in development. Its current working MVP supports bodyweight squat, sit-to-stand, seated knee extension, and shoulder-abduction video analysis with MediaPipe pose landmarks, exercise-specific rule-based biomechanics, repetition counting, validity and confidence checks, and educational feedback.
+PhysioVision AI is a physiotherapy-informed movement-analysis and rehabilitation-support product in development. Its current working MVP supports bodyweight squat, sit-to-stand, seated knee extension, shoulder abduction, and standing hip-abduction video analysis with MediaPipe pose landmarks, exercise-specific rule-based biomechanics, repetition counting, validity and confidence checks, and educational feedback.
 
 ## From Squat MVP to Full Product Roadmap
 
 Squat and sit-to-stand are the current MVP, not the final product. The long-term architecture supports a patient web/mobile experience, therapist dashboard, exercise-specific analysis engine, consent-aware session history, report generation, dataset/model governance, and a shared safety/confidence layer. API, auth/privacy, and data architecture foundations precede the React Native + Expo mobile MVP; analysis stays on FastAPI before any on-device feasibility work.
 
-Bodyweight squat, sit-to-stand, knee extension, and shoulder abduction are active today. Rule-based analyzers remain primary, and optional ML/DL remains experimental; no knee-extension or shoulder-abduction ML model is available.
+Bodyweight squat, sit-to-stand, knee extension, shoulder abduction, and hip abduction are active today. Rule-based analyzers remain primary, and optional ML/DL remains experimental; no exercise-specific ML model is available for the three newer analyzers.
 
 Product planning documents:
 
@@ -733,7 +733,7 @@ Sprint 17 — Cloud Deployment
 Sprint 18+ — Multi-Exercise Expansion
 ```
 
-Current supported exercises are bodyweight squat, sit-to-stand, seated knee extension, and shoulder abduction. Planned expansion includes hip abduction, balance, walking/gait screening, heel raise, lunge, and step-up; these planned exercises are not currently working analyzers.
+Current supported exercises are bodyweight squat, sit-to-stand, seated knee extension, shoulder abduction, and standing hip abduction. Planned expansion includes balance, walking/gait screening, heel raise, lunge, and step-up; these planned exercises are not currently working analyzers.
 
 Rule-based biomechanics remains primary. ML/DL models remain experimental until exercise-specific validation and documented promotion criteria are met. Video, skeleton, sensor, image, and tabular datasets are not blindly merged: each source requires modality classification, provenance and licensing review, taxonomy mapping, participant-safe splitting, and a dataset-specific adapter. PhysioVision AI supports exercise monitoring and educational feedback; it does not diagnose, replace a licensed physiotherapist, or independently prescribe treatment.
 
@@ -786,7 +786,7 @@ Use `python scripts/export_unified_dataset_metadata.py --limit-per-dataset 20` f
 
 ## Sprint 16A — Experimental Exercise Recognition
 
-Exercise recognition is an optional research foundation for suggesting an exercise type. Manual selection remains primary, recognition never auto-routes or runs an analyzer, and no recognition model is required for startup. Current app-supported exercises are `bodyweight_squat`, `sit_to_stand`, `knee_extension`, and `shoulder_abduction`; all other taxonomy exercises are planned only.
+Exercise recognition is an optional research foundation for suggesting an exercise type. Manual selection remains primary, recognition never auto-routes or runs an analyzer, and no recognition model is required for startup. Current app-supported exercises are `bodyweight_squat`, `sit_to_stand`, `knee_extension`, `shoulder_abduction`, and `hip_abduction`; all other taxonomy exercises are planned only.
 
 ```powershell
 python scripts/build_exercise_recognition_dataset.py --dry-run
@@ -830,3 +830,19 @@ npm run dev
 ```
 
 Use a stable front view showing the shoulder, elbow, wrist, and trunk for 3–5 complete repetitions. Thresholds are engineering defaults and are not clinically validated. See the [Sprint notes](docs/sprint_18_shoulder_abduction_analyzer.md), [analyzer design](docs/shoulder_abduction_analyzer_design.md), and [annotation protocol](docs/shoulder_abduction_annotation_protocol.md).
+
+## Sprint 19 — Hip Abduction Analyzer MVP
+
+The manually selected `hip_abduction` workflow supports the standing front-view variant with moving-side selection, neutral–abducted–neutral repetition counting, a fail-closed validity gate, explainable scoring, and safe observational feedback. Shared overlay, report, frame-data, and session options remain available. No hip-abduction ML model was trained or promoted.
+
+```powershell
+python scripts/prepare_hip_abduction_training_candidates.py
+cd backend
+python -m uvicorn app.main:app --reload
+# POST /api/v1/analyze/hip-abduction
+cd ../frontend
+npm test -- --run
+npm run dev
+```
+
+Use a stable front view showing the pelvis, both hips, moving hip, knee, ankle, and trunk for 3–5 complete repetitions. Thresholds are engineering defaults and are not clinically validated. See the [Sprint notes](docs/sprint_19_hip_abduction_analyzer.md), [analyzer design](docs/hip_abduction_analyzer_design.md), and [annotation protocol](docs/hip_abduction_annotation_protocol.md).

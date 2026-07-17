@@ -197,6 +197,8 @@ data/processed/**/*.csv
 !data/processed/labels/knee_extension_training_candidates.csv
 !data/processed/labels/shoulder_abduction_annotation_template.csv
 !data/processed/labels/shoulder_abduction_training_candidates.csv
+!data/processed/labels/hip_abduction_annotation_template.csv
+!data/processed/labels/hip_abduction_training_candidates.csv
 data/processed/**/*.json
 !data/processed/registry/unified_sample_schema.json
 data/processed/**/*.parquet

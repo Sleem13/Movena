@@ -19,6 +19,7 @@ DISPLAY_NAMES = {
     "sit_to_stand": "Sit-to-Stand",
     "knee_extension": "Knee Extension",
     "shoulder_abduction": "Shoulder Abduction",
+    "hip_abduction": "Hip Abduction",
 }
 
 
@@ -87,6 +88,7 @@ def save_analysis_session(
             ("average_knee_angle", "degrees"), ("average_hip_angle", "degrees"),
             ("average_trunk_angle", "degrees"), ("total_reps", "reps"),
             ("average_shoulder_angle", "degrees"),
+            ("average_hip_abduction_angle", "degrees"),
             ("movement_score", "score_0_100"),
         )
         for name, unit in metric_specs:

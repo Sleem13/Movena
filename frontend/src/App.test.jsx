@@ -2,7 +2,7 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import App from "./App.jsx";
-import { analyzeKneeExtensionVideo, analyzeShoulderAbductionVideo, analyzeSitToStandVideo, analyzeSquatVideo } from "./services/api.js";
+import { analyzeHipAbductionVideo, analyzeKneeExtensionVideo, analyzeShoulderAbductionVideo, analyzeSitToStandVideo, analyzeSquatVideo } from "./services/api.js";
 import { getSavedSession, listSavedSessions } from "./services/api.js";
 import { createPatientProfile, getPatientProfile, getPatientProgress, getTherapistDashboard, listPatientProfiles, listPatientSessions } from "./services/api.js";
 
@@ -16,6 +16,7 @@ vi.mock("./services/api.js", () => ({
   analyzeSitToStandVideo: vi.fn(),
   analyzeKneeExtensionVideo: vi.fn(),
   analyzeShoulderAbductionVideo: vi.fn(),
+  analyzeHipAbductionVideo: vi.fn(),
   listSavedSessions: vi.fn(),
   getSavedSession: vi.fn(),
   deleteSavedSession: vi.fn(),
@@ -176,6 +177,33 @@ describe("Squat Analyzer healthcare dashboard", () => {
     expect(analyzeShoulderAbductionVideo).toHaveBeenCalledTimes(1);
     expect(screen.getByText("Average shoulder")).toBeInTheDocument();
     expect(screen.getByText("Abduction range")).toBeInTheDocument();
+  });
+
+  it("selects hip abduction, shows lower-body guidance, and renders its rule-based result", async () => {
+    const hipReport = {
+      ...report,
+      exercise: "hip_abduction",
+      exercise_id: "hip_abduction",
+      exercise_name: "Hip Abduction",
+      average_hip_abduction_angle: 27,
+      valid_reps: 2,
+      summary: "Two complete hip abduction repetitions analyzed.",
+      ml_prediction: { enabled: false, model_version: "not_applicable", warning: "ML prediction is not applicable for hip abduction." },
+      score_breakdown: { abduction_range_score: 88, control_score: 86, consistency_score: 84, posture_visibility_score: 91, rep_completion_score: 100, pelvis_trunk_stability_score: 90 },
+      frame_analysis: [{ frame_index: 0, timestamp_sec: 0, knee_angle: 0, hip_angle: 8, hip_abduction_angle: 8, trunk_angle: 4, phase: "neutral", detected_issue: null }],
+    };
+    analyzeHipAbductionVideo.mockResolvedValue(hipReport);
+    openUpload();
+    fireEvent.change(screen.getByLabelText("Exercise selector"), { target: { value: "hip_abduction" } });
+    expect(screen.getByText("Full lower body visible")).toBeInTheDocument();
+    expect(screen.getByLabelText("ML second opinion")).toBeDisabled();
+    const file = new File(["video"], "hip.mp4", { type: "video/mp4" });
+    fireEvent.change(screen.getByLabelText(/choose a hip abduction exercise video/i), { target: { files: [file] } });
+    fireEvent.click(screen.getByRole("button", { name: "Analyze hip abduction" }));
+    await screen.findByText("Hip Abduction report");
+    expect(analyzeHipAbductionVideo).toHaveBeenCalledTimes(1);
+    expect(screen.getByText("Average hip abduction")).toBeInTheDocument();
+    expect(screen.getByText("Pelvis/trunk stability")).toBeInTheDocument();
   });
 
   it("renders the camera placement guide", () => {

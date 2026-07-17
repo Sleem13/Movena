@@ -52,3 +52,11 @@ Use `POST /api/v1/analyze/shoulder-abduction`. Manual selection remains primary,
 ```json
 {"exercise":"shoulder_abduction","exercise_id":"shoulder_abduction","exercise_name":"Shoulder Abduction","status":"success","total_reps":3,"valid_reps":3,"average_shoulder_angle":86,"movement_score":84,"analysis_confidence":{"level":"medium"},"ml_prediction":{"enabled":false,"model_version":"not_applicable"}}
 ```
+
+## Hip-abduction endpoint
+
+Use `POST /api/v1/analyze/hip-abduction`. The standing front-view variant is the MVP, manual selection remains primary, and ML is explicitly not applicable.
+
+```json
+{"exercise":"hip_abduction","exercise_id":"hip_abduction","exercise_name":"Hip Abduction","status":"success","total_reps":3,"valid_reps":3,"average_hip_abduction_angle":30,"movement_score":84,"analysis_confidence":{"level":"medium"},"ml_prediction":{"enabled":false,"model_version":"not_applicable"}}
+```

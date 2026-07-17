@@ -3,6 +3,7 @@ import { Card, EmptyState } from "../common/UI.jsx";
 
 const COLORS = { knee: "#2563eb", hip: "#0f8f83", trunk: "#f59e0b" };
 const SHOULDER_COLORS = { shoulder: "#2563eb", trunk: "#f59e0b" };
+const HIP_ABDUCTION_COLORS = { hip_abduction: "#0f8f83", trunk: "#f59e0b" };
 const pretty = (value = "") => value.replaceAll("_", " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
 
 export function MovementScoreGauge({ score = 0, size = 180 }) {
@@ -23,7 +24,7 @@ function points(rows, key, width = 600, height = 190) {
 
 export function AngleTrendChart({ frames = [] }) {
   if (!frames.length) return <EmptyState compact title="Angle trends unavailable" description="Enable Angle trend data before analysis to include sampled frame-level measurements." icon={BarChart3} />;
-  const colors = frames.some((frame) => frame.shoulder_angle != null) ? SHOULDER_COLORS : COLORS;
+  const colors = frames.some((frame) => frame.hip_abduction_angle != null) ? HIP_ABDUCTION_COLORS : frames.some((frame) => frame.shoulder_angle != null) ? SHOULDER_COLORS : COLORS;
   return <div><div className="mb-4 flex flex-wrap gap-4 text-xs font-semibold text-slate-600">{Object.entries(colors).map(([key, color]) => <span key={key} className="flex items-center gap-2"><i className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: color }} />{pretty(key)}</span>)}</div><div className="overflow-hidden rounded-xl bg-slate-50 p-3"><svg viewBox="0 0 600 210" className="h-56 w-full" role="img" aria-label="Movement angle trends"><g stroke="#dce6ee" strokeWidth="1">{[0, 60, 120, 180].map((value) => <line key={value} x1="0" x2="600" y1={190 - value / 180 * 190} y2={190 - value / 180 * 190} />)}</g>{Object.entries(colors).map(([key, color]) => <polyline key={key} points={points(frames, `${key}_angle`)} fill="none" stroke={color} strokeWidth="3" strokeLinejoin="round" strokeLinecap="round" />)}<text x="4" y="207" fill="#64748b" fontSize="11">Start</text><text x="566" y="207" fill="#64748b" fontSize="11">End</text></svg></div></div>;
 }
 
@@ -39,8 +40,11 @@ export function IssueBreakdownChart({ report }) {
 
 export function MovementRadarChart({ report }) {
   const shoulder = report.exercise === "shoulder_abduction";
-  const values = [Math.max(0, Math.min(100, report.movement_score || 0)), Math.min(100, (shoulder ? report.average_shoulder_angle : report.average_knee_angle || 0) / 1.8), Math.min(100, (shoulder ? report.pose_quality?.critical_landmark_visibility * 100 : (report.average_hip_angle || 0) / 1.8)), Math.max(0, 100 - (report.average_trunk_angle || 0) / 0.9), Math.max(0, 100 - (report.detected_issues?.length || 0) * 20)];
-  const labels = shoulder ? ["Score", "Shoulder", "Visibility", "Trunk", "Issue load"] : ["Score", "Knee", "Hip", "Trunk", "Issue load"];
+  const hipAbduction = report.exercise === "hip_abduction";
+  const primaryAngle = shoulder ? report.average_shoulder_angle : hipAbduction ? report.average_hip_abduction_angle : report.average_knee_angle;
+  const secondaryValue = shoulder || hipAbduction ? (report.pose_quality?.critical_landmark_visibility || 0) * 100 : (report.average_hip_angle || 0) / 1.8;
+  const values = [Math.max(0, Math.min(100, report.movement_score || 0)), Math.min(100, (primaryAngle || 0) / 1.8), Math.min(100, secondaryValue), Math.max(0, 100 - (report.average_trunk_angle || 0) / 0.9), Math.max(0, 100 - (report.detected_issues?.length || 0) * 20)];
+  const labels = shoulder ? ["Score", "Shoulder", "Visibility", "Trunk", "Issue load"] : hipAbduction ? ["Score", "Hip", "Visibility", "Trunk", "Issue load"] : ["Score", "Knee", "Hip", "Trunk", "Issue load"];
   const center = 120, radius = 78;
   const vertex = (index, scale = 1) => { const angle = -Math.PI / 2 + index * Math.PI * 2 / values.length; return [center + Math.cos(angle) * radius * scale, center + Math.sin(angle) * radius * scale]; };
   const polygon = values.map((value, index) => vertex(index, value / 100).join(",")).join(" ");

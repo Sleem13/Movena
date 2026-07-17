@@ -9,7 +9,7 @@ const options = [
   { key: "save_session", title: "Save session history", description: "Session history is stored locally in the current development database.", icon: Database },
 ];
 
-const exerciseNames = { sit_to_stand: "sit-to-stand", knee_extension: "knee-extension", shoulder_abduction: "shoulder-abduction" };
+const exerciseNames = { sit_to_stand: "sit-to-stand", knee_extension: "knee-extension", shoulder_abduction: "shoulder-abduction", hip_abduction: "hip-abduction" };
 
 export default function AnalysisOptions({ exercise = "bodyweight_squat", value, onChange, disabled }) {
   return <Card className="p-5">

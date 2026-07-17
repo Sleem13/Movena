@@ -8,6 +8,7 @@ const EXERCISE_NAMES = {
   sit_to_stand: { short: "sit-to-stand", title: "Sit-to-stand" },
   knee_extension: { short: "knee extension", title: "Knee extension" },
   shoulder_abduction: { short: "shoulder abduction", title: "Shoulder abduction" },
+  hip_abduction: { short: "hip abduction", title: "Hip abduction" },
 };
 
 export default function UploadCard({ exercise = "bodyweight_squat", file, error, isLoading, progress, onFileChange, onFileSelect, onSubmit }) {

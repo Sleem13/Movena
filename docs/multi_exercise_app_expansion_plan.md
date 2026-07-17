@@ -1,12 +1,12 @@
 # Multi-Exercise Application Expansion Plan
 
-`bodyweight_squat`, `sit_to_stand`, `knee_extension`, and the rule-based `shoulder_abduction` MVP are currently supported. Every other entry below is **planned**, not production-ready. New-exercise thresholds remain engineering defaults pending representative physiotherapy review.
+`bodyweight_squat`, `sit_to_stand`, `knee_extension`, `shoulder_abduction`, and the rule-based `hip_abduction` MVP are currently supported. Every other entry below is **planned**, not production-ready. New-exercise thresholds remain engineering defaults pending representative physiotherapy review.
 
 | Priority / exercise | Modality and landmarks | Suggested view | Rule, validity, and phase needs | Data sources / difficulty / safety |
 |---|---|---|---|---|
 | Implemented MVP: `knee_extension` | Video/skeleton; hip, knee, ankle | Side | Range/visibility gate; flexion → extension → return; seated-position validation | Rule-based only. Data candidates require manual review. Do not infer pain or safe load. |
 | Implemented MVP: `shoulder_abduction` | Video/skeleton; shoulders, elbows, wrists, hips | Front | Visibility and trunk-compensation gate; lowered → raised → lowered | Rule-based only. Data candidates require manual review. Do not infer injury, impingement, weakness, or safe range. |
-| 3. `hip_abduction` | Video/skeleton; shoulders, hips, knees, ankles | Front | Support/body visibility; outward → peak → return; balance/trunk confidence | KIMORE/UI-PRMD/rehab sources after mapping. Medium-high; supervision protocol needed. Planned. |
+| Implemented MVP: `hip_abduction` | Video/skeleton; shoulders, hips, knees, ankles | Front | Visibility gate; neutral → abducted → neutral; pelvis/trunk observations | Rule-based standing variant only. Data candidates require manual review. Do not infer weakness, instability, injury, or safe range. |
 | 4. `single_leg_balance` / `balance` | Video/skeleton; optional separate sensor track; shoulders through ankles | Front/oblique | Duration rather than reps; stance and foot visibility; loss-of-balance event definitions | Rehab24-6/KIMORE; sensor datasets stay separate. High. Never diagnose fall risk. Planned. |
 | 5. `walking_gait_screen` | Video/skeleton sequence; full lower body and shoulders | Protocol-specific side/front | Walking-bout validity; gait/stride phases; camera-motion rejection | Gait sources; sensors remain separate. Very high. Screening only; no pathology claims. Planned. |
 | 6. `heel_raise` | Video/skeleton; knees, ankles, heels/feet where supported | Side/rear | Foot visibility; rise → peak → lower; small-motion robustness | Curated high-resolution video likely required. High due to foot landmark limits. Planned. |

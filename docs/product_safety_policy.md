@@ -46,6 +46,10 @@ The system may describe visible extension range, complete cycles, tempo consiste
 ## Shoulder-abduction boundary
 
 The system may describe visible arm-raise range, complete cycles, tempo consistency, landmark visibility, possible trunk movement, and possible upward shoulder movement. It must not infer impingement, frozen shoulder, rotator-cuff weakness, injury, pain source, passive range, or treatment suitability.
+
+## Hip-abduction boundary
+
+The system may describe visible lateral leg range, complete cycles, tempo consistency, landmark visibility, possible trunk lean, and possible upward pelvic movement. It must not infer hip or gluteal weakness, instability, injury, pain source, balance capacity, passive range, or treatment suitability.
 # Deployment privacy boundary
 
 Deployment readiness does not imply clinical or patient-data readiness. Without authentication, authorization, consent, encryption governance, retention controls, and formal privacy/security review, this MVP must use synthetic or non-identifiable evaluation data only. Movement outputs are educational support and must not be represented as diagnosis or prescribed treatment.

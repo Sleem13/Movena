@@ -30,6 +30,7 @@ def generate_session_report(report: AnalysisResponse, output_path: Path) -> Path
         "sit_to_stand": "Sit-to-Stand",
         "knee_extension": "Knee Extension",
         "shoulder_abduction": "Shoulder Abduction",
+        "hip_abduction": "Hip Abduction",
     }
     exercise_name = report.exercise_name or display_names.get(report.exercise, report.exercise.replace("_", " ").title())
     story = [
@@ -53,6 +54,8 @@ def generate_session_report(report: AnalysisResponse, output_path: Path) -> Path
     ]
     if report.exercise == "shoulder_abduction":
         data.insert(3, ["Average shoulder angle", f"{(report.average_shoulder_angle or 0):.2f} deg"])
+    elif report.exercise == "hip_abduction":
+        data.insert(3, ["Average hip-abduction angle", f"{(report.average_hip_abduction_angle or 0):.2f} deg"])
     else:
         data[3:3] = [["Average knee angle", f"{report.average_knee_angle:.2f} deg"], ["Average hip angle", f"{report.average_hip_angle:.2f} deg"]]
     table = Table(data, colWidths=[55 * mm, 110 * mm])

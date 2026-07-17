@@ -11,6 +11,7 @@ class FrameAnalysis(BaseModel):
     phase: str
     detected_issue: str | None = None
     shoulder_angle: float | None = None
+    hip_abduction_angle: float | None = None
 
 
 class MLPrediction(BaseModel):
@@ -69,6 +70,7 @@ class ScoreBreakdown(BaseModel):
     posture_visibility_score: int | None = Field(default=None, ge=0, le=100)
     rep_completion_score: int | None = Field(default=None, ge=0, le=100)
     abduction_range_score: int | None = Field(default=None, ge=0, le=100)
+    pelvis_trunk_stability_score: int | None = Field(default=None, ge=0, le=100)
 
 
 class AnalysisConfidence(BaseModel):
@@ -91,6 +93,7 @@ class InputValidity(BaseModel):
     valid_reps: int
     warnings: list[str] = Field(default_factory=list)
     shoulder_angle_range: float | None = None
+    hip_abduction_angle_range: float | None = None
 
 
 class AnalysisResponse(BaseModel):
@@ -107,6 +110,7 @@ class AnalysisResponse(BaseModel):
     average_hip_angle: float = 0
     average_trunk_angle: float = 0
     average_shoulder_angle: float | None = None
+    average_hip_abduction_angle: float | None = None
     movement_score: int | None = Field(default=0, ge=0, le=100)
     rep_events: list[RepEvent] = Field(default_factory=list)
     partial_rep_events: list[PartialRepEvent] = Field(default_factory=list)

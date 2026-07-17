@@ -66,7 +66,9 @@ registry.register("bodyweight_squat", SquatAnalyzerAdapter())
 from app.exercises.sit_to_stand.analyzer import sit_to_stand_analyzer  # noqa: E402
 from app.exercises.knee_extension.analyzer import knee_extension_analyzer  # noqa: E402
 from app.exercises.shoulder_abduction.analyzer import shoulder_abduction_analyzer  # noqa: E402
+from app.exercises.hip_abduction.analyzer import hip_abduction_analyzer  # noqa: E402
 
 registry.register("sit_to_stand", sit_to_stand_analyzer)
 registry.register("knee_extension", knee_extension_analyzer)
 registry.register("shoulder_abduction", shoulder_abduction_analyzer)
+registry.register("hip_abduction", hip_abduction_analyzer)

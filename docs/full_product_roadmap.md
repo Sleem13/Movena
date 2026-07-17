@@ -1,6 +1,6 @@
 # PhysioVision AI Full Product Roadmap
 
-PhysioVision AI currently supports `bodyweight_squat`, `sit_to_stand`, `knee_extension`, and the Sprint 18 `shoulder_abduction` rule-based MVP. All other exercises below are planned and are not production-ready. Rule-based biomechanics remains primary; ML/DL remains experimental until documented validation and promotion criteria are satisfied.
+PhysioVision AI currently supports `bodyweight_squat`, `sit_to_stand`, `knee_extension`, `shoulder_abduction`, and the Sprint 19 `hip_abduction` rule-based MVP. All other exercises below are planned and are not production-ready. Rule-based biomechanics remains primary; ML/DL remains experimental until documented validation and promotion criteria are satisfied.
 
 ## Sprint 12 — Deployment & Mobile-Ready API Hardening
 
@@ -38,7 +38,7 @@ Only supported backend exercises may appear as active choices.
 
 ### Sprint 16A â€” Exercise Recognition Model Foundation
 
-Status: engineering foundation implemented. Recognition metadata and features remain modality-separated, baseline training is gated, and the optional API returns experimental suggestions only. Current reviewed features contain one exercise class, so no recognition model is trained or promoted. Manual selection remains primary; squat, sit-to-stand, knee extension, and shoulder abduction have rule-based analyzers.
+Status: engineering foundation implemented. Recognition metadata and features remain modality-separated, baseline training is gated, and the optional API returns experimental suggestions only. Current reviewed features contain one exercise class, so no recognition model is trained or promoted. Manual selection remains primary; squat, sit-to-stand, knee extension, shoulder abduction, and hip abduction have rule-based analyzers.
 
 ## Sprint 17 — Knee Extension Analyzer MVP
 
@@ -54,9 +54,13 @@ Cloud deployment follows API hardening, auth/privacy, stable session contracts, 
 
 Status: engineering implementation complete. The manually selected workflow has front-view geometry, exercise-specific validity and phase logic, explainable scoring, safe feedback, API/UI/session support, and manual-review-only dataset preparation. No ML/DL model was trained or promoted.
 
-## Sprint 19+ — Multi-Exercise Expansion
+## Sprint 19 — Hip Abduction Analyzer MVP
 
-Planned analyzers include hip abduction, balance, walking/gait screening, heel raise, lunge, and step-up. Future research may evaluate exercise recognition and validated sequence-model candidates.
+Status: engineering implementation complete. The manually selected standing workflow has front-view geometry, moving-side selection, exercise-specific validity and phase logic, explainable scoring, safe feedback, API/UI/session support, and manual-review-only dataset preparation. No ML/DL model was trained or promoted.
+
+## Sprint 20+ — Multi-Exercise Expansion
+
+Planned analyzers include balance, walking/gait screening, heel raise, lunge, and step-up. Future research may evaluate exercise recognition and validated sequence-model candidates.
 
 Every exercise requires its own recording protocol, validity gate, phase/state logic, scoring, confidence, feedback, dataset evidence, expert review, and regression tests. Planned exercises must never be presented as working until those gates pass.
 

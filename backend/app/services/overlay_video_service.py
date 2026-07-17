@@ -94,7 +94,9 @@ def generate_skeleton_overlay(
                 detail = metrics.get(frame_index)
                 if detail:
                     label = (
-                        f"{detail.phase} | shoulder {detail.shoulder_angle:.0f} deg"
+                        f"{detail.phase} | hip abduction {detail.hip_abduction_angle:.0f} deg"
+                        if detail.hip_abduction_angle is not None
+                        else f"{detail.phase} | shoulder {detail.shoulder_angle:.0f} deg"
                         if detail.shoulder_angle is not None
                         else f"{detail.phase} | knee {detail.knee_angle:.0f} deg"
                     )
