@@ -1,8 +1,40 @@
 # Mobile API contract
 
+## Sprint 24 internal-build gate
+
+An internal staging build must receive the real HTTPS API URL from EAS preview variables. Building against localhost, `10.0.2.2`, or an `.invalid` placeholder is prohibited. The current build is blocked until a deployed API exists; mobile behavior remains covered by automated tests only.
+
+## Staging contract
+
+Staging uses `EXPO_PUBLIC_API_BASE_URL=https://<staging-backend>` from the EAS preview environment and requires authentication for analysis. Artifact URLs may include short-lived `expires` and `signature` query parameters; clients must preserve the complete URL, must not log it, and must treat expiry as a request to re-run or refresh the authorized analysis rather than append a bearer token to the URL.
+
+## Sprint 22 client reliability behavior
+
+The mobile client maps `FILE_TOO_LARGE`, `UNSUPPORTED_FILE_TYPE`, `EMPTY_FILE`, `INVALID_FILENAME`, `AUTH_REQUIRED`, `INVALID_TOKEN`, `TOKEN_EXPIRED`, `INSUFFICIENT_ROLE`, `INVALID_*_VIDEO`, `NETWORK_ERROR`, `TIMEOUT`, and `SERVER_UNAVAILABLE` to non-technical messages. Rejected analysis is a result state, not a transport crash. `401`, `INVALID_TOKEN`, and `TOKEN_EXPIRED` clear the SecureStore token and request login. Upload cancel/retry retains the manually selected exercise and file; no token, raw media, or patient identifier may enter logs.
+
+Missing movement score, score breakdown, confidence, pose quality, artifacts, or ML output must remain missing/unavailable. Clients never synthesize a score. Native LAN testing uses `http://<LAN_IP>:8010`; Android emulator may use `http://10.0.2.2:8010`.
+
 Future flow: record a short video, upload it to `POST /api/v1/analyze/{exercise_id}?save_session=true`, display the response, and optionally load `GET /api/v1/sessions`. Future access must be token protected.
 
 Session and therapist calls now require `Authorization: Bearer <access_token>`. A mobile client must use secure platform token storage rather than browser localStorage. Development tokens currently have no refresh flow or server-side logout revocation.
+
+The current concrete endpoint map is:
+
+| Exercise ID | Endpoint |
+|---|---|
+| `bodyweight_squat` | `POST /api/v1/analyze/squat` |
+| `sit_to_stand` | `POST /api/v1/analyze/sit-to-stand` |
+| `knee_extension` | `POST /api/v1/analyze/knee-extension` |
+| `shoulder_abduction` | `POST /api/v1/analyze/shoulder-abduction` |
+| `hip_abduction` | `POST /api/v1/analyze/hip-abduction` |
+
+Use `GET /api/v1/exercises` to discover supported and planned exercises. Only records with `supported_in_app=true` and a non-null `endpoint_path` may be selected.
+
+## Sprint 21 mobile request behavior
+
+The Expo app reads `EXPO_PUBLIC_API_BASE_URL`; Android emulators commonly use `http://10.0.2.2:8010`, while physical devices use the backend computer's LAN IP. Analysis requests send `multipart/form-data` with the field name `video`. Query parameters include `save_session`, `include_overlay`, `generate_report`, `include_ml=false`, and `include_frame_data=false`. `patient_id` is sent only when explicitly provided by a supported workflow.
+
+Bearer tokens are read from Expo SecureStore and added as `Authorization: Bearer <token>`. No production secret is bundled in the app. Mobile clients must handle timeouts, offline/backend-unreachable states, structured upload errors, invalid movement rejections, and expired tokens.
 
 ## Squat success
 
@@ -29,6 +61,22 @@ Session and therapist calls now require `Authorization: Bearer <access_token>`. 
 ```
 
 Clients must tolerate optional fields, treat relative artifact URLs as relative to the configured API base, and never interpret scores as diagnosis or treatment advice.
+
+## Unsupported planned exercise
+
+Planned exercises do not have analyzer routes and clients should prevent submission. An unknown metadata lookup returns:
+
+```json
+{"status":"error","error_code":"EXERCISE_NOT_FOUND","message":"Exercise metadata was not found.","details":["Use GET /api/v1/exercises to view supported and planned exercises."]}
+```
+
+## Authentication required
+
+When authentication is enabled for a protected operation:
+
+```json
+{"status":"error","error_code":"AUTHENTICATION_REQUIRED","message":"Authentication is required.","details":[]}
+```
 
 ## Experimental recognition endpoints
 

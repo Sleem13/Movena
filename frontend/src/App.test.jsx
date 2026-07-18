@@ -3,7 +3,8 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import App from "./App.jsx";
 import { analyzeHipAbductionVideo, analyzeKneeExtensionVideo, analyzeShoulderAbductionVideo, analyzeSitToStandVideo, analyzeSquatVideo } from "./services/api.js";
-import { getSavedSession, listSavedSessions } from "./services/api.js";
+import { getExercises, getSavedSession, listSavedSessions } from "./services/api.js";
+import { EXERCISES } from "./data/exercises.js";
 import { createPatientProfile, getPatientProfile, getPatientProgress, getTherapistDashboard, listPatientProfiles, listPatientSessions } from "./services/api.js";
 
 vi.mock("./context/AuthContext.jsx", () => ({
@@ -17,6 +18,7 @@ vi.mock("./services/api.js", () => ({
   analyzeKneeExtensionVideo: vi.fn(),
   analyzeShoulderAbductionVideo: vi.fn(),
   analyzeHipAbductionVideo: vi.fn(),
+  getExercises: vi.fn(),
   listSavedSessions: vi.fn(),
   getSavedSession: vi.fn(),
   deleteSavedSession: vi.fn(),
@@ -90,6 +92,7 @@ describe("Squat Analyzer healthcare dashboard", () => {
   beforeEach(() => {
     window.history.replaceState({}, "", "/");
     vi.clearAllMocks();
+    getExercises.mockResolvedValue(EXERCISES);
     listSavedSessions.mockResolvedValue({ items: [], total: 0, limit: 50, offset: 0 });
     getTherapistDashboard.mockResolvedValue({ total_patients: 0, total_sessions: 0, low_confidence_sessions: 0, recent_sessions: [], common_detected_issues: [], sessions_by_exercise: {}, prototype_warning: "Prototype" });
     listPatientProfiles.mockResolvedValue([]);
@@ -103,6 +106,27 @@ describe("Squat Analyzer healthcare dashboard", () => {
     expect(screen.getByRole("button", { name: "Analyze squat" })).toBeDisabled();
     expect(screen.getByLabelText("Exercise selector")).toHaveValue("bodyweight_squat");
     expect(screen.getByRole("option", { name: "Sit-to-Stand" })).toBeInTheDocument();
+  });
+
+  it("renders the exercise library with supported and unavailable planned exercises", async () => {
+    render(<App />);
+    fireEvent.click(screen.getByRole("button", { name: "Exercises" }));
+    expect(await screen.findByText("Supported exercises")).toBeInTheDocument();
+    expect(screen.getByText("Bodyweight Squat")).toBeInTheDocument();
+    expect(screen.getByText("Hip Abduction")).toBeInTheDocument();
+    expect(screen.getAllByText("Planned — not available yet")).toHaveLength(7);
+    expect(screen.getAllByRole("button", { name: "Not available" })[0]).toBeDisabled();
+  });
+
+  it("opens Analyze from an exercise card with exercise-specific guidance", async () => {
+    render(<App />);
+    fireEvent.click(screen.getByRole("button", { name: "Exercises" }));
+    const cards = await screen.findAllByRole("button", { name: /Analyze this exercise/i });
+    fireEvent.click(cards[3]);
+    expect(screen.getByLabelText("Exercise selector")).toHaveValue("shoulder_abduction");
+    expect(screen.getByText("Front view preferred.")).toBeInTheDocument();
+    expect(screen.getByText(/raise the arm outward through a comfortable range/i)).toBeInTheDocument();
+    expect(screen.getByText("Recording tips")).toBeInTheDocument();
   });
 
   it("selects sit-to-stand, shows chair guidance, and calls its endpoint service", async () => {
@@ -236,6 +260,15 @@ describe("Squat Analyzer healthcare dashboard", () => {
     render(<App />);
     fireEvent.click(screen.getByRole("button", { name: "History" }));
     expect(await screen.findByText(/No saved sessions yet/i)).toBeInTheDocument();
+  });
+
+  it("filters session history by exercise and status", async () => {
+    render(<App />);
+    fireEvent.click(screen.getByRole("button", { name: "History" }));
+    await screen.findByText(/No saved sessions yet/i);
+    fireEvent.change(screen.getByLabelText("Exercise"), { target: { value: "hip_abduction" } });
+    fireEvent.change(screen.getByLabelText("Status"), { target: { value: "rejected" } });
+    await waitFor(() => expect(listSavedSessions).toHaveBeenLastCalledWith({ exercise_id: "hip_abduction", status: "rejected" }));
   });
 
   it("renders saved sessions and opens detail", async () => {

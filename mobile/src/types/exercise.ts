@@ -1,0 +1,15 @@
+export type ExerciseMetadata = {
+  exercise_id: string;
+  display_name: string;
+  supported_in_app: boolean;
+  body_region: string;
+  exercise_family: string;
+  recommended_camera_view: string;
+  required_landmarks: string[];
+  movement_description: string;
+  expected_movement_pattern: string;
+  safety_notes: string;
+  endpoint_path: string | null;
+  ml_model_status: string;
+  recognition_status: string;
+};

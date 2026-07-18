@@ -19,4 +19,5 @@ class TherapistDashboardSummary(BaseModel):
     low_confidence_sessions: int
     common_detected_issues: list[DetectedIssueTrend] = Field(default_factory=list)
     sessions_by_exercise: dict[str, int] = Field(default_factory=dict)
+    low_confidence_sessions_by_exercise: dict[str, int] = Field(default_factory=dict)
     prototype_warning: str = PROTOTYPE_WARNING

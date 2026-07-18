@@ -11,11 +11,12 @@ from sqlalchemy.engine import Engine
 from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
 
 from app.core.artifact_config import BACKEND_ROOT
+from app.core.config import normalize_database_url
 
 
 DEFAULT_DATABASE_PATH = BACKEND_ROOT / "physiovision_dev.db"
 DEFAULT_DATABASE_URL = f"sqlite:///{DEFAULT_DATABASE_PATH.as_posix()}"
-DATABASE_URL = os.getenv("DATABASE_URL", DEFAULT_DATABASE_URL)
+DATABASE_URL = normalize_database_url(os.getenv("DATABASE_URL", DEFAULT_DATABASE_URL))
 
 
 class Base(DeclarativeBase):

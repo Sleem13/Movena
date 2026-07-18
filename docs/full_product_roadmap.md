@@ -1,5 +1,13 @@
 # PhysioVision AI Full Product Roadmap
 
+## Sprint 24 — Private Staging Deployment and Internal Pilot Gate
+
+Status: execution package complete, external dependencies blocked. Render/Neon/Vercel is selected, staging Compose and exact runbooks exist, EAS project authentication is confirmed, and pilot documentation is ready. No real provider/database configuration, Android artifact, physical-device QA, or deployed smoke result exists; internal pilot and public release remain no-go.
+
+## Sprint 23 — Controlled Cloud Staging Deployment
+
+Status: repository-level staging readiness implemented. Fail-closed staging configuration, PostgreSQL/Psycopg support, internal EAS staging profile, explicit client origins, signed temporary artifacts, and release checklists are present. Actual provider deployment, signed Android build, physical-device QA, and controlled pilot approval remain gated. No public release or model promotion occurred.
+
 PhysioVision AI currently supports `bodyweight_squat`, `sit_to_stand`, `knee_extension`, `shoulder_abduction`, and the Sprint 19 `hip_abduction` rule-based MVP. All other exercises below are planned and are not production-ready. Rule-based biomechanics remains primary; ML/DL remains experimental until documented validation and promotion criteria are satisfied.
 
 ## Sprint 12 — Deployment & Mobile-Ready API Hardening
@@ -58,7 +66,15 @@ Status: engineering implementation complete. The manually selected workflow has 
 
 Status: engineering implementation complete. The manually selected standing workflow has front-view geometry, moving-side selection, exercise-specific validity and phase logic, explainable scoring, safe feedback, API/UI/session support, and manual-review-only dataset preparation. No ML/DL model was trained or promoted.
 
-## Sprint 20+ — Multi-Exercise Expansion
+## Sprint 20 — Multi-Exercise UI/UX and Mobile Preparation
+
+Status: engineering implementation complete. The product exposes a truthful exercise library and metadata API, exercise-specific recording guidance, unified result safety behavior, refined session/dashboard grouping, and a backend-analysis-first React Native/Expo plan. No new analyzer or model was added or promoted.
+
+## Sprint 21+ — Multi-Exercise Expansion
+
+Sprint 21 Mobile App MVP status: engineering implementation complete. The Expo Router/TypeScript client uses backend-side analysis for the five existing exercises, SecureStore for JWTs, and explicit invalid-input handling. Device testing and production privacy/security work remain release gates.
+
+Sprint 22 Mobile QA + Cloud Deployment Preparation status: engineering hardening and documentation complete. Internal EAS profiles, upload retry/cancel, standardized errors, token-expiry cleanup, and release checklists are implemented. Status remains conditional until at least one physical Android development-build test and signed EAS build are evidenced. No public release is authorized.
 
 Planned analyzers include balance, walking/gait screening, heel raise, lunge, and step-up. Future research may evaluate exercise recognition and validated sequence-model candidates.
 

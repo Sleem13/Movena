@@ -13,6 +13,7 @@ from app.api.routes.shoulder_abduction_analysis import router as shoulder_abduct
 from app.api.routes.hip_abduction_analysis import router as hip_abduction_router
 from app.api.routes.sessions import router as sessions_router
 from app.api.routes.exercise_recognition import router as exercise_recognition_router
+from app.api.routes.exercises import router as exercises_router
 from app.api.v1.therapist import router as therapist_router
 from app.api.v1.auth import router as auth_router
 from app.api.dependencies.auth import AuthError
@@ -24,6 +25,7 @@ from app.schemas.analysis_schema import ErrorResponse
 
 configure_logging()
 settings = get_settings()
+settings.validate_deployment_safety()
 ensure_artifact_directories()
 init_db()
 
@@ -54,16 +56,16 @@ async def database_exception_handler(_request, _exc: SQLAlchemyError) -> JSONRes
         error_code="DATABASE_UNAVAILABLE",
         message="The database is temporarily unavailable.",
     )
+    return JSONResponse(
+        status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+        content=payload.model_dump(),
+    )
 
 
 @app.exception_handler(AuthError)
 async def auth_exception_handler(_request, exc: AuthError) -> JSONResponse:
     payload = ErrorResponse(error_code=exc.error_code, message=exc.message)
     return JSONResponse(status_code=exc.status_code, content=payload.model_dump())
-    return JSONResponse(
-        status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-        content=payload.model_dump(),
-    )
 
 app.add_middleware(
     CORSMiddleware,
@@ -81,6 +83,7 @@ app.include_router(shoulder_abduction_router)
 app.include_router(hip_abduction_router)
 app.include_router(artifacts_router)
 app.include_router(exercise_recognition_router)
+app.include_router(exercises_router)
 app.include_router(auth_router)
 if settings.enable_session_history:
     app.include_router(sessions_router)

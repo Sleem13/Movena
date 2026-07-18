@@ -38,7 +38,6 @@ def optional_current_user(
         raise AuthError(403, "USER_INACTIVE", "This user account is inactive.")
     return user
 
-
 def get_current_user(user: User | None = Depends(optional_current_user)) -> User:
     if user is None:
         raise AuthError(401, "AUTH_REQUIRED", "Please log in to continue.")

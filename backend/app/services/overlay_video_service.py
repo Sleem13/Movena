@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from app.schemas.analysis_schema import FrameAnalysis
-from app.services.artifact_service import create_artifact
+from app.services.artifact_service import build_artifact_url, create_artifact
 
 logger = logging.getLogger(__name__)
 
@@ -148,6 +148,6 @@ def create_overlay_video(
     return OverlayArtifact(
         overlay_id=overlay_id,
         overlay_path=overlay_path,
-        overlay_preview_url=f"/api/v1/artifacts/overlays/{overlay_id}/preview",
-        overlay_download_url=f"/api/v1/artifacts/overlays/{overlay_id}/download",
+        overlay_preview_url=build_artifact_url(f"/api/v1/artifacts/overlays/{overlay_id}/preview", overlay_id, "overlay"),
+        overlay_download_url=build_artifact_url(f"/api/v1/artifacts/overlays/{overlay_id}/download", overlay_id, "overlay"),
     )

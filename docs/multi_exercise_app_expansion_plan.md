@@ -2,6 +2,8 @@
 
 `bodyweight_squat`, `sit_to_stand`, `knee_extension`, `shoulder_abduction`, and the rule-based `hip_abduction` MVP are currently supported. Every other entry below is **planned**, not production-ready. New-exercise thresholds remain engineering defaults pending representative physiotherapy review.
 
+Sprint 20 exposes this boundary through the Exercise Library and exercise metadata API. Planned entries may be visible for roadmap transparency but remain disabled, have no endpoint, and cannot be selected for analysis.
+
 | Priority / exercise | Modality and landmarks | Suggested view | Rule, validity, and phase needs | Data sources / difficulty / safety |
 |---|---|---|---|---|
 | Implemented MVP: `knee_extension` | Video/skeleton; hip, knee, ankle | Side | Range/visibility gate; flexion → extension → return; seated-position validation | Rule-based only. Data candidates require manual review. Do not infer pain or safe load. |

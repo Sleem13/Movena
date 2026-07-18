@@ -29,6 +29,7 @@ const WARNING =
   "Therapist dashboard is a protected development prototype. Do not use real patient data without production identity controls, consent, and privacy review.";
 const pretty = (value = "") =>
   value.replaceAll("_", " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
+const exerciseName = (value = "") => ({ bodyweight_squat: "Bodyweight Squat", sit_to_stand: "Sit-to-Stand", knee_extension: "Knee Extension", shoulder_abduction: "Shoulder Abduction", hip_abduction: "Hip Abduction" }[value] || pretty(value));
 
 export default function TherapistDashboard() {
   const [view, setView] = useState(
@@ -223,11 +224,13 @@ export default function TherapistDashboard() {
                 {Object.entries(dashboard?.sessions_by_exercise || {}).map(
                   ([key, value]) => (
                     <li key={key}>
-                      {pretty(key)}: {value}
+                      {exerciseName(key)}: {value}
                     </li>
                   ),
                 )}
               </ul>
+              <h3 className="mt-6 font-bold">Low-confidence sessions by exercise</h3>
+              {Object.keys(dashboard?.low_confidence_sessions_by_exercise || {}).length ? <ul className="mt-3 space-y-2 text-sm">{Object.entries(dashboard.low_confidence_sessions_by_exercise).map(([key, value]) => <li key={key}>{exerciseName(key)}: {value}</li>)}</ul> : <p className="mt-3 text-sm text-slate-500">No low-confidence sessions.</p>}
             </Card>
           </div>
         </div>
@@ -331,6 +334,7 @@ export default function TherapistDashboard() {
           </section>
           <Card className="p-5">
             <h2 className="font-bold">Exercise session history</h2>
+            {Object.keys(progress?.sessions_by_exercise || {}).length > 0 && <div className="mt-4 flex flex-wrap gap-2">{Object.entries(progress.sessions_by_exercise).map(([key, value]) => <Badge key={key} tone="blue">{exerciseName(key)}: {value}</Badge>)}</div>}
             {sessions.length ? (
               <ul className="mt-4 space-y-3">
                 {sessions.map((item) => (

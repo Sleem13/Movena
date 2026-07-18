@@ -2,6 +2,7 @@ import {
   Activity,
   BarChart3,
   HeartPulse,
+  Library,
   History,
   Info,
   LogIn,
@@ -11,6 +12,7 @@ import {
 } from "lucide-react";
 const items = [
   { id: "home", label: "Home", icon: HeartPulse },
+  { id: "exercises", label: "Exercises", icon: Library },
   { id: "analyze", label: "Analyze", icon: UploadCloud },
   { id: "results", label: "Results", icon: BarChart3, requiresReport: true },
   { id: "history", label: "History", icon: History, requiresUser: true },

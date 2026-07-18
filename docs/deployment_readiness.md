@@ -1,5 +1,17 @@
 # Deployment Readiness
 
+## Sprint 24 execution gate
+
+The provider path, secrets procedure, staging Compose rehearsal, PostgreSQL setup, internal-build report, smoke matrix, artifact review, and pilot package are complete. Actual Render/Neon/Vercel provisioning, EAS Android build, and physical-device QA are blocked by missing deployment configuration/API URL/device evidence. Deployment readiness does not equal pilot approval.
+
+## Sprint 23 controlled staging boundary
+
+Repository readiness now includes fail-closed staging settings, PostgreSQL/Psycopg support, explicit web/mobile API origins, signed temporary artifacts, and staging checklists. Provider deployment, HTTPS/database setup, scheduled cleanup, signed EAS build, and physical-device QA are not yet evidenced. External pilot and real patient data remain prohibited.
+
+## Sprint 22 mobile/cloud preparation
+
+EAS internal profiles and cloud target options are documented, but no public deployment has been performed. Production remains blocked on a non-default secret, exact CORS origins, private media storage, consent/privacy approval, auth/role verification, retention/deletion enforcement, monitoring/audit operations, and physical-device QA. See `cloud_deployment_preparation.md` and `privacy_security_release_checklist.md`.
+
 ## Roadmap position
 
 Cloud deployment is Sprint 17. It comes after API hardening, the Sprint 13 auth/privacy foundation, the mobile API contract, stable database/session behavior, and clear dataset/model registries. Container preparation supports local engineering but does not mean the product is ready for internet-facing patient use.

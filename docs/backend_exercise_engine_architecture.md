@@ -16,6 +16,8 @@ Planned analyzers—not implemented or production-ready—include `balance` and 
 
 Each analyzer should expose stable metadata and return a shared result envelope containing exercise/version, validity, status, repetitions or duration, exercise-specific metrics, score or null, detected observations, educational feedback, confidence, limitations, and optional frame details. A registry resolves only explicitly activated exercise IDs and rejects unknown or planned-only entries.
 
+Product metadata is separate from analyzer dispatch. `app.exercises.metadata` powers `GET /api/v1/exercises` and may include planned entries, while `app.exercises.registry` contains only working analyzers. Tests require the supported metadata set to equal the analyzer registry set. This prevents a roadmap entry from becoming executable accidentally.
+
 ## Required pipeline for every future analyzer
 
 1. **Validity gate:** exercise-specific pose coverage, view, body visibility, motion, and complete-attempt criteria.

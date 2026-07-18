@@ -1,8 +1,10 @@
-from fastapi import APIRouter, status
+from fastapi import APIRouter, Depends, Query, status
 from fastapi.responses import FileResponse, JSONResponse
 
 from app.schemas.analysis_schema import ErrorResponse
-from app.services.artifact_service import resolve_artifact
+from app.services.artifact_service import resolve_artifact, valid_artifact_signature
+from app.api.dependencies.auth import AuthError, optional_current_user
+from app.core.config import get_settings
 
 
 router = APIRouter(prefix="/api/v1", tags=["artifacts"])
@@ -17,7 +19,8 @@ def artifact_not_found(kind: str) -> JSONResponse:
 
 
 @router.get("/artifacts/reports/{report_id}")
-def download_report(report_id: str):
+def download_report(report_id: str, expires: int | None = Query(None), signature: str | None = Query(None), user=Depends(optional_current_user)):
+    authorize_artifact(report_id, "report", user, expires, signature)
     path = resolve_artifact(report_id, "report")
     if path is None:
         return artifact_not_found("report")
@@ -31,8 +34,16 @@ def overlay_file_or_404(overlay_id: str):
     return path
 
 
+def authorize_artifact(artifact_id: str, kind: str, user, expires: int | None, signature: str | None) -> None:
+    if not get_settings().require_auth_for_analysis or user is not None:
+        return
+    if not valid_artifact_signature(artifact_id.removesuffix(".mp4").removesuffix(".pdf"), kind, expires, signature):
+        raise AuthError(401, "AUTH_REQUIRED", "A valid login or unexpired artifact link is required.")
+
+
 @router.get("/artifacts/overlays/{overlay_id}/preview")
-def preview_overlay(overlay_id: str):
+def preview_overlay(overlay_id: str, expires: int | None = Query(None), signature: str | None = Query(None), user=Depends(optional_current_user)):
+    authorize_artifact(overlay_id, "overlay", user, expires, signature)
     path = overlay_file_or_404(overlay_id)
     if isinstance(path, JSONResponse):
         return path
@@ -47,7 +58,8 @@ def preview_overlay(overlay_id: str):
 
 
 @router.get("/artifacts/overlays/{overlay_id}/download")
-def download_overlay(overlay_id: str):
+def download_overlay(overlay_id: str, expires: int | None = Query(None), signature: str | None = Query(None), user=Depends(optional_current_user)):
+    authorize_artifact(overlay_id, "overlay", user, expires, signature)
     path = overlay_file_or_404(overlay_id)
     if isinstance(path, JSONResponse):
         return path
@@ -59,6 +71,6 @@ def download_overlay(overlay_id: str):
 
 
 @router.get("/artifacts/overlays/{overlay_id}")
-def download_overlay_legacy(overlay_id: str):
+def download_overlay_legacy(overlay_id: str, expires: int | None = Query(None), signature: str | None = Query(None), user=Depends(optional_current_user)):
     """Preserve the original download URL for existing clients."""
-    return download_overlay(overlay_id)
+    return download_overlay(overlay_id, expires, signature, user)

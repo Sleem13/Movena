@@ -1,5 +1,23 @@
 # Product Safety Policy
 
+## Internal pilot gate
+
+Internal pilot documentation does not authorize pilot execution. Testing may start only after private staging, authenticated artifact handling, physical-device QA, privacy/security approval, and versioned safety-consent acknowledgment pass. Testers use non-identifying test media only and must never rely on results for diagnosis or treatment.
+
+## Controlled staging boundary
+
+Staging is restricted to internal staff and synthetic/non-identifiable recordings. A staging deployment, database, report, overlay, or mobile build is not clinical validation or pilot approval. Rule-based analyzers remain primary; experimental ML/DL and recognition cannot be promoted by deployment. External testing requires the documented privacy, consent, security, artifact, physical-device, and professional-review gates.
+
+## Multi-exercise interface boundary
+
+The Exercise Library must clearly separate supported analyzers from planned exercises. Planned cards are disabled and use “Planned — not available yet.” Metadata availability does not establish clinical validation. Product copy should use “observed movement pattern,” “possible compensation,” and “limited observed range,” never “injury detected” or “weakness detected.” For pain, worsening symptoms, or unusual symptoms, advise stopping the activity and seeking appropriate professional review rather than generating a diagnosis or treatment instruction.
+
+## Mobile boundary
+
+The mobile client records or selects media and uploads it for backend-side analysis; it does not run on-device pose estimation or make offline clinical inferences. Permission denial must fail clearly. Rejected inputs must not show a score. Tokens belong in platform secure storage, videos must not be retained on-device by the app beyond normal picker/camera behavior, and real patient-identifiable information is prohibited until production consent, privacy, retention, and security controls are approved.
+
+Internal development builds must retain the same boundary during offline, timeout, interrupted upload, expired-token, and backend-error states. Retry may retain a local picker URI for user convenience, but logs must never include tokens, raw media, patient identifiers, or health details. EAS/cloud readiness does not authorize public distribution.
+
 ## Scope
 
 PhysioVision AI provides educational movement-monitoring support. It does not diagnose injury or disease, determine fitness for activity, prescribe or modify treatment, or replace a licensed physiotherapist or other healthcare professional.

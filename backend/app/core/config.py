@@ -14,8 +14,20 @@ from app.core.artifact_config import ARTIFACTS_DIR, BACKEND_ROOT
 DEFAULT_CORS_ORIGINS = [
     "http://localhost:5173", "http://127.0.0.1:5173",
     "http://localhost:3000", "http://127.0.0.1:3000",
+    "http://localhost:8081", "http://127.0.0.1:8081",
 ]
 DEFAULT_EXTENSIONS = {".mp4", ".mov", ".avi", ".mkv", ".webm"}
+DEPLOYMENT_ENVIRONMENTS = {"staging", "production"}
+INSECURE_SECRET_KEYS = {"", "change-me-in-production"}
+
+
+def normalize_database_url(value: str) -> str:
+    """Select Psycopg 3 for common provider-style PostgreSQL URLs."""
+    if value.startswith("postgres://"):
+        return "postgresql+psycopg://" + value[len("postgres://"):]
+    if value.startswith("postgresql://"):
+        return "postgresql+psycopg://" + value[len("postgresql://"):]
+    return value
 
 
 def _csv(value: str | None, default: list[str]) -> list[str]:
@@ -74,7 +86,7 @@ class Settings(BaseModel):
             app_env=os.getenv("APP_ENV", "development").strip().lower(),
             api_host=os.getenv("API_HOST", "127.0.0.1"),
             api_port=int(os.getenv("API_PORT", "8000")),
-            database_url=os.getenv("DATABASE_URL", "sqlite:///./physiovision_dev.db"),
+            database_url=normalize_database_url(os.getenv("DATABASE_URL", "sqlite:///./physiovision_dev.db")),
             cors_allowed_origins=_csv(os.getenv("CORS_ALLOWED_ORIGINS"), DEFAULT_CORS_ORIGINS),
             max_upload_size_mb=max_mb, max_upload_size_bytes=max_mb * 1024 * 1024,
             artifact_retention_hours=retention, artifact_ttl_seconds=round(retention * 3600),
@@ -106,10 +118,28 @@ class Settings(BaseModel):
 
     @property
     def effective_cors_origins(self) -> list[str]:
-        """Return deployable origins; wildcard CORS is never enabled in production."""
-        if self.app_env == "production":
+        """Return deployable origins; wildcard CORS is never enabled outside development."""
+        if self.app_env in DEPLOYMENT_ENVIRONMENTS:
             return [origin for origin in self.cors_allowed_origins if origin != "*"]
         return self.cors_allowed_origins
+
+    def validate_deployment_safety(self) -> None:
+        """Fail closed when staging/production starts with development security settings."""
+        if self.app_env not in DEPLOYMENT_ENVIRONMENTS:
+            return
+        issues: list[str] = []
+        if self.secret_key in INSECURE_SECRET_KEYS or len(self.secret_key) < 32:
+            issues.append("SECRET_KEY must be a non-default value of at least 32 characters")
+        if not self.cors_allowed_origins or "*" in self.cors_allowed_origins:
+            issues.append("CORS_ALLOWED_ORIGINS must contain explicit origins and cannot include '*'")
+        if any(not origin.startswith("https://") for origin in self.effective_cors_origins):
+            issues.append("staging/production CORS origins must use HTTPS")
+        if not self.require_auth_for_analysis:
+            issues.append("REQUIRE_AUTH_FOR_ANALYSIS must be true")
+        if self.enable_public_demo_mode:
+            issues.append("ENABLE_PUBLIC_DEMO_MODE must be false")
+        if issues:
+            raise RuntimeError("Unsafe deployment configuration: " + "; ".join(issues))
 
 
 @lru_cache

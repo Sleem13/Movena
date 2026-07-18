@@ -185,4 +185,7 @@ def get_therapist_dashboard_summary(db: Session) -> TherapistDashboardSummary:
         low_confidence_sessions=sum(row.analysis_confidence_level == "low" for row in sessions),
         common_detected_issues=[DetectedIssueTrend(issue_code=code, count=count) for code, count in issue_counts.most_common(10)],
         sessions_by_exercise=dict(Counter(row.exercise_id for row in sessions)),
+        low_confidence_sessions_by_exercise=dict(Counter(
+            row.exercise_id for row in sessions if row.analysis_confidence_level == "low"
+        )),
     )

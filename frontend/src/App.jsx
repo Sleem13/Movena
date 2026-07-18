@@ -9,11 +9,13 @@ import TherapistDashboard from "./pages/TherapistDashboard.jsx";
 import Login from "./pages/Login.jsx";
 import Register from "./pages/Register.jsx";
 import Profile from "./pages/Profile.jsx";
+import ExerciseLibrary from "./pages/ExerciseLibrary.jsx";
+import { EXERCISES } from "./data/exercises.js";
 import { AuthProvider, useAuth } from "./context/AuthContext.jsx";
-import { analyzeHipAbductionVideo, analyzeKneeExtensionVideo, analyzeShoulderAbductionVideo, analyzeSitToStandVideo, analyzeSquatVideo } from "./services/api.js";
+import { analyzeHipAbductionVideo, analyzeKneeExtensionVideo, analyzeShoulderAbductionVideo, analyzeSitToStandVideo, analyzeSquatVideo, getExercises } from "./services/api.js";
 
 const DEFAULT_OPTIONS = { include_overlay: true, generate_report: true, include_ml: false, include_frame_data: true, save_session: false };
-const PAGE_PATHS = { home: "/", analyze: "/analyze", results: "/results", history: "/history", therapist: "/therapist", about: "/about", login: "/login", register: "/register", profile: "/profile" };
+const PAGE_PATHS = { home: "/", exercises: "/exercises", analyze: "/analyze", results: "/results", history: "/history", therapist: "/therapist", about: "/about", login: "/login", register: "/register", profile: "/profile" };
 
 function initialPage() {
   const path = window.location.pathname;
@@ -32,6 +34,11 @@ function AppContent() {
   const [options, setOptions] = useState(DEFAULT_OPTIONS);
   const [originalVideoUrl, setOriginalVideoUrl] = useState(null);
   const [exercise, setExercise] = useState("bodyweight_squat");
+  const [exercises, setExercises] = useState(EXERCISES);
+
+  useEffect(() => {
+    getExercises().then((items) => Array.isArray(items) && items.length && setExercises(items)).catch(() => {});
+  }, []);
 
   useEffect(() => {
     if (!file || typeof URL.createObjectURL !== "function") { setOriginalVideoUrl(null); return undefined; }
@@ -62,7 +69,8 @@ function AppContent() {
 
   return <AppShell currentPage={page} hasReport={Boolean(report)} onNavigate={navigate} user={user}>
     {page === "home" && <Home onStart={() => navigate("analyze")} />}
-    {page === "analyze" && <UploadSquat exercise={exercise} onExerciseChange={(value) => { setExercise(value); setFile(null); setError(""); if (value !== "bodyweight_squat") setOptions((current) => ({ ...current, include_ml: false })); }} file={file} error={error} isLoading={isLoading} progress={progress} options={options} onOptionsChange={setOptions} onFileChange={handleFileChange} onFileSelect={selectFile} onSubmit={handleSubmit} />}
+    {page === "exercises" && <ExerciseLibrary exercises={exercises} onAnalyze={(value) => { setExercise(value); navigate("analyze"); }} />}
+    {page === "analyze" && <UploadSquat exercises={exercises} exercise={exercise} onExerciseChange={(value) => { setExercise(value); setFile(null); setError(""); if (value !== "bodyweight_squat") setOptions((current) => ({ ...current, include_ml: false })); }} file={file} error={error} isLoading={isLoading} progress={progress} options={options} onOptionsChange={setOptions} onFileChange={handleFileChange} onFileSelect={selectFile} onSubmit={handleSubmit} />}
     {page === "results" && <Results report={report} originalVideoUrl={originalVideoUrl} onAnalyzeAnother={handleAnalyzeAnother} onGoAnalyze={() => setPage("analyze")} onViewHistory={() => setPage("history")} />}
     {page === "history" && <SessionHistory />}
     {page === "therapist" && <TherapistDashboard />}

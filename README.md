@@ -1,5 +1,85 @@
 # PhysioVision AI
 
+## Sprint 24 — Private Staging Deployment and Internal Pilot Gate
+
+Provider and pilot execution assets are prepared, but actual private staging deployment is blocked by missing Render/Neon/Vercel configuration and database credentials. EAS is authenticated, yet its preview environment has no staging API URL, so no misleading Android build was submitted. Physical-device QA and the internal pilot remain blocked. No public release or real patient data use occurred.
+
+Selected path: Render FastAPI + Neon PostgreSQL + Vercel web + EAS internal Android. See the [Sprint 24 status](docs/sprint_24_private_staging_internal_pilot.md), [provider decision](docs/private_staging_provider_decision.md), [deployment results](docs/deployed_staging_smoke_test_results.md), [Android report](docs/android_internal_build_report.md), and [internal pilot plan](docs/internal_pilot_plan.md).
+
+## Sprint 23 — Controlled Cloud Staging Deployment
+
+The repository is staging-ready for internal testing: staging configuration fails closed on unsafe secrets/CORS/auth settings, PostgreSQL uses Psycopg 3, non-development web builds require an explicit API URL, EAS includes an internal `preview-staging` profile, and protected report/overlay links expire. No staging service has been publicly launched, no real patient data is authorized, and external pilot approval remains blocked.
+
+```powershell
+# Backend staging simulation — use non-secret local test values only
+$env:APP_ENV="staging"
+$env:APP_VERSION="0.23.0"
+$env:SECRET_KEY="local-staging-simulation-key-at-least-32-characters"
+$env:CORS_ALLOWED_ORIGINS="https://staging-web.example.test"
+$env:REQUIRE_AUTH_FOR_ANALYSIS="true"
+$env:ENABLE_PUBLIC_DEMO_MODE="false"
+cd backend
+..\.venv\Scripts\python.exe -m uvicorn app.main:app --host 0.0.0.0 --port 8010 --no-access-log
+```
+
+See the [Sprint 23 decision](docs/sprint_23_controlled_cloud_staging_deployment.md), [deployment strategy](docs/staging_deployment_strategy.md), [smoke checklist](docs/staging_smoke_test_checklist.md), and [pilot gate](docs/controlled_pilot_readiness_gate.md).
+
+## Sprint 22 — Mobile QA and Cloud Deployment Preparation
+
+Sprint 21 is complete at the engineering MVP level. Sprint 22 adds internal EAS development-build profiles, upload cancel/retry and preflight validation, standardized mobile errors, expired-token cleanup, safer rejected/error result handling, and physical-device/cloud/privacy release checklists. No public release has occurred or is authorized.
+
+```powershell
+cd backend
+..\.venv\Scripts\python.exe -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8010
+
+cd ..\mobile
+npm install
+npm test
+npm run typecheck
+npx expo start
+
+# Requires EAS account/project access
+eas build --profile development --platform android
+```
+
+For a physical phone, set `EXPO_PUBLIC_API_BASE_URL=http://<LAN_IP>:8010`; never use `localhost` on the phone. See the [Sprint 22 status](docs/sprint_22_mobile_qa_cloud_prep.md), [physical-device guide](docs/mobile_physical_device_testing.md), [QA plan](docs/mobile_qa_plan.md), and [privacy/security checklist](docs/privacy_security_release_checklist.md).
+
+## Sprint 21 — Expo Mobile App MVP
+
+The new `mobile/` Expo Router/React Native TypeScript client supports the existing five exercises through backend-side analysis. It provides an API-driven exercise library, exercise-specific camera guidance, existing-video selection and short camera recording, multipart upload progress, safe success/rejected results, protected session history, and SecureStore JWT handling.
+
+```powershell
+cd mobile
+npm install
+Copy-Item .env.example .env
+npm test
+npm run typecheck
+npx expo start
+```
+
+Set `EXPO_PUBLIC_API_BASE_URL` to `http://10.0.2.2:8010` for an Android emulator or to the backend computer's LAN address for a physical phone. See [mobile setup](mobile/README.md), [Sprint 21 notes](docs/sprint_21_mobile_app_mvp.md), and the [mobile API contract](docs/mobile_api_contract.md).
+
+The mobile app performs no on-device pose estimation or ML/DL. Manual exercise selection and rule-based backend analysis remain primary. It does not diagnose, detect injury or weakness, prescribe treatment, or replace a licensed physiotherapist.
+
+## Sprint 20 — Multi-Exercise UI/UX and Mobile Preparation
+
+Current supported exercises are bodyweight squat, sit-to-stand, knee extension, shoulder abduction, and hip abduction. The web app includes an Exercise Library at `/exercises`; planned exercises are visible but disabled and are not working analyzers. Manual selection and rule-based biomechanics remain primary. ML/DL and exercise recognition remain experimental.
+
+Exercise catalog endpoints are `GET /api/v1/exercises` and `GET /api/v1/exercises/{exercise_id}`.
+
+```powershell
+cd backend
+python -m uvicorn app.main:app --reload
+
+cd ../frontend
+npm install
+npm run dev
+```
+
+Validate with `python -m pytest`, then `cd frontend`, `npm test`, and `npm run build`. See the [Sprint 20 notes](docs/sprint_20_multi_exercise_ui_mobile_prep.md), [mobile preparation](docs/mobile_mvp_preparation.md), [mobile API contract](docs/mobile_api_contract.md), and [safety policy](docs/product_safety_policy.md).
+
+The interface reports observed movement patterns, possible compensation, and limited observed range. It does not detect injury or weakness, diagnose conditions, prescribe treatment, or replace professional assessment. Stop for pain or unusual symptoms and seek appropriate professional review.
+
 PhysioVision AI is a physiotherapy-informed movement-analysis and rehabilitation-support product in development. Its current working MVP supports bodyweight squat, sit-to-stand, seated knee extension, shoulder abduction, and standing hip-abduction video analysis with MediaPipe pose landmarks, exercise-specific rule-based biomechanics, repetition counting, validity and confidence checks, and educational feedback.
 
 ## From Squat MVP to Full Product Roadmap

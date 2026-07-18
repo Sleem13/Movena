@@ -20,6 +20,8 @@ const pretty = (value = "") =>
 
 export default function SessionHistory() {
   const [exercise, setExercise] = useState("");
+  const [status, setStatus] = useState("");
+  const [sortOrder, setSortOrder] = useState("newest");
   const [sessions, setSessions] = useState([]);
   const [selected, setSelected] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -30,9 +32,10 @@ export default function SessionHistory() {
     setError("");
     setSelected(null);
     try {
-      const data = await listSavedSessions(
-        exercise ? { exercise_id: exercise } : {},
-      );
+      const data = await listSavedSessions({
+        ...(exercise ? { exercise_id: exercise } : {}),
+        ...(status ? { status } : {}),
+      });
       setSessions(data.items || []);
     } catch (requestError) {
       setError(
@@ -45,7 +48,9 @@ export default function SessionHistory() {
   }
   useEffect(() => {
     load();
-  }, [exercise]);
+  }, [exercise, status]);
+
+  const visibleSessions = sortOrder === "oldest" ? [...sessions].reverse() : sessions;
 
   async function openDetail(sessionId) {
     try {
@@ -68,7 +73,7 @@ export default function SessionHistory() {
           </Button>
         }
       />
-      <div className="mb-5 flex items-center gap-3">
+      <div className="mb-5 flex flex-wrap items-center gap-3">
         <label
           className="text-sm font-semibold text-slate-600"
           htmlFor="history-exercise"
@@ -88,6 +93,10 @@ export default function SessionHistory() {
           <option value="shoulder_abduction">Shoulder Abduction</option>
           <option value="hip_abduction">Hip Abduction</option>
         </select>
+        <label className="text-sm font-semibold text-slate-600" htmlFor="history-status">Status</label>
+        <select id="history-status" className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm" value={status} onChange={(event) => setStatus(event.target.value)}><option value="">All statuses</option><option value="success">Success</option><option value="rejected">Rejected</option></select>
+        <label className="text-sm font-semibold text-slate-600" htmlFor="history-sort">Date</label>
+        <select id="history-sort" className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm" value={sortOrder} onChange={(event) => setSortOrder(event.target.value)}><option value="newest">Newest first</option><option value="oldest">Oldest first</option></select>
       </div>
       {error && <Alert title="History unavailable">{error}</Alert>}
       {loading ? (
@@ -102,7 +111,7 @@ export default function SessionHistory() {
         />
       ) : (
         <div className="grid gap-4 lg:grid-cols-2">
-          {sessions.map((session) => (
+          {visibleSessions.map((session) => (
             <Card key={session.session_id} className="p-5">
               <div className="flex items-start justify-between gap-3">
                 <div>

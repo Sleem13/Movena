@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, File, Query, UploadFile, status
 
 from app.api.routes.squat_analysis import error_response, pose_error_code
 from app.exercises.sit_to_stand.analyzer import sit_to_stand_analyzer
-from app.services.artifact_service import create_artifact
+from app.services.artifact_service import build_artifact_url, create_artifact
 from app.services.overlay_video_service import create_overlay_video
 from app.services.pose_estimation_service import PoseEstimationError, extract_pose_landmarks
 from app.services.report_service import generate_session_report
@@ -58,7 +58,7 @@ async def analyze_sit_to_stand(
             generated_artifacts.append(report_path)
             generate_session_report(report, report_path)
             report.report_id = report_id
-            report.report_download_url = f"/api/v1/artifacts/reports/{report_id}"
+            report.report_download_url = build_artifact_url(f"/api/v1/artifacts/reports/{report_id}", report_id, "report")
         elif generate_report and not settings.enable_report_generation:
             report.limitations.append("PDF report generation is disabled by deployment configuration.")
         if include_overlay and settings.enable_overlay_generation and report.status == "success" and report.frame_analysis:

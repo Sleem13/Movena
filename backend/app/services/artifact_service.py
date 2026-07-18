@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import time
+import hashlib
+import hmac
 from pathlib import Path
 from uuid import UUID, uuid4
 
@@ -12,6 +14,29 @@ from app.core.config import get_settings
 
 ARTIFACT_SUFFIXES = {"report": ".pdf", "overlay": ".mp4"}
 ARTIFACT_SUBDIRS = {"report": "reports", "overlay": "overlays"}
+
+
+def _artifact_signature(artifact_id: str, kind: str, expires: int) -> str:
+    payload = f"{kind}:{artifact_id}:{expires}".encode()
+    return hmac.new(get_settings().secret_key.encode(), payload, hashlib.sha256).hexdigest()
+
+
+def build_artifact_url(path: str, artifact_id: str, kind: str) -> str:
+    """Return a short-lived signed URL when analysis artifacts are protected."""
+    settings = get_settings()
+    if not settings.require_auth_for_analysis:
+        return path
+    expires = int(time.time()) + settings.artifact_ttl_seconds
+    signature = _artifact_signature(artifact_id, kind, expires)
+    separator = "&" if "?" in path else "?"
+    return f"{path}{separator}expires={expires}&signature={signature}"
+
+
+def valid_artifact_signature(artifact_id: str, kind: str, expires: int | None, signature: str | None) -> bool:
+    if expires is None or not signature or expires < int(time.time()):
+        return False
+    expected = _artifact_signature(artifact_id, kind, expires)
+    return hmac.compare_digest(signature, expected)
 
 
 def ensure_artifact_directories() -> Path:

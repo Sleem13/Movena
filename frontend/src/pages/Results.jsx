@@ -5,7 +5,7 @@ import ResultsDashboard, { ExportActions } from "../components/results/ResultsDa
 
 export default function Results({ report, originalVideoUrl, onAnalyzeAnother, onGoAnalyze, onViewHistory }) {
   if (!report) {
-    return <main className="mx-auto max-w-4xl px-6 py-20"><EmptyState title="No analysis results yet" description="Upload a squat video to create a movement dashboard." /><div className="mt-5 text-center"><Button onClick={onGoAnalyze}><ArrowLeft size={16} />Go to Analyze</Button></div></main>;
+    return <main className="mx-auto max-w-4xl px-6 py-20"><EmptyState title="No analysis results yet" description="Upload a supported exercise video to create a movement dashboard." /><div className="mt-5 text-center"><Button onClick={onGoAnalyze}><ArrowLeft size={16} />Go to Analyze</Button></div></main>;
   }
   const rejected = report.status === "rejected";
   const displayNames = { bodyweight_squat: "Bodyweight squat", sit_to_stand: "Sit-to-Stand", knee_extension: "Knee Extension", shoulder_abduction: "Shoulder Abduction", hip_abduction: "Hip Abduction" };

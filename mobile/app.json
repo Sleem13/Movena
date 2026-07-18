@@ -1,0 +1,41 @@
+{
+  "expo": {
+    "name": "PhysioVision AI",
+    "slug": "physiovision-ai-mobile",
+    "version": "0.24.0",
+    "orientation": "portrait",
+    "scheme": "physiovision",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "ai.physiovision.mobile"
+    },
+    "android": {
+      "package": "ai.physiovision.mobile"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-dev-client",
+      "expo-secure-store",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow PhysioVision AI to select a movement video for temporary analysis.",
+          "cameraPermission": "Allow PhysioVision AI to record a movement video for temporary analysis.",
+          "microphonePermission": false
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "extra": {
+      "releaseStatus": "internal-testing-only",
+      "router": {},
+      "eas": {
+        "projectId": "3161d775-09da-468e-b97d-f678ca583c4c"
+      }
+    }
+  }
+}

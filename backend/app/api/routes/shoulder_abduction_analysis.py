@@ -10,7 +10,7 @@ from app.core.config import get_settings
 from app.db.models import User
 from app.exercises.shoulder_abduction.analyzer import shoulder_abduction_analyzer
 from app.schemas.analysis_schema import AnalysisResponse, ErrorResponse
-from app.services.artifact_service import create_artifact
+from app.services.artifact_service import build_artifact_url, create_artifact
 from app.services.overlay_video_service import create_overlay_video
 from app.services.pose_estimation_service import PoseEstimationError, extract_pose_landmarks
 from app.services.report_service import generate_session_report
@@ -38,7 +38,7 @@ async def analyze_shoulder_abduction(video: UploadFile = File(...), include_over
             report_id, report_path = create_artifact("report")
             generated_artifacts.append(report_path)
             generate_session_report(report, report_path)
-            report.report_id, report.report_download_url = report_id, f"/api/v1/artifacts/reports/{report_id}"
+            report.report_id, report.report_download_url = report_id, build_artifact_url(f"/api/v1/artifacts/reports/{report_id}", report_id, "report")
         elif generate_report and not settings.enable_report_generation:
             report.limitations.append("PDF report generation is disabled by deployment configuration.")
         if include_overlay and settings.enable_overlay_generation and report.status == "success" and report.frame_analysis:
