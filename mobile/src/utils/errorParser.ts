@@ -28,6 +28,11 @@ const FRIENDLY_MESSAGES: Record<string, string> = {
   TIMEOUT: "The request timed out. Try a shorter recording and check your connection.",
   SERVER_UNAVAILABLE: "PhysioVision AI is temporarily unavailable. Please retry shortly.",
   CANCELLED: "Upload cancelled. Your selected video is still available to retry.",
+  ARTIFACT_NOT_FOUND: "This temporary report or annotated video has expired. Run the analysis again to create a new artifact.",
+  EXERCISE_NOT_FOUND: "This exercise is not available for analysis.",
+  EXERCISE_NOT_SUPPORTED: "This exercise is planned and cannot be analyzed yet.",
+  PROCESSING_ERROR: "The analysis could not be completed. Retry with a shorter, clearly recorded video.",
+  MISSING_FILE: "Select a video before starting analysis.",
 };
 
 export const isTokenError = (code?: string) => code === "INVALID_TOKEN" || code === "TOKEN_EXPIRED";

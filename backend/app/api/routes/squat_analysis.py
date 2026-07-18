@@ -58,7 +58,7 @@ async def analyze_squat(
     current_user: User | None = Depends(analysis_current_user),
 ):
     settings = get_settings()
-    logger.info("Video received: filename=%s content_type=%s", video.filename, video.content_type)
+    logger.info("Video upload received: content_type=%s", video.content_type)
     try:
         video_path = await save_upload_file(video)
     except UploadValidationError as exc:

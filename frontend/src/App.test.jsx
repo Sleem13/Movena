@@ -330,6 +330,7 @@ describe("Squat Analyzer healthcare dashboard", () => {
     expect(screen.getByText("Rep count confidence")).toBeInTheDocument();
     expect(screen.getByText("Score breakdown")).toBeInTheDocument();
     expect(screen.getByText("88%")).toBeInTheDocument();
+    expect(screen.getByText(/PhysioVision AI supports exercise monitoring and does not replace assessment by a licensed physiotherapist/i)).toBeInTheDocument();
   });
 
   it("renders the ML second opinion only when returned", async () => {

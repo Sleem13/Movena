@@ -1,21 +1,15 @@
 # Internal Pilot Feedback Form
 
-- Tester ID or non-identifying alias:
-- Date/time and app version:
-- Device model and OS version:
-- Network condition:
-- Exercise tested:
-- Picker or camera recording:
-- Upload succeeded, failed, timed out, or was cancelled:
-- Analysis status: success, rejected, or error:
-- Was the result clear? Why?
-- Was rejection guidance clear and did it avoid a fake score?
-- Was camera guidance clear?
-- Were score and confidence limitations clear?
-- Did report/overlay access work as expected?
-- Bugs or unexpected behavior:
-- Safety or privacy concern:
-- Suggested improvement:
-- May the team contact you for clarification?
+Use one row in `data/processed/pilot/internal_pilot_feedback_template.csv` per controlled test session. Use a non-identifying tester alias and `YYYY-MM-DD` date. Do not enter names, emails, diagnoses, patient identifiers, credentials, token values, signed URLs, or raw media.
 
-Do not include patient names, emails, diagnoses, raw video, tokens, signed links, or other identifying/sensitive information.
+Record device/OS/build, staging environment, supported exercise, controlled video source, upload outcome, analysis status, rejection clarity, result/score-confidence/camera-guidance clarity, and whether safety messaging was visible. Describe only sanitized product behavior.
+
+Allowed severity values:
+
+- `blocker`: core flow impossible or pilot cannot safely continue.
+- `high`: major supported behavior fails repeatedly.
+- `medium`: recoverable behavior with material usability impact.
+- `low`: minor or cosmetic problem.
+- `safety_privacy`: possible unsafe wording, unauthorized data, token/artifact exposure, missing disclaimer, or privacy concern; stop affected testing and escalate immediately.
+
+Set `screenshot_or_video_shared=yes` only after voluntary explicit sharing through the approved restricted channel. Never embed the media or private link in the CSV. Feedback supports product QA, not clinical validation.

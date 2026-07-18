@@ -1,5 +1,37 @@
 # PhysioVision AI Mobile MVP
 
+## Sprint 28 launch candidate
+
+Mobile version `0.28.0` represents engineering candidate `0.28.0-rc.1`. Staging/production now fails closed unless `EXPO_PUBLIC_API_BASE_URL` is a real HTTPS non-placeholder URL. The app shows an invite-only/not-public label and provides a known-limitations screen from onboarding, the library, and results.
+
+The candidate remains **NO-GO** and no EAS build was submitted. A real private staging URL, APK install, physical-device upload/network/token/artifact QA, and active private support/feedback/deletion links are still required. Never distribute publicly or upload real patients, identifiable personal information, or sensitive health information. The five supported exercises and backend rule-based primacy are unchanged; ML/DL/recognition remain experimental and no analysis runs on device.
+
+```powershell
+npm test
+npm run typecheck
+
+# Run only after a reviewed private HTTPS URL exists in the EAS preview environment:
+eas build --profile preview-staging --platform android
+```
+
+## Sprint 27 external closed beta readiness
+
+The mobile client is included in a future invite-only beta plan, but no external build is approved. The decision is **NO-GO** until private HTTPS staging, an installable non-public Android build, physical-device upload/network/token/artifact QA, and active support/privacy contacts are evidenced. Do not distribute through public stores or links.
+
+External testing, if later approved, is limited to tester-owned non-identifying test videos and the five supported exercises. Never upload real patients, identifiable personal information, or sensitive health information. Rule-based backend analysis remains primary; ML/DL and recognition remain experimental, and no analysis runs on device. See the [tester onboarding](../docs/external_tester_onboarding.md), [known limitations](../docs/external_beta_known_limitations.md), and [go/no-go decision](../docs/external_beta_go_no_go_decision.md).
+
+## Sprint 26 stability candidate
+
+Mobile version `0.26.0` prevents same-tick duplicate upload requests, retains retry/cancel behavior, adds exercise-specific camera and rejected-result guidance, handles null/zero/ML-not-applicable result states safely, and maps expired artifacts and processing failures to non-technical messages. Tokens remain in Expo SecureStore and are never logged.
+
+This is an internal automated-test-validated candidate, not a public or installed pilot release. No real patient data is permitted. The five supported exercises are unchanged, backend rule-based analysis remains primary, and ML/DL/recognition remain experimental. Private staging, Android build installation, physical-device QA, and pilot feedback are still blocked.
+
+## Sprint 25 internal pilot status
+
+The mobile client is prepared for a limited internal product-QA pilot, but no pilot build is approved or installed yet. The `preview-staging` build remains blocked until a real private HTTPS backend URL is configured and deployment/device gates pass. Do not distribute publicly, onboard patients, or upload patient-identifiable media.
+
+Pilot testers may use only controlled test videos and the five supported exercises. Rule-based backend analysis remains primary; the app has no on-device pose estimation or ML/DL. Experimental ML/DL and recognition are not clinical features. Feedback reports product reliability and clarity only, not clinical validity. Follow the [tester onboarding](../docs/internal_tester_onboarding.md), [test script](../docs/internal_pilot_test_script.md), and [readiness checklist](../docs/internal_pilot_readiness_checklist.md).
+
 ## Sprint 24 Android build status
 
 The EAS project is linked and `preview-staging` is configured for internal APK distribution. Build submission is blocked because the EAS preview environment has no `EXPO_PUBLIC_API_BASE_URL` and no private staging API exists. After deployment, set the real HTTPS URL, run `eas build --profile preview-staging --platform android`, and record/install the artifact internally. No store submission is authorized.

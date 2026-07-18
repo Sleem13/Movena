@@ -44,6 +44,7 @@ export default function ExerciseLibraryScreen() {
         <Pressable onPress={() => router.push("/history")}><Text style={styles.link}>History</Text></Pressable>
         <Pressable onPress={() => router.push("/profile")}><Text style={styles.link}>Profile</Text></Pressable>
         <Pressable onPress={() => router.push("/safety")}><Text style={styles.link}>Safety</Text></Pressable>
+        <Pressable onPress={() => router.push("/limitations")}><Text style={styles.link}>Limitations</Text></Pressable>
       </View>
       {loading ? <Loading label="Loading exercises" /> : error ? (
         <ErrorState message={error} action={<PrimaryButton title="Retry" onPress={load} />} />

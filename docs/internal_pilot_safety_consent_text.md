@@ -1,7 +1,13 @@
 # Internal Pilot Safety and Consent Text
 
-By participating, I confirm that I am an authorized internal tester using only non-identifying test recordings. I understand PhysioVision AI is an experimental exercise-monitoring and educational-support product. It does not diagnose injury or disease, determine whether exercise is safe for me, prescribe treatment, or replace assessment by a licensed healthcare professional.
+**PhysioVision AI supports exercise monitoring and does not replace assessment by a licensed physiotherapist.**
 
-I will stop if I experience pain, dizziness, chest discomfort, unusual shortness of breath, weakness/numbness, instability, or another concerning symptom and seek appropriate professional or urgent help. I will not use or share another person's recording, patient information, credentials, reports, overlay links, or results. I understand uploads and artifacts are processed temporarily under the staging retention policy and that unexpected failures or data exposure must be reported immediately.
+This is an internal test build of PhysioVision AI. It is not a medical device and is not approved for clinical use. It does not diagnose a condition, determine whether an exercise is safe, or prescribe treatment. Do not use it for an emergency, a painful condition, or a treatment decision.
 
-This draft requires organizational privacy/safety approval and a versioned acknowledgment mechanism before the pilot begins. It is not legal or clinical consent for patient care or research.
+Stop exercising if you feel pain, dizziness, numbness, chest discomfort, unusual shortness of breath, instability, or other unusual discomfort. Seek appropriate professional or urgent care when needed; the app cannot assess those symptoms.
+
+Use only controlled, non-identifying test videos. Do not upload identifiable patient videos or patient information. Videos or results may be reviewed for debugging only when you explicitly choose to share them through the approved restricted channel. Sharing is voluntary and must not include credentials, tokens, or unrelated personal information.
+
+Participation is voluntary. You may stop at any time and ask the pilot owner to close your staging access. Pilot feedback is for product quality assurance only and is not clinical validation or research evidence.
+
+Acknowledgment: I have read these limits, will follow the test-data rules, and understand that I can stop participation at any time.

@@ -1,5 +1,17 @@
 # Mobile API contract
 
+## Sprint 27 external-beta contract
+
+A future external beta continues to use the same five exercise endpoints and explicit `success`, `rejected`, and `error` states. It does not add exercises, on-device analysis, or promoted ML/DL. The client must suppress movement scores and experimental model output when validity rejects input, preserve confidence/limitations/disclaimer copy, and never interpret API output as diagnosis or treatment.
+
+Only a reviewed private HTTPS API may be configured in an external-beta build. Authentication, logout/revocation, expiry, upload retry, and signed temporary artifact URLs must pass physical-device tests. The client must not log raw media, filenames with personal information, tokens, authorization headers, signed URLs, health data, or unrestricted responses. Any future allow-listed beta analytics must follow `external_beta_analytics_logging_plan.md` and remain disabled until approved.
+
+## Sprint 25 internal pilot contract
+
+The client continues to use backend-side analysis for the five supported exercises. Pilot QA must record the exact app/backend versions and environment, preserve structured `success`, `rejected`, and `error` states, suppress scores for rejected input, and never infer missing fields. ML/DL and recognition remain experimental and are not pilot acceptance criteria.
+
+The app must not send analytics containing raw media, filenames, landmarks, patient information, tokens, authorization headers, artifact URLs, diagnoses, or free-text health data. Controlled pilot events, if later approved, are limited to the event and coarse metadata allowlist in `pilot_analytics_logging_plan.md`. Local LAN testing uses development mode; the internal staging build requires the real reviewed HTTPS API URL.
+
 ## Sprint 24 internal-build gate
 
 An internal staging build must receive the real HTTPS API URL from EAS preview variables. Building against localhost, `10.0.2.2`, or an `.invalid` placeholder is prohibited. The current build is blocked until a deployed API exists; mobile behavior remains covered by automated tests only.

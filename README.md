@@ -1,5 +1,91 @@
 # PhysioVision AI
 
+## Sprint 28 — External Beta Launch Candidate Fixes
+
+Sprint 28 prepares `0.28.0-rc.1` for a future invite-only external beta. It adds fail-closed mobile staging URL validation, a linked in-app known-limitations screen, privacy-safer upload logging, build/QA/retention evidence, and build-aware beta summaries. **This is not a public launch; the current decision remains NO-GO.** No EAS build was submitted because private HTTPS staging and physical-device evidence are unavailable.
+
+No real patient data or clinical use is permitted. Supported exercises remain `bodyweight_squat`, `sit_to_stand`, `knee_extension`, `shoulder_abduction`, and `hip_abduction`. Rule-based analyzers remain primary; ML/DL and recognition remain experimental, and no analysis runs on device.
+
+```powershell
+python scripts/cleanup_artifacts.py --dry-run
+python scripts/summarize_external_beta_feedback.py
+python -m pytest
+
+cd mobile
+npm test
+npm run typecheck
+
+cd ..\frontend
+npm test
+npm run build
+```
+
+See the [Sprint 28 status](docs/sprint_28_external_beta_launch_candidate_fixes.md), [release notes](docs/external_beta_launch_candidate_release_notes.md), [QA matrix](docs/external_beta_final_qa_matrix.md), and [go/no-go decision](docs/external_beta_launch_candidate_go_no_go.md).
+
+## Sprint 27 — External Closed Beta Readiness
+
+Sprint 27 prepares governance, privacy/safety, tester onboarding, feedback, support, and release controls for a future invite-only external closed beta. **This is not a public launch and the current decision is NO-GO.** Private staging, an installable Android beta build, physical-device QA, deployed auth/artifact verification, and active support contacts remain blockers.
+
+No real patient data or clinical use is permitted. Supported exercises remain `bodyweight_squat`, `sit_to_stand`, `knee_extension`, `shoulder_abduction`, and `hip_abduction`. Rule-based analyzers remain primary; ML/DL and exercise recognition remain experimental, and there is no on-device analysis.
+
+```powershell
+python scripts/summarize_external_beta_feedback.py
+python -m pytest
+
+cd mobile
+npm test
+npm run typecheck
+
+cd ..\frontend
+npm test
+npm run build
+```
+
+See the [Sprint 27 status](docs/sprint_27_external_closed_beta_readiness.md), [beta scope](docs/external_closed_beta_scope.md), [release checklist](docs/external_beta_release_candidate_checklist.md), and [go/no-go decision](docs/external_beta_go_no_go_decision.md).
+
+## Sprint 26 — Pilot Findings Fixes and Stability Release
+
+Sprint 26 is a stability/fixes sprint following internal-pilot preparation. Version `0.26.0` adds preventive mobile upload, rejected-result, exercise guidance, artifact-error, summary, and safety-copy hardening. Pilot inputs still contain zero sessions, so this is an automated-test-validated candidate—not evidence from a completed pilot.
+
+No public release or real patient-identifiable data is authorized. Supported exercises remain `bodyweight_squat`, `sit_to_stand`, `knee_extension`, `shoulder_abduction`, and `hip_abduction`. Rule-based analyzers remain primary; ML/DL and exercise recognition remain experimental.
+
+```powershell
+# Activate .venv first
+python scripts/summarize_internal_pilot_feedback.py
+python -m pytest
+
+cd mobile
+npm test
+npm run typecheck
+
+cd ..\frontend
+npm test
+npm run build
+```
+
+See the [Sprint 26 status](docs/sprint_26_pilot_findings_fixes_stability_release.md), [triage report](docs/pilot_issue_triage_report.md), [regression matrix](docs/pilot_regression_test_matrix.md), and [findings report](docs/internal_pilot_findings_report.md).
+
+## Sprint 25 — Limited Internal Pilot and Feedback Loop
+
+Sprint 25 is **internal-pilot preparation only**. Scope, tester onboarding, consent/safety language, controlled test script, feedback and issue CSVs, privacy review, build registry, findings template, readiness checklist, and feedback summarization are available. The pilot has not started because private staging, an installable Android build, deployed smoke testing, and physical-device approval remain blocked.
+
+There is no public release and no real patient-identifiable data is permitted. Supported exercises remain `bodyweight_squat`, `sit_to_stand`, `knee_extension`, `shoulder_abduction`, and `hip_abduction`. Rule-based analyzers remain primary; ML/DL and exercise recognition remain experimental. Feedback collection measures product QA and usability—not clinical validity, diagnosis accuracy, or treatment effectiveness.
+
+```powershell
+# Activate .venv first
+python -m pytest
+python scripts/summarize_internal_pilot_feedback.py
+
+cd mobile
+npm test
+
+cd ..\frontend
+npm test
+npm run build
+```
+
+See the [Sprint 25 decision](docs/sprint_25_limited_internal_pilot_feedback_loop.md), [pilot scope](docs/internal_pilot_scope.md), [test script](docs/internal_pilot_test_script.md), and [readiness checklist](docs/internal_pilot_readiness_checklist.md).
+
 ## Sprint 24 — Private Staging Deployment and Internal Pilot Gate
 
 Provider and pilot execution assets are prepared, but actual private staging deployment is blocked by missing Render/Neon/Vercel configuration and database credentials. EAS is authenticated, yet its preview environment has no staging API URL, so no misleading Android build was submitted. Physical-device QA and the internal pilot remain blocked. No public release or real patient data use occurred.

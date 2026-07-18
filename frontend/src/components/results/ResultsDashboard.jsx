@@ -5,7 +5,7 @@ import { Alert, Badge, Button, Card, EmptyState } from "../common/UI.jsx";
 import { AngleTrendChart, ChartCard, IssueBreakdownChart, MovementRadarChart, MovementScoreGauge, RepQualityChart } from "../charts/MovementCharts.jsx";
 import CameraGuide from "../upload/CameraGuide.jsx";
 
-const DISCLAIMER = "This analysis is for exercise monitoring and educational support only. It does not replace assessment, diagnosis, or treatment by a licensed physiotherapist or healthcare professional.";
+const DISCLAIMER = "PhysioVision AI supports exercise monitoring and does not replace assessment by a licensed physiotherapist. This educational analysis does not provide diagnosis or treatment.";
 const pretty = (value = "") => value.replaceAll("_", " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
 const movementName = (exercise) => ({ bodyweight_squat: "squat", sit_to_stand: "sit-to-stand", knee_extension: "knee-extension", shoulder_abduction: "shoulder-abduction", hip_abduction: "hip-abduction" }[exercise] || "movement");
 

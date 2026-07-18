@@ -1,0 +1,12 @@
+metric,value
+number_of_testers,0
+number_of_devices,0
+number_of_sessions,0
+devices_tested,None recorded
+exercises_tested,None recorded
+upload_success_rate,Not measured
+rejected_result_clarity_rate,Not measured
+common_issues,None recorded
+blocker_high_count,0
+safety_privacy_count,0
+recommendation,NO-GO — no completed pilot feedback is available.

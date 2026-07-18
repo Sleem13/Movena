@@ -12,3 +12,15 @@ export function validateSelectedVideo(video: MobileVideo): string | null {
 }
 
 export const canSubmitUpload = (video: MobileVideo | null, busy: boolean) => Boolean(video) && !busy;
+
+export function createUploadSubmissionGuard() {
+  let active = false;
+  return {
+    tryStart() {
+      if (active) return false;
+      active = true;
+      return true;
+    },
+    finish() { active = false; },
+  };
+}
