@@ -2,7 +2,7 @@
   "expo": {
     "name": "PhysioVision AI",
     "slug": "physiovision-ai-mobile",
-    "version": "0.24.0",
+    "version": "0.28.0",
     "orientation": "portrait",
     "scheme": "physiovision",
     "userInterfaceStyle": "light",
@@ -31,7 +31,8 @@
       "typedRoutes": true
     },
     "extra": {
-      "releaseStatus": "internal-testing-only",
+      "releaseStatus": "external-beta-launch-candidate-no-go",
+      "releaseCandidate": "0.28.0-rc.1",
       "router": {},
       "eas": {
         "projectId": "3161d775-09da-468e-b97d-f678ca583c4c"

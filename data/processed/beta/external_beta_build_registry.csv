@@ -1,0 +1,2 @@
+build_id,date,rc_version,mobile_version,backend_version,web_version,platform,eas_profile,build_status,staging_backend_url,go_no_go_status,notes
+ext-beta-0.28.0-rc.1-android,2026-07-18,0.28.0-rc.1,0.28.0,0.28.0,0.1.0,android,preview-staging,blocked_not_submitted,NOT_CONFIGURED,NO-GO,Private HTTPS staging URL and physical-device evidence are missing; no EAS build was submitted.

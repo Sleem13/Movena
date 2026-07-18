@@ -1,0 +1,1 @@
+issue_id,date_reported,reported_by,platform,device_model,app_version,backend_environment,exercise,issue_category,severity,description,steps_to_reproduce,expected_behavior,actual_behavior,logs_available,screenshot_available,status,owner,resolution_notes,fixed_in_version

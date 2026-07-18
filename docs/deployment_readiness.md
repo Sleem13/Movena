@@ -1,5 +1,15 @@
 # Deployment Readiness
 
+## Sprint 28 launch-candidate gate
+
+`0.28.0-rc.1` is registered as `blocked_not_submitted`. Mobile staging/production now refuses missing, HTTP, or `.invalid` API URLs, preventing a misleading build against a development fallback. This does not supply the missing private HTTPS backend, EAS artifact, physical-device QA, deployed token/artifact/cleanup evidence, or live support contacts. Decision remains `NO-GO`.
+
+## Sprint 27 external closed beta gate
+
+The external-beta documentation and QA schemas are prepared, but deployment remains **NO-GO**. No verified private HTTPS staging service, staging web client, installable private Android beta build, physical-device result, or deployed auth/artifact/retention evidence is recorded. Support/deletion/install/login placeholders are unresolved. Do not invite testers, publish an app listing, onboard patients, or use real patient-identifiable media.
+
+Before reconsidering, complete `external_beta_release_candidate_checklist.md`, record final backend/mobile/frontend validation, test access revocation and temporary artifacts, and obtain product, QA, security/privacy, safety, and release approval. Documentation readiness is not deployment evidence.
+
 ## Sprint 24 execution gate
 
 The provider path, secrets procedure, staging Compose rehearsal, PostgreSQL setup, internal-build report, smoke matrix, artifact review, and pilot package are complete. Actual Render/Neon/Vercel provisioning, EAS Android build, and physical-device QA are blocked by missing deployment configuration/API URL/device evidence. Deployment readiness does not equal pilot approval.

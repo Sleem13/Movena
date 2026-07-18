@@ -12,7 +12,7 @@ import type { MobileVideo } from "@/src/types/analysis";
 import { colors } from "@/src/config/theme";
 import { APP_ENV } from "@/src/config/env";
 import { useExerciseMetadata } from "@/src/hooks/useExerciseMetadata";
-import { canSubmitUpload, validateSelectedVideo } from "@/src/utils/uploadValidation";
+import { canSubmitUpload, createUploadSubmissionGuard, validateSelectedVideo } from "@/src/utils/uploadValidation";
 
 function toVideo(asset: ImagePicker.ImagePickerAsset): MobileVideo {
   const extension = asset.fileName?.split(".").pop()?.toLowerCase() || "mp4";
@@ -34,6 +34,7 @@ export default function UploadScreen() {
   const [error, setError] = useState("");
   const [deniedPermission, setDeniedPermission] = useState<"camera" | "library" | null>(null);
   const abortRef = useRef<AbortController | null>(null);
+  const submissionGuard = useRef(createUploadSubmissionGuard()).current;
 
   function accept(asset?: ImagePicker.ImagePickerAsset) {
     if (!asset) return;
@@ -59,6 +60,7 @@ export default function UploadScreen() {
 
   async function submit() {
     if (!canSubmitUpload(video, busy) || !video || !id) return;
+    if (!submissionGuard.tryStart()) return;
     const controller = new AbortController(); abortRef.current = controller;
     setBusy(true); setProgress(0); setError("");
     try {
@@ -67,7 +69,7 @@ export default function UploadScreen() {
     } catch (requestError) {
       setError((requestError as Error).message);
       if (APP_ENV === "development") console.warn("Mobile analysis request failed", { exerciseId: id, errorName: (requestError as Error).name });
-    } finally { abortRef.current = null; setBusy(false); }
+    } finally { abortRef.current = null; submissionGuard.finish(); setBusy(false); }
   }
 
   const uploadDescription = `${metadata?.display_name || analysis.exercise?.display_name || id}. Videos are sent temporarily to the configured FastAPI backend.`;

@@ -1,5 +1,29 @@
 # Product Safety Policy
 
+## Sprint 28 launch-candidate boundary
+
+`0.28.0-rc.1` is an invite-only engineering candidate under `NO-GO`, not a public release or medical device. Tester-facing copy must state test videos only, no real patient-identifiable or sensitive health data, possible inaccuracy, and no diagnosis/treatment prescription/emergency use. Stop for pain, dizziness, numbness, instability, unusual discomfort, chest symptoms, or unusual shortness of breath and seek appropriate professional or urgent review.
+
+Remote mobile builds must fail closed without a real private HTTPS API; upload logs must not include source filenames, tokens, secrets, media, or signed artifact URLs. Rule-based validity and rejection remain primary, rejected/error inputs receive no normal score, and experimental ML/DL/recognition cannot override safety gates.
+
+## Sprint 27 external-beta boundary
+
+External-beta preparation does not authorize external use. Any future run is invite-only, uses tester-owned non-identifying test videos or approved fixtures, excludes real patients and sensitive/identifiable health data, and evaluates product QA—not clinical validity. Consent/privacy and limitations must be acknowledged, access must be revocable, and safety/privacy critical or blocker issues pause testing.
+
+Allowed language includes exercise monitoring, observed movement pattern, possible compensation, limited observed range, low confidence, and recording-quality effects. Diagnosis, injury/weakness detection, treatment/prescription, medical-device status, clinical validation, and emergency-use claims are prohibited. Scores are not clinical scores; rejected input receives no normal movement score. Rule-based validity/safety gates remain primary, and experimental ML/DL or recognition cannot override them.
+
+## Sprint 26 stability-release boundary
+
+PhysioVision AI supports exercise monitoring and does not replace assessment by a licensed physiotherapist. Product copy may describe an observed movement pattern, possible compensation, limited observed range, or low confidence and may suggest professional review. It must not state or imply diagnosis, injury detection, weakness detection, a treatment plan, medical-device status, or clinical validation.
+
+Stability automation is not participant or clinical evidence. A zero-issue empty pilot log cannot be interpreted as safety validation. Missing disclaimers, a normal score on rejected input, artifact/token exposure, or diagnosis/treatment wording remains a stop-testing issue.
+
+## Sprint 25 feedback boundary
+
+Internal pilot feedback evaluates product usability, reliability, messaging, and privacy controls only. It must not solicit diagnoses, treatment outcomes, clinical histories, pain scores, or real patient media. Feedback does not establish clinical validity, model accuracy for care, or treatment effectiveness. Blocker and safety/privacy concerns stop the affected test until reviewed.
+
+Only the five supported exercises may be tested. The pilot cannot promote experimental ML/DL or exercise recognition, and those layers cannot override rule-based validity/rejection behavior. Testers may voluntarily share restricted debugging evidence only after explicit notice; general feedback and issue logs contain no raw media, tokens, signed URLs, or patient identifiers.
+
 ## Internal pilot gate
 
 Internal pilot documentation does not authorize pilot execution. Testing may start only after private staging, authenticated artifact handling, physical-device QA, privacy/security approval, and versioned safety-consent acknowledgment pass. Testers use non-identifying test media only and must never rely on results for diagnosis or treatment.

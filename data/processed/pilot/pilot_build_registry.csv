@@ -1,0 +1,3 @@
+build_id,date,mobile_version,backend_version,web_version,eas_profile,platform,build_status,staging_backend_url,notes
+sprint25-prep-001,2026-07-18,0.24.0,0.24.0,0.24.0,preview-staging,android,blocked,,Private staging API URL and installable EAS artifact are not yet available; no public release authorized.
+sprint26-stability-001,2026-07-18,0.26.0,0.26.0,0.26.0,preview-staging,android,blocked,,Stability candidate verified by automation; deployment URL APK installation and physical-device validation remain blocked.

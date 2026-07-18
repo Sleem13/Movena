@@ -1,5 +1,29 @@
 # PhysioVision AI Full Product Roadmap
 
+## Sprint 28 — External Beta Launch Candidate Fixes
+
+Status: `0.28.0-rc.1` engineering candidate prepared; operational release remains **NO-GO**. Mobile remote configuration now fails closed without a real HTTPS API, known limitations are linked in-app, upload logging omits the source filename, and release/build/QA/retention evidence is assembled. The external issue/feedback inputs remain empty and are not treated as validation.
+
+Private staging deployment, EAS APK submission/install, physical-device/network/token/artifact QA, active feedback/support/deletion links, and accountable approvals remain mandatory before any invitation. No public distribution, patient use, clinical claim, new exercise, on-device analysis, or ML/DL promotion occurred.
+
+## Sprint 27 — External Closed Beta Readiness
+
+Status: engineering/governance package prepared; operational release remains **NO-GO**. Scope, tester onboarding, consent/privacy draft, limitations, risk/support/data policies, feedback/issue schemas, analytics plan, tester pack, checklist, and summary automation are present. No invitation, public listing, patient onboarding, or clinical evaluation is authorized.
+
+Progression to an invite-only run requires private HTTPS staging, a private Android build, physical-device/network/auth/artifact QA, active support and deletion contacts, final automated validation, and a signed multi-owner go/no-go decision. The five supported exercises, rule-based primacy, experimental ML/DL/recognition boundary, and backend-only analysis are unchanged.
+
+## Sprint 26 — Pilot Findings Fixes and Stability Release
+
+Status: engineering stability candidate complete; operational gate blocked. With zero submitted pilot sessions, the sprint records no participant findings. Preventive fixes cover duplicate upload submission, exercise-specific retry/camera guidance, artifact-expiry copy, pilot device metrics, and disclaimer consistency. Automated regression expanded, but private staging, APK installation, physical-device QA, and privacy/security approval remain required.
+
+Version `0.26.0` remains internal-only. The current five analyzers and rule-based primacy are unchanged; no ML/DL promotion, on-device analysis, patient-data use, clinical claim, or public release occurred.
+
+## Sprint 25 — Limited Internal Pilot and Feedback Loop
+
+Status: engineering preparation complete; execution no-go. The controlled pilot scope, onboarding, safety acknowledgment, test script, QA CSV schemas, issue workflow, privacy review, build registry, readiness gate, findings template, and summary automation exist. Private staging, Android artifact installation, physical-device evidence, and named approvals are still required before any tester session.
+
+The pilot is internal-only, uses non-identifying controlled media, and covers only `bodyweight_squat`, `sit_to_stand`, `knee_extension`, `shoulder_abduction`, and `hip_abduction`. Findings are product QA evidence, not clinical validation. No model, unsupported exercise, public distribution, or patient-data use is promoted by this sprint.
+
 ## Sprint 24 — Private Staging Deployment and Internal Pilot Gate
 
 Status: execution package complete, external dependencies blocked. Render/Neon/Vercel is selected, staging Compose and exact runbooks exist, EAS project authentication is confirmed, and pilot documentation is ready. No real provider/database configuration, Android artifact, physical-device QA, or deployed smoke result exists; internal pilot and public release remain no-go.
