@@ -1,5 +1,11 @@
 # PhysioVision AI Mobile MVP
 
+## Sprint 29 execution status
+
+Sprint 29 execution assets are being prepared, but the actual external beta has not started and remains blocked. Mobile `0.28.0` / RC `0.28.0-rc.1` has no submitted EAS artifact or physical-device approval, and private staging plus active feedback/support/privacy links are unavailable.
+
+Do not invite testers or distribute the app publicly. Use only non-identifying test videos after a future GO decision; never upload real patients or sensitive health information. The app is not for clinical use, diagnosis, treatment, or medical decisions. The five supported exercises, rule-based backend primacy, experimental ML/DL/recognition boundary, and no-on-device-analysis architecture remain unchanged.
+
 ## Sprint 28 launch candidate
 
 Mobile version `0.28.0` represents engineering candidate `0.28.0-rc.1`. Staging/production now fails closed unless `EXPO_PUBLIC_API_BASE_URL` is a real HTTPS non-placeholder URL. The app shows an invite-only/not-public label and provides a known-limitations screen from onboarding, the library, and results.

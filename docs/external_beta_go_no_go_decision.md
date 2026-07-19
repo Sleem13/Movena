@@ -2,6 +2,8 @@
 
 > Sprint 28 review: decision remains `NO-GO`. See `external_beta_launch_candidate_go_no_go.md` for `0.28.0-rc.1` evidence.
 
+> Sprint 29 status: execution assets are being prepared, but actual external beta has not started and remains blocked. There are no invited testers, consent records, assignments, feedback, issues, or beta results.
+
 ## Decision
 
 **NO-GO — fix blockers first** (2026-07-18).

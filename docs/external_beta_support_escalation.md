@@ -1,16 +1,22 @@
 # External Beta Support and Escalation
 
+> Sprint 29 execution assets are being prepared, but actual external beta has not started and remains blocked. The placeholders below are inactive release blockers; no invitation or testing is authorized.
+
 ## Channels and coverage
 
-- Tester support: `[BETA SUPPORT CHANNEL — REQUIRED]`
-- Privacy/safety escalation: `[PRIVATE INCIDENT CHANNEL — REQUIRED]`
-- Beta owner/on-call: `[ROLE AND CONTACT — REQUIRED]`
-- Status/outage notice: `[PRIVATE STATUS CHANNEL — REQUIRED]`
-- Feedback form: `[PRIVATE FEEDBACK LINK — REQUIRED]`
-- Issue report: `[PRIVATE ISSUE LINK — REQUIRED]`
-- Deletion/privacy requests: `[DELETION/PRIVACY CONTACT — REQUIRED]`
+| Function | Controlled placeholder | Status |
+|---|---|---|
+| Tester support | `[PRIVATE_SUPPORT_CONTACT]` | Inactive — owner/channel not supplied |
+| Privacy/safety escalation | `[PRIVATE_INCIDENT_CONTACT]` | Inactive — owner/channel not supplied |
+| Beta owner/on-call | `[BETA_OWNER_AND_BACKUP]` | Inactive — staffing not assigned |
+| Status/outage notice | `[PRIVATE_STATUS_URL]` | Inactive — URL not supplied |
+| Feedback form | `[PRIVATE_FEEDBACK_FORM_URL]` | Inactive — URL not supplied |
+| Issue report | `[PRIVATE_ISSUE_REPORT_URL]` | Inactive — URL not supplied |
+| Privacy/data deletion request | `[PRIVATE_DATA_REQUEST_URL]` | Inactive — URL not supplied |
 
 These are planning placeholders, not active contacts. Before `GO`, verify access, staffing hours, backup owner, and revocation permissions. Response targets are operational goals, not service-level guarantees: safety/privacy critical—acknowledge within 1 hour during the staffed beta window and pause immediately; blocker—4 staffed hours; high—1 business day; medium—2 business days; low—next triage cycle.
+
+Activation evidence must include a successful privacy-safe submission from a non-tester account, authorized-recipient receipt, access-control review, deletion/escalation routing, backup-owner acknowledgement, and a documented revocation test. Do not replace these with public unrestricted forms.
 
 ## Severity
 

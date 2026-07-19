@@ -1,5 +1,11 @@
 # PhysioVision AI Full Product Roadmap
 
+## Sprint 29 — Invite-Only External Beta Execution Assets
+
+Status: execution assets prepared; actual external beta has not started and remains blocked. Header-only roster/consent/assignment templates, execution protocols, empty-safe monitoring, pause/cleanup controls, and report templates are available. Zero records are absence of execution evidence, not successful testing or validation.
+
+No public release, real patient data, clinical use, diagnosis/treatment claim, new exercise, on-device analysis, or ML/DL promotion occurred. Private staging, Android build/install, physical-device QA, active feedback/support/privacy links, and a new GO approval remain required.
+
 ## Sprint 28 — External Beta Launch Candidate Fixes
 
 Status: `0.28.0-rc.1` engineering candidate prepared; operational release remains **NO-GO**. Mobile remote configuration now fails closed without a real HTTPS API, known limitations are linked in-app, upload logging omits the source filename, and release/build/QA/retention evidence is assembled. The external issue/feedback inputs remain empty and are not treated as validation.

@@ -1,0 +1,22 @@
+metric,value
+beta_status,not_started
+tester_records,0
+invited_testers,0
+accepted_testers,0
+consent_complete_testers,0
+consent_completion_rate,Not measured
+active_testers,0
+completed_testers,0
+assignment_records,0
+completed_assignments,0
+exercises_tested,None recorded
+feedback_records,0
+feedback_submitted_flags,0
+issues_recorded,0
+issues_by_severity,None recorded
+blocker_high_issues,0
+safety_privacy_flags,0
+upload_related_issues,0
+rejected_clarity_responses,0
+rejected_clarity_rate,Not measured
+go_no_go_alert,NO-GO — beta has not started; no real tester records exist.

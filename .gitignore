@@ -207,6 +207,9 @@ data/processed/**/*.csv
 !data/processed/beta/external_beta_feedback_template.csv
 !data/processed/beta/external_beta_issue_log.csv
 !data/processed/beta/external_beta_build_registry.csv
+!data/processed/beta/external_beta_tester_roster.csv
+!data/processed/beta/external_beta_consent_tracker.csv
+!data/processed/beta/external_beta_test_assignments.csv
 data/processed/**/*.json
 !data/processed/registry/unified_sample_schema.json
 data/processed/**/*.parquet

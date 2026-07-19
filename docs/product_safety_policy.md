@@ -1,5 +1,11 @@
 # Product Safety Policy
 
+## Sprint 29 execution boundary
+
+Sprint 29 assets are being prepared, but actual external beta execution has not started and remains blocked. No tester may be invited, consented, assigned, or allowed to upload until private staging, Android build/install, physical-device QA, private feedback/support/privacy links, and release approval are complete.
+
+Any future run is invite-only and non-public, uses non-identifying test videos only, and excludes real patients and sensitive health information. Feedback is product QA—not clinical validation, diagnosis, or treatment evaluation. Empty roster, feedback, and issue files must be reported as `not_started`, never interpreted as safety or reliability evidence. Safety/privacy flags require immediate pause and restricted review.
+
 ## Sprint 28 launch-candidate boundary
 
 `0.28.0-rc.1` is an invite-only engineering candidate under `NO-GO`, not a public release or medical device. Tester-facing copy must state test videos only, no real patient-identifiable or sensitive health data, possible inaccuracy, and no diagnosis/treatment prescription/emergency use. Stop for pain, dizziness, numbness, instability, unusual discomfort, chest symptoms, or unusual shortness of breath and seek appropriate professional or urgent review.

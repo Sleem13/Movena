@@ -1,5 +1,7 @@
 # External Beta Data Handling Policy
 
+> Sprint 29 execution assets are being prepared, but actual external beta has not started and remains blocked. The roster, consent, assignments, feedback, and issues must remain header-only until launch gates and consent are satisfied.
+
 ## Data boundary
 
 Any future external beta is invite-only and non-public. It permits only tester-owned non-identifying exercise test videos and approved synthetic/project fixtures. No real patient video, protected/sensitive health information, name, contact detail, record number, diagnosis, bystander identity, or other unnecessary personal data is allowed.
@@ -10,7 +12,9 @@ The beta service may process the test video, pose landmarks/angles, analysis sta
 
 Uploads should be temporary and removed after processing. Generated artifacts are designed to expire under configuration (currently up to 24 hours); signed/access-controlled links are not permission to share them. Feedback/issue/build/QA metadata should be retained only through the beta evaluation and approved closeout window. Before `GO`, verify actual storage, cleanup jobs, backups, provider logs, and deletion behavior in staging; record the approved periods rather than relying on this design statement. See `external_beta_data_retention_cleanup_plan.md`.
 
-Testers may request access revocation and deletion of eligible beta data at `[DELETION/PRIVACY CONTACT]`. The owner must authenticate the request without collecting excess identity data, locate scoped records, document exceptions, confirm completion, and avoid promising deletion from systems not yet verified.
+Testers may request access revocation and deletion of eligible beta data at `[PRIVATE_DATA_REQUEST_URL]`. The owner must authenticate the request without collecting excess identity data, locate scoped records, document exceptions, confirm completion, and avoid promising deletion from systems not yet verified.
+
+The canonical placeholder is `[PRIVATE_DATA_REQUEST_URL]`; it is currently inactive. Before `GO`, replace it with an access-controlled request path, verify receipt by the privacy owner and backup, test identity-minimizing request handling and closure notification, and document provider-specific backup/log limitations. `[PRIVATE_FEEDBACK_FORM_URL]`, `[PRIVATE_ISSUE_REPORT_URL]`, and `[PRIVATE_SUPPORT_CONTACT]` are also inactive and must not be presented as working channels.
 
 ## Access and artifacts
 

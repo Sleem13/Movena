@@ -1,5 +1,27 @@
 # PhysioVision AI
 
+## Sprint 29 — Invite-Only External Beta Execution Assets
+
+Sprint 29 execution assets are being prepared, but the actual external beta has not started and remains blocked. The repository now includes header-only tester/consent/assignment trackers and empty-safe monitoring that reports `not_started`; no testers, consent, assignments, feedback, issues, or beta results are fabricated.
+
+This remains invite-only planning, not a public launch. No real patient data or clinical use is permitted. Supported exercises remain `bodyweight_squat`, `sit_to_stand`, `knee_extension`, `shoulder_abduction`, and `hip_abduction`. Rule-based analyzers remain primary; ML/DL and recognition remain experimental, and no analysis runs on device. Private staging, the Android build, physical-device QA, and active feedback/support/privacy links are blockers.
+
+```powershell
+python scripts/build_external_beta_monitoring_report.py
+python scripts/summarize_external_beta_feedback.py
+python scripts/cleanup_artifacts.py --dry-run
+python -m pytest
+
+cd mobile
+npm test
+
+cd ..\frontend
+npm test
+npm run build
+```
+
+See the [Sprint 29 status](docs/sprint_29_invite_only_external_beta_execution.md), [execution plan](docs/external_beta_execution_plan.md), [blockers](docs/sprint_29_blockers.md), and [monitoring report](reports/beta/external_beta_monitoring_report.md).
+
 ## Sprint 28 — External Beta Launch Candidate Fixes
 
 Sprint 28 prepares `0.28.0-rc.1` for a future invite-only external beta. It adds fail-closed mobile staging URL validation, a linked in-app known-limitations screen, privacy-safer upload logging, build/QA/retention evidence, and build-aware beta summaries. **This is not a public launch; the current decision remains NO-GO.** No EAS build was submitted because private HTTPS staging and physical-device evidence are unavailable.

@@ -2,6 +2,10 @@
 
 > **DRAFT — DO NOT DISTRIBUTE.** Release candidate `0.28.0-rc.1` remains `NO-GO`; replace every placeholder and obtain approval first.
 
+Sprint 29 execution assets are being prepared, but the actual external beta has not started and remains blocked by private staging, Android build, physical-device QA, and inactive feedback/support/privacy links. No tester invitation is authorized.
+
+Required private placeholders remain inactive: `[PRIVATE_FEEDBACK_FORM_URL]`, `[PRIVATE_ISSUE_REPORT_URL]`, `[PRIVATE_SUPPORT_CONTACT]`, `[PRIVATE_DATA_REQUEST_URL]`, `[PRIVATE_INCIDENT_CONTACT]`, `[CONSENT_PRIVACY_URL]`, `[KNOWN_LIMITATIONS_URL]`, and `[PRIVATE_ANDROID_INSTALL_URL]`. Do not distribute this pack until every value is replaced with an approved, access-tested destination.
+
 ## Welcome
 
 Thank you for helping test PhysioVision AI. This private, invite-only beta checks whether the app installs, uploads controlled exercise videos, explains results, and handles errors clearly. It is product QA, not clinical testing.
@@ -10,10 +14,10 @@ PhysioVision AI supports exercise monitoring and does not replace assessment by 
 
 ## Before testing
 
-- Read and accept `[CONSENT/PRIVACY LINK]` and `[KNOWN LIMITATIONS LINK]`.
+- Read and accept `[CONSENT_PRIVACY_URL]` and `[KNOWN_LIMITATIONS_URL]`.
 - **Do not upload videos containing real patients, identifiable personal information, or sensitive health information.**
 - Use your own non-identifying test recording or a supplied fixture. Do not use the app for pain, emergency symptoms, or a medical decision.
-- Install only from `[PRIVATE INSTALL LINK]`; do not share the package or credentials.
+- Install only from `[PRIVATE_ANDROID_INSTALL_URL]`; do not share the package or credentials.
 
 ## Supported exercises and recording tips
 
@@ -27,9 +31,9 @@ Test only bodyweight squat, sit-to-stand, knee extension, shoulder abduction, an
 4. Review a success or rejected result, confidence, feedback, disclaimer, and temporary artifact where available.
 5. Test cancel/retry or a safe network interruption once.
 6. Log out and sign in again.
-7. Submit `[PRIVATE FEEDBACK LINK]` with your alias.
+7. Submit `[PRIVATE_FEEDBACK_FORM_URL]` with your alias.
 
-Report a bug at `[PRIVATE ISSUE LINK]` with device/OS, app version, exercise, steps, and expected/actual behavior—never tokens or health information. Submit feedback at `[PRIVATE FEEDBACK LINK]`. Report privacy/safety concerns immediately to `[PRIVATE INCIDENT CONTACT]` and stop testing. General support is `[BETA SUPPORT CONTACT]`. You may leave at any time by uninstalling, requesting access revocation, and contacting `[DELETION REQUEST CONTACT]`.
+Report a bug at `[PRIVATE_ISSUE_REPORT_URL]` with device/OS, app version, exercise, steps, and expected/actual behavior—never tokens or health information. Submit feedback at `[PRIVATE_FEEDBACK_FORM_URL]`. Report privacy/safety concerns immediately to `[PRIVATE_INCIDENT_CONTACT]` and stop testing. General support is `[PRIVATE_SUPPORT_CONTACT]`. You may leave at any time by uninstalling, requesting access revocation, and contacting `[PRIVATE_DATA_REQUEST_URL]`.
 
 Stop for pain, dizziness, numbness, instability, unusual discomfort, chest symptoms, or unusual shortness of breath and seek appropriate professional or urgent review.
 
