@@ -1,5 +1,9 @@
 # PhysioVision AI Mobile MVP
 
+## Sprint 31 second-wave status
+
+The second external beta wave is **NO-GO / blocked**. The post-fix Android candidate has no verified physical-device installation or QA record, Sprint 30 has no real beta results, and private tester/support/privacy links remain inactive. Do not distribute a second-wave build or invite testers. Mobile continues to support only the five registered exercises and makes no clinical claim.
+
 ## Sprint 29 execution status
 
 Sprint 29 execution assets are being prepared, but the actual external beta has not started and remains blocked. Mobile `0.28.0` / RC `0.28.0-rc.1` has no submitted EAS artifact or physical-device approval, and private staging plus active feedback/support/privacy links are unavailable.

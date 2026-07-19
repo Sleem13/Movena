@@ -1,6 +1,8 @@
 import type { MobileVideo } from "@/src/types/analysis";
 
 export const MAX_UPLOAD_BYTES = 100 * 1024 * 1024;
+export const MISSING_VIDEO_MESSAGE = "Select a video before starting analysis.";
+export const STAGING_UPLOAD_AUTH_MESSAGE = "Log in before uploading or analyzing a video in staging.";
 const SUPPORTED_EXTENSIONS = new Set(["mp4", "mov", "avi", "mkv", "webm"]);
 
 export function validateSelectedVideo(video: MobileVideo): string | null {

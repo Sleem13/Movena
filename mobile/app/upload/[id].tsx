@@ -12,7 +12,7 @@ import type { MobileVideo } from "@/src/types/analysis";
 import { colors } from "@/src/config/theme";
 import { APP_ENV } from "@/src/config/env";
 import { useExerciseMetadata } from "@/src/hooks/useExerciseMetadata";
-import { canSubmitUpload, createUploadSubmissionGuard, validateSelectedVideo } from "@/src/utils/uploadValidation";
+import { canSubmitUpload, createUploadSubmissionGuard, MISSING_VIDEO_MESSAGE, STAGING_UPLOAD_AUTH_MESSAGE, validateSelectedVideo } from "@/src/utils/uploadValidation";
 
 function toVideo(asset: ImagePicker.ImagePickerAsset): MobileVideo {
   const extension = asset.fileName?.split(".").pop()?.toLowerCase() || "mp4";
@@ -31,7 +31,7 @@ export default function UploadScreen() {
   const [generateReport, setGenerateReport] = useState(false);
   const [progress, setProgress] = useState(0);
   const [busy, setBusy] = useState(false);
-  const [error, setError] = useState("");
+  const [uploadError, setUploadError] = useState("");
   const [deniedPermission, setDeniedPermission] = useState<"camera" | "library" | null>(null);
   const abortRef = useRef<AbortController | null>(null);
   const submissionGuard = useRef(createUploadSubmissionGuard()).current;
@@ -40,34 +40,36 @@ export default function UploadScreen() {
     if (!asset) return;
     const selected = toVideo(asset);
     const validationError = validateSelectedVideo(selected);
-    if (validationError) { setError(validationError); return; }
-    setVideo(selected); analysis.setVideo(selected); setError(""); setDeniedPermission(null);
+    if (validationError) { setUploadError(validationError); return; }
+    setVideo(selected); analysis.setVideo(selected); setUploadError(""); setDeniedPermission(null);
   }
 
   async function pickVideo() {
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (!permission.granted) { setDeniedPermission("library"); setError(""); return; }
+    if (!permission.granted) { setDeniedPermission("library"); setUploadError(""); return; }
     const result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ["videos"], allowsEditing: false, quality: 0.8 });
     if (!result.canceled) accept(result.assets[0]);
   }
 
   async function recordVideo() {
     const permission = await ImagePicker.requestCameraPermissionsAsync();
-    if (!permission.granted) { setDeniedPermission("camera"); setError(""); return; }
+    if (!permission.granted) { setDeniedPermission("camera"); setUploadError(""); return; }
     const result = await ImagePicker.launchCameraAsync({ mediaTypes: ["videos"], videoMaxDuration: 60, quality: 0.8 });
     if (!result.canceled) accept(result.assets[0]);
   }
 
   async function submit() {
-    if (!canSubmitUpload(video, busy) || !video || !id) return;
+    if (!video) { setUploadError(MISSING_VIDEO_MESSAGE); return; }
+    if (APP_ENV === "staging" && !user) { setUploadError(STAGING_UPLOAD_AUTH_MESSAGE); return; }
+    if (!canSubmitUpload(video, busy) || !id) return;
     if (!submissionGuard.tryStart()) return;
     const controller = new AbortController(); abortRef.current = controller;
-    setBusy(true); setProgress(0); setError("");
+    setBusy(true); setProgress(0); setUploadError("");
     try {
       const result = await analyzeExercise(id, video, { saveSession: Boolean(user && saveSession), includeOverlay, generateReport, signal: controller.signal }, setProgress);
       analysis.setResult(result); router.replace("/result");
     } catch (requestError) {
-      setError((requestError as Error).message);
+      setUploadError((requestError as Error).message);
       if (APP_ENV === "development") console.warn("Mobile analysis request failed", { exerciseId: id, errorName: (requestError as Error).name });
     } finally { abortRef.current = null; submissionGuard.finish(); setBusy(false); }
   }
@@ -79,9 +81,9 @@ export default function UploadScreen() {
     {deniedPermission && <PermissionState kind={deniedPermission} onRetry={deniedPermission === "camera" ? recordVideo : pickVideo} />}
     {video && <VideoPreviewCard video={video} />}
     <Card><Option label="Save session" detail={user ? "Save analysis metadata to your protected history." : "Log in to enable protected session history."} value={saveSession} disabled={!user || busy} onChange={setSaveSession} /><Option label="Generate annotated overlay" detail="Temporary experimental 2D visual artifact." value={includeOverlay} disabled={busy} onChange={setIncludeOverlay} /><Option label="Generate PDF report" detail="Temporary educational session report." value={generateReport} disabled={busy} onChange={setGenerateReport} /></Card>
-    {error ? <UploadErrorState message={error} onRetry={submit} canRetry={Boolean(video) && !busy} /> : null}
+    {uploadError ? <UploadErrorState message={uploadError} onRetry={submit} canRetry={Boolean(video) && !busy} /> : null}
     {busy && <Card><UploadProgress progress={progress} /><PrimaryButton title="Cancel upload" onPress={() => abortRef.current?.abort()} secondary /></Card>}
-    <PrimaryButton title={busy ? "Analyzing…" : "Upload and Analyze"} onPress={submit} disabled={!canSubmitUpload(video, busy)} /><SafetyNotice />
+    <PrimaryButton title={busy ? "Analyzing…" : "Upload and Analyze"} onPress={submit} disabled={busy} /><SafetyNotice />
   </Screen>;
 }
 
