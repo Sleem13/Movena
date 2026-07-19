@@ -134,3 +134,37 @@ def test_monitoring_separates_first_and_second_wave_records(tmp_path):
     assert summary["second_wave_assignment_records"] == 1
     assert summary["second_wave_feedback_records"] == 1
     assert summary["second_wave_issue_records"] == 1
+
+
+def test_internal_pt_review_is_counted_without_starting_external_beta(tmp_path):
+    roster, consent, assignments, feedback, issues = paths(tmp_path)
+    internal = tmp_path / "internal.csv"
+    write_csv(
+        internal,
+        ["review_id", "role", "test_type", "result_status"],
+        [{
+            "review_id": "internal-1",
+            "role": "physical_therapist_internal_reviewer",
+            "test_type": "internal_physical_device_qa",
+            "result_status": "partial_pass",
+        }],
+    )
+    summary = run_report(
+        roster,
+        consent,
+        assignments,
+        feedback,
+        issues,
+        tmp_path / "report.md",
+        tmp_path / "report.csv",
+        None,
+        None,
+        internal,
+    )
+
+    assert summary["beta_status"] == "not_started"
+    assert summary["tester_records"] == 0
+    assert summary["internal_reviewer_records"] == 1
+    assert summary["internal_pt_physical_device_reviews"] == 1
+    assert summary["internal_partial_pass_records"] == 1
+    assert "not external beta evidence" in (tmp_path / "report.md").read_text(encoding="utf-8")

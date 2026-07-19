@@ -28,4 +28,7 @@ second_wave_active_testers,0
 second_wave_assignment_records,0
 second_wave_feedback_records,0
 second_wave_issue_records,0
+internal_reviewer_records,1
+internal_pt_physical_device_reviews,1
+internal_partial_pass_records,1
 go_no_go_alert,NO-GO — beta has not started; no real tester records exist.

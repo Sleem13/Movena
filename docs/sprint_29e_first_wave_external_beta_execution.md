@@ -1,5 +1,11 @@
 # Sprint 29E — First-Wave External Beta Execution
 
+## Internal reviewer evidence update
+
+Internal physical therapist reviewer testing is recorded under alias `PT_INTERNAL_001` as a partial internal physical-device QA pass. Unreported device/build/exercise and scenario details remain `not_reported`.
+
+This evidence partially supports internal readiness only. External beta activity has not started: external testers, consent, assignments, feedback, and issues remain zero. Sprint 29E external execution remains pending until a separate approval authorizes invitations and genuine external records are created.
+
 **Status: execution assets applied / real execution not started.**
 
 ## Purpose and scope
@@ -26,4 +32,3 @@ Pause immediately for real patient-identifiable data, a privacy/security inciden
 ## Current gate
 
 No real tester alias, consent, assignment, feedback, or issue exists. Physical-device approval and active private-link evidence remain absent. Therefore Sprint 29E is incomplete and no invitation is sent.
-

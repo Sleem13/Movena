@@ -17,6 +17,11 @@
 - First-wave feedback / issues: 0 / 0
 - Second-wave feedback / issues: 0 / 0
 
+## Internal reviewer evidence (not external beta)
+
+- Internal reviewer records: 1
+- Internal PT physical-device QA records: 1
+
 ## Release evidence
 
 - Builds recorded: 1 (blocked_not_submitted (1))
@@ -24,7 +29,7 @@
 - Blocked builds: 1
 - Machine-readable QA checks: 0 (pass 0, fail 0, blocked 0)
 
-**Evidence note:** No external beta feedback has been collected yet. Empty feedback is not evidence of safety, usability, or clinical validity.
+**Evidence note:** Internal reviewer QA evidence exists, but no external beta feedback has been collected. Internal QA is not external beta evidence.
 
 ## Recommended fixes
 

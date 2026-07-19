@@ -14,6 +14,7 @@ DEFAULT_CONSENT = BETA_DIR / "external_beta_consent_tracker.csv"
 DEFAULT_ASSIGNMENTS = BETA_DIR / "external_beta_test_assignments.csv"
 DEFAULT_SECOND_WAVE_ASSIGNMENTS = BETA_DIR / "external_beta_second_wave_assignments.csv"
 DEFAULT_FIRST_WAVE_ASSIGNMENTS = BETA_DIR / "external_beta_first_wave_assignments.csv"
+DEFAULT_INTERNAL_REVIEWER_QA = BETA_DIR / "internal_reviewer_qa_log.csv"
 DEFAULT_FEEDBACK = BETA_DIR / "external_beta_feedback_template.csv"
 DEFAULT_ISSUES = BETA_DIR / "external_beta_issue_log.csv"
 DEFAULT_MARKDOWN = ROOT / "reports/beta/external_beta_monitoring_report.md"
@@ -65,9 +66,11 @@ def build_summary(
     issues: list[dict[str, str]],
     second_wave_assignments: list[dict[str, str]] | None = None,
     first_wave_assignments: list[dict[str, str]] | None = None,
+    internal_reviewer_qa: list[dict[str, str]] | None = None,
 ) -> dict[str, object]:
     second_wave_assignments = second_wave_assignments or []
     first_wave_assignments = first_wave_assignments or []
+    internal_reviewer_qa = internal_reviewer_qa or []
     real_tester_ids = {row.get("tester_id", "") for row in roster if row.get("tester_id")}
     invited_ids = {
         row.get("tester_id", "")
@@ -135,6 +138,15 @@ def build_summary(
         row.get("testing_status", "").lower() in {"active", "in_progress"}
         for row in second_wave_roster
     )
+    internal_pt_reviews = sum(
+        row.get("role", "").lower() == "physical_therapist_internal_reviewer"
+        and row.get("test_type", "").lower() == "internal_physical_device_qa"
+        for row in internal_reviewer_qa
+    )
+    internal_partial_passes = sum(
+        row.get("result_status", "").lower() == "partial_pass"
+        for row in internal_reviewer_qa
+    )
     if not real_tester_ids:
         beta_status = "not_started"
         alert = "NO-GO — beta has not started; no real tester records exist."
@@ -193,6 +205,9 @@ def build_summary(
         "second_wave_assignment_records": len(second_wave_assignments),
         "second_wave_feedback_records": len(second_wave_feedback),
         "second_wave_issue_records": len(second_wave_issues),
+        "internal_reviewer_records": len(internal_reviewer_qa),
+        "internal_pt_physical_device_reviews": internal_pt_reviews,
+        "internal_partial_pass_records": internal_partial_passes,
         "go_no_go_alert": alert,
     }
 
@@ -201,7 +216,9 @@ def write_report(summary: dict[str, object], markdown_path: Path, csv_path: Path
     markdown_path.parent.mkdir(parents=True, exist_ok=True)
     csv_path.parent.mkdir(parents=True, exist_ok=True)
     evidence_note = (
-        "No real tester records exist. The invite-only external beta has not started; zero counts are not validation."
+        "Internal reviewer QA evidence exists, but no external tester records exist. The external beta has not started; internal QA is not external beta evidence."
+        if summary["tester_records"] == 0 and summary["internal_reviewer_records"]
+        else "No real tester records exist. The invite-only external beta has not started; zero counts are not validation."
         if summary["beta_status"] == "not_started" and summary["tester_records"] == 0
         else "Counts reflect only non-empty operational records. This report is product QA, not clinical validation."
     )
@@ -218,6 +235,10 @@ def write_report(summary: dict[str, object], markdown_path: Path, csv_path: Path
         f"({format_rate(summary['consent_completion_rate'])})\n"
         f"- Active: {summary['active_testers']}\n"
         f"- Completed: {summary['completed_testers']}\n\n"
+        "## Internal reviewer evidence (not external beta)\n\n"
+        f"- Internal reviewer records: {summary['internal_reviewer_records']}\n"
+        f"- Internal PT physical-device QA records: {summary['internal_pt_physical_device_reviews']}\n"
+        f"- Internal partial-pass records: {summary['internal_partial_pass_records']}\n\n"
         "## Execution and feedback\n\n"
         f"- Assignments: {summary['assignment_records']} (completed {summary['completed_assignments']})\n"
         f"- Exercises actually tested: {summary['exercises_tested']}\n"
@@ -261,6 +282,7 @@ def run_report(
     csv_path: Path,
     second_wave_assignments_path: Path | None = None,
     first_wave_assignments_path: Path | None = None,
+    internal_reviewer_qa_path: Path | None = None,
 ) -> dict[str, object]:
     summary = build_summary(
         read_rows(roster_path),
@@ -270,6 +292,7 @@ def run_report(
         read_rows(issues_path),
         read_rows(second_wave_assignments_path) if second_wave_assignments_path else [],
         read_rows(first_wave_assignments_path) if first_wave_assignments_path else [],
+        read_rows(internal_reviewer_qa_path) if internal_reviewer_qa_path else [],
     )
     write_report(summary, markdown_path, csv_path)
     return summary
@@ -282,6 +305,7 @@ def main() -> int:
     parser.add_argument("--assignments", type=Path, default=DEFAULT_ASSIGNMENTS)
     parser.add_argument("--second-wave-assignments", type=Path, default=DEFAULT_SECOND_WAVE_ASSIGNMENTS)
     parser.add_argument("--first-wave-assignments", type=Path, default=DEFAULT_FIRST_WAVE_ASSIGNMENTS)
+    parser.add_argument("--internal-reviewer-qa", type=Path, default=DEFAULT_INTERNAL_REVIEWER_QA)
     parser.add_argument("--feedback", type=Path, default=DEFAULT_FEEDBACK)
     parser.add_argument("--issues", type=Path, default=DEFAULT_ISSUES)
     parser.add_argument("--markdown-output", type=Path, default=DEFAULT_MARKDOWN)
@@ -297,6 +321,7 @@ def main() -> int:
         args.csv_output,
         args.second_wave_assignments,
         args.first_wave_assignments,
+        args.internal_reviewer_qa,
     )
     print(f"External beta monitoring report written: {args.markdown_output} (status={summary['beta_status']})")
     return 0

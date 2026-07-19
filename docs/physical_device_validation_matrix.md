@@ -1,12 +1,18 @@
 # Physical-Device Validation Matrix
 
+## Internal physical therapist reviewer evidence — 2026-07-19
+
+Physical-device QA is **partially passed at the internal-reviewer level**. A project owner/developer who is a physical therapist reported testing the app, recorded under privacy-safe alias `PT_INTERNAL_001` in `internal_reviewer_qa_log.csv` as `internal_physical_device_qa` with result `partial_pass`.
+
+This is real internal reviewer evidence, not external beta evidence. Device model, Android version, app build, backend environment, exercise, issue outcome, safety/privacy outcome, and scenario-level pass/fail details were not reported and are not inferred. The granular matrix rows below therefore still require evidence. External tester physical-device QA remains pending, and this internal record does not authorize external invitations by itself.
+
 ## Sprint 29C gate update — 2026-07-19
 
 EAS build `a10a3920-23e3-4097-ae7a-861a61bda01d` is now `FINISHED` as an internal Android `0.28.0` APK. This closes only the cloud-build step. ADB is unavailable on the current workstation, no named Android device is connected, the APK has not been verified as installed, and no physical scenario below has been executed. Physical-device QA remains **blocked / incomplete**.
 
 ## Current execution record — 2026-07-19
 
-Physical Android execution remains **blocked**. The Render staging API and Supabase-backed readiness checks pass, and the post-fix `preview-staging` build finished, but no Android/ADB device, device OS, installation evidence, or assigned device tester was detected. Every device row remains pending and must not be inferred from unit tests, web simulation, cloud build status, or local API checks.
+Physical Android execution has **partial internal reviewer evidence**, but remains incomplete for release gating. The Render staging API and Supabase-backed readiness checks pass, and the post-fix `preview-staging` build finished. No device/ADB evidence is available on the validation workstation, no scenario-level internal evidence was supplied, and no external assigned device tester has executed the matrix. Every granular row remains pending unless separately evidenced.
 
 When executable, record device model, Android version, app/build identifier, HTTPS backend origin, tester, timestamp, sanitized evidence, pass/fail, and issue ID for every row. Use only approved synthetic or tester-owned non-identifying videos—never real patient data.
 

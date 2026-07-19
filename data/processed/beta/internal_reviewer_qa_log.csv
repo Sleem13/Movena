@@ -1,0 +1,2 @@
+review_id,reviewer_alias,role,date,device_model,android_version,app_build_version,backend_environment,exercise_tested,test_type,result_status,issue_found,safety_privacy_flag,notes
+internal-pt-qa-001,PT_INTERNAL_001,physical_therapist_internal_reviewer,2026-07-19,not_reported,not_reported,not_reported,not_reported,not_reported,internal_physical_device_qa,partial_pass,not_reported,not_reported,Internal project owner/developer and physical therapist reported testing the app; scenario-level evidence and device/build details were not provided. Not external beta evidence.

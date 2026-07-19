@@ -12,6 +12,7 @@ DEFAULT_FEEDBACK = ROOT / "data/processed/beta/external_beta_feedback_template.c
 DEFAULT_ISSUES = ROOT / "data/processed/beta/external_beta_issue_log.csv"
 DEFAULT_BUILDS = ROOT / "data/processed/beta/external_beta_build_registry.csv"
 DEFAULT_QA_MATRIX = ROOT / "data/processed/beta/external_beta_qa_matrix.csv"
+DEFAULT_INTERNAL_REVIEWER_QA = ROOT / "data/processed/beta/internal_reviewer_qa_log.csv"
 DEFAULT_MARKDOWN = ROOT / "reports/beta/external_beta_summary.md"
 DEFAULT_CSV = ROOT / "reports/beta/external_beta_summary.csv"
 
@@ -60,9 +61,11 @@ def summarize_feedback(
     issue_rows: list[dict[str, str]],
     build_rows: list[dict[str, str]] | None = None,
     qa_rows: list[dict[str, str]] | None = None,
+    internal_reviewer_rows: list[dict[str, str]] | None = None,
 ) -> dict[str, object]:
     build_rows = build_rows or []
     qa_rows = qa_rows or []
+    internal_reviewer_rows = internal_reviewer_rows or []
     testers = ({row.get("tester_alias", "") for row in feedback_rows} | {
         row.get("reported_by_alias", "") for row in issue_rows
     }) - {""}
@@ -165,6 +168,12 @@ def summarize_feedback(
         "first_wave_issue_records": first_wave_issues,
         "second_wave_feedback_records": second_wave_feedback,
         "second_wave_issue_records": second_wave_issues,
+        "internal_reviewer_records": len(internal_reviewer_rows),
+        "internal_pt_physical_device_reviews": sum(
+            row.get("role", "").lower() == "physical_therapist_internal_reviewer"
+            and row.get("test_type", "").lower() == "internal_physical_device_qa"
+            for row in internal_reviewer_rows
+        ),
         "recommended_fixes": recommendations,
         "recommendation": recommendation,
     }
@@ -180,7 +189,9 @@ def write_summary(summary: dict[str, object], markdown_path: Path, csv_path: Pat
     fixes = summary["recommended_fixes"]
     fix_lines = "\n".join(f"- {item}" for item in fixes) if fixes else "- Collect completed beta feedback before prioritizing fixes."
     evidence_note = (
-        "No external beta feedback has been collected yet. Empty feedback is not evidence of safety, usability, or clinical validity."
+        "Internal reviewer QA evidence exists, but no external beta feedback has been collected. Internal QA is not external beta evidence."
+        if summary["number_of_sessions"] == 0 and summary["internal_reviewer_records"]
+        else "No external beta feedback has been collected yet. Empty feedback is not evidence of safety, usability, or clinical validity."
         if summary["number_of_sessions"] == 0
         else "Feedback counts reflect submitted product-QA sessions only; they are not clinical validation."
     )
@@ -201,6 +212,9 @@ def write_summary(summary: dict[str, object], markdown_path: Path, csv_path: Pat
         f"{summary['first_wave_issue_records']}\n"
         f"- Second-wave feedback / issues: {summary['second_wave_feedback_records']} / "
         f"{summary['second_wave_issue_records']}\n\n"
+        "## Internal reviewer evidence (not external beta)\n\n"
+        f"- Internal reviewer records: {summary['internal_reviewer_records']}\n"
+        f"- Internal PT physical-device QA records: {summary['internal_pt_physical_device_reviews']}\n\n"
         "## Release evidence\n\n"
         f"- Builds recorded: {summary['builds_recorded']} ({summary['build_statuses']})\n"
         f"- Latest RC: {summary['latest_rc_version']} — {summary['latest_build_status']}\n"
@@ -238,6 +252,8 @@ def write_summary(summary: dict[str, object], markdown_path: Path, csv_path: Pat
         ("first_wave_issue_records", summary["first_wave_issue_records"]),
         ("second_wave_feedback_records", summary["second_wave_feedback_records"]),
         ("second_wave_issue_records", summary["second_wave_issue_records"]),
+        ("internal_reviewer_records", summary["internal_reviewer_records"]),
+        ("internal_pt_physical_device_reviews", summary["internal_pt_physical_device_reviews"]),
         ("recommendation", summary["recommendation"]),
     ]
     with csv_path.open("w", encoding="utf-8", newline="") as handle:
@@ -253,12 +269,14 @@ def run_summary(
     csv_path: Path,
     build_registry_path: Path | None = None,
     qa_matrix_path: Path | None = None,
+    internal_reviewer_qa_path: Path | None = None,
 ) -> dict[str, object]:
     summary = summarize_feedback(
         _read_rows(feedback_path),
         _read_rows(issues_path),
         _read_rows(build_registry_path) if build_registry_path else [],
         _read_rows(qa_matrix_path) if qa_matrix_path else [],
+        _read_rows(internal_reviewer_qa_path) if internal_reviewer_qa_path else [],
     )
     write_summary(summary, markdown_path, csv_path)
     return summary
@@ -270,6 +288,7 @@ def main() -> int:
     parser.add_argument("--issues", type=Path, default=DEFAULT_ISSUES)
     parser.add_argument("--build-registry", type=Path, default=DEFAULT_BUILDS)
     parser.add_argument("--qa-matrix", type=Path, default=DEFAULT_QA_MATRIX)
+    parser.add_argument("--internal-reviewer-qa", type=Path, default=DEFAULT_INTERNAL_REVIEWER_QA)
     parser.add_argument("--markdown-output", type=Path, default=DEFAULT_MARKDOWN)
     parser.add_argument("--csv-output", type=Path, default=DEFAULT_CSV)
     args = parser.parse_args()
@@ -280,6 +299,7 @@ def main() -> int:
         args.csv_output,
         args.build_registry,
         args.qa_matrix,
+        args.internal_reviewer_qa,
     )
     print(f"External beta summary written: {args.markdown_output} ({summary['number_of_sessions']} session(s))")
     return 0

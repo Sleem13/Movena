@@ -4,7 +4,7 @@
 
 **Beta status:** `not_started`
 
-**Evidence note:** No real tester records exist. The invite-only external beta has not started; zero counts are not validation.
+**Evidence note:** Internal reviewer QA evidence exists, but no external tester records exist. The external beta has not started; internal QA is not external beta evidence.
 
 ## Participation and consent
 
@@ -14,6 +14,12 @@
 - Consent complete: 0 (Not measured)
 - Active: 0
 - Completed: 0
+
+## Internal reviewer evidence (not external beta)
+
+- Internal reviewer records: 1
+- Internal PT physical-device QA records: 1
+- Internal partial-pass records: 1
 
 ## Execution and feedback
 

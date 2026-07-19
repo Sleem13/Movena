@@ -163,3 +163,30 @@ def test_summary_separates_first_and_second_wave_records(tmp_path):
     assert summary["first_wave_issue_records"] == 1
     assert summary["second_wave_feedback_records"] == 1
     assert summary["second_wave_issue_records"] == 1
+
+
+def test_internal_reviewer_evidence_does_not_create_external_session(tmp_path):
+    feedback = tmp_path / "feedback.csv"
+    issues = tmp_path / "issues.csv"
+    internal = tmp_path / "internal.csv"
+    markdown = tmp_path / "summary.md"
+    output_csv = tmp_path / "summary.csv"
+    write_csv(feedback, ["feedback_id"])
+    write_csv(issues, ["issue_id"])
+    write_csv(
+        internal,
+        ["review_id", "role", "test_type"],
+        [{
+            "review_id": "internal-1",
+            "role": "physical_therapist_internal_reviewer",
+            "test_type": "internal_physical_device_qa",
+        }],
+    )
+
+    summary = run_summary(feedback, issues, markdown, output_csv, None, None, internal)
+
+    assert summary["number_of_sessions"] == 0
+    assert summary["number_of_testers"] == 0
+    assert summary["internal_reviewer_records"] == 1
+    assert summary["internal_pt_physical_device_reviews"] == 1
+    assert "not external beta evidence" in markdown.read_text(encoding="utf-8")
