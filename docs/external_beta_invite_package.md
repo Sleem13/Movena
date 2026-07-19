@@ -1,10 +1,16 @@
 # External Beta Invite Package
 
+## Sprint 29C activation decision
+
+Consent, feedback, issue, support, privacy/deletion, incident, and known-limitations destinations are **inactive or blocked**. The Android internal build exists but is not physical-device approved. This package remains **DO NOT SEND**; no real tester has been invited.
+
 > **DRAFT - DO NOT SEND. Current decision: NO-GO.** Replace and test every bracketed item after approval.
 
 ## Link activation status
 
 The following controlled placeholders are intentionally inactive: `[PRIVATE_FEEDBACK_FORM_URL]`, `[PRIVATE_ISSUE_REPORT_URL]`, `[PRIVATE_SUPPORT_CONTACT]`, `[PRIVATE_DATA_REQUEST_URL]`, `[PRIVATE_INCIDENT_CONTACT]`, `[CONSENT_PRIVACY_URL]`, `[KNOWN_LIMITATIONS_URL]`, `[PRIVATE_ANDROID_INSTALL_URL]`, and `[BETA_LOGIN_INSTRUCTIONS]`. No invitation may be sent until each applicable destination is private, staffed, access-tested, and approved.
+
+Sprint 28D audit (2026-07-19): staging is reachable and the Android rebuild is underway, but none of these private destinations has been activated or access-tested. This package remains **DRAFT — DO NOT SEND**.
 
 ## Short invitation
 

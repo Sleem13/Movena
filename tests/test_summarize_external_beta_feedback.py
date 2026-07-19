@@ -139,3 +139,27 @@ def test_build_registry_and_optional_qa_are_summarized(tmp_path):
     assert summary["qa_pass_count"] == 1
     assert summary["qa_blocked_count"] == 1
     assert "Empty feedback is not evidence" in markdown.read_text(encoding="utf-8")
+
+
+def test_summary_separates_first_and_second_wave_records(tmp_path):
+    feedback = tmp_path / "feedback.csv"
+    issues = tmp_path / "issues.csv"
+    markdown = tmp_path / "summary.md"
+    output_csv = tmp_path / "summary.csv"
+    write_csv(
+        feedback,
+        ["feedback_id", "beta_wave"],
+        [{"feedback_id": "f1", "beta_wave": "first"}, {"feedback_id": "f2", "beta_wave": "second"}],
+    )
+    write_csv(
+        issues,
+        ["issue_id", "beta_wave"],
+        [{"issue_id": "i1", "beta_wave": "first"}, {"issue_id": "i2", "beta_wave": "wave_2"}],
+    )
+
+    summary = run_summary(feedback, issues, markdown, output_csv)
+
+    assert summary["first_wave_feedback_records"] == 1
+    assert summary["first_wave_issue_records"] == 1
+    assert summary["second_wave_feedback_records"] == 1
+    assert summary["second_wave_issue_records"] == 1

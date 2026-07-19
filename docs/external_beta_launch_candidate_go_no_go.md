@@ -15,9 +15,9 @@ The candidate contains useful code-level hardening and complete readiness artifa
 
 ## Blocking evidence
 
-- No private HTTPS staging deployment or deployed smoke/security record.
-- No EAS `preview-staging` Android build, install result, or physical-device matrix.
-- No deployed artifact exposure/expiry/cleanup or database/token lifecycle verification.
+- The post-fix EAS `preview-staging` rebuild is not yet complete and has not been installed on a physical device.
+- No physical-device execution record exists for auth, upload, safe rejection, retry/network, token lifecycle, or limitations.
+- No deployed artifact exposure/expiry/cleanup or full database backup/restore lifecycle verification exists.
 - No active private install, login, feedback, issue, support, privacy/deletion, or status links.
 - Legal/privacy review and accountable product, QA, security, safety, and release approvals are absent.
 - No external feedback exists; empty templates cannot validate usability or safety.
@@ -26,9 +26,9 @@ The candidate contains useful code-level hardening and complete readiness artifa
 
 | GO requirement | Evidence | Decision |
 |---|---|---|
-| HTTPS staging reachable | No Render/Vercel URL or provider credentials; deployed smoke endpoints untested | Fail |
-| Managed PostgreSQL ready | No Neon credential/database; schema, seed, backup, and restore unexecuted | Fail |
-| Android internal build installed | EAS is authenticated, but preview environment has zero variables and no build/install link | Fail |
+| HTTPS staging reachable | Render HTTPS returned `200` for `/health`, `/ready`, and `/api/v1/exercises` on 2026-07-19 | Pass |
+| Managed PostgreSQL ready | Supabase-backed `/health` reports database OK and `/ready` reports database connection OK | Pass for connectivity; backup/restore evidence still pending |
+| Android internal build installed | Post-fix EAS build `a10a3920-23e3-4097-ae7a-861a61bda01d` is in progress; no device installation | Fail |
 | Physical-device QA passed | No named Android device or executed matrix | Fail |
 | Valid upload and safe rejection | Automated tests only; no deployed-device evidence | Fail |
 | Rejected result has no fake score | Automated tests only; no deployed-device evidence | Fail |
@@ -54,11 +54,23 @@ These documents are execution instructions, not completion evidence. The current
 ## Repository validation — 2026-07-19
 
 - `python -m pytest`: 198 passed, with 7 dependency deprecation warnings.
-- `mobile\npm test`: 10 suites and 61 tests passed.
+- `mobile\npm test`: 11 suites and 65 tests passed.
 - `frontend\npm test`: 4 files and 33 tests passed.
 - `frontend\npm run build`: production build passed.
 
-These results support code-level regression confidence only. They do not prove private HTTPS reachability, PostgreSQL operations, Android installation, physical-device behavior, link staffing, privacy/legal approval, or external-beta safety/usability.
+These automated results support code-level regression confidence only. Separate live checks now prove basic HTTPS and database reachability, but neither evidence set proves Android installation, physical-device behavior, link staffing, backup/restore, privacy/legal approval, or external-beta safety/usability.
+
+## Sprint 28D validation — 2026-07-19
+
+- Live staging: `/health`, `/ready`, and `/api/v1/exercises` returned HTTP 200.
+- Deployed safety: unauthenticated squat analysis returned HTTP 401; an unapproved origin received no CORS allow-origin header.
+- Mobile: 11 suites and 65 tests passed, including auth/upload warning isolation.
+- Python: 198 tests passed with 7 dependency deprecation warnings.
+- Frontend: 33 tests passed and the production build succeeded.
+- Physical Android device: not detected; all device scenarios remain unexecuted.
+- Private beta links: inactive placeholders; no privacy/safety operational sign-off recorded.
+
+The decision remains **NO-GO** because successful staging and automated tests do not replace physical-device QA, active private support/privacy channels, or accountable sign-off.
 
 ## Reconsideration gate
 

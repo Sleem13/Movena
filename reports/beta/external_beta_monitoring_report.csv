@@ -19,4 +19,13 @@ safety_privacy_flags,0
 upload_related_issues,0
 rejected_clarity_responses,0
 rejected_clarity_rate,Not measured
+first_wave_tester_records,0
+first_wave_feedback_records,0
+first_wave_issue_records,0
+first_wave_assignment_records,0
+second_wave_planned_testers,0
+second_wave_active_testers,0
+second_wave_assignment_records,0
+second_wave_feedback_records,0
+second_wave_issue_records,0
 go_no_go_alert,NO-GO — beta has not started; no real tester records exist.

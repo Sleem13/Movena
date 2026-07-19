@@ -1,5 +1,15 @@
 # External Closed Beta Tester Pack
 
+## Sprint 29E execution status
+
+The first-wave invite and instruction drafts exist, but no real tester is invited and all required destinations remain placeholders. Do not distribute this pack until GO/CONDITIONAL GO, consent/link verification, and accountable approval are recorded.
+
+## Sprint 29C distribution gate
+
+Status: **blocked / do not distribute**. Private consent, feedback, issue, support, privacy/deletion, incident, and limitations links are not active and physical-device QA is incomplete. No tester, consent, or assignment record exists.
+
+> Sprint 29B pre-invite decision: **NO-GO — DO NOT DISTRIBUTE.** No real tester has been selected or invited. Use this pack only after physical-device QA, private-link activation, and accountable privacy/safety approval produce a new GO or CONDITIONAL GO.
+
 > **DRAFT — DO NOT DISTRIBUTE.** Release candidate `0.28.0-rc.1` remains `NO-GO`; replace every placeholder and obtain approval first.
 
 Sprint 29 execution assets are being prepared, but the actual external beta has not started and remains blocked by private staging, Android build, physical-device QA, and inactive feedback/support/privacy links. No tester invitation is authorized.

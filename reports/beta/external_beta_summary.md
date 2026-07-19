@@ -12,6 +12,11 @@
 - Blocker/high issues: 0
 - Safety/privacy concerns: 0
 
+## Wave separation
+
+- First-wave feedback / issues: 0 / 0
+- Second-wave feedback / issues: 0 / 0
+
 ## Release evidence
 
 - Builds recorded: 1 (blocked_not_submitted (1))

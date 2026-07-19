@@ -1,5 +1,83 @@
 # PhysioVision AI
 
+## Sprint 29E — First-Wave External Beta Execution
+
+Sprint 29E execution assets are applied, but real first-wave execution has **not started**: invited testers, consent, assignments, feedback, and issues are all zero. The beta remains invite-only with no public launch, real patient data, clinical use, diagnosis/treatment claim, new exercise, or ML/DL promotion.
+
+Supported exercises remain `bodyweight_squat`, `sit_to_stand`, `knee_extension`, `shoulder_abduction`, and `hip_abduction`; planned exercises remain disabled. ML/DL remains experimental and rule-based analysis remains primary.
+
+```powershell
+python scripts/build_external_beta_monitoring_report.py
+python scripts/summarize_external_beta_feedback.py
+python -m pytest
+```
+
+## Sprint 31 — Second External Beta Wave Preparation
+
+Sprint 31 preparation assets are available, but the second wave is **NO-GO / blocked**. Sprint 30 contains no real beta results and retains unresolved P0/P1 evidence and operational gates. No second-wave tester has been added, consented, assigned, invited, or activated.
+
+This remains invite-only product QA with no public release, patient participation, real patient-identifiable data, clinical use, diagnosis/treatment claim, new exercise, or ML/DL promotion.
+
+```powershell
+python scripts/build_external_beta_monitoring_report.py
+python scripts/summarize_external_beta_feedback.py
+python -m pytest
+
+cd mobile
+npm test
+
+cd ..\frontend
+npm test
+npm run build
+```
+
+See the [Sprint 31 status](docs/sprint_31_second_external_beta_wave_preparation.md), [readiness review](docs/sprint_31_second_wave_readiness_review.md), and [second-wave decision](docs/external_beta_second_wave_go_no_go.md).
+
+## Sprint 30 — External Beta Results Review Gate
+
+Sprint 30 is **blocked**. The five required beta inputs are header-only: there are no real testers, consent records, assignments, feedback items, issues, or beta results. Empty data is not evidence of product safety, reliability, usability, or clinical validity, and rates without denominators are reported as `not_available`.
+
+Continue Sprint 29B controlled execution; do not expand the beta or claim Sprint 30 completion. This remains invite-only product QA with no public release, real patient data, clinical use, diagnosis, or treatment claims.
+
+```powershell
+python scripts/review_external_beta_results.py
+python scripts/build_external_beta_monitoring_report.py
+python scripts/summarize_external_beta_feedback.py
+python -m pytest
+
+cd mobile
+npm test
+
+cd ..\frontend
+npm test
+npm run build
+```
+
+See the [Sprint 30 blocked review](docs/sprint_30_external_beta_results_review_fix_plan.md), [metrics](reports/beta/external_beta_metrics_summary.md), and [go/no-go review](docs/external_beta_results_go_no_go_review.md).
+
+## Sprint 29B — First External Tester Gate
+
+Sprint 29B remains **NO-GO**. The first external testers would be invite-only; there is no public launch, public app-store release, or tester invitation. No real patient data or clinical use is permitted, and no diagnosis or treatment claim is made.
+
+Supported exercises remain `bodyweight_squat`, `sit_to_stand`, `knee_extension`, `shoulder_abduction`, and `hip_abduction`; planned exercises remain disabled. Rule-based analyzers remain primary, while ML/DL and recognition remain experimental and are not promoted.
+
+Render HTTPS staging, Supabase-backed readiness, auth enforcement, and the exercise registry pass. Invitations remain blocked until the post-fix Android build is installed, physical-device QA passes, private feedback/issue/support/privacy/consent/limitations links are active, and accountable privacy/safety approval is recorded. Beta CSVs remain header-only with no fabricated people or results.
+
+```powershell
+python scripts/build_external_beta_monitoring_report.py
+python scripts/summarize_external_beta_feedback.py
+python -m pytest
+
+cd mobile
+npm test
+
+cd ..\frontend
+npm test
+npm run build
+```
+
+See the [Sprint 29B gate](docs/sprint_29b_pre_invite_gate_check.md), [status](docs/sprint_29b_invite_first_external_testers.md), and [first-wave check-in](docs/external_beta_first_wave_checkin.md).
+
 ## Sprint 29 — Invite-Only External Beta Execution Assets
 
 Sprint 29 execution assets are being prepared, but the actual external beta has not started and remains blocked. The repository now includes header-only tester/consent/assignment trackers and empty-safe monitoring that reports `not_started`; no testers, consent, assignments, feedback, issues, or beta results are fabricated.

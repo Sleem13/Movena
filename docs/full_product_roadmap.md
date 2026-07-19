@@ -1,5 +1,23 @@
 # PhysioVision AI Full Product Roadmap
 
+## Sprint 29E — First-Wave External Beta Execution
+
+Status: **execution assets applied / beta not started**. Target is 3–5 trusted non-clinical adults after GO, but no real invitation, consent, assignment, feedback, issue, or result exists. Sprint 30 remains blocked until genuine first-wave evidence is collected safely.
+
+## Sprint 31 — Second External Beta Wave Preparation
+
+Status: **preparation assets complete / second wave blocked**. Sprint 30 has no real external beta evidence and unresolved P0/P1 gates remain. A header-only second-wave assignment schema and wave-aware monitoring exist, but no tester, consent, assignment, feedback, issue, invitation, or expansion is authorized. Continue Sprint 29B, then rerun Sprint 30 before reconsidering Sprint 31.
+
+## Sprint 30 — External Beta Results Review + Fix Plan
+
+Status: **blocked; do not start**. All five required beta CSV inputs are header-only, so there is no genuine external tester, consent, assignment, feedback, issue, reliability, safety, or privacy evidence to review. Continue Sprint 29B controlled execution. Do not expand the beta, fabricate outcomes, or advance the roadmap until genuine consented sessions exist.
+
+## Sprint 29B — Invite First External Testers
+
+Status: **NO-GO / not started**. Basic Render HTTPS, Supabase database readiness, auth rejection, CORS denial for an unapproved origin, and the five-exercise registry pass. The post-fix Android build is not installed, physical-device QA is absent, private feedback/support/privacy/consent/limitations links are inactive, and accountable safety/privacy approval is missing.
+
+No real tester aliases, invitations, consent records, assignments, feedback, issues, or beta results exist. No public launch, patient use, clinical claim, new exercise, or ML/DL promotion is authorized. Sprint 30 remains blocked until controlled beta execution produces genuine feedback/issues after a future GO.
+
 ## Sprint 29 — Invite-Only External Beta Execution Assets
 
 Status: execution assets prepared; actual external beta has not started and remains blocked. Header-only roster/consent/assignment templates, execution protocols, empty-safe monitoring, pause/cleanup controls, and report templates are available. Zero records are absence of execution evidence, not successful testing or validation.

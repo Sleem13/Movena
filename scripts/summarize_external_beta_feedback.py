@@ -18,6 +18,7 @@ DEFAULT_CSV = ROOT / "reports/beta/external_beta_summary.csv"
 TRUE_VALUES = {"1", "true", "yes", "y", "passed", "success"}
 SEVERE_LEVELS = {"blocker", "high"}
 SAFETY_LEVEL = "safety_privacy"
+SECOND_WAVE_VALUES = {"2", "second", "second_wave", "wave_2", "wave2"}
 
 
 def _read_rows(path: Path) -> list[dict[str, str]]:
@@ -38,6 +39,10 @@ def _read_rows(path: Path) -> list[dict[str, str]]:
 
 def _is_true(value: str) -> bool:
     return value.strip().lower() in TRUE_VALUES
+
+
+def _is_second_wave(row: dict[str, str]) -> bool:
+    return row.get("beta_wave", "").strip().lower() in SECOND_WAVE_VALUES
 
 
 def _rate(rows: list[dict[str, str]], field: str) -> tuple[int, int, float | None]:
@@ -119,6 +124,10 @@ def summarize_feedback(
     )
     latest_build = build_rows[-1] if build_rows else {}
     qa_statuses = Counter(row.get("status", "").lower() for row in qa_rows if row.get("status"))
+    first_wave_feedback = sum(not _is_second_wave(row) for row in feedback_rows)
+    second_wave_feedback = sum(_is_second_wave(row) for row in feedback_rows)
+    first_wave_issues = sum(not _is_second_wave(row) for row in issue_rows)
+    second_wave_issues = sum(_is_second_wave(row) for row in issue_rows)
 
     has_blocker = any(severity == "blocker" for severity, _ in combined_severity)
     if not feedback_rows:
@@ -152,6 +161,10 @@ def summarize_feedback(
         "qa_pass_count": qa_statuses.get("pass", 0),
         "qa_fail_count": qa_statuses.get("fail", 0),
         "qa_blocked_count": qa_statuses.get("blocked", 0),
+        "first_wave_feedback_records": first_wave_feedback,
+        "first_wave_issue_records": first_wave_issues,
+        "second_wave_feedback_records": second_wave_feedback,
+        "second_wave_issue_records": second_wave_issues,
         "recommended_fixes": recommendations,
         "recommendation": recommendation,
     }
@@ -183,6 +196,11 @@ def write_summary(summary: dict[str, object], markdown_path: Path, csv_path: Pat
         f"- Common issues: {summary['common_issues']}\n"
         f"- Blocker/high issues: {summary['blocker_high_count']}\n"
         f"- Safety/privacy concerns: {summary['safety_privacy_count']}\n\n"
+        "## Wave separation\n\n"
+        f"- First-wave feedback / issues: {summary['first_wave_feedback_records']} / "
+        f"{summary['first_wave_issue_records']}\n"
+        f"- Second-wave feedback / issues: {summary['second_wave_feedback_records']} / "
+        f"{summary['second_wave_issue_records']}\n\n"
         "## Release evidence\n\n"
         f"- Builds recorded: {summary['builds_recorded']} ({summary['build_statuses']})\n"
         f"- Latest RC: {summary['latest_rc_version']} — {summary['latest_build_status']}\n"
@@ -216,6 +234,10 @@ def write_summary(summary: dict[str, object], markdown_path: Path, csv_path: Pat
         ("qa_pass_count", summary["qa_pass_count"]),
         ("qa_fail_count", summary["qa_fail_count"]),
         ("qa_blocked_count", summary["qa_blocked_count"]),
+        ("first_wave_feedback_records", summary["first_wave_feedback_records"]),
+        ("first_wave_issue_records", summary["first_wave_issue_records"]),
+        ("second_wave_feedback_records", summary["second_wave_feedback_records"]),
+        ("second_wave_issue_records", summary["second_wave_issue_records"]),
         ("recommendation", summary["recommendation"]),
     ]
     with csv_path.open("w", encoding="utf-8", newline="") as handle:

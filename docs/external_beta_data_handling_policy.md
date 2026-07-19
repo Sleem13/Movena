@@ -1,5 +1,15 @@
 # External Beta Data Handling Policy
 
+## Sprint 29E execution rule
+
+Create records only from real invited aliases and completed consent. Do not prefill acceptance, consent, assignments, feedback, issues, safety outcomes, or results. The current trackers remain empty, so no first-wave data processing or Sprint 30 review is authorized.
+
+## Sprint 29C collection gate
+
+No first-wave data collection is authorized. Consent, feedback, issue, support, privacy/deletion, incident, and known-limitations destinations remain inactive or unverified; the roster, consent, and assignment trackers remain header-only. Add a real alias only after GO/CONDITIONAL GO, record consent before assignment, and never collect full names, health information, real patient media, diagnosis, or treatment data.
+
+> Sprint 29B status: no external testing or data collection has started. Roster, consent, assignment, feedback, and issue trackers remain header-only. Do not create records until a real tester is privately selected after GO; never prefill consent or results.
+
 > Sprint 29 execution assets are being prepared, but actual external beta has not started and remains blocked. The roster, consent, assignments, feedback, and issues must remain header-only until launch gates and consent are satisfied.
 
 ## Data boundary

@@ -18,4 +18,8 @@ qa_checks_recorded,0
 qa_pass_count,0
 qa_fail_count,0
 qa_blocked_count,0
+first_wave_feedback_records,0
+first_wave_issue_records,0
+second_wave_feedback_records,0
+second_wave_issue_records,0
 recommendation,NO-GO — no completed external beta feedback is available.

@@ -12,6 +12,8 @@ BETA_DIR = ROOT / "data/processed/beta"
 DEFAULT_ROSTER = BETA_DIR / "external_beta_tester_roster.csv"
 DEFAULT_CONSENT = BETA_DIR / "external_beta_consent_tracker.csv"
 DEFAULT_ASSIGNMENTS = BETA_DIR / "external_beta_test_assignments.csv"
+DEFAULT_SECOND_WAVE_ASSIGNMENTS = BETA_DIR / "external_beta_second_wave_assignments.csv"
+DEFAULT_FIRST_WAVE_ASSIGNMENTS = BETA_DIR / "external_beta_first_wave_assignments.csv"
 DEFAULT_FEEDBACK = BETA_DIR / "external_beta_feedback_template.csv"
 DEFAULT_ISSUES = BETA_DIR / "external_beta_issue_log.csv"
 DEFAULT_MARKDOWN = ROOT / "reports/beta/external_beta_monitoring_report.md"
@@ -20,6 +22,11 @@ DEFAULT_CSV = ROOT / "reports/beta/external_beta_monitoring_report.csv"
 TRUE_VALUES = {"1", "true", "yes", "y", "passed", "complete", "completed"}
 INVITED_STATES = {"invited", "accepted", "declined", "removed"}
 SEVERE_STATES = {"blocker", "high"}
+SECOND_WAVE_VALUES = {"2", "second", "second_wave", "wave_2", "wave2"}
+
+
+def is_second_wave(row: dict[str, str]) -> bool:
+    return row.get("beta_wave", "").strip().lower() in SECOND_WAVE_VALUES
 
 
 def read_rows(path: Path) -> list[dict[str, str]]:
@@ -56,7 +63,11 @@ def build_summary(
     assignments: list[dict[str, str]],
     feedback: list[dict[str, str]],
     issues: list[dict[str, str]],
+    second_wave_assignments: list[dict[str, str]] | None = None,
+    first_wave_assignments: list[dict[str, str]] | None = None,
 ) -> dict[str, object]:
+    second_wave_assignments = second_wave_assignments or []
+    first_wave_assignments = first_wave_assignments or []
     real_tester_ids = {row.get("tester_id", "") for row in roster if row.get("tester_id")}
     invited_ids = {
         row.get("tester_id", "")
@@ -114,6 +125,16 @@ def build_summary(
     clarity_rate = clarity_positive / len(clarity_values) if clarity_values else None
 
     blocker_high = issue_severity.get("blocker", 0) + issue_severity.get("high", 0)
+    first_wave_roster = [row for row in roster if not is_second_wave(row)]
+    second_wave_roster = [row for row in roster if is_second_wave(row)]
+    first_wave_feedback = [row for row in feedback if not is_second_wave(row)]
+    second_wave_feedback = [row for row in feedback if is_second_wave(row)]
+    first_wave_issues = [row for row in issues if not is_second_wave(row)]
+    second_wave_issues = [row for row in issues if is_second_wave(row)]
+    second_wave_active = sum(
+        row.get("testing_status", "").lower() in {"active", "in_progress"}
+        for row in second_wave_roster
+    )
     if not real_tester_ids:
         beta_status = "not_started"
         alert = "NO-GO — beta has not started; no real tester records exist."
@@ -163,6 +184,15 @@ def build_summary(
         "upload_related_issues": upload_issues,
         "rejected_clarity_responses": len(clarity_values),
         "rejected_clarity_rate": clarity_rate,
+        "first_wave_tester_records": len(first_wave_roster),
+        "first_wave_feedback_records": len(first_wave_feedback),
+        "first_wave_issue_records": len(first_wave_issues),
+        "first_wave_assignment_records": len(first_wave_assignments),
+        "second_wave_planned_testers": len(second_wave_roster),
+        "second_wave_active_testers": second_wave_active,
+        "second_wave_assignment_records": len(second_wave_assignments),
+        "second_wave_feedback_records": len(second_wave_feedback),
+        "second_wave_issue_records": len(second_wave_issues),
         "go_no_go_alert": alert,
     }
 
@@ -195,6 +225,14 @@ def write_report(summary: dict[str, object], markdown_path: Path, csv_path: Path
         f"- Roster feedback-submitted flags: {summary['feedback_submitted_flags']}\n"
         f"- Rejected-result clarity: {summary['rejected_clarity_responses']} response(s), "
         f"{format_rate(summary['rejected_clarity_rate'])}\n\n"
+        "## Wave separation\n\n"
+        f"- First-wave tester / feedback / issue records: {summary['first_wave_tester_records']} / "
+        f"{summary['first_wave_feedback_records']} / {summary['first_wave_issue_records']}\n"
+        f"- First-wave assignment records: {summary['first_wave_assignment_records']}\n"
+        f"- Second-wave planned / active testers: {summary['second_wave_planned_testers']} / "
+        f"{summary['second_wave_active_testers']}\n"
+        f"- Second-wave assignments / feedback / issues: {summary['second_wave_assignment_records']} / "
+        f"{summary['second_wave_feedback_records']} / {summary['second_wave_issue_records']}\n\n"
         "## Issues and safety\n\n"
         f"- Issues: {summary['issues_recorded']} ({summary['issues_by_severity']})\n"
         f"- Blocker/high issues: {summary['blocker_high_issues']}\n"
@@ -221,6 +259,8 @@ def run_report(
     issues_path: Path,
     markdown_path: Path,
     csv_path: Path,
+    second_wave_assignments_path: Path | None = None,
+    first_wave_assignments_path: Path | None = None,
 ) -> dict[str, object]:
     summary = build_summary(
         read_rows(roster_path),
@@ -228,6 +268,8 @@ def run_report(
         read_rows(assignments_path),
         read_rows(feedback_path),
         read_rows(issues_path),
+        read_rows(second_wave_assignments_path) if second_wave_assignments_path else [],
+        read_rows(first_wave_assignments_path) if first_wave_assignments_path else [],
     )
     write_report(summary, markdown_path, csv_path)
     return summary
@@ -238,6 +280,8 @@ def main() -> int:
     parser.add_argument("--roster", type=Path, default=DEFAULT_ROSTER)
     parser.add_argument("--consent", type=Path, default=DEFAULT_CONSENT)
     parser.add_argument("--assignments", type=Path, default=DEFAULT_ASSIGNMENTS)
+    parser.add_argument("--second-wave-assignments", type=Path, default=DEFAULT_SECOND_WAVE_ASSIGNMENTS)
+    parser.add_argument("--first-wave-assignments", type=Path, default=DEFAULT_FIRST_WAVE_ASSIGNMENTS)
     parser.add_argument("--feedback", type=Path, default=DEFAULT_FEEDBACK)
     parser.add_argument("--issues", type=Path, default=DEFAULT_ISSUES)
     parser.add_argument("--markdown-output", type=Path, default=DEFAULT_MARKDOWN)
@@ -251,6 +295,8 @@ def main() -> int:
         args.issues,
         args.markdown_output,
         args.csv_output,
+        args.second_wave_assignments,
+        args.first_wave_assignments,
     )
     print(f"External beta monitoring report written: {args.markdown_output} (status={summary['beta_status']})")
     return 0

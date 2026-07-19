@@ -77,3 +77,60 @@ def test_safety_privacy_issue_pauses_monitoring(tmp_path):
     assert summary["safety_privacy_flags"] == 1
     assert str(summary["go_no_go_alert"]).startswith("PAUSE")
     assert markdown.exists() and output_csv.exists()
+
+
+def test_monitoring_separates_first_and_second_wave_records(tmp_path):
+    roster, consent, assignments, feedback, issues = paths(tmp_path)
+    second_assignments = tmp_path / "second_assignments.csv"
+    first_assignments = tmp_path / "first_assignments.csv"
+    write_csv(
+        roster,
+        ["tester_id", "beta_wave", "invite_status", "testing_status"],
+        [
+            {"tester_id": "first-1", "beta_wave": "first", "invite_status": "accepted", "testing_status": "completed"},
+            {"tester_id": "second-1", "beta_wave": "second", "invite_status": "planned", "testing_status": "in_progress"},
+        ],
+    )
+    write_csv(consent, ["tester_id", "consent_acknowledged"])
+    write_csv(assignments, ["assignment_id", "tester_id", "status"])
+    write_csv(
+        second_assignments,
+        ["assignment_id", "tester_id", "beta_wave", "status"],
+        [{"assignment_id": "wave2-a1", "tester_id": "second-1", "beta_wave": "second", "status": "planned"}],
+    )
+    write_csv(
+        first_assignments,
+        ["assignment_id", "tester_id", "beta_wave", "status"],
+        [{"assignment_id": "wave1-a1", "tester_id": "first-1", "beta_wave": "first", "status": "completed"}],
+    )
+    write_csv(
+        feedback,
+        ["feedback_id", "beta_wave"],
+        [{"feedback_id": "f1", "beta_wave": "first"}, {"feedback_id": "f2", "beta_wave": "second"}],
+    )
+    write_csv(
+        issues,
+        ["issue_id", "beta_wave"],
+        [{"issue_id": "i2", "beta_wave": "second"}],
+    )
+
+    summary = run_report(
+        roster,
+        consent,
+        assignments,
+        feedback,
+        issues,
+        tmp_path / "monitoring.md",
+        tmp_path / "monitoring.csv",
+        second_assignments,
+        first_assignments,
+    )
+
+    assert summary["first_wave_tester_records"] == 1
+    assert summary["first_wave_feedback_records"] == 1
+    assert summary["first_wave_assignment_records"] == 1
+    assert summary["second_wave_planned_testers"] == 1
+    assert summary["second_wave_active_testers"] == 1
+    assert summary["second_wave_assignment_records"] == 1
+    assert summary["second_wave_feedback_records"] == 1
+    assert summary["second_wave_issue_records"] == 1

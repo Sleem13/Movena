@@ -1,5 +1,23 @@
 # Product Safety Policy
 
+## Sprint 29E first-wave boundary
+
+No tester begins before genuine consent is recorded. Only five supported exercises and non-identifying test videos are allowed. Real patient data, clinical use, diagnosis/treatment claims, public release, unsupported exercises, and ML/DL promotion are prohibited. Any patient data, privacy/artifact exposure, diagnostic wording, fake rejected score, launch crash, or majority upload failure pauses the beta.
+
+## Sprint 31 second-wave boundary
+
+The second wave is NO-GO while Sprint 30 lacks real results and P0/P1 operational gates remain unresolved. Do not invite, assign, or activate second-wave testers. Any future wave is limited to trusted non-clinical adults using non-identifying tester-owned media, with consent completed first and immediate pause for patient data, privacy/artifact exposure, diagnostic wording, fake rejected scores, launch crashes, or majority upload failure.
+
+## Sprint 30 evidence boundary
+
+Sprint 30 is blocked because the external beta inputs contain headers only. No safety, privacy, reliability, comprehension, or clinical conclusion may be drawn from zero records. Continue Sprint 29B under the existing invitation, consent, no-real-patient-data, pause/stop, and escalation controls. No beta expansion or public release is authorized.
+
+## Sprint 29B first-wave boundary
+
+Sprint 29B is **NO-GO** and no tester may be invited. A future first wave is limited to 3–5 trusted non-clinical testers using aliases and approved non-identifying test videos. There is no public release, real-patient use, clinical validation, diagnosis/treatment claim, unsupported exercise, or ML/DL promotion.
+
+Physical-device proof must confirm auth warnings do not leak into account screens, invalid/static inputs are rejected with no fake score, and safety/limitations remain visible. Feedback, issue, support, privacy/deletion, incident, consent, and limitations channels must be private, staffed, access-tested, and approved. Any patient-identifiable upload, privacy/security incident, diagnostic wording, public artifact, fake rejected score, majority upload failure, or launch crash pauses testing immediately.
+
 ## Sprint 29 execution boundary
 
 Sprint 29 assets are being prepared, but actual external beta execution has not started and remains blocked. No tester may be invited, consented, assigned, or allowed to upload until private staging, Android build/install, physical-device QA, private feedback/support/privacy links, and release approval are complete.

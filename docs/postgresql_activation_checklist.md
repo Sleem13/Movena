@@ -2,7 +2,7 @@
 
 ## Current status
 
-**Blocked / inactive.** No managed Neon database, project identifier, credential, or `DATABASE_URL` is available. Schema initialization, beta account seeding, backup, and restore have not run. No real patient data is permitted.
+**Active for basic connectivity, incomplete for operational assurance.** The deployed Render service reports Supabase PostgreSQL `database_status=ok`, and `/ready` reports `database_connection=ok`. Credentials were not retrieved or exposed. Schema/account lifecycle details, TLS configuration evidence, backup/restore test, reset evidence, and data-owner approval still require a restricted operational record. No real patient data is permitted.
 
 ## Provisioning gate
 

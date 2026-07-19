@@ -6,13 +6,13 @@
 
 | Required gate | Status | Current evidence / required closure |
 |---|---|---|
-| HTTPS backend deployed | Blocked | No Render service/domain/credential; deploy and record sanitized HTTPS origin |
-| PostgreSQL connected over SSL | Blocked | No Neon database or `DATABASE_URL`; provision, initialize, and verify TLS |
-| `GET /health` passes | Blocked | No staging origin; record timestamped HTTPS response with `environment=staging` |
-| `GET /ready` passes | Blocked | No staging/database; record database-ready response without secrets |
-| `GET /api/v1/exercises` passes | Blocked | No staging origin; verify five supported and planned unavailable entries |
-| Exact HTTPS CORS/auth safety | Blocked | Provider values absent; verify no wildcard, auth required, public demo disabled |
-| Android internal build created | Blocked | EAS preview has no API URL; configure only after staging passes and build internally |
+| HTTPS backend deployed | Pass | Render HTTPS staging origin responded on 2026-07-19 |
+| PostgreSQL connected over SSL | Pass for live connectivity | Supabase-backed health/readiness report database OK; backup/restore evidence remains pending |
+| `GET /health` passes | Pass | HTTP 200; staging, version, database OK, auth required, public demo disabled |
+| `GET /ready` passes | Pass | HTTP 200; database connection OK and artifacts writable |
+| `GET /api/v1/exercises` passes | Pass | HTTP 200; five supported exercises and planned unavailable entries returned |
+| HTTPS CORS/auth safety | Pass for tested controls | Unauthenticated squat analysis returned 401; unapproved origin received no `Access-Control-Allow-Origin`; health reports public demo disabled |
+| Android internal build created | In progress | Post-fix build `a10a3920-23e3-4097-ae7a-861a61bda01d` running |
 | Android build installed on physical device | Blocked | No build/install link/named device |
 | Valid upload tested on device | Blocked | Requires installed build, staging account, and approved non-identifying fixture |
 | Invalid/static upload rejected safely | Blocked | Requires device evidence showing rejected status |

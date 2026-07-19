@@ -23,6 +23,13 @@
 - Roster feedback-submitted flags: 0
 - Rejected-result clarity: 0 response(s), Not measured
 
+## Wave separation
+
+- First-wave tester / feedback / issue records: 0 / 0 / 0
+- First-wave assignment records: 0
+- Second-wave planned / active testers: 0 / 0
+- Second-wave assignments / feedback / issues: 0 / 0 / 0
+
 ## Issues and safety
 
 - Issues: 0 (None recorded)

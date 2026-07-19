@@ -1,6 +1,30 @@
 # External Beta Support and Escalation
 
+> Sprint 29E execution status: no genuine support, feedback, issue, privacy/deletion, or incident interaction exists. Placeholder destinations are not treated as active; beta execution remains stopped until access and staffing are verified.
+
+## Sprint 29C private-link gate
+
+| Required destination | Status | Evidence gap |
+|---|---|---|
+| Consent text | Inactive | Approved private URL and consent version not supplied |
+| Feedback form | Inactive | Private form, owner, and receipt test absent |
+| Issue report | Inactive | Private tracker/form and access test absent |
+| Support contact | Inactive | Staffed primary/backup channel absent |
+| Privacy/deletion request | Inactive | Approved private workflow and receipt/deletion test absent |
+| Incident report | Inactive | Restricted recipient and escalation test absent |
+| Known limitations | Blocked | Repository text exists; private tester URL/access test absent |
+
+No placeholder is an active link. First-wave invitations remain prohibited.
+
+> Sprint 31 status: second-wave onboarding remains blocked because the private feedback, issue, support, privacy/deletion, incident, consent, and limitations destinations are inactive or unverified. Do not distribute placeholders or invite testers.
+
+> Sprint 30 result gate: no feedback or issue records exist and no external support outcome can be assessed. Continue Sprint 29B. Do not infer that zero reports means zero incidents; private channels must be activated, staffed, and access-tested before controlled execution.
+
+> Sprint 29B status: all feedback, issue, support, privacy/deletion, incident, consent, and limitations destinations remain inactive. No channel is staffed or approved for live external testing, so invitations are prohibited.
+
 > Sprint 29 execution assets are being prepared, but actual external beta has not started and remains blocked. The placeholders below are inactive release blockers; no invitation or testing is authorized.
+
+Sprint 28D activation audit (2026-07-19): no approved private URLs, support mailbox/channel, incident recipient, privacy/deletion workflow, or accountable primary/backup contacts were supplied. All rows therefore remain inactive; no destination was fabricated from a personal address or public form.
 
 ## Channels and coverage
 
