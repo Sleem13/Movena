@@ -67,6 +67,7 @@ function AppContent() {
   async function handleSubmit(event) {
     event?.preventDefault?.();
     if (!file) { setError("Select a video before starting analysis."); return; }
+    if (!user) { setError("Please log in before analyzing a video."); return; }
     setIsLoading(true); setProgress(0); setError("");
     try {
       const analyze = exercise === "sit_to_stand" ? analyzeSitToStandVideo : exercise === "knee_extension" ? analyzeKneeExtensionVideo : exercise === "shoulder_abduction" ? analyzeShoulderAbductionVideo : exercise === "hip_abduction" ? analyzeHipAbductionVideo : analyzeSquatVideo;

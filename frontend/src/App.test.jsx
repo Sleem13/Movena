@@ -7,9 +7,13 @@ import { getExercises, getSavedSession, listSavedSessions } from "./services/api
 import { EXERCISES } from "./data/exercises.js";
 import { createPatientProfile, getPatientProfile, getPatientProgress, getTherapistDashboard, listPatientProfiles, listPatientSessions } from "./services/api.js";
 
+const authState = vi.hoisted(() => ({
+  user: { user_id: "test-admin", email: "admin@example.com", role: "admin" },
+}));
+
 vi.mock("./context/AuthContext.jsx", () => ({
   AuthProvider: ({ children }) => children,
-  useAuth: () => ({ user: { user_id: "test-admin", email: "admin@example.com", role: "admin" }, login: vi.fn(), register: vi.fn(), logout: vi.fn() }),
+  useAuth: () => ({ user: authState.user, login: vi.fn(), register: vi.fn(), logout: vi.fn() }),
 }));
 
 vi.mock("./services/api.js", () => ({
@@ -91,6 +95,7 @@ async function analyzeWith(response = report) {
 describe("Squat Analyzer healthcare dashboard", () => {
   beforeEach(() => {
     window.history.replaceState({}, "", "/");
+    authState.user = { user_id: "test-admin", email: "admin@example.com", role: "admin" };
     vi.clearAllMocks();
     getExercises.mockResolvedValue(EXERCISES);
     listSavedSessions.mockResolvedValue({ items: [], total: 0, limit: 50, offset: 0 });
@@ -391,6 +396,14 @@ describe("Squat Analyzer healthcare dashboard", () => {
     openUpload(); selectVideo();
     fireEvent.click(screen.getByRole("button", { name: "Analyze squat" }));
     expect(await screen.findByRole("alert")).toHaveTextContent("Please log in before analyzing a video.");
+  });
+
+  it("does not start analysis while the user is logged out", async () => {
+    authState.user = null;
+    openUpload(); selectVideo();
+    fireEvent.click(screen.getByRole("button", { name: "Analyze squat" }));
+    expect(await screen.findByRole("alert")).toHaveTextContent("Please log in before analyzing a video.");
+    expect(analyzeSquatVideo).not.toHaveBeenCalled();
   });
 
   it("shows the supported formats for an unsupported-file response", async () => {
