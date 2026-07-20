@@ -18,6 +18,7 @@ from app.api.v1.therapist import router as therapist_router
 from app.api.v1.auth import router as auth_router
 from app.api.dependencies.auth import AuthError
 from app.core.config import get_settings
+from app.core.cors import cors_middleware_options
 from app.services.artifact_service import ensure_artifact_directories
 from app.db.database import init_db
 from app.core.logging_config import configure_logging
@@ -69,10 +70,7 @@ async def auth_exception_handler(_request, exc: AuthError) -> JSONResponse:
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.effective_cors_origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    **cors_middleware_options(settings),
 )
 
 app.include_router(health_router)
