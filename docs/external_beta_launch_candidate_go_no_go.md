@@ -1,5 +1,34 @@
 # External Beta Launch Candidate Go/No-Go
 
+## Private controlled staging release decision
+
+**Decision: GO for private controlled staging release.**
+
+PhysioVision AI backend and frontend infrastructure are deployed and validated. The system is suitable for private demonstrations, internal review, and controlled non-clinical testing.
+
+### Evidence
+
+- Render backend service is live.
+- Supabase PostgreSQL is connected.
+- `/health` endpoint passed.
+- `/ready` endpoint passed.
+- `/api/v1/exercises` endpoint passed.
+- Backend validation passed: 202 passed, 3 skipped.
+- Mobile validation passed: 65 passed.
+- Frontend validation passed: 33 passed.
+- Frontend production build passed.
+
+### Release limitations
+
+- Not approved for public production release.
+- Not approved for real clinical decision-making.
+- Not approved for diagnosis or treatment prescription.
+- Does not replace a licensed physiotherapist.
+- No real patient data should be used without consent, privacy review, and security controls.
+- Real external user validation is deferred, not completed.
+
+This staging decision does not change the external beta decision below. External beta evidence remains intentionally deferred.
+
 ## Decision
 
 **NO-GO — fix blockers first** for `0.28.0-rc.1` (reviewed 2026-07-19).
