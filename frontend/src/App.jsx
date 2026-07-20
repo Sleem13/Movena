@@ -16,6 +16,19 @@ import { analyzeHipAbductionVideo, analyzeKneeExtensionVideo, analyzeShoulderAbd
 
 const DEFAULT_OPTIONS = { include_overlay: true, generate_report: true, include_ml: false, include_frame_data: true, save_session: false };
 const PAGE_PATHS = { home: "/", exercises: "/exercises", analyze: "/analyze", results: "/results", history: "/history", therapist: "/therapist", about: "/about", login: "/login", register: "/register", profile: "/profile" };
+const GENERIC_ANALYSIS_ERROR = "Unable to analyze this video. Check the backend and try again.";
+
+function analysisErrorMessage(requestError) {
+  const status = requestError.response?.status;
+  const apiError = requestError.response?.data;
+  if (status === 401 || status === 403) return "Please log in before analyzing a video.";
+  if (status === 400 && apiError?.error_code === "UNSUPPORTED_FILE_TYPE") {
+    return "Unsupported video format. Please upload MP4, MOV, AVI, MKV, or WEBM.";
+  }
+  if (!requestError.response) return "Could not connect to the analysis server.";
+  if (status >= 500) return GENERIC_ANALYSIS_ERROR;
+  return apiError?.message || apiError?.detail || GENERIC_ANALYSIS_ERROR;
+}
 
 function initialPage() {
   const path = window.location.pathname;
@@ -60,8 +73,7 @@ function AppContent() {
       const data = await analyze(file, options, setProgress);
       setReport(data); setPage("results");
     } catch (requestError) {
-      const apiError = requestError.response?.data;
-      setError(apiError?.message || apiError?.detail || "Unable to analyze this video. Check the backend and try again.");
+      setError(analysisErrorMessage(requestError));
     } finally { setIsLoading(false); }
   }
 

@@ -30,7 +30,7 @@ export default function UploadCard({
         <input
           className="sr-only"
           type="file"
-          accept="video/mp4,video/quicktime,video/x-msvideo,video/x-matroska,video/webm"
+          accept=".mp4,.mov,.avi,.mkv,.webm"
           onChange={onFileChange}
         />
       </label>

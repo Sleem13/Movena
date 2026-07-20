@@ -101,6 +101,8 @@ describe("Squat Analyzer healthcare dashboard", () => {
   it("renders the upload page and analysis options", () => {
     openUpload();
     expect(screen.getByText("Squat video upload")).toBeInTheDocument();
+    expect(screen.getByText(/MP4, MOV, AVI, MKV, or WEBM/)).toBeInTheDocument();
+    expect(screen.getByLabelText(/choose a squat exercise video/i)).toHaveAttribute("accept", ".mp4,.mov,.avi,.mkv,.webm");
     expect(screen.getByText("Analysis options")).toBeInTheDocument();
     expect(screen.getByLabelText("Annotated video")).toBeChecked();
     expect(screen.getByRole("button", { name: "Analyze squat" })).toBeDisabled();
@@ -382,6 +384,34 @@ describe("Squat Analyzer healthcare dashboard", () => {
     openUpload(); selectVideo();
     fireEvent.click(screen.getByRole("button", { name: "Analyze squat" }));
     expect(await screen.findByRole("alert")).toHaveTextContent("Video is too large.");
+  });
+
+  it.each([401, 403])("shows a login prompt for an HTTP %s analysis response", async (status) => {
+    analyzeSquatVideo.mockRejectedValue({ response: { status, data: {} } });
+    openUpload(); selectVideo();
+    fireEvent.click(screen.getByRole("button", { name: "Analyze squat" }));
+    expect(await screen.findByRole("alert")).toHaveTextContent("Please log in before analyzing a video.");
+  });
+
+  it("shows the supported formats for an unsupported-file response", async () => {
+    analyzeSquatVideo.mockRejectedValue({ response: { status: 400, data: { error_code: "UNSUPPORTED_FILE_TYPE" } } });
+    openUpload(); selectVideo();
+    fireEvent.click(screen.getByRole("button", { name: "Analyze squat" }));
+    expect(await screen.findByRole("alert")).toHaveTextContent("Unsupported video format. Please upload MP4, MOV, AVI, MKV, or WEBM.");
+  });
+
+  it("shows a connection message for a network or CORS failure", async () => {
+    analyzeSquatVideo.mockRejectedValue({ code: "ERR_NETWORK", request: {} });
+    openUpload(); selectVideo();
+    fireEvent.click(screen.getByRole("button", { name: "Analyze squat" }));
+    expect(await screen.findByRole("alert")).toHaveTextContent("Could not connect to the analysis server.");
+  });
+
+  it("keeps the generic backend message for a server error", async () => {
+    analyzeSquatVideo.mockRejectedValue({ response: { status: 500, data: { message: "Internal detail" } } });
+    openUpload(); selectVideo();
+    fireEvent.click(screen.getByRole("button", { name: "Analyze squat" }));
+    expect(await screen.findByRole("alert")).toHaveTextContent("Unable to analyze this video. Check the backend and try again.");
   });
 
   it("renders rejected input guidance without score or ML panels", async () => {

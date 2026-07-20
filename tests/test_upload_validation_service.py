@@ -33,3 +33,7 @@ def test_missing_upload_rejection():
     with pytest.raises(UploadValidationError) as exc:
         validate_upload_metadata(None)
     assert exc.value.error_code == "MISSING_FILE"
+
+
+def test_default_staging_formats_accept_webm():
+    validate_upload_metadata(upload("clip.webm", "video/webm"))

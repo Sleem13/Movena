@@ -1,6 +1,6 @@
 # Staging Secrets Configuration
 
-Configure these in Render: `APP_ENV=staging`, `APP_VERSION=0.28.0`, `DATABASE_URL`, `SECRET_KEY`, `CORS_ALLOWED_ORIGINS`, `ACCESS_TOKEN_EXPIRE_MINUTES=60`, `MAX_UPLOAD_SIZE_MB=100`, `ALLOWED_VIDEO_EXTENSIONS`, `ARTIFACT_RETENTION_HOURS=24`, feature flags, `ENABLE_ML_SECOND_OPINION=false`, `ENABLE_PUBLIC_DEMO_MODE=false`, and `REQUIRE_AUTH_FOR_ANALYSIS=true`.
+Configure these in Render: `APP_ENV=staging`, `APP_VERSION=0.28.0`, `DATABASE_URL`, `SECRET_KEY`, `CORS_ALLOWED_ORIGINS`, `ACCESS_TOKEN_EXPIRE_MINUTES=60`, `MAX_UPLOAD_SIZE_MB=100`, `ALLOWED_VIDEO_EXTENSIONS=mp4,mov,avi,mkv,webm`, `ARTIFACT_RETENTION_HOURS=24`, feature flags, `ENABLE_ML_SECOND_OPINION=false`, `ENABLE_PUBLIC_DEMO_MODE=false`, and `REQUIRE_AUTH_FOR_ANALYSIS=true`.
 
 Vercel needs public `VITE_API_BASE_URL`. EAS preview needs public `EXPO_PUBLIC_API_BASE_URL` and the profile supplies `EXPO_PUBLIC_APP_ENV=staging`. Public client variables are not secret storage.
 
