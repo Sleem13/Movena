@@ -8,5 +8,5 @@ def test_seed_admin_is_safe_and_idempotent(tmp_path):
     with pytest.raises(ValueError):validate_admin_password("weak")
     first,changed=seed_admin("admin@example.com","StrongAdminPassword123","Dev Admin",db=db)
     second,changed_again=seed_admin("admin@example.com","StrongAdminPassword123","Dev Admin",db=db)
-    assert changed and not changed_again and first.user_id==second.user_id and first.role=="admin"
+    assert changed and not changed_again and first.user_id==second.user_id and first.role=="admin" and first.is_verified
     db.close()

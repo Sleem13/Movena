@@ -33,7 +33,7 @@ def seed_admin(email: str, password: str, full_name: str | None, *, reset: bool 
         if existing:
             existing.password_hash = get_password_hash(password)
             existing.full_name = full_name
-            existing.role = "admin"; existing.is_active = True
+            existing.role = "admin"; existing.is_active = True; existing.is_verified = True
             user = existing
         else:
             user = User(user_id=str(uuid4()), email=email.lower().strip(), password_hash=get_password_hash(password),
