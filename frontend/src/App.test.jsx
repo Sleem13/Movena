@@ -125,6 +125,20 @@ describe("Squat Analyzer healthcare dashboard", () => {
     expect(screen.getAllByRole("button", { name: "Not available" })[0]).toBeDisabled();
   });
 
+  it("filters the exercise library by search text and availability", async () => {
+    render(<App />);
+    fireEvent.click(screen.getByRole("button", { name: "Exercises" }));
+    expect(await screen.findByText("Supported exercises")).toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText("Search exercises"), { target: { value: "shoulder" } });
+    fireEvent.change(screen.getByLabelText("Availability"), { target: { value: "supported" } });
+    expect(screen.getByText("1 exercise matches your filters.")).toBeInTheDocument();
+    expect(screen.getByText("Shoulder Abduction")).toBeInTheDocument();
+    expect(screen.queryByText("Shoulder Flexion")).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Clear exercise filters" }));
+    expect(screen.getByText("12 exercises match your filters.")).toBeInTheDocument();
+    expect(screen.getByText("Shoulder Flexion")).toBeInTheDocument();
+  });
+
   it("opens Analyze from an exercise card with exercise-specific guidance", async () => {
     render(<App />);
     fireEvent.click(screen.getByRole("button", { name: "Exercises" }));
