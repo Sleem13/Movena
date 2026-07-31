@@ -10,21 +10,24 @@ import {
   UploadCloud,
   User,
 } from "lucide-react";
+import LanguageSelector from "../../i18n/LanguageSelector.jsx";
+import { useLocale } from "../../i18n/LocaleContext.jsx";
 const items = [
-  { id: "home", label: "Home", icon: HeartPulse },
-  { id: "exercises", label: "Exercises", icon: Library },
-  { id: "analyze", label: "Analyze", icon: UploadCloud },
-  { id: "results", label: "Results", icon: BarChart3, requiresReport: true },
-  { id: "history", label: "History", icon: History, requiresUser: true },
+  { id: "home", labelKey: "nav.home", icon: HeartPulse },
+  { id: "exercises", labelKey: "nav.exercises", icon: Library },
+  { id: "analyze", labelKey: "nav.analyze", icon: UploadCloud },
+  { id: "results", labelKey: "nav.results", icon: BarChart3, requiresReport: true },
+  { id: "history", labelKey: "nav.history", icon: History, requiresUser: true },
   {
     id: "therapist",
-    label: "Therapist",
+    labelKey: "nav.therapist",
     icon: Stethoscope,
     roles: ["therapist", "admin"],
   },
-  { id: "about", label: "About", icon: Info },
+  { id: "about", labelKey: "nav.about", icon: Info },
 ];
 export function Navbar({ currentPage, hasReport, onNavigate, user }) {
+  const { t } = useLocale();
   const visible = items.filter(
     (i) =>
       (!i.requiresReport || hasReport) &&
@@ -47,11 +50,11 @@ export function Navbar({ currentPage, hasReport, onNavigate, user }) {
           </span>
           <span>
             <span className="block text-sm font-extrabold tracking-tight text-clinical-ink sm:text-base">PhysioVision AI</span>
-            <span className="hidden text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-400 sm:block">Movement intelligence</span>
+            <span className="hidden text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-400 sm:block">{t("brand.tagline")}</span>
           </span>
         </button>
         <div className="flex min-w-0 items-center gap-1 overflow-x-auto py-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          {visible.map(({ id, label, icon: Icon }) => (
+          {visible.map(({ id, labelKey, icon: Icon }) => (
             <button
               key={id}
               onClick={() => onNavigate(id)}
@@ -63,11 +66,12 @@ export function Navbar({ currentPage, hasReport, onNavigate, user }) {
               }`}
             >
               <Icon size={16} aria-hidden="true" />
-              <span className="hidden lg:inline">{label}</span>
+              <span className="hidden lg:inline">{t(labelKey)}</span>
             </button>
           ))}
+          <LanguageSelector />
           <button
-            aria-label={user ? "Profile" : "Log in"}
+            aria-label={user ? t("nav.profile") : t("nav.login")}
             onClick={() => onNavigate(user ? "profile" : "login")}
             className={`grid h-10 w-10 shrink-0 place-items-center rounded-xl transition ${
               currentPage === "profile" || currentPage === "login" || currentPage === "register"

@@ -12,6 +12,7 @@ import Profile from "./pages/Profile.jsx";
 import ExerciseLibrary from "./pages/ExerciseLibrary.jsx";
 import { EXERCISES } from "./data/exercises.js";
 import { AuthProvider, useAuth } from "./context/AuthContext.jsx";
+import { LocaleProvider } from "./i18n/LocaleContext.jsx";
 import { analyzeHipAbductionVideo, analyzeKneeExtensionVideo, analyzeShoulderAbductionVideo, analyzeSitToStandVideo, analyzeSquatVideo, getExercises } from "./services/api.js";
 
 const DEFAULT_OPTIONS = { include_overlay: true, generate_report: true, include_ml: false, include_frame_data: true, save_session: false };
@@ -94,4 +95,4 @@ function AppContent() {
   </AppShell>;
 }
 
-export default function App(){return <AuthProvider><AppContent/></AuthProvider>;}
+export default function App(){return <LocaleProvider><AuthProvider><AppContent/></AuthProvider></LocaleProvider>;}

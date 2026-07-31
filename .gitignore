@@ -242,3 +242,7 @@ data/samples/metadata.csv
 #  refer to https://docs.cursor.com/context/ignore-files
 .cursorignore
 .cursorindexingignore
+
+# Imported third-party comparison prototype. Keep outside PhysioVision commits;
+# it contains unreviewed code, model artifacts, and exposed credentials.
+/Powered-Physiotherapy-System-master/
