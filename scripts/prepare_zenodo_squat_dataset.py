@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import hashlib
 import logging
 import sys
 from pathlib import Path
@@ -24,12 +25,35 @@ OUTPUT_COLUMNS = [
     "image_path",
     "label",
     "original_label",
+    "source_split",
+    "content_sha256",
     "filename",
     "file_extension",
     "image_width",
     "image_height",
     "file_size_bytes",
 ]
+
+
+def content_sha256(image_path: Path) -> str:
+    """Return a stable content identifier for duplicate and leakage checks."""
+    digest = hashlib.sha256()
+    with image_path.open("rb") as image_file:
+        for chunk in iter(lambda: image_file.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def infer_source_split(image_path: Path, input_dir: Path) -> str:
+    """Preserve the dataset publisher's train/test directory assignment."""
+    try:
+        relative = image_path.relative_to(input_dir)
+    except ValueError:
+        return "unknown"
+    if not relative.parts:
+        return "unknown"
+    candidate = relative.parts[0].strip().lower()
+    return candidate if candidate in {"train", "test"} else "unknown"
 
 
 def normalize_folder_label(folder_name: str) -> str | None:
@@ -115,6 +139,8 @@ def prepare_dataset(input_dir: Path, output_path: Path) -> Path:
                 "image_path": str(image_path),
                 "label": label,
                 "original_label": original_label,
+                "source_split": infer_source_split(image_path, input_dir),
+                "content_sha256": content_sha256(image_path),
                 "filename": image_path.name,
                 "file_extension": image_path.suffix.lower(),
                 "image_width": width,

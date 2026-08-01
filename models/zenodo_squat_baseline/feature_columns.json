@@ -1,0 +1,11 @@
+[
+  "left_knee_angle",
+  "right_knee_angle",
+  "left_hip_angle",
+  "right_hip_angle",
+  "trunk_angle",
+  "left_ankle_angle",
+  "right_ankle_angle",
+  "left_heel_foot_vertical_delta",
+  "right_heel_foot_vertical_delta"
+]

@@ -1,0 +1,957 @@
+image_path,actual_label,predicted_label,confidence,confidence_band,is_error,error_pair,false_negative_for,false_positive_for,source_split,source_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (1).jpg,bad_back,bad_back,0.713393,medium_0_50_to_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (10).jpg,bad_back,bad_heel,1.0,high_at_least_0_75,True,bad_back -> bad_heel,bad_back,bad_heel,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (100).jpg,bad_back,good,0.730288,medium_0_50_to_0_75,True,bad_back -> good,bad_back,good,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (101).jpg,bad_back,good,0.877147,high_at_least_0_75,True,bad_back -> good,bad_back,good,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (102).jpg,bad_back,good,0.891482,high_at_least_0_75,True,bad_back -> good,bad_back,good,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (103).jpg,bad_back,good,0.895378,high_at_least_0_75,True,bad_back -> good,bad_back,good,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (104).jpg,bad_back,good,0.866025,high_at_least_0_75,True,bad_back -> good,bad_back,good,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (105).jpg,bad_back,good,0.904455,high_at_least_0_75,True,bad_back -> good,bad_back,good,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (106).jpg,bad_back,good,0.87813,high_at_least_0_75,True,bad_back -> good,bad_back,good,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (107).jpg,bad_back,good,0.930822,high_at_least_0_75,True,bad_back -> good,bad_back,good,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (108).jpg,bad_back,good,0.930334,high_at_least_0_75,True,bad_back -> good,bad_back,good,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (109).jpg,bad_back,good,0.955831,high_at_least_0_75,True,bad_back -> good,bad_back,good,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (11).jpg,bad_back,bad_heel,0.999783,high_at_least_0_75,True,bad_back -> bad_heel,bad_back,bad_heel,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (110).jpg,bad_back,good,0.924996,high_at_least_0_75,True,bad_back -> good,bad_back,good,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (111).jpg,bad_back,good,0.966644,high_at_least_0_75,True,bad_back -> good,bad_back,good,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (112).jpg,bad_back,good,0.974689,high_at_least_0_75,True,bad_back -> good,bad_back,good,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (113).jpg,bad_back,good,0.987363,high_at_least_0_75,True,bad_back -> good,bad_back,good,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (114).jpg,bad_back,good,0.980628,high_at_least_0_75,True,bad_back -> good,bad_back,good,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (115).jpg,bad_back,good,0.970309,high_at_least_0_75,True,bad_back -> good,bad_back,good,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (116).jpg,bad_back,bad_heel,0.84146,high_at_least_0_75,True,bad_back -> bad_heel,bad_back,bad_heel,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (117).jpg,bad_back,good,0.993384,high_at_least_0_75,True,bad_back -> good,bad_back,good,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (118).jpg,bad_back,good,0.994916,high_at_least_0_75,True,bad_back -> good,bad_back,good,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (119).jpg,bad_back,bad_heel,0.506539,medium_0_50_to_0_75,True,bad_back -> bad_heel,bad_back,bad_heel,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (12).jpg,bad_back,bad_heel,1.0,high_at_least_0_75,True,bad_back -> bad_heel,bad_back,bad_heel,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (120).jpg,bad_back,bad_back,0.594199,medium_0_50_to_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (121).jpg,bad_back,bad_back,0.471826,low_below_0_50,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (122).jpg,bad_back,bad_back,0.549128,medium_0_50_to_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (123).jpg,bad_back,bad_back,0.506282,medium_0_50_to_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (124).jpg,bad_back,bad_back,0.579782,medium_0_50_to_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (125).jpg,bad_back,bad_back,0.726507,medium_0_50_to_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (126).jpg,bad_back,bad_back,0.837206,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (127).jpg,bad_back,bad_back,0.788765,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (128).jpg,bad_back,bad_back,0.799052,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (129).jpg,bad_back,bad_back,0.802862,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (13).jpg,bad_back,bad_back,0.998505,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (130).jpg,bad_back,bad_back,0.882179,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (131).jpg,bad_back,bad_back,0.820188,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (132).jpg,bad_back,bad_back,0.51403,medium_0_50_to_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (133).jpg,bad_back,good,0.521633,medium_0_50_to_0_75,True,bad_back -> good,bad_back,good,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (134).jpg,bad_back,good,0.651751,medium_0_50_to_0_75,True,bad_back -> good,bad_back,good,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (135).jpg,bad_back,good,0.836499,high_at_least_0_75,True,bad_back -> good,bad_back,good,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (136).jpg,bad_back,good,0.850312,high_at_least_0_75,True,bad_back -> good,bad_back,good,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (137).jpg,bad_back,good,0.728817,medium_0_50_to_0_75,True,bad_back -> good,bad_back,good,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (138).jpg,bad_back,good,0.930588,high_at_least_0_75,True,bad_back -> good,bad_back,good,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (139).jpg,bad_back,good,0.899848,high_at_least_0_75,True,bad_back -> good,bad_back,good,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (14).jpg,bad_back,bad_back,1.0,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (140).jpg,bad_back,good,0.80557,high_at_least_0_75,True,bad_back -> good,bad_back,good,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (141).jpg,bad_back,good,0.692291,medium_0_50_to_0_75,True,bad_back -> good,bad_back,good,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (142).jpg,bad_back,good,0.555612,medium_0_50_to_0_75,True,bad_back -> good,bad_back,good,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (143).jpg,bad_back,good,0.790113,high_at_least_0_75,True,bad_back -> good,bad_back,good,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (144).jpg,bad_back,bad_back,0.522164,medium_0_50_to_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (145).jpg,bad_back,good,0.568816,medium_0_50_to_0_75,True,bad_back -> good,bad_back,good,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (146).jpg,bad_back,bad_back,0.696928,medium_0_50_to_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (147).jpg,bad_back,bad_back,0.695975,medium_0_50_to_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (148).jpg,bad_back,bad_back,0.898406,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (149).jpg,bad_back,bad_back,0.902643,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (15).jpg,bad_back,bad_back,1.0,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (150).jpg,bad_back,bad_back,0.907108,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (151).jpg,bad_back,bad_back,0.857542,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (152).jpg,bad_back,bad_back,0.679806,medium_0_50_to_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (153).jpg,bad_back,bad_back,0.592563,medium_0_50_to_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (154).jpg,bad_back,good,0.555504,medium_0_50_to_0_75,True,bad_back -> good,bad_back,good,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (155).jpg,bad_back,bad_back,0.668305,medium_0_50_to_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (156).jpg,bad_back,good,0.561994,medium_0_50_to_0_75,True,bad_back -> good,bad_back,good,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (157).jpg,bad_back,good,0.395686,low_below_0_50,True,bad_back -> good,bad_back,good,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (158).jpg,bad_back,bad_back,0.925477,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (159).jpg,bad_back,bad_back,0.999861,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (16).jpg,bad_back,bad_back,1.0,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (160).jpg,bad_back,bad_back,0.999209,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (161).jpg,bad_back,bad_back,0.997751,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (162).jpg,bad_back,bad_back,0.999969,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (163).jpg,bad_back,bad_back,0.999114,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (164).jpg,bad_back,bad_back,0.997979,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (165).jpg,bad_back,bad_back,0.999119,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (166).jpg,bad_back,bad_back,0.998805,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (167).jpg,bad_back,bad_back,0.999552,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (168).jpg,bad_back,bad_back,0.997967,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (169).jpg,bad_back,bad_back,0.994088,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (17).jpg,bad_back,bad_back,1.0,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (170).jpg,bad_back,bad_back,0.995124,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (171).jpg,bad_back,bad_back,0.979805,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (172).jpg,bad_back,bad_back,0.95118,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (173).jpg,bad_back,bad_back,0.968275,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (174).jpg,bad_back,bad_back,0.927215,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (175).jpg,bad_back,bad_back,0.999996,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (176).jpg,bad_back,bad_back,0.999975,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (177).jpg,bad_back,bad_back,0.999989,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (178).jpg,bad_back,bad_back,0.999533,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (179).jpg,bad_back,bad_back,0.995375,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (18).jpg,bad_back,bad_back,1.0,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (180).jpg,bad_back,bad_back,0.999282,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (181).jpg,bad_back,bad_back,0.992362,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (182).jpg,bad_back,bad_back,0.993973,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (183).jpg,bad_back,bad_back,0.994043,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (184).jpg,bad_back,bad_back,0.994385,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (185).jpg,bad_back,bad_back,0.991373,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (186).jpg,bad_back,bad_back,0.992762,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (187).jpg,bad_back,bad_back,0.999687,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (188).jpg,bad_back,bad_back,0.988077,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (189).jpg,bad_back,bad_back,0.990274,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (190).jpg,bad_back,bad_back,0.964538,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (191).jpg,bad_back,bad_back,0.73358,medium_0_50_to_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (192).jpg,bad_back,bad_back,0.887137,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (193).jpg,bad_back,bad_back,0.923257,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (194).jpg,bad_back,bad_back,0.866228,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (195).jpg,bad_back,bad_back,0.633559,medium_0_50_to_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (196).jpg,bad_back,bad_back,0.735312,medium_0_50_to_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (197).jpg,bad_back,bad_back,0.832623,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (198).jpg,bad_back,bad_back,0.86485,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (199).jpg,bad_back,bad_back,0.940133,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (2).jpg,bad_back,good,0.567592,medium_0_50_to_0_75,True,bad_back -> good,bad_back,good,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (20).jpg,bad_back,bad_back,0.992484,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (200).jpg,bad_back,bad_back,0.966289,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (201).jpg,bad_back,bad_back,0.857703,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (202).jpg,bad_back,bad_back,0.967301,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (203).jpg,bad_back,bad_back,0.923998,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (204).jpg,bad_back,bad_back,0.91389,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (205).jpg,bad_back,bad_back,0.885321,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (206).jpg,bad_back,bad_back,0.930866,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (207).jpg,bad_back,bad_back,0.628408,medium_0_50_to_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (208).jpg,bad_back,good,0.506762,medium_0_50_to_0_75,True,bad_back -> good,bad_back,good,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (209).jpg,bad_back,bad_back,0.560355,medium_0_50_to_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (21).jpg,bad_back,bad_back,0.998812,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (210).jpg,bad_back,bad_back,0.870005,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (211).jpg,bad_back,bad_back,0.553404,medium_0_50_to_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (212).jpg,bad_back,bad_back,0.888534,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (213).jpg,bad_back,bad_back,0.955495,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (214).jpg,bad_back,bad_back,0.976156,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (215).jpg,bad_back,bad_back,0.968078,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (216).jpg,bad_back,bad_back,0.942781,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (217).jpg,bad_back,bad_back,0.987887,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (218).jpg,bad_back,bad_back,0.982143,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (219).jpg,bad_back,bad_back,0.989759,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (22).jpg,bad_back,bad_back,0.995973,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (220).jpg,bad_back,bad_back,0.991808,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (221).jpg,bad_back,bad_back,0.996635,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (222).jpg,bad_back,bad_back,0.99707,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (223).jpg,bad_back,bad_back,0.995383,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (224).jpg,bad_back,bad_back,0.991728,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (225).jpg,bad_back,bad_back,0.976126,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (226).jpg,bad_back,bad_back,0.976882,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (227).jpg,bad_back,bad_back,0.954655,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (228).jpg,bad_back,bad_back,0.960669,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (229).jpg,bad_back,good,0.836085,high_at_least_0_75,True,bad_back -> good,bad_back,good,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (23).jpg,bad_back,bad_back,0.999559,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (230).jpg,bad_back,good,0.625186,medium_0_50_to_0_75,True,bad_back -> good,bad_back,good,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (231).jpg,bad_back,bad_back,0.997023,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (232).jpg,bad_back,bad_back,0.988123,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (233).jpg,bad_back,bad_back,0.992446,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (234).jpg,bad_back,bad_back,0.967119,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (235).jpg,bad_back,bad_back,0.809266,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (236).jpg,bad_back,bad_back,0.948668,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (237).jpg,bad_back,bad_back,0.887263,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (238).jpg,bad_back,bad_back,0.876551,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (239).jpg,bad_back,bad_back,0.945526,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (24).jpg,bad_back,bad_back,0.99995,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (240).jpg,bad_back,bad_back,0.971313,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (241).jpg,bad_back,bad_back,0.947532,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (242).jpg,bad_back,bad_back,0.92167,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (243).jpg,bad_back,bad_back,0.883825,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (244).jpg,bad_back,bad_back,0.930085,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (245).jpg,bad_back,bad_back,0.907129,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (246).jpg,bad_back,bad_back,0.919905,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (247).jpg,bad_back,bad_back,0.805176,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (248).jpg,bad_back,bad_back,0.987212,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (249).jpg,bad_back,bad_back,0.98498,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (25).jpg,bad_back,bad_back,0.99998,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (250).jpg,bad_back,bad_back,0.961245,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (251).jpg,bad_back,bad_back,0.977445,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (252).jpg,bad_back,bad_back,0.996501,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (253).jpg,bad_back,bad_back,0.977136,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (254).jpg,bad_back,bad_back,0.96877,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (255).jpg,bad_back,bad_back,0.977316,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (256).jpg,bad_back,bad_back,0.992401,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (257).jpg,bad_back,bad_back,0.990641,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (258).jpg,bad_back,bad_back,0.95105,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (259).jpg,bad_back,bad_back,0.893612,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (26).jpg,bad_back,bad_back,0.999993,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (260).jpg,bad_back,bad_back,0.861668,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (261).jpg,bad_back,bad_back,0.862611,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (262).jpg,bad_back,bad_back,0.580097,medium_0_50_to_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (263).jpg,bad_back,good,0.825516,high_at_least_0_75,True,bad_back -> good,bad_back,good,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (264).jpg,bad_back,good,0.863948,high_at_least_0_75,True,bad_back -> good,bad_back,good,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (265).jpg,bad_back,good,0.904717,high_at_least_0_75,True,bad_back -> good,bad_back,good,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (266).jpg,bad_back,good,0.840703,high_at_least_0_75,True,bad_back -> good,bad_back,good,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (267).jpg,bad_back,good,0.502301,medium_0_50_to_0_75,True,bad_back -> good,bad_back,good,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (268).jpg,bad_back,good,0.532139,medium_0_50_to_0_75,True,bad_back -> good,bad_back,good,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (269).jpg,bad_back,good,0.532229,medium_0_50_to_0_75,True,bad_back -> good,bad_back,good,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (27).jpg,bad_back,bad_back,0.999988,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (270).jpg,bad_back,bad_back,0.731967,medium_0_50_to_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (271).jpg,bad_back,bad_back,0.559438,medium_0_50_to_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (272).jpg,bad_back,bad_back,0.661709,medium_0_50_to_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (273).jpg,bad_back,bad_back,0.919075,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (274).jpg,bad_back,bad_back,0.840622,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (275).jpg,bad_back,bad_back,0.95081,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (276).jpg,bad_back,bad_back,0.93178,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (277).jpg,bad_back,bad_back,0.957752,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (278).jpg,bad_back,bad_back,0.980242,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (279).jpg,bad_back,bad_back,0.980071,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (28).jpg,bad_back,bad_back,0.999987,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (280).jpg,bad_back,bad_back,0.881757,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (281).jpg,bad_back,bad_back,0.570335,medium_0_50_to_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (282).jpg,bad_back,bad_back,1.0,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (283).jpg,bad_back,bad_back,1.0,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (284).jpg,bad_back,bad_back,0.984111,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (285).jpg,bad_back,bad_back,0.989252,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (286).jpg,bad_back,bad_back,1.0,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (287).jpg,bad_back,bad_heel,0.97617,high_at_least_0_75,True,bad_back -> bad_heel,bad_back,bad_heel,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (288).jpg,bad_back,bad_back,0.916549,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (29).jpg,bad_back,bad_back,0.999979,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (290).jpg,bad_back,bad_back,1.0,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (291).jpg,bad_back,bad_back,1.0,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (292).jpg,bad_back,bad_back,1.0,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (293).jpg,bad_back,bad_back,1.0,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (294).jpg,bad_back,bad_back,1.0,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (295).jpg,bad_back,bad_back,1.0,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (296).jpg,bad_back,bad_back,1.0,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (297).jpg,bad_back,bad_back,1.0,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (298).jpg,bad_back,bad_back,1.0,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (299).jpg,bad_back,bad_back,1.0,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (3).jpg,bad_back,bad_back,0.900435,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (30).jpg,bad_back,bad_back,0.999979,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (300).jpg,bad_back,bad_back,0.999999,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (301).jpg,bad_back,bad_heel,0.999993,high_at_least_0_75,True,bad_back -> bad_heel,bad_back,bad_heel,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (302).jpg,bad_back,bad_back,1.0,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (303).jpg,bad_back,bad_heel,0.999951,high_at_least_0_75,True,bad_back -> bad_heel,bad_back,bad_heel,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (304).jpg,bad_back,bad_back,0.913158,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (305).jpg,bad_back,bad_heel,1.0,high_at_least_0_75,True,bad_back -> bad_heel,bad_back,bad_heel,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (306).jpg,bad_back,bad_heel,0.874607,high_at_least_0_75,True,bad_back -> bad_heel,bad_back,bad_heel,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (307).jpg,bad_back,bad_back,1.0,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (308).jpg,bad_back,bad_back,0.999545,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (309).jpg,bad_back,bad_back,1.0,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (31).jpg,bad_back,bad_back,0.999984,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (310).jpg,bad_back,bad_back,0.999999,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (311).jpg,bad_back,bad_back,0.962491,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (312).jpg,bad_back,bad_back,1.0,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (313).jpg,bad_back,bad_back,0.999604,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (314).jpg,bad_back,bad_back,0.999989,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (315).jpg,bad_back,bad_back,0.701164,medium_0_50_to_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (316).jpg,bad_back,bad_back,0.552215,medium_0_50_to_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (317).jpg,bad_back,bad_back,1.0,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (318).jpg,bad_back,bad_back,0.956644,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (319).jpg,bad_back,bad_back,0.983116,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (320).jpg,bad_back,bad_heel,1.0,high_at_least_0_75,True,bad_back -> bad_heel,bad_back,bad_heel,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (33).jpg,bad_back,bad_heel,1.0,high_at_least_0_75,True,bad_back -> bad_heel,bad_back,bad_heel,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (34).jpg,bad_back,bad_heel,1.0,high_at_least_0_75,True,bad_back -> bad_heel,bad_back,bad_heel,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (35).jpg,bad_back,bad_heel,1.0,high_at_least_0_75,True,bad_back -> bad_heel,bad_back,bad_heel,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (38).jpg,bad_back,bad_back,0.999985,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (39).jpg,bad_back,bad_back,0.999933,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (4).jpg,bad_back,bad_back,0.990137,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (40).jpg,bad_back,bad_back,0.999915,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (41).jpg,bad_back,bad_back,0.999978,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (42).jpg,bad_back,bad_back,0.999961,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (43).jpg,bad_back,bad_back,0.999969,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (44).jpg,bad_back,bad_back,0.999949,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (45).jpg,bad_back,bad_back,0.999954,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (46).jpg,bad_back,bad_back,0.999934,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (49).jpg,bad_back,bad_back,0.999963,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (50).jpg,bad_back,bad_back,1.0,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (51).jpg,bad_back,bad_back,0.999905,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (52).jpg,bad_back,bad_back,1.0,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (53).jpg,bad_back,bad_back,1.0,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (54).jpg,bad_back,bad_back,0.999896,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (55).jpg,bad_back,bad_back,1.0,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (56).jpg,bad_back,bad_back,1.0,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (58).jpg,bad_back,bad_back,1.0,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (59).jpg,bad_back,bad_back,0.999365,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (6).jpg,bad_back,bad_back,0.999906,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (60).jpg,bad_back,bad_back,0.997578,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (61).jpg,bad_back,bad_back,0.997068,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (62).jpg,bad_back,bad_back,0.99535,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (63).jpg,bad_back,bad_back,1.0,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (65).jpg,bad_back,bad_back,1.0,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (66).jpg,bad_back,bad_back,1.0,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (67).jpg,bad_back,bad_back,0.999977,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (68).jpg,bad_back,bad_back,0.999958,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (69).jpg,bad_back,bad_back,1.0,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (7).jpg,bad_back,bad_back,0.999727,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (70).jpg,bad_back,bad_back,0.999975,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (71).jpg,bad_back,bad_back,0.999998,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (72).jpg,bad_back,bad_back,1.0,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (73).jpg,bad_back,bad_back,1.0,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (74).jpg,bad_back,bad_back,1.0,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (75).jpg,bad_back,bad_back,1.0,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (76).jpg,bad_back,bad_back,1.0,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (77).jpg,bad_back,bad_back,0.999998,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (78).jpg,bad_back,bad_back,0.999997,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (79).jpg,bad_back,bad_back,0.999998,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (8).jpg,bad_back,bad_back,1.0,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (80).jpg,bad_back,bad_back,0.999996,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (81).jpg,bad_back,bad_back,0.999986,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (82).jpg,bad_back,bad_back,1.0,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (83).jpg,bad_back,bad_back,1.0,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (84).jpg,bad_back,bad_back,0.930471,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (85).jpg,bad_back,bad_back,0.998157,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (86).jpg,bad_back,bad_back,0.999999,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (87).jpg,bad_back,bad_back,1.0,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (88).jpg,bad_back,bad_back,1.0,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (89).jpg,bad_back,bad_heel,1.0,high_at_least_0_75,True,bad_back -> bad_heel,bad_back,bad_heel,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (9).jpg,bad_back,bad_back,0.998523,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (90).jpg,bad_back,bad_back,1.0,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (91).jpg,bad_back,bad_back,1.0,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (92).jpg,bad_back,bad_back,1.0,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (93).jpg,bad_back,bad_back,1.0,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (95).jpg,bad_back,bad_back,1.0,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (96).jpg,bad_back,bad_back,0.999997,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (97).jpg,bad_back,bad_back,1.0,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\Bad Back (99).jpg,bad_back,bad_back,0.994414,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\frame_266.jpg,bad_back,bad_back,0.911086,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\frame_267.jpg,bad_back,bad_back,0.893331,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\frame_268.jpg,bad_back,bad_back,0.999936,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\frame_269.jpg,bad_back,bad_back,0.999964,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\frame_270.jpg,bad_back,bad_back,0.999746,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\frame_271.jpg,bad_back,bad_heel,0.904997,high_at_least_0_75,True,bad_back -> bad_heel,bad_back,bad_heel,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\frame_338.jpg,bad_back,bad_back,0.99732,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\frame_339.jpg,bad_back,bad_back,0.998756,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\frame_340.jpg,bad_back,bad_back,0.993992,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\frame_341.jpg,bad_back,bad_back,0.765752,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\frame_342.jpg,bad_back,bad_back,0.763343,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\frame_343.jpg,bad_back,good,0.596795,medium_0_50_to_0_75,True,bad_back -> good,bad_back,good,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\frame_344.jpg,bad_back,bad_back,0.794496,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\frame_345.jpg,bad_back,good,0.602032,medium_0_50_to_0_75,True,bad_back -> good,bad_back,good,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\frame_346.jpg,bad_back,good,0.869505,high_at_least_0_75,True,bad_back -> good,bad_back,good,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\frame_347.jpg,bad_back,good,0.929598,high_at_least_0_75,True,bad_back -> good,bad_back,good,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\frame_348.jpg,bad_back,good,0.888186,high_at_least_0_75,True,bad_back -> good,bad_back,good,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Back\frame_349.jpg,bad_back,good,0.749134,medium_0_50_to_0_75,True,bad_back -> good,bad_back,good,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (1).jpg,bad_heel,bad_heel,0.98239,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (10).jpg,bad_heel,bad_heel,0.999681,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (100).jpg,bad_heel,bad_heel,0.940094,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (101).jpg,bad_heel,bad_heel,0.775575,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (102).jpg,bad_heel,bad_heel,0.996313,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (103).jpg,bad_heel,bad_heel,0.997893,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (104).jpg,bad_heel,bad_heel,0.962906,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (105).jpg,bad_heel,bad_heel,0.999912,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (106).jpg,bad_heel,bad_heel,0.999629,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (107).jpg,bad_heel,bad_heel,0.998519,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (108).jpg,bad_heel,bad_heel,0.994335,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (109).jpg,bad_heel,bad_heel,0.998802,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (11).jpg,bad_heel,bad_heel,0.998618,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (110).jpg,bad_heel,bad_heel,0.999743,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (111).jpg,bad_heel,bad_heel,0.998111,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (112).jpg,bad_heel,bad_heel,0.999615,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (113).jpg,bad_heel,bad_heel,0.999997,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (114).jpg,bad_heel,bad_heel,0.999998,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (115).jpg,bad_heel,bad_heel,0.999842,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (116).jpg,bad_heel,bad_heel,0.999996,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (117).jpg,bad_heel,bad_heel,0.999936,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (118).jpg,bad_heel,bad_heel,0.997633,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (119).jpg,bad_heel,bad_heel,0.999762,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (12).jpg,bad_heel,bad_heel,0.999986,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (120).jpg,bad_heel,bad_heel,0.999953,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (121).jpg,bad_heel,bad_heel,0.999949,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (122).jpg,bad_heel,bad_heel,1.0,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (123).jpg,bad_heel,bad_heel,0.999906,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (124).jpg,bad_heel,bad_heel,0.999744,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (125).jpg,bad_heel,bad_heel,0.998083,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (126).jpg,bad_heel,bad_heel,0.999471,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (127).jpg,bad_heel,bad_heel,0.999688,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (128).jpg,bad_heel,bad_heel,0.997594,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (129).jpg,bad_heel,bad_heel,0.997069,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (13).jpg,bad_heel,bad_heel,0.999994,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (130).jpg,bad_heel,bad_heel,0.999383,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (131).jpg,bad_heel,bad_heel,0.997869,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (132).jpg,bad_heel,bad_heel,0.952259,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (133).jpg,bad_heel,bad_heel,0.98805,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (134).jpg,bad_heel,bad_heel,0.967151,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (135).jpg,bad_heel,bad_heel,0.99632,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (136).jpg,bad_heel,bad_heel,0.992374,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (137).jpg,bad_heel,bad_heel,0.964449,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (138).jpg,bad_heel,bad_heel,0.990983,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (139).jpg,bad_heel,bad_heel,0.977706,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (14).jpg,bad_heel,bad_heel,0.999721,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (140).jpg,bad_heel,bad_heel,0.991706,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (141).jpg,bad_heel,bad_heel,0.977653,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (142).jpg,bad_heel,bad_heel,0.998395,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (143).jpg,bad_heel,bad_heel,0.995377,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (144).jpg,bad_heel,bad_heel,0.999942,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (145).jpg,bad_heel,bad_heel,0.945227,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (146).jpg,bad_heel,bad_heel,0.991589,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (147).jpg,bad_heel,bad_heel,0.981593,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (148).jpg,bad_heel,bad_heel,0.98371,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (149).jpg,bad_heel,bad_heel,0.905321,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (15).jpg,bad_heel,bad_heel,0.999884,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (150).jpg,bad_heel,bad_heel,0.676601,medium_0_50_to_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (151).jpg,bad_heel,bad_heel,0.968554,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (152).jpg,bad_heel,bad_heel,0.949027,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (153).jpg,bad_heel,bad_heel,0.984429,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (154).jpg,bad_heel,bad_heel,0.82756,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (155).jpg,bad_heel,bad_heel,0.776113,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (156).jpg,bad_heel,bad_heel,0.917854,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (157).jpg,bad_heel,bad_heel,0.998666,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (158).jpg,bad_heel,bad_heel,0.900623,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (159).jpg,bad_heel,bad_heel,0.980896,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (16).jpg,bad_heel,bad_heel,0.999848,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (160).jpg,bad_heel,bad_heel,0.998009,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (161).jpg,bad_heel,bad_heel,0.996729,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (162).jpg,bad_heel,bad_heel,0.995571,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (163).jpg,bad_heel,bad_heel,0.977714,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (164).jpg,bad_heel,bad_heel,0.999007,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (165).jpg,bad_heel,bad_heel,0.9975,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (166).jpg,bad_heel,bad_heel,0.998183,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (167).jpg,bad_heel,bad_heel,0.999105,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (168).jpg,bad_heel,bad_heel,0.998531,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (169).jpg,bad_heel,bad_heel,0.999716,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (17).jpg,bad_heel,bad_heel,0.999739,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (170).jpg,bad_heel,bad_heel,0.999477,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (171).jpg,bad_heel,bad_heel,0.999805,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (172).jpg,bad_heel,bad_heel,0.999866,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (173).jpg,bad_heel,bad_heel,0.930922,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (174).jpg,bad_heel,bad_heel,0.995276,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (175).jpg,bad_heel,bad_heel,0.967847,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (176).jpg,bad_heel,bad_heel,0.928421,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (177).jpg,bad_heel,bad_heel,0.97381,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (178).jpg,bad_heel,bad_heel,0.993985,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (179).jpg,bad_heel,bad_heel,0.948193,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (18).jpg,bad_heel,bad_heel,0.999912,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (180).jpg,bad_heel,bad_heel,0.866258,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (181).jpg,bad_heel,bad_heel,0.901928,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (182).jpg,bad_heel,bad_heel,0.735306,medium_0_50_to_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (183).jpg,bad_heel,bad_heel,0.846359,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (184).jpg,bad_heel,bad_heel,0.991959,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (185).jpg,bad_heel,bad_heel,0.999795,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (186).jpg,bad_heel,bad_heel,0.998682,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (187).jpg,bad_heel,bad_heel,0.999652,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (188).jpg,bad_heel,bad_heel,0.983134,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (189).jpg,bad_heel,bad_heel,0.934209,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (19).jpg,bad_heel,bad_heel,0.999946,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (190).jpg,bad_heel,bad_heel,0.999978,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (191).jpg,bad_heel,bad_heel,0.935571,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (192).jpg,bad_heel,bad_heel,0.996508,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (193).jpg,bad_heel,bad_heel,0.966277,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (194).jpg,bad_heel,bad_heel,0.931262,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (195).jpg,bad_heel,bad_heel,0.999042,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (196).jpg,bad_heel,bad_heel,0.998798,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (197).jpg,bad_heel,bad_heel,0.999752,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (198).jpg,bad_heel,bad_heel,0.999993,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (199).jpg,bad_heel,bad_heel,0.976674,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (2).jpg,bad_heel,bad_heel,0.928215,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (20).jpg,bad_heel,bad_heel,0.999973,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (200).jpg,bad_heel,bad_heel,0.992058,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (201).jpg,bad_heel,bad_heel,0.847197,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (202).jpg,bad_heel,bad_heel,0.97317,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (203).jpg,bad_heel,bad_heel,0.973671,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (204).jpg,bad_heel,bad_heel,0.980853,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (205).jpg,bad_heel,bad_heel,0.956668,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (206).jpg,bad_heel,bad_heel,0.99929,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (207).jpg,bad_heel,bad_heel,0.990931,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (208).jpg,bad_heel,bad_heel,0.99848,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (209).jpg,bad_heel,bad_heel,0.999971,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (21).jpg,bad_heel,bad_heel,0.999911,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (210).jpg,bad_heel,bad_heel,0.991779,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (211).jpg,bad_heel,bad_heel,0.999368,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (212).jpg,bad_heel,bad_heel,0.998975,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (213).jpg,bad_heel,bad_heel,0.993812,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (214).jpg,bad_heel,bad_heel,0.999186,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (215).jpg,bad_heel,bad_heel,0.992833,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (216).jpg,bad_heel,bad_heel,0.99985,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (217).jpg,bad_heel,bad_heel,0.99989,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (218).jpg,bad_heel,bad_heel,0.999488,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (219).jpg,bad_heel,bad_heel,0.999506,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (22).jpg,bad_heel,bad_heel,0.999928,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (220).jpg,bad_heel,bad_heel,0.999505,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (221).jpg,bad_heel,bad_heel,0.999716,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (222).jpg,bad_heel,bad_heel,0.999878,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (223).jpg,bad_heel,bad_heel,0.999989,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (224).jpg,bad_heel,bad_heel,0.999936,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (225).jpg,bad_heel,bad_heel,0.999655,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (226).jpg,bad_heel,bad_heel,0.999787,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (227).jpg,bad_heel,bad_heel,0.998844,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (228).jpg,bad_heel,bad_heel,0.999443,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (229).jpg,bad_heel,bad_heel,0.952401,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (23).jpg,bad_heel,bad_heel,0.999504,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (230).jpg,bad_heel,bad_heel,0.941597,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (231).jpg,bad_heel,bad_heel,0.990839,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (232).jpg,bad_heel,bad_heel,0.99965,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (233).jpg,bad_heel,bad_heel,0.999875,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (234).jpg,bad_heel,bad_heel,0.999901,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (235).jpg,bad_heel,bad_heel,0.992665,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (236).jpg,bad_heel,bad_heel,0.996921,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (237).jpg,bad_heel,bad_heel,0.999821,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (238).jpg,bad_heel,bad_heel,0.999632,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (239).jpg,bad_heel,bad_heel,0.998656,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (24).jpg,bad_heel,bad_heel,0.995974,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (240).jpg,bad_heel,bad_heel,0.999935,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (241).jpg,bad_heel,bad_heel,0.999653,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (242).jpg,bad_heel,bad_heel,0.999764,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (243).jpg,bad_heel,bad_heel,0.999533,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (244).jpg,bad_heel,bad_heel,0.999364,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (245).jpg,bad_heel,bad_heel,0.998833,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (246).jpg,bad_heel,bad_heel,0.99959,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (247).jpg,bad_heel,bad_heel,0.999776,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (248).jpg,bad_heel,bad_heel,0.999966,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (249).jpg,bad_heel,bad_heel,0.999772,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (25).jpg,bad_heel,bad_heel,0.982523,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (250).jpg,bad_heel,bad_heel,0.998292,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (251).jpg,bad_heel,bad_heel,0.991584,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (252).jpg,bad_heel,bad_heel,0.983957,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (253).jpg,bad_heel,bad_heel,0.970348,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (254).jpg,bad_heel,bad_heel,0.99484,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (255).jpg,bad_heel,bad_heel,0.983016,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (256).jpg,bad_heel,bad_heel,0.996969,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (257).jpg,bad_heel,bad_heel,0.993165,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (258).jpg,bad_heel,bad_heel,0.995401,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (259).jpg,bad_heel,bad_heel,0.998235,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (26).jpg,bad_heel,bad_heel,0.975932,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (260).jpg,bad_heel,bad_heel,0.998832,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (261).jpg,bad_heel,bad_heel,0.998591,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (262).jpg,bad_heel,bad_heel,0.999873,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (263).jpg,bad_heel,bad_heel,0.999477,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (264).jpg,bad_heel,bad_heel,0.997862,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (265).jpg,bad_heel,bad_heel,0.999629,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (266).jpg,bad_heel,bad_heel,0.999267,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (267).jpg,bad_heel,bad_heel,0.998987,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (268).jpg,bad_heel,bad_heel,0.999849,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (269).jpg,bad_heel,bad_heel,0.999885,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (27).jpg,bad_heel,bad_heel,0.986836,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (270).jpg,bad_heel,bad_heel,0.998907,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (271).jpg,bad_heel,bad_heel,0.999614,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (272).jpg,bad_heel,bad_heel,0.999992,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (273).jpg,bad_heel,bad_heel,0.999758,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (274).jpg,bad_heel,bad_heel,0.998714,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (275).jpg,bad_heel,bad_heel,0.832217,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (276).jpg,bad_heel,bad_heel,0.887592,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (277).jpg,bad_heel,bad_heel,0.86031,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (278).jpg,bad_heel,bad_heel,0.901165,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (279).jpg,bad_heel,bad_heel,0.950154,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (28).jpg,bad_heel,bad_heel,0.959544,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (280).jpg,bad_heel,bad_heel,0.992096,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (281).jpg,bad_heel,bad_heel,0.981332,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (282).jpg,bad_heel,bad_heel,0.996511,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (283).jpg,bad_heel,bad_heel,0.99063,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (284).jpg,bad_heel,bad_heel,0.998457,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (285).jpg,bad_heel,bad_heel,0.999779,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (286).jpg,bad_heel,bad_heel,0.984066,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (287).jpg,bad_heel,bad_heel,0.997337,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (288).jpg,bad_heel,bad_heel,0.99331,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (289).jpg,bad_heel,bad_heel,0.996424,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (29).jpg,bad_heel,bad_heel,0.984435,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (290).jpg,bad_heel,bad_heel,0.997785,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (291).jpg,bad_heel,bad_heel,0.997887,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (292).jpg,bad_heel,bad_heel,0.999842,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (293).jpg,bad_heel,bad_heel,0.998269,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (294).jpg,bad_heel,bad_heel,0.999771,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (295).jpg,bad_heel,bad_heel,0.990272,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (296).jpg,bad_heel,bad_heel,0.978208,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (297).jpg,bad_heel,bad_heel,0.941685,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (298).jpg,bad_heel,bad_heel,0.826034,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (299).jpg,bad_heel,bad_heel,0.981464,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (3).jpg,bad_heel,bad_heel,0.880762,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (30).jpg,bad_heel,bad_heel,0.99795,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (300).jpg,bad_heel,bad_heel,0.902182,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (301).jpg,bad_heel,bad_heel,0.999239,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (302).jpg,bad_heel,bad_heel,0.998826,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (303).jpg,bad_heel,bad_heel,0.999714,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (304).jpg,bad_heel,bad_heel,0.998406,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (305).jpg,bad_heel,bad_heel,0.998757,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (306).jpg,bad_heel,bad_heel,0.999728,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (307).jpg,bad_heel,bad_heel,0.999626,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (308).jpg,bad_heel,bad_heel,0.999804,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (309).jpg,bad_heel,bad_heel,0.999943,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (31).jpg,bad_heel,bad_heel,0.999077,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (310).jpg,bad_heel,bad_heel,0.999846,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (311).jpg,bad_heel,bad_heel,0.999838,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (312).jpg,bad_heel,bad_heel,0.999826,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (313).jpg,bad_heel,bad_heel,0.999394,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (314).jpg,bad_heel,bad_heel,0.999455,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (315).jpg,bad_heel,bad_heel,0.999198,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (316).jpg,bad_heel,bad_heel,0.999789,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (317).jpg,bad_heel,bad_heel,0.999921,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (318).jpg,bad_heel,bad_heel,0.999992,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (319).jpg,bad_heel,bad_heel,0.99566,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (32).jpg,bad_heel,bad_heel,0.999943,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (320).jpg,bad_heel,bad_heel,0.997894,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (321).jpg,bad_heel,bad_heel,0.999731,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (33).jpg,bad_heel,bad_heel,0.999978,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (34).jpg,bad_heel,bad_heel,0.999426,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (35).jpg,bad_heel,bad_heel,0.999693,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (36).jpg,bad_heel,bad_heel,0.999996,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (37).jpg,bad_heel,bad_heel,0.999953,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (38).jpg,bad_heel,bad_heel,0.999476,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (39).jpg,bad_heel,bad_heel,0.99999,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (4).jpg,bad_heel,bad_heel,0.983686,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (40).jpg,bad_heel,bad_heel,0.999718,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (41).jpg,bad_heel,bad_heel,0.999997,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (42).jpg,bad_heel,bad_heel,0.999996,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (43).jpg,bad_heel,bad_heel,0.999981,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (44).jpg,bad_heel,bad_heel,0.999987,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (45).jpg,bad_heel,bad_heel,0.999968,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (46).jpg,bad_heel,bad_heel,0.999963,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (47).jpg,bad_heel,bad_heel,0.999709,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (48).jpg,bad_heel,bad_heel,0.999957,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (49).jpg,bad_heel,bad_heel,0.999851,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (5).jpg,bad_heel,bad_heel,0.999521,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (50).jpg,bad_heel,bad_heel,0.990445,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (51).jpg,bad_heel,bad_heel,0.93831,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (52).jpg,bad_heel,bad_heel,0.971096,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (54).jpg,bad_heel,bad_heel,0.999206,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (55).jpg,bad_heel,bad_heel,0.999738,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (56).jpg,bad_heel,bad_heel,0.999828,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (57).jpg,bad_heel,bad_heel,0.999969,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (58).jpg,bad_heel,bad_heel,0.999984,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (59).jpg,bad_heel,bad_heel,0.999861,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (6).jpg,bad_heel,bad_heel,0.999932,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (60).jpg,bad_heel,bad_heel,0.999983,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (61).jpg,bad_heel,bad_heel,0.999964,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (62).jpg,bad_heel,bad_heel,0.999976,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (63).jpg,bad_heel,bad_heel,0.999855,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (64).jpg,bad_heel,bad_heel,0.999946,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (65).jpg,bad_heel,bad_heel,0.999998,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (66).jpg,bad_heel,bad_heel,0.999995,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (67).jpg,bad_heel,bad_heel,0.999991,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (68).jpg,bad_heel,bad_heel,0.99999,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (69).jpg,bad_heel,bad_heel,0.999997,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (7).jpg,bad_heel,bad_heel,0.999959,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (70).jpg,bad_heel,bad_heel,1.0,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (71).jpg,bad_heel,bad_heel,0.99998,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (72).jpg,bad_heel,bad_heel,0.999999,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (73).jpg,bad_heel,bad_heel,0.999992,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (74).jpg,bad_heel,bad_heel,0.999998,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (75).jpg,bad_heel,bad_heel,0.99997,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (76).jpg,bad_heel,bad_heel,0.999988,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (77).jpg,bad_heel,bad_heel,0.984942,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (78).jpg,bad_heel,bad_heel,0.724502,medium_0_50_to_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (79).jpg,bad_heel,bad_heel,0.98843,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (8).jpg,bad_heel,bad_heel,0.999949,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (80).jpg,bad_heel,bad_heel,0.996377,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (81).jpg,bad_heel,bad_heel,0.99669,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (82).jpg,bad_heel,bad_heel,0.984855,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (83).jpg,bad_heel,bad_heel,0.999791,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (84).jpg,bad_heel,bad_heel,0.996633,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (85).jpg,bad_heel,bad_heel,0.988558,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (86).jpg,bad_heel,bad_heel,0.91342,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (87).jpg,bad_heel,bad_heel,0.985215,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (88).jpg,bad_heel,bad_heel,0.971662,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (89).jpg,bad_heel,bad_heel,0.993264,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (9).jpg,bad_heel,bad_heel,0.999987,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (90).jpg,bad_heel,bad_heel,0.994971,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (91).jpg,bad_heel,bad_heel,0.991181,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (92).jpg,bad_heel,bad_heel,0.997962,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (93).jpg,bad_heel,bad_heel,0.989824,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (94).jpg,bad_heel,bad_heel,0.968044,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (95).jpg,bad_heel,bad_heel,0.997869,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (96).jpg,bad_heel,bad_heel,0.995188,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (97).jpg,bad_heel,bad_heel,0.950284,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (98).jpg,bad_heel,bad_heel,0.976905,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Bad Heel\Bad Heel (99).jpg,bad_heel,bad_heel,0.980219,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (1).jpg,good,good,0.999614,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (10).jpg,good,good,0.994303,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (100).jpg,good,good,0.993511,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (101).jpg,good,good,0.999064,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (102).jpg,good,good,0.996392,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (103).jpg,good,good,0.992516,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (104).jpg,good,good,0.995774,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (105).jpg,good,good,0.988297,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (106).jpg,good,good,0.998655,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (107).jpg,good,good,0.679607,medium_0_50_to_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (108).jpg,good,good,0.984362,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (109).jpg,good,good,0.993682,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (11).jpg,good,good,0.998165,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (110).jpg,good,good,0.66907,medium_0_50_to_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (111).jpg,good,good,0.654644,medium_0_50_to_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (112).jpg,good,good,0.656838,medium_0_50_to_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (113).jpg,good,bad_heel,0.595856,medium_0_50_to_0_75,True,good -> bad_heel,good,bad_heel,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (114).jpg,good,good,0.665512,medium_0_50_to_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (115).jpg,good,bad_heel,0.681105,medium_0_50_to_0_75,True,good -> bad_heel,good,bad_heel,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (116).jpg,good,good,0.945386,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (117).jpg,good,good,0.994522,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (118).jpg,good,good,0.989469,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (119).jpg,good,good,0.99733,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (12).jpg,good,good,0.998639,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (120).jpg,good,good,0.979424,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (121).jpg,good,good,0.986855,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (122).jpg,good,good,0.62561,medium_0_50_to_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (123).jpg,good,good,0.961123,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (124).jpg,good,good,0.984702,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (125).jpg,good,good,0.984196,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (126).jpg,good,good,0.984702,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (127).jpg,good,good,0.989538,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (128).jpg,good,good,0.990469,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (129).jpg,good,good,0.989642,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (13).jpg,good,good,0.997095,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (130).jpg,good,good,0.986269,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (131).jpg,good,good,0.995584,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (132).jpg,good,good,0.996367,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (133).jpg,good,good,0.998777,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (134).jpg,good,good,0.995683,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (135).jpg,good,good,0.998471,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (136).jpg,good,good,0.997996,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (137).jpg,good,good,0.966544,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (138).jpg,good,good,0.987957,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (139).jpg,good,good,0.995759,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (14).jpg,good,good,0.997161,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (140).jpg,good,good,0.956982,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (141).jpg,good,good,0.978256,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (142).jpg,good,good,0.995803,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (143).jpg,good,good,0.958576,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (144).jpg,good,good,0.994856,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (145).jpg,good,good,0.875371,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (146).jpg,good,good,0.997692,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (147).jpg,good,good,0.73525,medium_0_50_to_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (148).jpg,good,good,0.996301,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (149).jpg,good,good,0.829931,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (15).jpg,good,good,0.991568,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (150).jpg,good,bad_heel,0.795523,high_at_least_0_75,True,good -> bad_heel,good,bad_heel,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (151).jpg,good,bad_heel,0.883429,high_at_least_0_75,True,good -> bad_heel,good,bad_heel,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (152).jpg,good,good,0.687563,medium_0_50_to_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (153).jpg,good,bad_heel,0.601098,medium_0_50_to_0_75,True,good -> bad_heel,good,bad_heel,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (154).jpg,good,good,0.996992,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (155).jpg,good,good,0.996305,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (156).jpg,good,bad_heel,0.754334,high_at_least_0_75,True,good -> bad_heel,good,bad_heel,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (157).jpg,good,good,0.626169,medium_0_50_to_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (158).jpg,good,good,0.996897,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (159).jpg,good,good,0.99779,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (16).jpg,good,good,0.997124,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (160).jpg,good,good,0.996407,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (161).jpg,good,bad_heel,0.56854,medium_0_50_to_0_75,True,good -> bad_heel,good,bad_heel,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (162).jpg,good,bad_heel,0.631555,medium_0_50_to_0_75,True,good -> bad_heel,good,bad_heel,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (163).jpg,good,good,0.997292,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (164).jpg,good,good,0.998745,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (165).jpg,good,bad_heel,0.952625,high_at_least_0_75,True,good -> bad_heel,good,bad_heel,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (166).jpg,good,good,0.806602,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (167).jpg,good,bad_heel,0.848454,high_at_least_0_75,True,good -> bad_heel,good,bad_heel,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (168).jpg,good,bad_heel,0.904838,high_at_least_0_75,True,good -> bad_heel,good,bad_heel,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (169).jpg,good,bad_heel,0.884796,high_at_least_0_75,True,good -> bad_heel,good,bad_heel,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (17).jpg,good,good,0.990179,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (170).jpg,good,bad_heel,0.908023,high_at_least_0_75,True,good -> bad_heel,good,bad_heel,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (171).jpg,good,bad_heel,0.96024,high_at_least_0_75,True,good -> bad_heel,good,bad_heel,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (172).jpg,good,bad_heel,0.774512,high_at_least_0_75,True,good -> bad_heel,good,bad_heel,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (173).jpg,good,good,0.998773,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (174).jpg,good,bad_heel,0.669633,medium_0_50_to_0_75,True,good -> bad_heel,good,bad_heel,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (175).jpg,good,good,0.997636,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (176).jpg,good,bad_heel,0.936397,high_at_least_0_75,True,good -> bad_heel,good,bad_heel,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (177).jpg,good,bad_heel,0.909772,high_at_least_0_75,True,good -> bad_heel,good,bad_heel,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (178).jpg,good,good,0.997511,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (179).jpg,good,good,0.99467,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (18).jpg,good,good,0.992061,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (180).jpg,good,bad_heel,0.659818,medium_0_50_to_0_75,True,good -> bad_heel,good,bad_heel,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (181).jpg,good,good,0.997029,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (182).jpg,good,bad_heel,0.647077,medium_0_50_to_0_75,True,good -> bad_heel,good,bad_heel,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (183).jpg,good,bad_heel,0.718654,medium_0_50_to_0_75,True,good -> bad_heel,good,bad_heel,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (184).jpg,good,good,0.997325,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (185).jpg,good,good,0.997015,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (186).jpg,good,good,0.994775,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (187).jpg,good,good,0.994621,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (188).jpg,good,good,0.994791,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (189).jpg,good,good,0.976817,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (19).jpg,good,good,0.993449,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (190).jpg,good,good,0.993162,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (191).jpg,good,good,0.889109,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (192).jpg,good,good,0.978193,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (193).jpg,good,good,0.894443,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (194).jpg,good,good,0.939686,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (195).jpg,good,good,0.89834,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (196).jpg,good,good,0.945089,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (197).jpg,good,good,0.947857,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (198).jpg,good,good,0.776774,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (199).jpg,good,good,0.742883,medium_0_50_to_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (2).jpg,good,good,0.976123,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (20).jpg,good,good,0.988148,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (200).jpg,good,good,0.990192,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (201).jpg,good,good,0.994607,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (202).jpg,good,good,0.997178,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (203).jpg,good,good,0.997163,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (204).jpg,good,good,0.99889,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (205).jpg,good,good,0.998497,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (206).jpg,good,good,0.998402,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (207).jpg,good,good,0.994833,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (208).jpg,good,good,0.99747,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (209).jpg,good,good,0.996817,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (21).jpg,good,good,0.984378,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (210).jpg,good,good,0.9957,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (211).jpg,good,good,0.997317,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (212).jpg,good,good,0.993779,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (213).jpg,good,good,0.979934,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (214).jpg,good,good,0.990117,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (215).jpg,good,good,0.99313,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (216).jpg,good,good,0.963178,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (217).jpg,good,good,0.992393,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (218).jpg,good,good,0.997443,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (219).jpg,good,good,0.998108,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (22).jpg,good,good,0.984494,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (220).jpg,good,good,0.995034,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (221).jpg,good,good,0.993949,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (222).jpg,good,good,0.993217,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (223).jpg,good,good,0.997645,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (224).jpg,good,good,0.995363,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (225).jpg,good,good,0.997853,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (226).jpg,good,good,0.998026,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (227).jpg,good,good,0.999106,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (228).jpg,good,good,0.99002,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (229).jpg,good,good,0.99022,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (23).jpg,good,good,0.998934,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (230).jpg,good,good,0.998484,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (231).jpg,good,good,0.998825,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (232).jpg,good,good,0.918732,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (233).jpg,good,good,0.9498,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (234).jpg,good,good,0.647552,medium_0_50_to_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (235).jpg,good,good,0.8107,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (236).jpg,good,good,0.922988,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (237).jpg,good,good,0.662515,medium_0_50_to_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (238).jpg,good,good,0.744177,medium_0_50_to_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (239).jpg,good,good,0.755953,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (24).jpg,good,good,0.998025,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (240).jpg,good,good,0.671748,medium_0_50_to_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (241).jpg,good,good,0.694673,medium_0_50_to_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (242).jpg,good,good,0.938538,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (243).jpg,good,good,0.996254,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (244).jpg,good,good,0.777872,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (245).jpg,good,good,0.999151,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (246).jpg,good,bad_heel,0.858541,high_at_least_0_75,True,good -> bad_heel,good,bad_heel,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (247).jpg,good,good,0.998029,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (248).jpg,good,bad_heel,0.922192,high_at_least_0_75,True,good -> bad_heel,good,bad_heel,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (249).jpg,good,good,0.973104,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (25).jpg,good,good,0.99836,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (250).jpg,good,good,0.998146,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (251).jpg,good,good,0.711946,medium_0_50_to_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (252).jpg,good,good,0.998247,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (253).jpg,good,bad_heel,0.646087,medium_0_50_to_0_75,True,good -> bad_heel,good,bad_heel,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (254).jpg,good,good,0.732878,medium_0_50_to_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (255).jpg,good,good,0.839824,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (256).jpg,good,good,0.688132,medium_0_50_to_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (257).jpg,good,good,0.65717,medium_0_50_to_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (258).jpg,good,good,0.994327,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (259).jpg,good,good,0.998019,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (26).jpg,good,good,0.997936,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (260).jpg,good,good,0.998355,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (261).jpg,good,bad_heel,0.517352,medium_0_50_to_0_75,True,good -> bad_heel,good,bad_heel,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (262).jpg,good,good,0.542827,medium_0_50_to_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (263).jpg,good,good,0.998209,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (264).jpg,good,bad_heel,0.920002,high_at_least_0_75,True,good -> bad_heel,good,bad_heel,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (265).jpg,good,good,0.99411,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (266).jpg,good,good,0.997993,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (267).jpg,good,good,0.995071,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (268).jpg,good,good,0.981267,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (269).jpg,good,good,0.502093,medium_0_50_to_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (27).jpg,good,good,0.998207,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (270).jpg,good,good,0.996892,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (271).jpg,good,bad_heel,0.550209,medium_0_50_to_0_75,True,good -> bad_heel,good,bad_heel,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (272).jpg,good,bad_heel,0.701236,medium_0_50_to_0_75,True,good -> bad_heel,good,bad_heel,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (273).jpg,good,good,0.723058,medium_0_50_to_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (274).jpg,good,bad_heel,0.573292,medium_0_50_to_0_75,True,good -> bad_heel,good,bad_heel,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (275).jpg,good,bad_heel,0.750093,high_at_least_0_75,True,good -> bad_heel,good,bad_heel,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (276).jpg,good,bad_heel,0.887369,high_at_least_0_75,True,good -> bad_heel,good,bad_heel,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (277).jpg,good,bad_heel,0.953368,high_at_least_0_75,True,good -> bad_heel,good,bad_heel,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (278).jpg,good,bad_heel,0.940201,high_at_least_0_75,True,good -> bad_heel,good,bad_heel,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (279).jpg,good,bad_heel,0.790125,high_at_least_0_75,True,good -> bad_heel,good,bad_heel,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (28).jpg,good,good,0.996754,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (280).jpg,good,bad_heel,0.803913,high_at_least_0_75,True,good -> bad_heel,good,bad_heel,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (281).jpg,good,good,0.992627,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (282).jpg,good,good,0.997799,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (283).jpg,good,good,0.996322,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (284).jpg,good,good,0.864334,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (285).jpg,good,good,0.998279,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (286).jpg,good,good,0.506484,medium_0_50_to_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (287).jpg,good,bad_heel,0.537146,medium_0_50_to_0_75,True,good -> bad_heel,good,bad_heel,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (288).jpg,good,good,0.998636,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (289).jpg,good,good,0.99407,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (29).jpg,good,good,0.97574,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (290).jpg,good,good,0.995414,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (291).jpg,good,good,0.997829,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (292).jpg,good,good,0.995105,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (293).jpg,good,good,0.994756,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (294).jpg,good,good,0.99147,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (295).jpg,good,good,0.623972,medium_0_50_to_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (296).jpg,good,bad_heel,0.967599,high_at_least_0_75,True,good -> bad_heel,good,bad_heel,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (297).jpg,good,bad_heel,0.940966,high_at_least_0_75,True,good -> bad_heel,good,bad_heel,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (298).jpg,good,bad_heel,0.618188,medium_0_50_to_0_75,True,good -> bad_heel,good,bad_heel,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (299).jpg,good,good,0.991945,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (3).jpg,good,good,0.994103,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (30).jpg,good,good,0.996779,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (300).jpg,good,good,0.99739,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (301).jpg,good,bad_heel,0.573898,medium_0_50_to_0_75,True,good -> bad_heel,good,bad_heel,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (302).jpg,good,bad_heel,0.985651,high_at_least_0_75,True,good -> bad_heel,good,bad_heel,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (303).jpg,good,bad_heel,0.873978,high_at_least_0_75,True,good -> bad_heel,good,bad_heel,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (304).jpg,good,good,0.997532,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (305).jpg,good,good,0.996681,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (306).jpg,good,good,0.994018,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (307).jpg,good,good,0.990593,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (308).jpg,good,good,0.988431,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (309).jpg,good,good,0.997592,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (31).jpg,good,good,0.999301,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (310).jpg,good,good,0.998705,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (32).jpg,good,good,0.984397,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (33).jpg,good,good,0.994368,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (34).jpg,good,good,0.993619,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (35).jpg,good,good,0.995637,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (36).jpg,good,good,0.998529,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (37).jpg,good,good,0.998938,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (38).jpg,good,good,0.9985,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (39).jpg,good,good,0.998959,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (4).jpg,good,good,0.994539,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (40).jpg,good,good,0.995921,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (41).jpg,good,good,0.996496,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (42).jpg,good,good,0.99909,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (43).jpg,good,good,0.997832,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (44).jpg,good,good,0.99905,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (45).jpg,good,good,0.998249,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (46).jpg,good,good,0.995469,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (47).jpg,good,good,0.998899,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (48).jpg,good,good,0.988539,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (49).jpg,good,good,0.985525,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (5).jpg,good,good,0.99963,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (50).jpg,good,good,0.982393,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (51).jpg,good,good,0.988934,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (52).jpg,good,good,0.954453,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (53).jpg,good,good,0.997745,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (54).jpg,good,good,0.996791,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (55).jpg,good,good,0.984052,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (56).jpg,good,good,0.997797,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (57).jpg,good,good,0.996577,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (58).jpg,good,good,0.987526,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (59).jpg,good,good,0.998193,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (6).jpg,good,good,0.99793,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (60).jpg,good,good,0.9977,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (61).jpg,good,good,0.997418,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (62).jpg,good,good,0.981018,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (63).jpg,good,good,0.986367,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (64).jpg,good,good,0.988151,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (65).jpg,good,good,0.995531,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (66).jpg,good,good,0.990799,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (67).jpg,good,good,0.993694,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (68).jpg,good,good,0.997761,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (69).jpg,good,good,0.999335,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (7).jpg,good,good,0.999314,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (70).jpg,good,good,0.979604,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (71).jpg,good,good,0.99868,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (72).jpg,good,good,0.991199,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (73).jpg,good,good,0.996982,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (74).jpg,good,good,0.99647,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (75).jpg,good,good,0.999525,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (76).jpg,good,good,0.999161,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (77).jpg,good,good,0.994615,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (78).jpg,good,good,0.999008,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (79).jpg,good,good,0.99754,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (8).jpg,good,good,0.999304,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (80).jpg,good,good,0.998298,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (81).jpg,good,good,0.997672,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (82).jpg,good,good,0.985474,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (83).jpg,good,good,0.971382,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (84).jpg,good,good,0.954606,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (85).jpg,good,good,0.998501,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (86).jpg,good,good,0.99845,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (87).jpg,good,good,0.997512,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (88).jpg,good,good,0.990092,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (89).jpg,good,good,0.995746,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (9).jpg,good,good,0.997101,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (90).jpg,good,good,0.997857,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (91).jpg,good,good,0.995457,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (92).jpg,good,good,0.94795,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (93).jpg,good,good,0.999145,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (94).jpg,good,good,0.997685,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (95).jpg,good,good,0.997025,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (96).jpg,good,good,0.998844,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (97).jpg,good,good,0.998949,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (98).jpg,good,good,0.999558,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset
+data\raw\zenodo_squat_dataset\test\Good\Good (99).jpg,good,good,0.993765,high_at_least_0_75,False,correct,,,test,zenodo_squat_dataset

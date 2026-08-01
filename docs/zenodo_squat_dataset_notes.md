@@ -37,6 +37,51 @@ Custom PhysioVision squat videos remain necessary for end-to-end upload testing,
 3. Run `prepare_zenodo_squat_dataset.py` to create normalized metadata without copying images.
 4. Audit class counts, duplicates, corrupted files, subject leakage, and folder-to-label mappings.
 5. Run MediaPipe Pose in static-image mode and retain landmark visibility.
+6. Create angle features and train the research-only, leakage-aware baseline.
+
+```powershell
+python scripts/prepare_zenodo_squat_dataset.py
+python scripts/extract_landmarks_from_images.py
+python scripts/create_image_angle_features.py
+python scripts/train_zenodo_squat_baseline.py
+python scripts/analyze_zenodo_model_errors.py
+python scripts/analyze_zenodo_distribution_shift.py
+```
+
+The trainer preserves the publisher's `train`/`test` folders, checks exact file hashes for
+cross-split duplicates, and pre-registers logistic regression rather than selecting a model on
+the test data. Zenodo does not expose participant identifiers, so the resulting source holdout
+is not proven participant-independent and model promotion remains blocked.
+
+## First static-posture baseline run
+
+- Prepared images: 3,806.
+- Pose detections: 3,770 (99.1%).
+- Development/source-train images: 2,814.
+- Source-test images: 956.
+- Exact cross-split duplicate groups: 0.
+- Pre-registered logistic-regression accuracy: 0.887.
+- Pre-registered logistic-regression macro F1: 0.886.
+
+The source holdout is useful for engineering comparison, but it is not a participant-grouped
+validation set. These numbers do not authorize product integration or clinical claims.
+
+Probability calibration uses a deterministic, stratified 20% subset of the publisher's training
+folder. The source test folder is not used for fitting, calibration, model-family selection, or
+threshold selection. Calibration metrics remain research evidence because participant identity
+is unavailable.
+
+The first temperature-scaling experiment improved its reserved calibration subset but worsened
+the untouched source-test probability metrics: log loss increased from 0.472 to 0.739, multiclass
+Brier score from 0.178 to 0.197, and 10-bin expected calibration error from 0.054 to 0.084. The
+experiment was rejected. Its artifact is retained for audit only, and the uncalibrated logistic
+model remains the offline research candidate.
+
+Distribution-shift analysis found the largest overall changes in hip and knee angles. Pose
+detection succeeded for every `good` image and all but one `bad_heel` image, while 35 of 36 total
+misses were `bad_back`. Manual review of the 18 highest-confidence errors found repeated
+subject/scene clusters and ambiguous single-label boundaries. This reduces the effective evidence
+and reinforces the requirement for participant and recording-sequence identifiers.
 6. Calculate bilateral knee/hip/ankle angles, trunk lean, and transparent heel-to-foot vertical proxies.
 7. Treat heel proxies as experimental 2D features, not direct measurements of foot pressure or clinical heel loading.
 8. Create subject-aware splits only after identity and collection metadata are understood; do not train a model during Sprint 2 setup.

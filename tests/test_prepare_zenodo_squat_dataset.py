@@ -33,6 +33,8 @@ def test_prepare_dataset_creates_normalized_metadata_from_dummy_images(tmp_path)
     assert created == output_path
     assert {row["label"] for row in rows} == {"good", "bad_back"}
     assert {row["original_label"] for row in rows} == {"Good", "Bad Back"}
+    assert {row["source_split"] for row in rows} == {"unknown"}
+    assert all(len(row["content_sha256"]) == 64 for row in rows)
     assert all(row["image_width"] == "32" for row in rows)
     assert all(row["image_height"] == "24" for row in rows)
     assert all(int(row["file_size_bytes"]) > 0 for row in rows)
