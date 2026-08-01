@@ -12,23 +12,21 @@ import Profile from "./pages/Profile.jsx";
 import ExerciseLibrary from "./pages/ExerciseLibrary.jsx";
 import { EXERCISES } from "./data/exercises.js";
 import { AuthProvider, useAuth } from "./context/AuthContext.jsx";
-import { LocaleProvider } from "./i18n/LocaleContext.jsx";
+import { LocaleProvider, useLocale } from "./i18n/LocaleContext.jsx";
 import { analyzeHipAbductionVideo, analyzeKneeExtensionVideo, analyzeShoulderAbductionVideo, analyzeSitToStandVideo, analyzeSquatVideo, getExercises } from "./services/api.js";
 
 const DEFAULT_OPTIONS = { include_overlay: true, generate_report: true, include_ml: false, include_frame_data: true, save_session: false };
 const PAGE_PATHS = { home: "/", exercises: "/exercises", analyze: "/analyze", results: "/results", history: "/history", therapist: "/therapist", about: "/about", login: "/login", register: "/register", profile: "/profile" };
-const GENERIC_ANALYSIS_ERROR = "Unable to analyze this video. Check the backend and try again.";
-
-function analysisErrorMessage(requestError) {
+function analysisErrorMessage(requestError, t) {
   const status = requestError.response?.status;
   const apiError = requestError.response?.data;
-  if (status === 401 || status === 403) return "Please log in before analyzing a video.";
+  if (status === 401 || status === 403) return t("upload.loginRequired");
   if (status === 400 && apiError?.error_code === "UNSUPPORTED_FILE_TYPE") {
-    return "Unsupported video format. Please upload MP4, MOV, AVI, MKV, or WEBM.";
+    return t("upload.unsupported");
   }
-  if (!requestError.response) return "Could not connect to the analysis server.";
-  if (status >= 500) return GENERIC_ANALYSIS_ERROR;
-  return apiError?.message || apiError?.detail || GENERIC_ANALYSIS_ERROR;
+  if (!requestError.response) return t("upload.network");
+  if (status >= 500) return t("upload.genericError");
+  return apiError?.message || apiError?.detail || t("upload.genericError");
 }
 
 function initialPage() {
@@ -39,6 +37,7 @@ function initialPage() {
 
 function AppContent() {
   const { user } = useAuth();
+  const { t } = useLocale();
   const [page, setPage] = useState(initialPage);
   const [file, setFile] = useState(null);
   const [report, setReport] = useState(null);
@@ -67,15 +66,15 @@ function AppContent() {
 
   async function handleSubmit(event) {
     event?.preventDefault?.();
-    if (!file) { setError("Select a video before starting analysis."); return; }
-    if (!user) { setError("Please log in before analyzing a video."); return; }
+    if (!file) { setError(t("upload.noFile")); return; }
+    if (!user) { setError(t("upload.loginRequired")); return; }
     setIsLoading(true); setProgress(0); setError("");
     try {
       const analyze = exercise === "sit_to_stand" ? analyzeSitToStandVideo : exercise === "knee_extension" ? analyzeKneeExtensionVideo : exercise === "shoulder_abduction" ? analyzeShoulderAbductionVideo : exercise === "hip_abduction" ? analyzeHipAbductionVideo : analyzeSquatVideo;
       const data = await analyze(file, options, setProgress);
       setReport(data); setPage("results");
     } catch (requestError) {
-      setError(analysisErrorMessage(requestError));
+      setError(analysisErrorMessage(requestError, t));
     } finally { setIsLoading(false); }
   }
 

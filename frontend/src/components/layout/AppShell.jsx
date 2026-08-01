@@ -2,9 +2,9 @@ import {
   Activity,
   BarChart3,
   HeartPulse,
-  Library,
   History,
   Info,
+  Library,
   LogIn,
   Stethoscope,
   UploadCloud,
@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import LanguageSelector from "../../i18n/LanguageSelector.jsx";
 import { useLocale } from "../../i18n/LocaleContext.jsx";
+
 const items = [
   { id: "home", labelKey: "nav.home", icon: HeartPulse },
   { id: "exercises", labelKey: "nav.exercises", icon: Library },
@@ -26,6 +27,7 @@ const items = [
   },
   { id: "about", labelKey: "nav.about", icon: Info },
 ];
+
 export function Navbar({ currentPage, hasReport, onNavigate, user }) {
   const { t } = useLocale();
   const visible = items.filter(
@@ -34,6 +36,7 @@ export function Navbar({ currentPage, hasReport, onNavigate, user }) {
       (!i.requiresUser || user) &&
       (!i.roles || i.roles.includes(user?.role)),
   );
+
   return (
     <header className="sticky top-0 z-30 border-b border-slate-200/80 bg-white/85 backdrop-blur-xl">
       <nav
@@ -50,7 +53,9 @@ export function Navbar({ currentPage, hasReport, onNavigate, user }) {
           </span>
           <span>
             <span className="block text-sm font-extrabold tracking-tight text-clinical-ink sm:text-base">PhysioVision AI</span>
-            <span className="hidden text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-400 sm:block">{t("brand.tagline")}</span>
+            <span className="hidden text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-400 sm:block">
+              {t("brand.tagline")}
+            </span>
           </span>
         </button>
         <div className="flex min-w-0 items-center gap-1 overflow-x-auto py-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
@@ -86,6 +91,7 @@ export function Navbar({ currentPage, hasReport, onNavigate, user }) {
     </header>
   );
 }
+
 export function PageHeader({ eyebrow, title, description, actions }) {
   return (
     <div className="mb-8 flex flex-col gap-5 border-b border-slate-200/80 pb-7 lg:flex-row lg:items-end lg:justify-between">
@@ -102,6 +108,7 @@ export function PageHeader({ eyebrow, title, description, actions }) {
     </div>
   );
 }
+
 export default function AppShell({
   currentPage,
   hasReport,
@@ -109,6 +116,8 @@ export default function AppShell({
   user,
   children,
 }) {
+  const { t } = useLocale();
+
   return (
     <div className="min-h-screen">
       <Navbar
@@ -120,13 +129,8 @@ export default function AppShell({
       {children}
       <footer className="mt-16 border-t border-slate-200 bg-white">
         <div className="mx-auto max-w-7xl px-6 py-8 text-xs leading-5 text-slate-500 sm:flex sm:items-center sm:justify-between">
-          <p className="font-semibold">
-            PhysioVision AI · Educational movement support
-          </p>
-          <p>
-            This analysis does not replace assessment, diagnosis, or treatment
-            by a licensed professional.
-          </p>
+          <p className="font-semibold">{t("footer.product")}</p>
+          <p>{t("footer.disclaimer")}</p>
         </div>
       </footer>
     </div>

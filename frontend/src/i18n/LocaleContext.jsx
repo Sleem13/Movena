@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { DEFAULT_LOCALE, LOCALE_STORAGE_KEY, SUPPORTED_LOCALES, translate } from "./messages.js";
+import { DEFAULT_LOCALE, LOCALE_STORAGE_KEY, SUPPORTED_LOCALES, getExerciseText, prettyLabel, translate } from "./messages.js";
 
 const LocaleContext = createContext(null);
 
@@ -25,9 +25,11 @@ export function LocaleProvider({ children }) {
   }, [localeDefinition]);
 
   const t = useCallback((key, values) => translate(locale, key, values), [locale]);
+  const exerciseText = useCallback((exerciseId) => getExerciseText(exerciseId, locale), [locale]);
+  const pretty = useCallback((value) => prettyLabel(value, locale), [locale]);
   const value = useMemo(
-    () => ({ locale, direction: localeDefinition.direction, setLocale, t }),
-    [locale, localeDefinition.direction, setLocale, t],
+    () => ({ locale, direction: localeDefinition.direction, setLocale, t, exerciseText, pretty }),
+    [locale, localeDefinition.direction, setLocale, t, exerciseText, pretty],
   );
 
   return <LocaleContext.Provider value={value}>{children}</LocaleContext.Provider>;
@@ -35,6 +37,15 @@ export function LocaleProvider({ children }) {
 
 export function useLocale() {
   const context = useContext(LocaleContext);
-  if (!context) throw new Error("useLocale must be used within LocaleProvider");
+  if (!context) {
+    return {
+      locale: DEFAULT_LOCALE,
+      direction: "ltr",
+      setLocale: () => {},
+      t: (key, values) => translate(DEFAULT_LOCALE, key, values),
+      exerciseText: (exerciseId) => getExerciseText(exerciseId, DEFAULT_LOCALE),
+      pretty: (value) => prettyLabel(value, DEFAULT_LOCALE),
+    };
+  }
   return context;
 }

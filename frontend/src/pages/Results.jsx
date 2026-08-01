@@ -6,7 +6,7 @@ import SpeechFeedbackControls from "../components/results/SpeechFeedbackControls
 import { useLocale } from "../i18n/LocaleContext.jsx";
 
 export default function Results({ report, originalVideoUrl, onAnalyzeAnother, onGoAnalyze, onViewHistory }) {
-  const { t } = useLocale();
+  const { t, exerciseText } = useLocale();
   if (!report) {
     return <main className="mx-auto max-w-4xl px-6 py-20">
       <EmptyState title={t("results.emptyTitle")} description={t("results.emptyDescription")} />
@@ -17,8 +17,7 @@ export default function Results({ report, originalVideoUrl, onAnalyzeAnother, on
   }
 
   const rejected = report.status === "rejected";
-  const translatedExercise = t(`exercise.${report.exercise}`);
-  const displayName = translatedExercise.startsWith("exercise.") ? "Movement" : translatedExercise;
+  const displayName = exerciseText(report.exercise).name;
   const actions = <div className="flex flex-wrap items-start gap-2">
     <SpeechFeedbackControls report={report} />
     {!rejected && <ExportActions report={report} />}

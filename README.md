@@ -205,7 +205,7 @@ $env:CORS_ALLOWED_ORIGINS="https://staging-web.example.test"
 $env:REQUIRE_AUTH_FOR_ANALYSIS="true"
 $env:ENABLE_PUBLIC_DEMO_MODE="false"
 cd backend
-..\.venv\Scripts\python.exe -m uvicorn app.main:app --host 0.0.0.0 --port 8010 --no-access-log
+..\.venv\Scripts\python.exe -m uvicorn api.main:app --host 0.0.0.0 --port 8010 --no-access-log
 ```
 
 See the [Sprint 23 decision](docs/sprint_23_controlled_cloud_staging_deployment.md), [deployment strategy](docs/staging_deployment_strategy.md), [smoke checklist](docs/staging_smoke_test_checklist.md), and [pilot gate](docs/controlled_pilot_readiness_gate.md).
@@ -216,7 +216,7 @@ Sprint 21 is complete at the engineering MVP level. Sprint 22 adds internal EAS 
 
 ```powershell
 cd backend
-..\.venv\Scripts\python.exe -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8010
+..\.venv\Scripts\python.exe -m uvicorn api.main:app --reload --host 0.0.0.0 --port 8010
 
 cd ..\mobile
 npm install
