@@ -6,10 +6,12 @@ import {
   Info,
   Library,
   LogIn,
+  Radio,
   Stethoscope,
   UploadCloud,
   User,
 } from "lucide-react";
+import { ENABLE_REALTIME_COACHING_SPIKE } from "../../config/featureFlags.js";
 import LanguageSelector from "../../i18n/LanguageSelector.jsx";
 import { useLocale } from "../../i18n/LocaleContext.jsx";
 
@@ -25,6 +27,12 @@ const items = [
     icon: Stethoscope,
     roles: ["therapist", "admin"],
   },
+  {
+    id: "coach",
+    labelKey: "nav.coach",
+    icon: Radio,
+    featureEnabled: ENABLE_REALTIME_COACHING_SPIKE,
+  },
   { id: "about", labelKey: "nav.about", icon: Info },
 ];
 
@@ -34,6 +42,7 @@ export function Navbar({ currentPage, hasReport, onNavigate, user }) {
     (i) =>
       (!i.requiresReport || hasReport) &&
       (!i.requiresUser || user) &&
+      (i.featureEnabled !== false) &&
       (!i.roles || i.roles.includes(user?.role)),
   );
 

@@ -98,9 +98,13 @@ plan, estimate recovery time, or personalize medical advice from health data.
 
 ## Delivery Order
 
-1. Complete Phase 1.
+1. Complete Phase 1. **Status: complete.**
 2. Write the real-time coaching architecture decision record and prototype
-   camera/landmark capture behind a disabled feature flag.
+   camera/landmark capture behind a disabled feature flag. **Status:
+   complete as a disabled technical spike; see
+   `docs/realtime_coaching_technical_spike_adr.md`.**
 3. Improve longitudinal progress views using existing session records.
-4. Begin lunge protocol and dataset feasibility work.
+   **Status: next.**
+4. Begin lunge protocol and dataset feasibility work. **Status: not started.**
 5. Reassess the educational assistant only after the closed-pilot gate.
+   **Status: deferred.**
