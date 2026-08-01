@@ -104,7 +104,10 @@ plan, estimate recovery time, or personalize medical advice from health data.
    complete as a disabled technical spike; see
    `docs/realtime_coaching_technical_spike_adr.md`.**
 3. Improve longitudinal progress views using existing session records.
-   **Status: next.**
+   **Status: complete for the current development dashboard. Progress values
+   are sourced from persisted assigned sessions, source-value counts and metric
+   provenance are exposed, empty/low-confidence states remain explicit, and
+   therapist APIs require therapist/admin authorization.**
 4. Begin lunge protocol and dataset feasibility work. **Status: not started.**
 5. Reassess the educational assistant only after the closed-pilot gate.
    **Status: deferred.**

@@ -23,9 +23,18 @@ export default function TherapistDashboard() {
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
   const sessionExerciseName = (item) => {
     const id = item.exercise_id || item.exercise;
     return id ? exerciseText(id).name : item.exercise_display_name;
+  };
+  const formatDate = (value) => {
+    if (!value) return "—";
+    try {
+      return new Intl.DateTimeFormat(undefined, { dateStyle: "medium" }).format(new Date(value));
+    } catch {
+      return "—";
+    }
   };
 
   async function load() {
@@ -126,7 +135,7 @@ export default function TherapistDashboard() {
                   {dashboard.recent_sessions.map((item) => (
                     <li key={item.session_id} className="rounded-xl bg-slate-50 p-3 text-sm">
                       <span className="font-semibold">{sessionExerciseName(item)}</span>{" "}
-                      · {item.total_reps ?? "—"} reps · score {item.movement_score ?? "—"}
+                      · {t("therapist.rowReps", { value: item.total_reps ?? "—" })} · {t("therapist.rowScore", { value: item.movement_score ?? "—" })}
                     </li>
                   ))}
                 </ul>
@@ -194,16 +203,26 @@ export default function TherapistDashboard() {
           </Card>
           <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <Card className="p-4"><p className="text-xs text-slate-500">{t("therapist.totalSessions")}</p><p className="mt-2 text-2xl font-bold">{progress?.total_sessions || 0}</p></Card>
-            <Card className="p-4"><p className="text-xs text-slate-500">{t("therapist.averageScore")}</p><p className="mt-2 text-2xl font-bold">{progress?.average_movement_score ?? "—"}</p></Card>
-            <Card className="p-4"><p className="text-xs text-slate-500">{t("therapist.averageConfidence")}</p><p className="mt-2 text-2xl font-bold">{progress?.average_analysis_confidence == null ? "—" : `${Math.round(progress.average_analysis_confidence * 100)}%`}</p></Card>
+            <Card className="p-4"><p className="text-xs text-slate-500">{t("therapist.averageScore")}</p><p className="mt-2 text-2xl font-bold">{progress?.average_movement_score ?? "—"}</p><p className="mt-1 text-[11px] text-slate-500">{t("therapist.observationCount", { count: progress?.movement_score_observation_count || 0 })}</p></Card>
+            <Card className="p-4"><p className="text-xs text-slate-500">{t("therapist.averageConfidence")}</p><p className="mt-2 text-2xl font-bold">{progress?.average_analysis_confidence == null ? "—" : `${Math.round(progress.average_analysis_confidence * 100)}%`}</p><p className="mt-1 text-[11px] text-slate-500">{t("therapist.observationCount", { count: progress?.analysis_confidence_observation_count || 0 })}</p></Card>
             <Card className="p-4"><p className="text-xs text-slate-500">{t("therapist.lowConfidenceSessions")}</p><p className="mt-2 text-2xl font-bold">{progress?.low_confidence_session_count || 0}</p></Card>
           </section>
+          <Alert tone="info" title={t("therapist.provenanceTitle")}>
+            <p>{t("therapist.provenanceSummary", { date: formatDate(progress?.latest_session_date) })}</p>
+            {progress?.metric_provenance?.length ? (
+              <ul className="mt-2 list-disc space-y-1 ps-5">
+                {progress.metric_provenance.map((item) => <li key={item}>{item}</li>)}
+              </ul>
+            ) : (
+              <p className="mt-2">{t("therapist.noProvenance")}</p>
+            )}
+          </Alert>
           <Card className="p-5">
             <h2 className="font-bold">{t("therapist.exerciseHistory")}</h2>
             {Object.keys(progress?.sessions_by_exercise || {}).length > 0 && <div className="mt-4 flex flex-wrap gap-2">{Object.entries(progress.sessions_by_exercise).map(([key, value]) => <Badge key={key} tone="blue">{exerciseText(key).name}: {value}</Badge>)}</div>}
             {sessions.length ? (
               <ul className="mt-4 space-y-3">
-                {sessions.map((item) => <li key={item.session_id} className="rounded-xl border border-slate-100 p-3 text-sm">{sessionExerciseName(item)} · {item.total_reps ?? "—"} reps · score {item.movement_score ?? item.score ?? "—"}</li>)}
+                {sessions.map((item) => <li key={item.session_id} className="rounded-xl border border-slate-100 p-3 text-sm">{sessionExerciseName(item)} · {t("therapist.rowReps", { value: item.total_reps ?? "—" })} · {t("therapist.rowScore", { value: item.movement_score ?? item.score ?? "—" })} · {t("therapist.rowConfidence", { value: item.analysis_confidence_level || "—" })} · {formatDate(item.created_at)}</li>)}
               </ul>
             ) : (
               <p className="mt-4 text-sm text-slate-500">{t("therapist.noAssignedSessions")}</p>

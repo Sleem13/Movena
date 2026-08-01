@@ -41,9 +41,12 @@ class PatientProgressSummary(BaseModel):
     sessions_by_exercise: dict[str, int] = Field(default_factory=dict)
     average_movement_score: float | None = None
     average_analysis_confidence: float | None = None
+    movement_score_observation_count: int = 0
+    analysis_confidence_observation_count: int = 0
     latest_session_date: datetime | None = None
     detected_issue_counts: list[DetectedIssueTrend] = Field(default_factory=list)
     low_confidence_session_count: int = 0
+    metric_provenance: list[str] = Field(default_factory=list)
 
 
 class PatientSummary(BaseModel):

@@ -34,5 +34,8 @@ def test_progress_handles_empty_and_multiple_exercises(tmp_path):
     assert progress.total_sessions == 2
     assert progress.sessions_by_exercise == {"bodyweight_squat": 1, "sit_to_stand": 1}
     assert progress.average_movement_score == 85
+    assert progress.movement_score_observation_count == 2
+    assert progress.analysis_confidence_observation_count == 2
     assert progress.low_confidence_session_count == 1
+    assert any("movement_score" in item for item in progress.metric_provenance)
     assert {item.issue_code for item in progress.detected_issue_counts} == {"poor_depth", "poor_control"}

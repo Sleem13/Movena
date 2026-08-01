@@ -35,6 +35,7 @@ def test_assign_list_and_progress_api_with_clean_invalid_ids(tmp_path):
         assert sessions.status_code == 200 and len(sessions.json()) == 1
         progress = client.get(f"/api/v1/therapist/patients/{patient.patient_id}/progress")
         assert progress.json()["total_sessions"] == 1
+        assert "metric_provenance" in progress.json()
         assert client.post(f"/api/v1/therapist/patients/{patient.patient_id}/sessions/missing").status_code == 404
         assert client.get("/api/v1/therapist/patients/missing/sessions").status_code == 404
     finally:

@@ -164,14 +164,27 @@ def get_patient_progress_summary(db: Session, patient_id: str) -> PatientProgres
     sessions = list_patient_sessions(db, patient_id)
     scores = [float(row.movement_score) for row in sessions if row.movement_score is not None]
     confidences = [float(row.analysis_confidence_score) for row in sessions if row.analysis_confidence_score is not None]
+    issue_counts = get_patient_detected_issue_summary(db, patient_id)
+    provenance = [
+        "total_sessions: analysis_sessions rows assigned to this patient_id",
+        "sessions_by_exercise: analysis_sessions.exercise_id counts",
+        "average_movement_score: mean of non-null analysis_sessions.movement_score values",
+        "average_analysis_confidence: mean of non-null analysis_sessions.analysis_confidence_score values",
+        "latest_session_date: latest analysis_sessions.created_at value",
+        "detected_issue_counts: detected_issues rows joined by session_id",
+        "low_confidence_session_count: analysis_sessions.analysis_confidence_level == 'low'",
+    ]
     return PatientProgressSummary(
         patient_id=patient_id, total_sessions=len(sessions),
         sessions_by_exercise=dict(Counter(row.exercise_id for row in sessions)),
         average_movement_score=round(mean(scores), 2) if scores else None,
         average_analysis_confidence=round(mean(confidences), 3) if confidences else None,
+        movement_score_observation_count=len(scores),
+        analysis_confidence_observation_count=len(confidences),
         latest_session_date=max((row.created_at for row in sessions), default=None),
-        detected_issue_counts=get_patient_detected_issue_summary(db, patient_id),
+        detected_issue_counts=issue_counts,
         low_confidence_session_count=sum(row.analysis_confidence_level == "low" for row in sessions),
+        metric_provenance=provenance if sessions else [],
     )
 
 
