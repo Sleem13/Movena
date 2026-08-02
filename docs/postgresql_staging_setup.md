@@ -19,7 +19,7 @@ cd backend
 ..\.venv\Scripts\python.exe -c "from app.db.database import init_db; init_db()"
 ```
 
-From the repository root, set `ADMIN_EMAIL`, a unique 14+ character mixed-case/numeric `ADMIN_PASSWORD`, and a non-identifying name, then run `python scripts/seed_admin_user.py`. Verify `/ready` reports an available database without printing the connection URL.
+From the repository root, set `ADMIN_EMAIL`, an `ADMIN_PASSWORD` containing at least 8 characters, and a non-identifying name, then run `python scripts/seed_admin_user.py`. Verify `/ready` reports an available database without printing the connection URL.
 
 For reset, revoke active credentials, destroy/recreate the staging branch/database, issue a new credential, rerun initialization, and reseed the admin. Use provider backups/point-in-time restore and test restoration into a separate staging branch. Current `create_all()` initialization has no ordered upgrades or rollback; Alembic is required before long-lived production evolution.
 

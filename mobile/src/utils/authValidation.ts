@@ -12,7 +12,7 @@ export function validateRegistrationInput(name: string, email: string, password:
 }
 
 export function validateLoginInput(email: string, password: string): string | null {
-  if (!EMAIL_PATTERN.test(email.trim())) return "Enter a valid email address.";
+  if (!email.trim()) return "Enter your username or email address.";
   if (!password) return "Enter your password.";
   return null;
 }
@@ -34,7 +34,7 @@ export function authRequestErrorMessage(error: AuthRequestError, action: "create
     case "ACCOUNT_EXISTS":
       return "An account with this email already exists.";
     case "INVALID_CREDENTIALS":
-      return "The email or password is incorrect.";
+      return "The username/email or password is incorrect.";
     default:
       return action === "create" ? "Account creation failed. Please try again." : "Login failed. Check your account details and try again.";
   }

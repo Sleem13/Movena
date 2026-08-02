@@ -1,3 +1,5 @@
+import os
+
 from fastapi import FastAPI, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
@@ -29,6 +31,10 @@ settings = get_settings()
 settings.validate_deployment_safety()
 ensure_artifact_directories()
 init_db()
+if os.getenv("SEED_ADMIN_ON_START", "").strip().lower() in {"1", "true", "yes", "on"}:
+    from app.services.admin_seed_service import seed_admin_from_environment
+
+    seed_admin_from_environment(reset=True)
 
 app = FastAPI(
     title=settings.project_name,

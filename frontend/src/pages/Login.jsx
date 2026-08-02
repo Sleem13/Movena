@@ -19,11 +19,11 @@ export default function Login({ onSuccess, onRegister }) {
       await login(data.get("email"), data.get("password"));
       onSuccess?.();
     } catch (requestError) {
-      setError(
-        requestError.response?.data?.error_code === "TOKEN_EXPIRED"
-          ? t("auth.expired")
-          : t("auth.invalid"),
-      );
+      const errorCode = requestError.response?.data?.error_code;
+      if (!requestError.response) setError(t("auth.network"));
+      else if (errorCode === "TOKEN_EXPIRED") setError(t("auth.expired"));
+      else if (errorCode === "INVALID_CREDENTIALS") setError(t("auth.invalid"));
+      else setError(requestError.response.data?.message || t("auth.unavailable"));
     } finally {
       setSubmitting(false);
     }
@@ -52,10 +52,10 @@ export default function Login({ onSuccess, onRegister }) {
         {error && <div className="mt-4"><Alert>{error}</Alert></div>}
         <form onSubmit={submit} className="mt-6 grid gap-5">
           <label className="grid gap-2 text-sm font-semibold text-slate-700">
-            {t("common.email")}
+            {t("auth.loginIdentifier")}
             <span className="relative">
               <Mail className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-              <input name="email" type="email" autoComplete="email" required className="w-full rounded-xl border border-slate-200 bg-slate-50 py-3 pl-11 pr-3 text-sm text-clinical-ink placeholder:text-slate-400" placeholder="name@example.com" />
+              <input name="email" type="text" autoComplete="username" required className="w-full rounded-xl border border-slate-200 bg-slate-50 py-3 pl-11 pr-3 text-sm text-clinical-ink placeholder:text-slate-400" placeholder="Username or email" />
             </span>
           </label>
           <label className="grid gap-2 text-sm font-semibold text-slate-700">
