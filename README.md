@@ -165,7 +165,6 @@ npm run build
 
 See the [Sprint 26 status](docs/sprint_26_pilot_findings_fixes_stability_release.md), [triage report](docs/pilot_issue_triage_report.md), [regression matrix](docs/pilot_regression_test_matrix.md), and [findings report](docs/internal_pilot_findings_report.md).
 
-## Sprint 25 — Limited Internal Pilot and Feedback Loop
 
 Sprint 25 is **internal-pilot preparation only**. Scope, tester onboarding, consent/safety language, controlled test script, feedback and issue CSVs, privacy review, build registry, findings template, readiness checklist, and feedback summarization are available. The pilot has not started because private staging, an installable Android build, deployed smoke testing, and physical-device approval remain blocked.
 
