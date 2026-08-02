@@ -37,7 +37,7 @@ def register(data: UserRegisterRequest, db: Session = Depends(get_db)):
 def login(data: UserLoginRequest, db: Session = Depends(get_db)):
     user = db.scalar(select(User).where(User.email == data.email.lower().strip()))
     if user is None or not verify_password(data.password, user.password_hash):
-        return auth_error("INVALID_CREDENTIALS", "Email or password is incorrect.", 401)
+        return auth_error("INVALID_CREDENTIALS", "Username/email or password is incorrect.", 401)
     if not user.is_active:
         return auth_error("USER_INACTIVE", "This user account is inactive.", 403)
     settings = get_settings()

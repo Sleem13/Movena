@@ -37,7 +37,7 @@ cd backend
 
 ## Seed an administrative beta account
 
-Use a non-identifying staging alias/email and a unique 14+ character password containing upper-, lower-case, and numeric characters. Run from the repository root:
+Use a non-identifying staging alias/email and a password containing at least 8 characters. Run from the repository root:
 
 ```powershell
 $env:ADMIN_EMAIL = "<non-identifying-staging-admin-alias>"
