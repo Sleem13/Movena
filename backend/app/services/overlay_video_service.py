@@ -16,6 +16,10 @@ SKELETON_CONNECTIONS = [
     ("left_shoulder", "right_shoulder"),
     ("left_shoulder", "left_hip"),
     ("right_shoulder", "right_hip"),
+    ("left_shoulder", "left_elbow"),
+    ("left_elbow", "left_wrist"),
+    ("right_shoulder", "right_elbow"),
+    ("right_elbow", "right_wrist"),
     ("left_hip", "right_hip"),
     ("left_hip", "left_knee"),
     ("left_knee", "left_ankle"),
@@ -98,6 +102,8 @@ def generate_skeleton_overlay(
                         if detail.hip_abduction_angle is not None
                         else f"{detail.phase} | shoulder {detail.shoulder_angle:.0f} deg"
                         if detail.shoulder_angle is not None
+                        else f"{detail.phase} | elbow {detail.elbow_angle:.0f} deg"
+                        if detail.elbow_angle is not None
                         else f"{detail.phase} | knee {detail.knee_angle:.0f} deg"
                     )
                     cv2.putText(

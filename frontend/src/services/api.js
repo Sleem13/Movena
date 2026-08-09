@@ -31,6 +31,9 @@ export async function analyzeExerciseVideo(exerciseId, videoFile, options = {}, 
     knee_extension: "knee-extension",
     shoulder_abduction: "shoulder-abduction",
     hip_abduction: "hip-abduction",
+    push_up: "push-up",
+    shoulder_press: "shoulder-press",
+    bicep_curl: "bicep-curl",
   }[exerciseId];
   if (!endpoint) throw new Error(`Unsupported exercise: ${exerciseId}`);
   const response = await api.post(`/api/v1/analyze/${endpoint}?${query}`, formData, {
@@ -75,6 +78,22 @@ export async function getExercises() {
 
 export async function getExercise(exerciseId) {
   return (await api.get(`/api/v1/exercises/${exerciseId}`)).data;
+}
+
+export async function getRecognitionModels() {
+  return (await api.get("/api/v1/recognition/models")).data;
+}
+
+export async function recognizeExerciseVideo(videoFile, onProgress) {
+  const formData = new FormData();
+  formData.append("video", videoFile);
+  const response = await api.post("/api/v1/recognition/video", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+    onUploadProgress: (event) => {
+      if (onProgress && event.total) onProgress(Math.round((event.loaded * 100) / event.total));
+    },
+  });
+  return response.data;
 }
 
 export async function listSavedSessions(params = {}) {

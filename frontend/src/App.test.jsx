@@ -2,7 +2,7 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import App from "./App.jsx";
-import { analyzeHipAbductionVideo, analyzeKneeExtensionVideo, analyzeShoulderAbductionVideo, analyzeSitToStandVideo, analyzeSquatVideo } from "./services/api.js";
+import { analyzeExerciseVideo } from "./services/api.js";
 import { getExercises, getSavedSession, listSavedSessions } from "./services/api.js";
 import { EXERCISES } from "./data/exercises.js";
 import { createPatientProfile, getPatientProfile, getPatientProgress, getTherapistDashboard, listPatientProfiles, listPatientSessions } from "./services/api.js";
@@ -17,12 +17,10 @@ vi.mock("./context/AuthContext.jsx", () => ({
 }));
 
 vi.mock("./services/api.js", () => ({
-  analyzeSquatVideo: vi.fn(),
-  analyzeSitToStandVideo: vi.fn(),
-  analyzeKneeExtensionVideo: vi.fn(),
-  analyzeShoulderAbductionVideo: vi.fn(),
-  analyzeHipAbductionVideo: vi.fn(),
+  analyzeExerciseVideo: vi.fn(),
   getExercises: vi.fn(),
+  getRecognitionModels: vi.fn().mockResolvedValue({ status: "not_available", models: [] }),
+  recognizeExerciseVideo: vi.fn(),
   listSavedSessions: vi.fn(),
   getSavedSession: vi.fn(),
   deleteSavedSession: vi.fn(),
@@ -85,7 +83,7 @@ function selectVideo() {
 }
 
 async function analyzeWith(response = report) {
-  analyzeSquatVideo.mockResolvedValue(response);
+  analyzeExerciseVideo.mockResolvedValue(response);
   openUpload();
   selectVideo();
   fireEvent.click(screen.getByRole("button", { name: "Analyze squat" }));
@@ -131,11 +129,12 @@ describe("Squat Analyzer healthcare dashboard", () => {
     expect(await screen.findByText("Supported exercises")).toBeInTheDocument();
     fireEvent.change(screen.getByLabelText("Search exercises"), { target: { value: "shoulder" } });
     fireEvent.change(screen.getByLabelText("Availability"), { target: { value: "supported" } });
-    expect(screen.getByText("1 exercise matches your filters.")).toBeInTheDocument();
+    expect(screen.getByText("2 exercises match your filters.")).toBeInTheDocument();
     expect(screen.getByText("Shoulder Abduction")).toBeInTheDocument();
+    expect(screen.getByText("Shoulder Press")).toBeInTheDocument();
     expect(screen.queryByText("Shoulder Flexion")).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Clear exercise filters" }));
-    expect(screen.getByText("12 exercises match your filters.")).toBeInTheDocument();
+    expect(screen.getByText("16 exercises match your filters.")).toBeInTheDocument();
     expect(screen.getByText("Shoulder Flexion")).toBeInTheDocument();
   });
 
@@ -159,7 +158,7 @@ describe("Squat Analyzer healthcare dashboard", () => {
       ml_prediction: { enabled: false, model_version: "not_applicable", warning: "ML prediction is not available for sit-to-stand yet." },
       score_breakdown: { completion_score: 100, control_score: 88, trunk_control_score: 90, consistency_score: 85, pose_confidence_score: 84 },
     };
-    analyzeSitToStandVideo.mockResolvedValue(sitReport);
+    analyzeExerciseVideo.mockResolvedValue(sitReport);
     openUpload();
     fireEvent.change(screen.getByLabelText("Exercise selector"), { target: { value: "sit_to_stand" } });
     expect(screen.getByText("Use a stable chair")).toBeInTheDocument();
@@ -168,7 +167,7 @@ describe("Squat Analyzer healthcare dashboard", () => {
     fireEvent.change(screen.getByLabelText(/choose a sit-to-stand exercise video/i), { target: { files: [file] } });
     fireEvent.click(screen.getByRole("button", { name: "Analyze sit-to-stand" }));
     await screen.findByText("Sit-to-Stand report");
-    expect(analyzeSitToStandVideo).toHaveBeenCalledTimes(1);
+    expect(analyzeExerciseVideo).toHaveBeenCalledWith("sit_to_stand", expect.any(File), expect.any(Object), expect.any(Function));
     expect(screen.getByText(/not available for sit-to-stand yet/i)).toBeInTheDocument();
     expect(screen.getByText("Completion")).toBeInTheDocument();
   });
@@ -184,7 +183,7 @@ describe("Squat Analyzer healthcare dashboard", () => {
       ml_prediction: { enabled: false, model_version: "not_applicable", warning: "ML prediction is not applicable for knee extension." },
       score_breakdown: { extension_range_score: 90, control_score: 88, consistency_score: 85, posture_visibility_score: 92, rep_completion_score: 100 },
     };
-    analyzeKneeExtensionVideo.mockResolvedValue(kneeReport);
+    analyzeExerciseVideo.mockResolvedValue(kneeReport);
     openUpload();
     fireEvent.change(screen.getByLabelText("Exercise selector"), { target: { value: "knee_extension" } });
     expect(screen.getByText("Seated position visible")).toBeInTheDocument();
@@ -193,7 +192,7 @@ describe("Squat Analyzer healthcare dashboard", () => {
     fireEvent.change(screen.getByLabelText(/choose a knee extension exercise video/i), { target: { files: [file] } });
     fireEvent.click(screen.getByRole("button", { name: "Analyze knee extension" }));
     await screen.findByText("Knee Extension report");
-    expect(analyzeKneeExtensionVideo).toHaveBeenCalledTimes(1);
+    expect(analyzeExerciseVideo).toHaveBeenCalledWith("knee_extension", expect.any(File), expect.any(Object), expect.any(Function));
     expect(screen.getByText("Extension range")).toBeInTheDocument();
   });
 
@@ -210,7 +209,7 @@ describe("Squat Analyzer healthcare dashboard", () => {
       score_breakdown: { abduction_range_score: 90, control_score: 88, consistency_score: 85, posture_visibility_score: 92, rep_completion_score: 100 },
       frame_analysis: [{ frame_index: 0, timestamp_sec: 0, knee_angle: 0, hip_angle: 0, shoulder_angle: 25, trunk_angle: 5, phase: "lowered", detected_issue: null }],
     };
-    analyzeShoulderAbductionVideo.mockResolvedValue(shoulderReport);
+    analyzeExerciseVideo.mockResolvedValue(shoulderReport);
     openUpload();
     fireEvent.change(screen.getByLabelText("Exercise selector"), { target: { value: "shoulder_abduction" } });
     expect(screen.getByText("Upper body visible")).toBeInTheDocument();
@@ -219,7 +218,7 @@ describe("Squat Analyzer healthcare dashboard", () => {
     fireEvent.change(screen.getByLabelText(/choose a shoulder abduction exercise video/i), { target: { files: [file] } });
     fireEvent.click(screen.getByRole("button", { name: "Analyze shoulder abduction" }));
     await screen.findByText("Shoulder Abduction report");
-    expect(analyzeShoulderAbductionVideo).toHaveBeenCalledTimes(1);
+    expect(analyzeExerciseVideo).toHaveBeenCalledWith("shoulder_abduction", expect.any(File), expect.any(Object), expect.any(Function));
     expect(screen.getByText("Average shoulder")).toBeInTheDocument();
     expect(screen.getByText("Abduction range")).toBeInTheDocument();
   });
@@ -237,7 +236,7 @@ describe("Squat Analyzer healthcare dashboard", () => {
       score_breakdown: { abduction_range_score: 88, control_score: 86, consistency_score: 84, posture_visibility_score: 91, rep_completion_score: 100, pelvis_trunk_stability_score: 90 },
       frame_analysis: [{ frame_index: 0, timestamp_sec: 0, knee_angle: 0, hip_angle: 8, hip_abduction_angle: 8, trunk_angle: 4, phase: "neutral", detected_issue: null }],
     };
-    analyzeHipAbductionVideo.mockResolvedValue(hipReport);
+    analyzeExerciseVideo.mockResolvedValue(hipReport);
     openUpload();
     fireEvent.change(screen.getByLabelText("Exercise selector"), { target: { value: "hip_abduction" } });
     expect(screen.getByText("Full lower body visible")).toBeInTheDocument();
@@ -246,7 +245,7 @@ describe("Squat Analyzer healthcare dashboard", () => {
     fireEvent.change(screen.getByLabelText(/choose a hip abduction exercise video/i), { target: { files: [file] } });
     fireEvent.click(screen.getByRole("button", { name: "Analyze hip abduction" }));
     await screen.findByText("Hip Abduction report");
-    expect(analyzeHipAbductionVideo).toHaveBeenCalledTimes(1);
+    expect(analyzeExerciseVideo).toHaveBeenCalledWith("hip_abduction", expect.any(File), expect.any(Object), expect.any(Function));
     expect(screen.getByText("Average hip abduction")).toBeInTheDocument();
     expect(screen.getByText("Pelvis/trunk stability")).toBeInTheDocument();
   });
@@ -260,7 +259,7 @@ describe("Squat Analyzer healthcare dashboard", () => {
   });
 
   it("shows loading progress after a video is submitted", async () => {
-    analyzeSquatVideo.mockReturnValue(new Promise(() => {}));
+    analyzeExerciseVideo.mockReturnValue(new Promise(() => {}));
     openUpload(); selectVideo();
     fireEvent.click(screen.getByRole("button", { name: "Analyze squat" }));
     expect(await screen.findByText("Analyzing")).toBeInTheDocument();
@@ -268,12 +267,12 @@ describe("Squat Analyzer healthcare dashboard", () => {
   });
 
   it("sends save_session when the local history option is enabled", async () => {
-    analyzeSquatVideo.mockResolvedValue({ ...report, session_id: "12345678-test-session" });
+    analyzeExerciseVideo.mockResolvedValue({ ...report, session_id: "12345678-test-session" });
     openUpload(); selectVideo();
     fireEvent.click(screen.getByLabelText("Save session history"));
     fireEvent.click(screen.getByRole("button", { name: "Analyze squat" }));
     await screen.findByText("Saved session");
-    expect(analyzeSquatVideo.mock.calls[0][1].save_session).toBe(true);
+    expect(analyzeExerciseVideo.mock.calls[0][2].save_session).toBe(true);
     expect(screen.getByRole("button", { name: "View Session History" })).toBeInTheDocument();
   });
 
@@ -399,14 +398,14 @@ describe("Squat Analyzer healthcare dashboard", () => {
   });
 
   it("renders an API error state", async () => {
-    analyzeSquatVideo.mockRejectedValue({ response: { data: { message: "Video is too large." } } });
+    analyzeExerciseVideo.mockRejectedValue({ response: { data: { message: "Video is too large." } } });
     openUpload(); selectVideo();
     fireEvent.click(screen.getByRole("button", { name: "Analyze squat" }));
     expect(await screen.findByRole("alert")).toHaveTextContent("Video is too large.");
   });
 
   it.each([401, 403])("shows a login prompt for an HTTP %s analysis response", async (status) => {
-    analyzeSquatVideo.mockRejectedValue({ response: { status, data: {} } });
+    analyzeExerciseVideo.mockRejectedValue({ response: { status, data: {} } });
     openUpload(); selectVideo();
     fireEvent.click(screen.getByRole("button", { name: "Analyze squat" }));
     expect(await screen.findByRole("alert")).toHaveTextContent("Please log in before analyzing a video.");
@@ -417,25 +416,25 @@ describe("Squat Analyzer healthcare dashboard", () => {
     openUpload(); selectVideo();
     fireEvent.click(screen.getByRole("button", { name: "Analyze squat" }));
     expect(await screen.findByRole("alert")).toHaveTextContent("Please log in before analyzing a video.");
-    expect(analyzeSquatVideo).not.toHaveBeenCalled();
+    expect(analyzeExerciseVideo).not.toHaveBeenCalled();
   });
 
   it("shows the supported formats for an unsupported-file response", async () => {
-    analyzeSquatVideo.mockRejectedValue({ response: { status: 400, data: { error_code: "UNSUPPORTED_FILE_TYPE" } } });
+    analyzeExerciseVideo.mockRejectedValue({ response: { status: 400, data: { error_code: "UNSUPPORTED_FILE_TYPE" } } });
     openUpload(); selectVideo();
     fireEvent.click(screen.getByRole("button", { name: "Analyze squat" }));
     expect(await screen.findByRole("alert")).toHaveTextContent("Unsupported video format. Please upload MP4, MOV, AVI, MKV, or WEBM.");
   });
 
   it("shows a connection message for a network or CORS failure", async () => {
-    analyzeSquatVideo.mockRejectedValue({ code: "ERR_NETWORK", request: {} });
+    analyzeExerciseVideo.mockRejectedValue({ code: "ERR_NETWORK", request: {} });
     openUpload(); selectVideo();
     fireEvent.click(screen.getByRole("button", { name: "Analyze squat" }));
     expect(await screen.findByRole("alert")).toHaveTextContent("Could not connect to the analysis server.");
   });
 
   it("keeps the generic backend message for a server error", async () => {
-    analyzeSquatVideo.mockRejectedValue({ response: { status: 500, data: { message: "Internal detail" } } });
+    analyzeExerciseVideo.mockRejectedValue({ response: { status: 500, data: { message: "Internal detail" } } });
     openUpload(); selectVideo();
     fireEvent.click(screen.getByRole("button", { name: "Analyze squat" }));
     expect(await screen.findByRole("alert")).toHaveTextContent("Unable to analyze this video. Check the backend and try again.");

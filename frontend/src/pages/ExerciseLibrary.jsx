@@ -5,6 +5,7 @@ import { PageHeader } from "../components/layout/AppShell.jsx";
 import { useLocale } from "../i18n/LocaleContext.jsx";
 
 function localizeExercise(exercise, exerciseText) {
+  if (exercise.recognition_status === "experimental_candidate_data_available") return exercise;
   const text = exerciseText(exercise.exercise_id);
   return {
     ...exercise,
@@ -20,6 +21,7 @@ function localizeExercise(exercise, exerciseText) {
 function ExerciseCard({ exercise, onAnalyze }) {
   const { t } = useLocale();
   const supported = exercise.supported_in_app;
+  const recognitionCandidate = exercise.recognition_status === "experimental_candidate_data_available";
   return (
     <Card className={`group flex h-full flex-col overflow-hidden p-5 transition duration-200 ${supported ? "hover:-translate-y-1 hover:shadow-lift" : "bg-slate-50/70 opacity-90"}`}>
       <div className={`-mx-5 -mt-5 mb-5 h-1 ${supported ? "bg-gradient-to-r from-clinical-blue to-clinical-teal" : "bg-slate-200"}`} />
@@ -27,7 +29,9 @@ function ExerciseCard({ exercise, onAnalyze }) {
         <span className={`grid h-12 w-12 place-items-center rounded-2xl transition ${supported ? "bg-blue-50 text-clinical-blue group-hover:bg-clinical-blue group-hover:text-white" : "bg-slate-100 text-slate-400"}`}>
           <Activity size={21} />
         </span>
-        <Badge tone={supported ? "teal" : "slate"}>{supported ? t("status.supported") : t("status.planned")}</Badge>
+        <Badge tone={supported ? "teal" : recognitionCandidate ? "blue" : "slate"}>
+          {supported ? t("status.supported") : recognitionCandidate ? t("status.recognitionResearch") : t("status.planned")}
+        </Badge>
       </div>
       <h2 className="mt-4 text-lg font-bold text-clinical-ink">{exercise.display_name}</h2>
       <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-clinical-teal">{exercise.body_region} · {exercise.exercise_family}</p>
@@ -86,6 +90,13 @@ export default function ExerciseLibrary({ exercises, onAnalyze }) {
   return (
     <main className="mx-auto w-full max-w-7xl px-6 py-12">
       <PageHeader eyebrow={t("exercises.eyebrow")} title={t("exercises.title")} description={t("exercises.description")} />
+      <section className="mb-8 grid gap-4 rounded-3xl border border-blue-100 bg-gradient-to-r from-blue-50 to-teal-50 p-5 shadow-soft md:grid-cols-[minmax(0,1fr)_auto] md:items-center" aria-label={t("exercises.researchTitle")}>
+        <div>
+          <p className="text-sm font-bold text-clinical-ink">{t("exercises.researchTitle")}</p>
+          <p className="mt-1 max-w-3xl text-sm leading-6 text-slate-600">{t("exercises.researchDescription")}</p>
+        </div>
+        <Badge tone="blue">{t("exercises.researchBadge")}</Badge>
+      </section>
       <section className="mb-8 rounded-2xl border border-slate-200 bg-white p-4 shadow-soft" aria-label="Exercise filters">
         <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_220px_220px_auto]">
           <label className="relative block">

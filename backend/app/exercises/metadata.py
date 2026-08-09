@@ -69,6 +69,45 @@ _SUPPORTED = (
     ),
 )
 
+_COACHING_CANDIDATES = (
+    ExerciseMetadata(
+        exercise_id="push_up", display_name="Push-Up", supported_in_app=True,
+        body_region="Upper body and trunk", exercise_family="Closed-chain upper-body movement",
+        recommended_camera_view="Side view preferred", required_landmarks=["shoulders", "elbows", "wrists", "hips", "ankles"],
+        movement_description="A controlled push-up through a comfortable range with the trunk supported as one unit.",
+        expected_movement_pattern="From a visible side-view support position, bend and extend the elbows with the body supported as one unit.",
+        safety_notes="Use an appropriate supported variation and stop if pain, dizziness, numbness, or unusual symptoms occur.", endpoint_path="/api/v1/analyze/push-up",
+        ml_model_status="not_applicable_rule_based_primary", recognition_status="experimental_suggestion_only_analyzer_available",
+    ),
+    ExerciseMetadata(
+        exercise_id="shoulder_press", display_name="Shoulder Press", supported_in_app=True,
+        body_region="Shoulder, upper limb, and trunk", exercise_family="Overhead press",
+        recommended_camera_view="Front or slight diagonal view", required_landmarks=["shoulders", "elbows", "wrists", "hips"],
+        movement_description="An overhead pressing movement distinct from shoulder abduction.",
+        expected_movement_pattern="Begin with flexed elbows visible, extend overhead, then return with control.",
+        safety_notes="Use only a clinician-approved load or unloaded practice; stop if pain, numbness, dizziness, or unusual symptoms occur.", endpoint_path="/api/v1/analyze/shoulder-press",
+        ml_model_status="not_applicable_rule_based_primary", recognition_status="experimental_suggestion_only_analyzer_available",
+    ),
+    ExerciseMetadata(
+        exercise_id="bicep_curl", display_name="Bicep Curl", supported_in_app=True,
+        body_region="Elbow and upper limb", exercise_family="Elbow flexion",
+        recommended_camera_view="Front or slight side view", required_landmarks=["shoulders", "elbows", "wrists", "hips"],
+        movement_description="A controlled elbow-flexion movement observed with conservative upper-arm and trunk rules.",
+        expected_movement_pattern="Begin with the elbow extended, flex through a comfortable visible range, then return with control.",
+        safety_notes="Use only a clinician-approved load or unloaded practice; the analyzer cannot assess grip or safe load.", endpoint_path="/api/v1/analyze/bicep-curl",
+        ml_model_status="not_applicable_rule_based_primary", recognition_status="experimental_suggestion_only_analyzer_available",
+    ),
+    ExerciseMetadata(
+        exercise_id="hammer_curl", display_name="Hammer Curl", supported_in_app=False,
+        body_region="Elbow, forearm, and upper limb", exercise_family="Neutral-grip elbow flexion",
+        recommended_camera_view="Front or slight side view", required_landmarks=["shoulders", "elbows", "wrists", "hands", "hips"],
+        movement_description="A neutral-grip curl candidate that requires hand-orientation evidence.",
+        expected_movement_pattern="Research candidate only; the current body-pose contract cannot verify grip orientation.",
+        safety_notes="Do not use PhysioVision AI to distinguish or assess hammer curls yet.", endpoint_path=None,
+        ml_model_status="experimental_recognition_research_only", recognition_status="experimental_candidate_data_available",
+    ),
+)
+
 _PLANNED_IDS = ("heel_raise", "lunge", "step_up", "balance", "walking_gait_screen", "shoulder_flexion", "hip_flexion")
 _PLANNED = tuple(
     ExerciseMetadata(
@@ -89,7 +128,7 @@ _PLANNED = tuple(
     for exercise_id in _PLANNED_IDS
 )
 
-EXERCISE_METADATA = _SUPPORTED + _PLANNED
+EXERCISE_METADATA = _SUPPORTED + _COACHING_CANDIDATES + _PLANNED
 EXERCISE_METADATA_BY_ID = {item.exercise_id: item for item in EXERCISE_METADATA}
 
 

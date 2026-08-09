@@ -17,3 +17,6 @@ __all__ = [
     "KiMoReAdapter", "UIPRMDAdapter", "UCIPhysicalTherapyAdapter", "DynTherapyAdapter",
     "Rehab246Adapter", "PhysicalTherapyExercisesAdapter", "UCOPhysicalRehabAdapter",
 ]
+from app.datasets.adapters.exercise_pose_frames_adapter import ExercisePoseFramesAdapter
+
+__all__ = ["ExercisePoseFramesAdapter"]

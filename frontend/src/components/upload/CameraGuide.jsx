@@ -43,6 +43,30 @@ const tipsByExercise = {
     ["camera.tip.reps", "camera.tip.hipRepsText"],
     ["camera.tip.stop", "camera.tip.shoulderStopText"],
   ],
+  push_up: [
+    ["camera.tip.side", "camera.tip.pushUpSideText"],
+    ["camera.tip.fullBody", "camera.tip.fullBodyText"],
+    ["camera.tip.stableSupport", "camera.tip.pushUpSupportText"],
+    ["camera.tip.stableBright", "camera.tip.stableBrightText"],
+    ["camera.tip.reps", "camera.tip.pushUpRepsText"],
+    ["camera.tip.stop", "camera.tip.shoulderStopText"],
+  ],
+  shoulder_press: [
+    ["camera.tip.front", "camera.tip.pressViewText"],
+    ["camera.tip.upperBody", "camera.tip.upperBodyText"],
+    ["camera.tip.stablePosture", "camera.tip.pressPostureText"],
+    ["camera.tip.stableBright", "camera.tip.armStableText"],
+    ["camera.tip.reps", "camera.tip.pressRepsText"],
+    ["camera.tip.stop", "camera.tip.shoulderStopText"],
+  ],
+  bicep_curl: [
+    ["camera.tip.front", "camera.tip.curlViewText"],
+    ["camera.tip.upperBody", "camera.tip.upperBodyText"],
+    ["camera.tip.stablePosture", "camera.tip.curlPostureText"],
+    ["camera.tip.stableBright", "camera.tip.armStableText"],
+    ["camera.tip.reps", "camera.tip.curlRepsText"],
+    ["camera.tip.stop", "camera.tip.shoulderStopText"],
+  ],
 };
 
 export default function CameraGuide({ exercise = "bodyweight_squat", metadata }) {

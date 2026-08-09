@@ -11,6 +11,7 @@ class FrameAnalysis(BaseModel):
     phase: str
     detected_issue: str | None = None
     shoulder_angle: float | None = None
+    elbow_angle: float | None = None
     hip_abduction_angle: float | None = None
 
 
@@ -110,6 +111,7 @@ class AnalysisResponse(BaseModel):
     average_hip_angle: float = 0
     average_trunk_angle: float = 0
     average_shoulder_angle: float | None = None
+    average_elbow_angle: float | None = None
     average_hip_abduction_angle: float | None = None
     movement_score: int | None = Field(default=0, ge=0, le=100)
     rep_events: list[RepEvent] = Field(default_factory=list)

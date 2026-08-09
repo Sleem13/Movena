@@ -86,7 +86,7 @@ def save_analysis_session(
         database.add(row)
         metric_specs = (
             ("average_knee_angle", "degrees"), ("average_hip_angle", "degrees"),
-            ("average_trunk_angle", "degrees"), ("total_reps", "reps"),
+            ("average_trunk_angle", "degrees"), ("average_elbow_angle", "degrees"), ("total_reps", "reps"),
             ("average_shoulder_angle", "degrees"),
             ("average_hip_abduction_angle", "degrees"),
             ("movement_score", "score_0_100"),

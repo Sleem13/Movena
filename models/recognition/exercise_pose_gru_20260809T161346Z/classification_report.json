@@ -1,0 +1,45 @@
+{
+  "bicep_curl": {
+    "precision": 0.8,
+    "recall": 0.8,
+    "f1-score": 0.8,
+    "support": 5.0
+  },
+  "bodyweight_squat": {
+    "precision": 1.0,
+    "recall": 0.8,
+    "f1-score": 0.8888888888888888,
+    "support": 5.0
+  },
+  "hammer_curl": {
+    "precision": 0.5,
+    "recall": 0.75,
+    "f1-score": 0.6,
+    "support": 4.0
+  },
+  "push_up": {
+    "precision": 1.0,
+    "recall": 0.8,
+    "f1-score": 0.8888888888888888,
+    "support": 5.0
+  },
+  "shoulder_press": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1-score": 1.0,
+    "support": 4.0
+  },
+  "accuracy": 0.8260869565217391,
+  "macro avg": {
+    "precision": 0.86,
+    "recall": 0.8300000000000001,
+    "f1-score": 0.8355555555555554,
+    "support": 23.0
+  },
+  "weighted avg": {
+    "precision": 0.8695652173913043,
+    "recall": 0.8260869565217391,
+    "f1-score": 0.8386473429951692,
+    "support": 23.0
+  }
+}

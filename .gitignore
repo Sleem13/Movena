@@ -246,3 +246,4 @@ data/samples/metadata.csv
 # Imported third-party comparison prototype. Keep outside PhysioVision commits;
 # it contains unreviewed code, model artifacts, and exposed credentials.
 /Powered-Physiotherapy-System-master/
+/NTI-Projcet-Computer_Vision

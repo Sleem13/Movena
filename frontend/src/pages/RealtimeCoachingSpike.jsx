@@ -1,14 +1,32 @@
 import { useEffect, useRef, useState } from "react";
-import { Camera, ShieldCheck, Square } from "lucide-react";
+import { BrainCircuit, Camera, CheckCircle2, ShieldCheck, Square } from "lucide-react";
 
 import { Card, Alert, Button, Badge } from "../components/common/UI.jsx";
 import { PageHeader } from "../components/layout/AppShell.jsx";
+import RecognitionUploadCard from "../components/recognition/RecognitionUploadCard.jsx";
 import { useLocale } from "../i18n/LocaleContext.jsx";
+import { getRecognitionModels } from "../services/api.js";
 
 const SAMPLE_INTERVAL_MS = 500;
 const SAMPLE_WIDTH = 160;
 const SAMPLE_HEIGHT = 90;
 const MAX_SAMPLES = 20;
+
+const CAMERA_ERROR_KEYS = {
+  NotFoundError: "coach.noCameraError",
+  DevicesNotFoundError: "coach.noCameraError",
+  NotAllowedError: "coach.permissionDeniedError",
+  PermissionDeniedError: "coach.permissionDeniedError",
+  SecurityError: "coach.permissionDeniedError",
+  NotReadableError: "coach.cameraBusyError",
+  TrackStartError: "coach.cameraBusyError",
+  OverconstrainedError: "coach.cameraConstraintsError",
+  ConstraintNotSatisfiedError: "coach.cameraConstraintsError",
+};
+
+export function cameraErrorMessageKey(error) {
+  return CAMERA_ERROR_KEYS[error?.name] || "coach.permissionError";
+}
 
 export function summarizeFrame(canvas) {
   const context = canvas.getContext("2d", { willReadFrequently: true });
@@ -50,7 +68,7 @@ export async function readOptionalLandmarkSummary(videoElement) {
   };
 }
 
-export default function RealtimeCoachingSpike() {
+export default function RealtimeCoachingSpike({ onConfirmSuggestion }) {
   const { t } = useLocale();
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
@@ -61,6 +79,15 @@ export default function RealtimeCoachingSpike() {
   const [error, setError] = useState("");
   const [samples, setSamples] = useState([]);
   const [landmarkSummary, setLandmarkSummary] = useState({ enabled: false, landmarkCount: 0, averageConfidence: null });
+  const [recognition, setRecognition] = useState({ status: "checking", models: [] });
+
+  useEffect(() => {
+    let cancelled = false;
+    getRecognitionModels()
+      .then((result) => { if (!cancelled) setRecognition(result); })
+      .catch(() => { if (!cancelled) setRecognition({ status: "not_available", models: [] }); });
+    return () => { cancelled = true; };
+  }, []);
 
   function stopCamera() {
     if (timerRef.current) window.clearInterval(timerRef.current);
@@ -114,9 +141,9 @@ export default function RealtimeCoachingSpike() {
       setStatus("active");
       timerRef.current = window.setInterval(sampleCurrentFrame, SAMPLE_INTERVAL_MS);
       await sampleCurrentFrame();
-    } catch {
+    } catch (cameraError) {
       stopCamera();
-      setError(t("coach.permissionError"));
+      setError(t(cameraErrorMessageKey(cameraError)));
       setStatus("idle");
     }
   }
@@ -198,7 +225,28 @@ export default function RealtimeCoachingSpike() {
                 : t("coach.landmarksDisabled")}
             </div>
           </Card>
+          <Card className="p-5">
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2 text-sm font-bold text-clinical-ink">
+                <BrainCircuit size={17} aria-hidden="true" />
+                {t("coach.modelTitle")}
+              </div>
+              <Badge tone={recognition.models?.length ? "blue" : "slate"}>
+                {recognition.models?.length ? t("coach.modelAvailable") : t("coach.modelPending")}
+              </Badge>
+            </div>
+            <p className="mt-3 text-xs leading-5 text-slate-500">{t("coach.modelDescription")}</p>
+            <ol className="mt-4 space-y-3 text-xs text-slate-600">
+              {[t("coach.stepData"), t("coach.stepRecognition"), t("coach.stepAnalyzers"), t("coach.stepRealtime")].map((step, index) => (
+                <li key={step} className="flex items-start gap-2">
+                  <CheckCircle2 className={index < 2 ? "mt-0.5 shrink-0 text-clinical-teal" : index === 2 ? "mt-0.5 shrink-0 text-clinical-blue" : "mt-0.5 shrink-0 text-slate-300"} size={15} aria-hidden="true" />
+                  <span>{step}</span>
+                </li>
+              ))}
+            </ol>
+          </Card>
         </div>
+        <RecognitionUploadCard models={recognition.models || []} onConfirmSuggestion={onConfirmSuggestion} />
       </div>
     </main>
   );

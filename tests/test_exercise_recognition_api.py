@@ -1,6 +1,7 @@
 from fastapi.testclient import TestClient
 
 from app.main import app
+from app.api.routes import exercise_recognition as route
 from app.services import exercise_recognition_service as service
 
 
@@ -22,3 +23,31 @@ def test_models_endpoint_and_explicit_analyze_routes_remain_registered():
     assert "/api/v1/analyze/squat" in paths
     assert "/api/v1/analyze/sit-to-stand" in paths
 
+
+def test_video_recognition_endpoint_extracts_sequence_and_removes_upload(tmp_path, monkeypatch):
+    saved = tmp_path / "upload.mp4"
+    saved.write_bytes(b"video")
+    removed = []
+
+    async def fake_save(_video):
+        return saved
+
+    monkeypatch.setattr(route, "save_upload_file", fake_save)
+    monkeypatch.setattr(route, "extract_pose_landmarks", lambda _path: [{"landmarks": {}}])
+    monkeypatch.setattr(route, "extract_mediapipe_sequence_features", lambda _frames: [{"f1": 1.0}])
+    monkeypatch.setattr(
+        route,
+        "predict_exercise_from_sequence",
+        lambda sequence, model_id=None: {
+            "status": "success", "suggested_exercise_id": "push_up", "confidence": 0.8
+        },
+    )
+    monkeypatch.setattr(route, "remove_file", lambda path: removed.append(path))
+    response = client.post(
+        "/api/v1/recognition/video",
+        files={"video": ("clip.mp4", b"video", "video/mp4")},
+    )
+    assert response.status_code == 200
+    assert response.json()["suggested_exercise_id"] == "push_up"
+    assert response.json()["usable_pose_frames"] == 1
+    assert removed == [saved]

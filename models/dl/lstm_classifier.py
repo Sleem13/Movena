@@ -1,4 +1,4 @@
-WARNING="DL models are research/experimental until validated."
+WARNING="DL model validation scope must be reported with every artifact."
 try:
  import torch.nn as nn
  class LSTMClassifier(nn.Module):
@@ -7,4 +7,4 @@ try:
   def forward(self,x):return self.head(self.lstm(x)[0][:,-1,:])
 except ImportError:
  class LSTMClassifier:
-  def __init__(self,*_a,**_k):raise RuntimeError("PyTorch is optional. Install it in a separate DL research environment.")
+  def __init__(self,*_a,**_k):raise RuntimeError("PyTorch is optional. Install requirements-ml.txt to enable DL training.")

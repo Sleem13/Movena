@@ -5,6 +5,7 @@ import { useLocale } from "../../i18n/LocaleContext.jsx";
 const COLORS = { knee: "#2563eb", hip: "#0f8f83", trunk: "#f59e0b" };
 const SHOULDER_COLORS = { shoulder: "#2563eb", trunk: "#f59e0b" };
 const HIP_ABDUCTION_COLORS = { hip_abduction: "#0f8f83", trunk: "#f59e0b" };
+const ELBOW_COLORS = { elbow: "#2563eb", trunk: "#f59e0b" };
 
 export function MovementScoreGauge({ score = 0, size = 180 }) {
   const { t } = useLocale();
@@ -26,7 +27,7 @@ function points(rows, key, width = 600, height = 190) {
 export function AngleTrendChart({ frames = [] }) {
   const { t, pretty } = useLocale();
   if (!frames.length) return <EmptyState compact title={t("chart.angleUnavailable")} description={t("chart.angleHelp")} icon={BarChart3} />;
-  const colors = frames.some((frame) => frame.hip_abduction_angle != null) ? HIP_ABDUCTION_COLORS : frames.some((frame) => frame.shoulder_angle != null) ? SHOULDER_COLORS : COLORS;
+  const colors = frames.some((frame) => frame.hip_abduction_angle != null) ? HIP_ABDUCTION_COLORS : frames.some((frame) => frame.shoulder_angle != null) ? SHOULDER_COLORS : frames.some((frame) => frame.elbow_angle != null) ? ELBOW_COLORS : COLORS;
   return <div><div className="mb-4 flex flex-wrap gap-4 text-xs font-semibold text-slate-600">{Object.entries(colors).map(([key, color]) => <span key={key} className="flex items-center gap-2"><i className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: color }} />{pretty(key)}</span>)}</div><div className="overflow-hidden rounded-xl bg-slate-50 p-3"><svg viewBox="0 0 600 210" className="h-56 w-full" role="img" aria-label={t("chart.angleAria")}><g stroke="#dce6ee" strokeWidth="1">{[0, 60, 120, 180].map((value) => <line key={value} x1="0" x2="600" y1={190 - value / 180 * 190} y2={190 - value / 180 * 190} />)}</g>{Object.entries(colors).map(([key, color]) => <polyline key={key} points={points(frames, `${key}_angle`)} fill="none" stroke={color} strokeWidth="3" strokeLinejoin="round" strokeLinecap="round" />)}<text x="4" y="207" fill="#64748b" fontSize="11">{t("chart.start")}</text><text x="566" y="207" fill="#64748b" fontSize="11">{t("chart.end")}</text></svg></div></div>;
 }
 

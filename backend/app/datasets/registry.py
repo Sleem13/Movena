@@ -4,6 +4,7 @@ from pathlib import Path
 
 from app.datasets.adapters.custom_videos_adapter import CustomVideosAdapter
 from app.datasets.adapters.dyntherapy_adapter import DynTherapyAdapter
+from app.datasets.adapters.exercise_pose_frames_adapter import ExercisePoseFramesAdapter
 from app.datasets.adapters.kimore_adapter import KiMoReAdapter
 from app.datasets.adapters.physical_therapy_exercises_adapter import PhysicalTherapyExercisesAdapter
 from app.datasets.adapters.rehab24_6_adapter import Rehab246Adapter
@@ -22,6 +23,7 @@ ADAPTERS = {
     "ui_prmd": UIPRMDAdapter,
     "uci_physical_therapy_exercises": UCIPhysicalTherapyAdapter,
     "dyntherapy": DynTherapyAdapter,
+    "exercise_pose_frames": ExercisePoseFramesAdapter,
     "rehab24_6": Rehab246Adapter,
     "Physical-therapy exercises": PhysicalTherapyExercisesAdapter,
     "uco_physical_rehab": UCOPhysicalRehabAdapter,

@@ -15,7 +15,7 @@ import { EXERCISES } from "./data/exercises.js";
 import { AuthProvider, useAuth } from "./context/AuthContext.jsx";
 import { LocaleProvider, useLocale } from "./i18n/LocaleContext.jsx";
 import { ENABLE_REALTIME_COACHING_SPIKE } from "./config/featureFlags.js";
-import { analyzeHipAbductionVideo, analyzeKneeExtensionVideo, analyzeShoulderAbductionVideo, analyzeSitToStandVideo, analyzeSquatVideo, getExercises } from "./services/api.js";
+import { analyzeExerciseVideo, getExercises } from "./services/api.js";
 
 const DEFAULT_OPTIONS = { include_overlay: true, generate_report: true, include_ml: false, include_frame_data: true, save_session: false };
 const PAGE_PATHS = { home: "/", exercises: "/exercises", analyze: "/analyze", results: "/results", history: "/history", therapist: "/therapist", coach: "/coach", about: "/about", login: "/login", register: "/register", profile: "/profile" };
@@ -73,8 +73,7 @@ function AppContent() {
     if (!user) { setError(t("upload.loginRequired")); return; }
     setIsLoading(true); setProgress(0); setError("");
     try {
-      const analyze = exercise === "sit_to_stand" ? analyzeSitToStandVideo : exercise === "knee_extension" ? analyzeKneeExtensionVideo : exercise === "shoulder_abduction" ? analyzeShoulderAbductionVideo : exercise === "hip_abduction" ? analyzeHipAbductionVideo : analyzeSquatVideo;
-      const data = await analyze(file, options, setProgress);
+      const data = await analyzeExerciseVideo(exercise, file, options, setProgress);
       setReport(data); setPage("results");
     } catch (requestError) {
       setError(analysisErrorMessage(requestError, t));
@@ -90,7 +89,7 @@ function AppContent() {
     {page === "results" && <Results report={report} originalVideoUrl={originalVideoUrl} onAnalyzeAnother={handleAnalyzeAnother} onGoAnalyze={() => setPage("analyze")} onViewHistory={() => setPage("history")} />}
     {page === "history" && <SessionHistory />}
     {page === "therapist" && <TherapistDashboard />}
-    {page === "coach" && ENABLE_REALTIME_COACHING_SPIKE && <RealtimeCoachingSpike />}
+    {page === "coach" && ENABLE_REALTIME_COACHING_SPIKE && <RealtimeCoachingSpike onConfirmSuggestion={(exerciseId) => { setExercise(exerciseId); setFile(null); setError(""); navigate("analyze"); }} />}
     {page === "about" && <About onStart={() => navigate("analyze")} />}
     {page === "login" && <Login onSuccess={() => navigate("profile")} onRegister={() => navigate("register")} />}
     {page === "register" && <Register onLogin={() => navigate("login")} />}

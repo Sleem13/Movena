@@ -61,7 +61,7 @@ export default function SessionHistory() {
         <label className="text-sm font-semibold text-slate-600" htmlFor="history-exercise">{t("common.exercise")}</label>
         <select id="history-exercise" className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm" value={exercise} onChange={(event) => setExercise(event.target.value)}>
           <option value="">{t("history.allExercises")}</option>
-          {["bodyweight_squat", "sit_to_stand", "knee_extension", "shoulder_abduction", "hip_abduction"].map((id) => <option key={id} value={id}>{exerciseText(id).name}</option>)}
+          {["bodyweight_squat", "sit_to_stand", "knee_extension", "shoulder_abduction", "hip_abduction", "push_up", "shoulder_press", "bicep_curl"].map((id) => <option key={id} value={id}>{exerciseText(id).name}</option>)}
         </select>
         <label className="text-sm font-semibold text-slate-600" htmlFor="history-status">{t("common.status")}</label>
         <select id="history-status" className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm" value={status} onChange={(event) => setStatus(event.target.value)}><option value="">{t("history.allStatuses")}</option><option value="success">{t("common.success")}</option><option value="rejected">{t("common.rejected")}</option></select>

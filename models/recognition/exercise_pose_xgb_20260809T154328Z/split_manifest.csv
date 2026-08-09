@@ -1,0 +1,114 @@
+group_id,exercise_id,split
+barbell biceps curl_1.mp4,bicep_curl,holdout
+barbell biceps curl_15.mp4,bicep_curl,holdout
+barbell biceps curl_17.mp4,bicep_curl,holdout
+barbell biceps curl_21.mp4,bicep_curl,holdout
+barbell biceps curl_6.mp4,bicep_curl,holdout
+squat_15.mp4,bodyweight_squat,holdout
+squat_19.mp4,bodyweight_squat,holdout
+squat_21.mp4,bodyweight_squat,holdout
+squat_22.mp4,bodyweight_squat,holdout
+squat_4.MOV,bodyweight_squat,holdout
+hammer curl_10.mp4,hammer_curl,holdout
+hammer curl_12.mp4,hammer_curl,holdout
+hammer curl_3.MOV,hammer_curl,holdout
+hammer curl_8.mp4,hammer_curl,holdout
+push-up_1.mp4,push_up,holdout
+push-up_16.mp4,push_up,holdout
+push-up_18.mp4,push_up,holdout
+push-up_21.mp4,push_up,holdout
+push-up_22.mp4,push_up,holdout
+shoulder press_10.mp4,shoulder_press,holdout
+shoulder press_4.MOV,shoulder_press,holdout
+shoulder press_5.mp4,shoulder_press,holdout
+shoulder press_6.mp4,shoulder_press,holdout
+barbell biceps curl_10.mp4,bicep_curl,train
+barbell biceps curl_11.mp4,bicep_curl,train
+barbell biceps curl_12.mp4,bicep_curl,train
+barbell biceps curl_13.mp4,bicep_curl,train
+barbell biceps curl_14.mp4,bicep_curl,train
+barbell biceps curl_16.mp4,bicep_curl,train
+barbell biceps curl_18.mp4,bicep_curl,train
+barbell biceps curl_19.mp4,bicep_curl,train
+barbell biceps curl_2.mp4,bicep_curl,train
+barbell biceps curl_20.mp4,bicep_curl,train
+barbell biceps curl_22.mp4,bicep_curl,train
+barbell biceps curl_23.mp4,bicep_curl,train
+barbell biceps curl_24.mp4,bicep_curl,train
+barbell biceps curl_25.mp4,bicep_curl,train
+barbell biceps curl_3.mp4,bicep_curl,train
+barbell biceps curl_4.mp4,bicep_curl,train
+barbell biceps curl_5.mp4,bicep_curl,train
+barbell biceps curl_7.mp4,bicep_curl,train
+barbell biceps curl_8.mp4,bicep_curl,train
+barbell biceps curl_9.mp4,bicep_curl,train
+squat_1.MOV,bodyweight_squat,train
+squat_10.mp4,bodyweight_squat,train
+squat_11.mp4,bodyweight_squat,train
+squat_12.mp4,bodyweight_squat,train
+squat_13.mp4,bodyweight_squat,train
+squat_14.mp4,bodyweight_squat,train
+squat_16.mp4,bodyweight_squat,train
+squat_17.mp4,bodyweight_squat,train
+squat_18.mp4,bodyweight_squat,train
+squat_2.MOV,bodyweight_squat,train
+squat_20.mp4,bodyweight_squat,train
+squat_23.mp4,bodyweight_squat,train
+squat_24.mp4,bodyweight_squat,train
+squat_25.mp4,bodyweight_squat,train
+squat_3.MOV,bodyweight_squat,train
+squat_5.MOV,bodyweight_squat,train
+squat_6.MOV,bodyweight_squat,train
+squat_7.mp4,bodyweight_squat,train
+squat_8.mp4,bodyweight_squat,train
+squat_9.mp4,bodyweight_squat,train
+hammer curl_1.MOV,hammer_curl,train
+hammer curl_11.mp4,hammer_curl,train
+hammer curl_13.mp4,hammer_curl,train
+hammer curl_14.mp4,hammer_curl,train
+hammer curl_15.mp4,hammer_curl,train
+hammer curl_16.mp4,hammer_curl,train
+hammer curl_17.mp4,hammer_curl,train
+hammer curl_18.mp4,hammer_curl,train
+hammer curl_19.mp4,hammer_curl,train
+hammer curl_2.MOV,hammer_curl,train
+hammer curl_4.MOV,hammer_curl,train
+hammer curl_5.MOV,hammer_curl,train
+hammer curl_6.MOV,hammer_curl,train
+hammer curl_7.MOV,hammer_curl,train
+hammer curl_9.mp4,hammer_curl,train
+push-up_10.mp4,push_up,train
+push-up_11.mp4,push_up,train
+push-up_12.mp4,push_up,train
+push-up_13.mp4,push_up,train
+push-up_14.mp4,push_up,train
+push-up_15.mp4,push_up,train
+push-up_17.mp4,push_up,train
+push-up_19.mp4,push_up,train
+push-up_2.mp4,push_up,train
+push-up_20.mp4,push_up,train
+push-up_23.mp4,push_up,train
+push-up_24.mp4,push_up,train
+push-up_25.mp4,push_up,train
+push-up_3.mp4,push_up,train
+push-up_4.mp4,push_up,train
+push-up_5.mp4,push_up,train
+push-up_6.mp4,push_up,train
+push-up_7.mp4,push_up,train
+push-up_8.mp4,push_up,train
+push-up_9.mp4,push_up,train
+shoulder press_1.mp4,shoulder_press,train
+shoulder press_13.mp4,shoulder_press,train
+shoulder press_14.mp4,shoulder_press,train
+shoulder press_15.mp4,shoulder_press,train
+shoulder press_16.mp4,shoulder_press,train
+shoulder press_17.mp4,shoulder_press,train
+shoulder press_19.MOV,shoulder_press,train
+shoulder press_20.MOV,shoulder_press,train
+shoulder press_21.mov,shoulder_press,train
+shoulder press_22.mp4,shoulder_press,train
+shoulder press_24.mp4,shoulder_press,train
+shoulder press_3.MOV,shoulder_press,train
+shoulder press_7.mp4,shoulder_press,train
+shoulder press_8.mp4,shoulder_press,train
+shoulder press_9.mp4,shoulder_press,train

@@ -1,0 +1,4 @@
+# Optional exercise-recognition training environment.
+-r requirements.txt
+xgboost==3.2.0
+torch>=2.6,<3

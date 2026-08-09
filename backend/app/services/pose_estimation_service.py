@@ -8,6 +8,11 @@ logger = logging.getLogger(__name__)
 
 
 LANDMARK_NAMES = {
+    0: "nose",
+    2: "left_eye",
+    5: "right_eye",
+    7: "left_ear",
+    8: "right_ear",
     11: "left_shoulder",
     12: "right_shoulder",
     13: "left_elbow",
@@ -24,6 +29,13 @@ LANDMARK_NAMES = {
     30: "right_heel",
     31: "left_foot_index",
     32: "right_foot_index",
+}
+
+QUALITY_LANDMARK_NAMES = {
+    "left_shoulder", "right_shoulder", "left_elbow", "right_elbow",
+    "left_wrist", "right_wrist", "left_hip", "right_hip", "left_knee",
+    "right_knee", "left_ankle", "right_ankle", "left_heel", "right_heel",
+    "left_foot_index", "right_foot_index",
 }
 
 
@@ -89,7 +101,10 @@ def extract_pose_landmarks(video_path: Path) -> list[dict[str, Any]]:
                 name: _landmark_to_dict(landmarks[index])
                 for index, name in LANDMARK_NAMES.items()
             }
-            visible_values = [point["visibility"] for point in selected.values()]
+            visible_values = [
+                point["visibility"] for name, point in selected.items()
+                if name in QUALITY_LANDMARK_NAMES
+            ]
             average_visibility = sum(visible_values) / len(visible_values)
             frame_landmarks.append(
                 {

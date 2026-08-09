@@ -72,6 +72,7 @@ export function Navbar({ currentPage, hasReport, onNavigate, user }) {
             <button
               key={id}
               onClick={() => onNavigate(id)}
+              aria-label={t(labelKey)}
               aria-current={currentPage === id ? "page" : undefined}
               className={`inline-flex min-h-10 shrink-0 items-center gap-2 rounded-xl px-3 text-sm font-semibold transition ${
                 currentPage === id

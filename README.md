@@ -1,10 +1,18 @@
 # PhysioVision AI
 
+> Exercise-coaching expansion is documented in [docs/exercise_coaching_adoption_plan.md](docs/exercise_coaching_adoption_plan.md). The pose-recognition path now supports XGBoost frame and calibrated GRU sequence development candidates as optional suggestions; low-confidence GRU results abstain, and the existing rule-based analyzers remain primary.
+
+The Coaching Lab at `/coach` can now upload a temporary movement clip to the temporal recognition endpoint, display ranked exercise suggestions, and continue to a supported analyzer only after explicit user confirmation. Unsupported recognized labels remain non-routable.
+
+Push-up, shoulder-press, and bicep-curl now have conservative rule-based MVP paths. They remain educational, require manual selection, and need reviewed real-video validation before controlled-pilot use. Hammer Curl remains disabled because the current pose contract cannot verify grip orientation.
+
+The sprint and beta sections below are historical gate snapshots. Their original five-exercise beta allowlist remains in force until the two new development analyzers pass the promotion gates.
+
 ## Sprint 29E — First-Wave External Beta Execution
 
 Sprint 29E execution assets are applied, but real first-wave execution has **not started**: invited testers, consent, assignments, feedback, and issues are all zero. The beta remains invite-only with no public launch, real patient data, clinical use, diagnosis/treatment claim, new exercise, or ML/DL promotion.
 
-Supported exercises remain `bodyweight_squat`, `sit_to_stand`, `knee_extension`, `shoulder_abduction`, and `hip_abduction`; planned exercises remain disabled. ML/DL remains experimental and rule-based analysis remains primary.
+Supported development rule-based exercises are `bodyweight_squat`, `sit_to_stand`, `knee_extension`, `shoulder_abduction`, `hip_abduction`, `push_up`, `shoulder_press`, and `bicep_curl`; planned exercises remain disabled. The external-beta allowlist remains the original five. ML/DL remains experimental and rule-based analysis remains primary.
 
 ```powershell
 python scripts/build_external_beta_monitoring_report.py

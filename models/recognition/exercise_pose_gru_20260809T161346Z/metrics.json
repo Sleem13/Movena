@@ -1,0 +1,207 @@
+{
+  "validation": {
+    "accuracy": 0.8260869565217391,
+    "balanced_accuracy": 0.8400000000000001,
+    "macro_f1": 0.8287878787878787,
+    "confusion_matrix": [
+      [
+        3,
+        0,
+        2,
+        0,
+        0
+      ],
+      [
+        0,
+        4,
+        0,
+        0,
+        1
+      ],
+      [
+        0,
+        0,
+        4,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        1,
+        4,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        4
+      ]
+    ],
+    "classification_report": {
+      "bicep_curl": {
+        "precision": 1.0,
+        "recall": 0.6,
+        "f1-score": 0.75,
+        "support": 5.0
+      },
+      "bodyweight_squat": {
+        "precision": 1.0,
+        "recall": 0.8,
+        "f1-score": 0.8888888888888888,
+        "support": 5.0
+      },
+      "hammer_curl": {
+        "precision": 0.5714285714285714,
+        "recall": 1.0,
+        "f1-score": 0.7272727272727273,
+        "support": 4.0
+      },
+      "push_up": {
+        "precision": 1.0,
+        "recall": 0.8,
+        "f1-score": 0.8888888888888888,
+        "support": 5.0
+      },
+      "shoulder_press": {
+        "precision": 0.8,
+        "recall": 1.0,
+        "f1-score": 0.8888888888888888,
+        "support": 4.0
+      },
+      "accuracy": 0.8260869565217391,
+      "macro avg": {
+        "precision": 0.8742857142857142,
+        "recall": 0.8400000000000001,
+        "f1-score": 0.8287878787878787,
+        "support": 23.0
+      },
+      "weighted avg": {
+        "precision": 0.8906832298136645,
+        "recall": 0.8260869565217391,
+        "f1-score": 0.8305884936319718,
+        "support": 23.0
+      }
+    }
+  },
+  "holdout": {
+    "accuracy": 0.8260869565217391,
+    "balanced_accuracy": 0.8300000000000001,
+    "macro_f1": 0.8355555555555554,
+    "confusion_matrix": [
+      [
+        4,
+        0,
+        1,
+        0,
+        0
+      ],
+      [
+        0,
+        4,
+        1,
+        0,
+        0
+      ],
+      [
+        1,
+        0,
+        3,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        1,
+        4,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        4
+      ]
+    ],
+    "classification_report": {
+      "bicep_curl": {
+        "precision": 0.8,
+        "recall": 0.8,
+        "f1-score": 0.8,
+        "support": 5.0
+      },
+      "bodyweight_squat": {
+        "precision": 1.0,
+        "recall": 0.8,
+        "f1-score": 0.8888888888888888,
+        "support": 5.0
+      },
+      "hammer_curl": {
+        "precision": 0.5,
+        "recall": 0.75,
+        "f1-score": 0.6,
+        "support": 4.0
+      },
+      "push_up": {
+        "precision": 1.0,
+        "recall": 0.8,
+        "f1-score": 0.8888888888888888,
+        "support": 5.0
+      },
+      "shoulder_press": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 4.0
+      },
+      "accuracy": 0.8260869565217391,
+      "macro avg": {
+        "precision": 0.86,
+        "recall": 0.8300000000000001,
+        "f1-score": 0.8355555555555554,
+        "support": 23.0
+      },
+      "weighted avg": {
+        "precision": 0.8695652173913043,
+        "recall": 0.8260869565217391,
+        "f1-score": 0.8386473429951692,
+        "support": 23.0
+      }
+    }
+  },
+  "holdout_loss": 0.7339780330657959,
+  "best_validation_macro_f1": 0.8287878787878787,
+  "epochs_completed": 16,
+  "video_group_leakage": false,
+  "participant_grouped_holdout": false,
+  "validation_scope": "stratified_video_group_train_validation_holdout",
+  "deployment_status": "development_candidate",
+  "calibration": {
+    "method": "temperature_scaling_validation",
+    "temperature": 0.5193533936647152,
+    "validation_nll_before": 0.7358315582126675,
+    "validation_nll_after": 0.6369503034408383,
+    "validation_ece_before": 0.244709996971096,
+    "validation_ece_after": 0.2015445022673063,
+    "holdout_nll_before": 0.7094013380880329,
+    "holdout_nll_after": 0.5412928209601089,
+    "holdout_ece_before": 0.2610321113603589,
+    "holdout_ece_after": 0.10369724783591407
+  },
+  "abstention": {
+    "threshold": 0.6355557051256083,
+    "accepted_count": 14,
+    "coverage": 0.6086956521739131,
+    "selective_accuracy": 0.8571428571428571,
+    "target_precision": 0.85,
+    "minimum_coverage": 0.25,
+    "holdout_accepted_count": 15,
+    "holdout_coverage": 0.6521739130434783,
+    "holdout_selective_accuracy": 0.9333333333333333,
+    "holdout_abstention_rate": 0.34782608695652173
+  }
+}

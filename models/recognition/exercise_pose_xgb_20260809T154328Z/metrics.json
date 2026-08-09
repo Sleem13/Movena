@@ -1,0 +1,20 @@
+{
+  "accuracy": 0.746366876885111,
+  "balanced_accuracy": 0.7560752820237102,
+  "macro_f1": 0.7311211063395595,
+  "per_class_recall": {
+    "bicep_curl": 0.8993135011441648,
+    "bodyweight_squat": 0.8253731343283582,
+    "hammer_curl": 0.25336927223719674,
+    "push_up": 0.9984825493171472,
+    "shoulder_press": 0.8038379530916845
+  },
+  "train_rows": 18952,
+  "test_rows": 3647,
+  "train_video_groups": 90,
+  "test_video_groups": 23,
+  "video_group_leakage": false,
+  "participant_grouped_holdout": false,
+  "validation_scope": "stratified_video_group_holdout",
+  "deployment_status": "development_candidate"
+}
