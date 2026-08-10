@@ -1,4 +1,7 @@
 import pytest
+import json
+import hashlib
+import joblib
 
 from app.services import exercise_recognition_service as service
 
@@ -88,3 +91,37 @@ def test_unsupported_recognition_is_not_actionable():
     })
     assert result["analyzer_available"] is False
     assert result["suggestion_actionable"] is False
+
+
+def test_artifact_integrity_rejects_tampered_bytes(tmp_path, monkeypatch):
+    model_id = "pinned_test_model"
+    directory = tmp_path / model_id
+    directory.mkdir()
+    artifact = directory / "model.joblib"
+    joblib.dump({"candidate": True}, artifact)
+    metadata = {
+        "model_id": model_id,
+        "artifact_format": "joblib",
+        "feature_columns": ["f1"],
+        "classes": ["push_up"],
+        "artifact_sha256": hashlib.sha256(artifact.read_bytes()).hexdigest(),
+    }
+    (directory / "metadata.json").write_text(json.dumps(metadata), encoding="utf-8")
+    monkeypatch.setattr(service, "RECOGNITION_MODELS_DIR", tmp_path)
+    assert service.verify_recognition_artifact(model_id)["valid"] is True
+    artifact.write_bytes(artifact.read_bytes() + b"tampered")
+    result = service.verify_recognition_artifact(model_id)
+    assert result["valid"] is False
+    assert "SHA-256" in result["errors"][0]
+
+
+def test_installed_active_artifacts_pass_contract_and_smoke_inference():
+    health = service.initialize_active_recognition_models()
+    assert health
+    assert all(result["valid"] for result in health.values())
+
+
+def test_inactive_model_override_is_rejected():
+    assert service.load_recognition_model(
+        "exercise_pose_gru_unconfigured", required_format="torchscript_sequence"
+    ) is None

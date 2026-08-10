@@ -33,6 +33,7 @@ const FRIENDLY_MESSAGES: Record<string, string> = {
   EXERCISE_NOT_SUPPORTED: "This exercise is planned and cannot be analyzed yet.",
   PROCESSING_ERROR: "The analysis could not be completed. Retry with a shorter, clearly recorded video.",
   MISSING_FILE: "Select a video before starting analysis.",
+  SUBJECT_SWITCH_DETECTED: "More than one person may have been tracked. Record only the person being analyzed, and keep coaches, spotters, and bystanders outside the frame.",
 };
 
 export const isTokenError = (code?: string) => code === "INVALID_TOKEN" || code === "TOKEN_EXPIRED";

@@ -39,7 +39,9 @@ def test_video_recognition_endpoint_extracts_sequence_and_removes_upload(tmp_pat
         route,
         "predict_exercise_from_sequence",
         lambda sequence, model_id=None: {
-            "status": "success", "suggested_exercise_id": "push_up", "confidence": 0.8
+            "status": "success", "suggested_exercise_id": "push_up", "confidence": 0.8,
+            "model_id": "exercise_pose_gru_test", "analyzer_available": True,
+            "confidence_threshold": 0.6,
         },
     )
     monkeypatch.setattr(route, "remove_file", lambda path: removed.append(path))
@@ -50,4 +52,11 @@ def test_video_recognition_endpoint_extracts_sequence_and_removes_upload(tmp_pat
     assert response.status_code == 200
     assert response.json()["suggested_exercise_id"] == "push_up"
     assert response.json()["usable_pose_frames"] == 1
+    assert response.json()["audit_status"] == "saved"
+    event_id = response.json()["recognition_event_id"]
+    confirmation = client.post("/api/v1/recognition/confirm", json={
+        "event_id": event_id, "confirmed_exercise_id": "push_up",
+    })
+    assert confirmation.status_code == 200
+    assert confirmation.json()["confirmed_exercise_id"] == "push_up"
     assert removed == [saved]

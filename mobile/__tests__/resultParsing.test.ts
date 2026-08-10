@@ -16,7 +16,7 @@ describe("result safety behavior", () => {
   it("handles ML not_applicable without presenting a prediction", () => {
     expect(mlStatusMessage({ enabled: false, warning: "ML is not applicable for this exercise." })).toMatch(/not applicable/i);
   });
-  it.each(["bodyweight_squat", "sit_to_stand", "knee_extension", "shoulder_abduction", "hip_abduction"])("returns exercise-specific retry guidance for %s", (exercise) => {
+  it.each(["bodyweight_squat", "sit_to_stand", "knee_extension", "shoulder_abduction", "hip_abduction", "push_up", "shoulder_press", "bicep_curl"])("returns exercise-specific retry guidance for %s", (exercise) => {
     expect(rejectedRecordingTip(exercise)).toMatch(/view/i);
   });
   it("treats status=error as a non-scoreable result", () => {

@@ -24,18 +24,31 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/v1/analyze", tags=["analysis"])
 
 
-def error_response(status_code: int, error_code: str, message: str) -> JSONResponse:
-    payload = ErrorResponse(error_code=error_code, message=message)
+def error_response(
+    status_code: int,
+    error_code: str,
+    message: str,
+    details: list[str] | None = None,
+) -> JSONResponse:
+    payload = ErrorResponse(error_code=error_code, message=message, details=details or [])
     return JSONResponse(status_code=status_code, content=payload.model_dump())
 
 
-def pose_error_code(message: str) -> str:
+def pose_error_code(error: str | Exception) -> str:
+    explicit_code = getattr(error, "error_code", None)
+    if explicit_code:
+        return str(explicit_code)
+    message = str(error)
     lowered = message.lower()
     if "no pose" in lowered:
         return "NO_POSE_DETECTED"
     if "open" in lowered or "readable frames" in lowered or "too short" in lowered:
         return "VIDEO_OPEN_FAILED"
     return "PROCESSING_ERROR"
+
+
+def pose_error_details(error: Exception) -> list[str]:
+    return list(getattr(error, "details", []) or [])
 
 
 @router.post(
@@ -139,8 +152,9 @@ async def analyze_squat(
         logger.warning("Pose estimation failed: %s", exc)
         return error_response(
             status.HTTP_422_UNPROCESSABLE_ENTITY,
-            pose_error_code(str(exc)),
+            pose_error_code(exc),
             str(exc),
+            pose_error_details(exc),
         )
     except Exception as exc:
         logger.exception("Internal processing error")

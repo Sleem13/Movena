@@ -15,13 +15,20 @@
       "distribution": "internal",
       "android": { "buildType": "apk" },
       "environment": "preview",
-      "env": { "EXPO_PUBLIC_APP_ENV": "preview" }
+      "env": {
+        "EXPO_PUBLIC_APP_ENV": "preview",
+        "EXPO_PUBLIC_API_BASE_URL": "http://10.2.6.38:8010"
+      }
     },
     "preview-staging": {
       "distribution": "internal",
+      "autoIncrement": true,
       "android": { "buildType": "apk" },
       "environment": "preview",
-      "env": { "EXPO_PUBLIC_APP_ENV": "staging" }
+      "env": {
+        "EXPO_PUBLIC_APP_ENV": "staging",
+        "EXPO_PUBLIC_API_BASE_URL": "https://name-physiovision-api-staging.onrender.com"
+      }
     },
     "production": {
       "autoIncrement": true,

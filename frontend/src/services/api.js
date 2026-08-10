@@ -96,6 +96,13 @@ export async function recognizeExerciseVideo(videoFile, onProgress) {
   return response.data;
 }
 
+export async function confirmRecognitionSuggestion(eventId, exerciseId) {
+  return (await api.post("/api/v1/recognition/confirm", {
+    event_id: eventId,
+    confirmed_exercise_id: exerciseId,
+  })).data;
+}
+
 export async function listSavedSessions(params = {}) {
   const response = await api.get("/api/v1/sessions", { params });
   return response.data;

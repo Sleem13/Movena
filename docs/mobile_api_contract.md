@@ -8,7 +8,7 @@ Only a reviewed private HTTPS API may be configured in an external-beta build. A
 
 ## Sprint 25 internal pilot contract
 
-The client continues to use backend-side analysis for the five supported exercises. Pilot QA must record the exact app/backend versions and environment, preserve structured `success`, `rejected`, and `error` states, suppress scores for rejected input, and never infer missing fields. ML/DL and recognition remain experimental and are not pilot acceptance criteria.
+The client uses backend-side analysis for eight supported exercises: bodyweight squat, sit-to-stand, knee extension, shoulder abduction, hip abduction, push-up, shoulder press, and bicep curl. Pilot QA must record the exact app/backend versions and environment, preserve structured `success`, `rejected`, and `error` states, suppress scores for rejected input, and never infer missing fields. Recognition is suggestion-only and never replaces rule-based validity or form analysis.
 
 The app must not send analytics containing raw media, filenames, landmarks, patient information, tokens, authorization headers, artifact URLs, diagnoses, or free-text health data. Controlled pilot events, if later approved, are limited to the event and coarse metadata allowlist in `pilot_analytics_logging_plan.md`. Local LAN testing uses development mode; the internal staging build requires the real reviewed HTTPS API URL.
 
@@ -22,7 +22,7 @@ Staging uses `EXPO_PUBLIC_API_BASE_URL=https://<staging-backend>` from the EAS p
 
 ## Sprint 22 client reliability behavior
 
-The mobile client maps `FILE_TOO_LARGE`, `UNSUPPORTED_FILE_TYPE`, `EMPTY_FILE`, `INVALID_FILENAME`, `AUTH_REQUIRED`, `INVALID_TOKEN`, `TOKEN_EXPIRED`, `INSUFFICIENT_ROLE`, `INVALID_*_VIDEO`, `NETWORK_ERROR`, `TIMEOUT`, and `SERVER_UNAVAILABLE` to non-technical messages. Rejected analysis is a result state, not a transport crash. `401`, `INVALID_TOKEN`, and `TOKEN_EXPIRED` clear the SecureStore token and request login. Upload cancel/retry retains the manually selected exercise and file; no token, raw media, or patient identifier may enter logs.
+The mobile client maps `FILE_TOO_LARGE`, `UNSUPPORTED_FILE_TYPE`, `EMPTY_FILE`, `INVALID_FILENAME`, `AUTH_REQUIRED`, `INVALID_TOKEN`, `TOKEN_EXPIRED`, `INSUFFICIENT_ROLE`, `INVALID_*_VIDEO`, `SUBJECT_SWITCH_DETECTED`, `NETWORK_ERROR`, `TIMEOUT`, and `SERVER_UNAVAILABLE` to non-technical messages. Rejected analysis is a result state, not a transport crash. `401`, `INVALID_TOKEN`, and `TOKEN_EXPIRED` clear the SecureStore token and request login. Upload cancel/retry retains the selected exercise and file; recognition confirmation carries that same transient file into the analyzer. No token, raw media, filename, pose sequence, or patient identifier may enter recognition audit storage or logs.
 
 Missing movement score, score breakdown, confidence, pose quality, artifacts, or ML output must remain missing/unavailable. Clients never synthesize a score. Native LAN testing uses `http://<LAN_IP>:8010`; Android emulator may use `http://10.0.2.2:8010`.
 

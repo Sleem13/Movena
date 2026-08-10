@@ -28,10 +28,26 @@ const EXERCISE_GUIDANCE: Record<string, string[]> = {
     "Keep the pelvis, hip, knee, and ankle visible",
     "Move the leg away from the body and avoid trunk leaning",
   ],
+  push_up: [
+    "Use a stable side view",
+    "Keep shoulders, hips, and ankles visible",
+    "Show controlled lowering and return phases",
+  ],
+  shoulder_press: [
+    "Use a stable front view",
+    "Keep shoulders, elbows, wrists, and trunk visible",
+    "Use only an approved load or unloaded practice",
+  ],
+  bicep_curl: [
+    "Use a stable front or slight side view",
+    "Keep shoulder, elbow, wrist, and trunk visible",
+    "Show the arm extending, flexing, and extending again",
+  ],
 };
 
 export function buildCameraGuidance(exercise: ExerciseMetadata): string[] {
   return [
+    "Keep coaches, spotters, and bystanders outside the frame — analyze one person only",
     ...(EXERCISE_GUIDANCE[exercise.exercise_id] || [`Keep ${exercise.required_landmarks.join(", ")} visible`]),
     "Keep the camera stable",
     "Use good, even lighting",

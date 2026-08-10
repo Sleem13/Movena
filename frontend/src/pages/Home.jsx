@@ -160,7 +160,7 @@ export default function Home({ onStart }) {
             <h2 className="mt-3 text-2xl font-bold">{t("home.safetyTitle")}</h2>
             <p className="mt-3 text-sm leading-6 text-slate-300">{t("home.safetyDescription")}</p>
           </div>
-          <Button type="button" onClick={onStart} className="shrink-0 bg-white text-clinical-ink hover:bg-blue-50">
+          <Button type="button" variant="secondary" onClick={onStart} className="shrink-0">
             {t("home.analyzeVideo")}
             <ArrowRight size={17} />
           </Button>

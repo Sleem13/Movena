@@ -1,114 +1,351 @@
-# PhysioVision AI Mobile MVP
+# PhysioVision AI Mobile
 
-## Sprint 31 second-wave status
+Expo/React Native Android client for guided exercise recognition and video-based movement analysis.
 
-The second external beta wave is **NO-GO / blocked**. The post-fix Android candidate has no verified physical-device installation or QA record, Sprint 30 has no real beta results, and private tester/support/privacy links remain inactive. Do not distribute a second-wave build or invite testers. Mobile continues to support only the five registered exercises and makes no clinical claim.
+## User experience
 
-## Sprint 29 execution status
+The application uses five persistent destinations:
 
-Sprint 29 execution assets are being prepared, but the actual external beta has not started and remains blocked. Mobile `0.28.0` / RC `0.28.0-rc.1` has no submitted EAS artifact or physical-device approval, and private staging plus active feedback/support/privacy links are unavailable.
+- **Home** — one primary entry point for starting an analysis.
+- **Analyze** — guided Exercise → Video → Review → Results workflow.
+- **Exercises** — supported movement library and manual selection.
+- **History** — protected saved-session review.
+- **More** — profile, login, safety, privacy, and limitations.
 
-Do not invite testers or distribute the app publicly. Use only non-identifying test videos after a future GO decision; never upload real patients or sensitive health information. The app is not for clinical use, diagnosis, treatment, or medical decisions. The five supported exercises, rule-based backend primacy, experimental ML/DL/recognition boundary, and no-on-device-analysis architecture remain unchanged.
+Users may identify an exercise from a short video or choose it manually. A confirmed recognition suggestion carries the same temporary video into analysis, avoiding a second selection or upload.
 
-## Sprint 28 launch candidate
+## Supported analysis workflow
 
-Mobile version `0.28.0` represents engineering candidate `0.28.0-rc.1`. Staging/production now fails closed unless `EXPO_PUBLIC_API_BASE_URL` is a real HTTPS non-placeholder URL. The app shows an invite-only/not-public label and provides a known-limitations screen from onboarding, the library, and results.
+1. Record or choose a short exercise video.
+2. Identify the movement automatically or choose it manually.
+3. Confirm the exercise.
+4. Review the selected video and optional analysis settings.
+5. Upload once to the configured FastAPI backend.
+6. Review repetitions, movement feedback, confidence, and optional artifacts.
 
-The candidate remains **NO-GO** and no EAS build was submitted. A real private staging URL, APK install, physical-device upload/network/token/artifact QA, and active private support/feedback/deletion links are still required. Never distribute publicly or upload real patients, identifiable personal information, or sensitive health information. The five supported exercises and backend rule-based primacy are unchanged; ML/DL/recognition remain experimental and no analysis runs on device.
+The backend performs pose estimation and movement analysis. No pose model runs on the phone.
+
+## Requirements
+
+- Node.js and npm.
+- Expo SDK 57-compatible dependencies from `package-lock.json`.
+- Android phone or Android emulator.
+- A running backend for local development, or the deployed HTTPS backend for staging builds.
+- Expo/EAS account access for signed cloud builds.
+
+## Install dependencies
+
+From the repository root:
 
 ```powershell
-npm test
-npm run typecheck
-
-# Run only after a reviewed private HTTPS URL exists in the EAS preview environment:
-eas build --profile preview-staging --platform android
+Set-Location mobile
+npm ci
+npx expo install --check
 ```
 
-## Sprint 27 external closed beta readiness
+Use `npm ci` for reproducible builds. Use `npm install` only when intentionally changing dependencies.
 
-The mobile client is included in a future invite-only beta plan, but no external build is approved. The decision is **NO-GO** until private HTTPS staging, an installable non-public Android build, physical-device upload/network/token/artifact QA, and active support/privacy contacts are evidenced. Do not distribute through public stores or links.
+## Configure the backend URL
 
-External testing, if later approved, is limited to tester-owned non-identifying test videos and the five supported exercises. Never upload real patients, identifiable personal information, or sensitive health information. Rule-based backend analysis remains primary; ML/DL and recognition remain experimental, and no analysis runs on device. See the [tester onboarding](../docs/external_tester_onboarding.md), [known limitations](../docs/external_beta_known_limitations.md), and [go/no-go decision](../docs/external_beta_go_no_go_decision.md).
+### Physical Android phone with a local backend
 
-## Sprint 26 stability candidate
-
-Mobile version `0.26.0` prevents same-tick duplicate upload requests, retains retry/cancel behavior, adds exercise-specific camera and rejected-result guidance, handles null/zero/ML-not-applicable result states safely, and maps expired artifacts and processing failures to non-technical messages. Tokens remain in Expo SecureStore and are never logged.
-
-This is an internal automated-test-validated candidate, not a public or installed pilot release. No real patient data is permitted. The five supported exercises are unchanged, backend rule-based analysis remains primary, and ML/DL/recognition remain experimental. Private staging, Android build installation, physical-device QA, and pilot feedback are still blocked.
-
-## Sprint 25 internal pilot status
-
-The mobile client is prepared for a limited internal product-QA pilot, but no pilot build is approved or installed yet. The `preview-staging` build remains blocked until a real private HTTPS backend URL is configured and deployment/device gates pass. Do not distribute publicly, onboard patients, or upload patient-identifiable media.
-
-Pilot testers may use only controlled test videos and the five supported exercises. Rule-based backend analysis remains primary; the app has no on-device pose estimation or ML/DL. Experimental ML/DL and recognition are not clinical features. Feedback reports product reliability and clarity only, not clinical validity. Follow the [tester onboarding](../docs/internal_tester_onboarding.md), [test script](../docs/internal_pilot_test_script.md), and [readiness checklist](../docs/internal_pilot_readiness_checklist.md).
-
-## Sprint 24 Android build status
-
-The EAS project is linked and `preview-staging` is configured for internal APK distribution. Build submission is blocked because the EAS preview environment has no `EXPO_PUBLIC_API_BASE_URL` and no private staging API exists. After deployment, set the real HTTPS URL, run `eas build --profile preview-staging --platform android`, and record/install the artifact internally. No store submission is authorized.
-
-## Sprint 23 internal staging
-
-The `preview-staging` EAS profile is internal-only and reads `EXPO_PUBLIC_API_BASE_URL` from the EAS `preview` environment. Configure it with `eas env:create`, verify with `eas env:list --environment preview`, then run `eas build --profile preview-staging --platform android`. Do not publish the build or place backend secrets in `EXPO_PUBLIC_*` values. See [mobile staging configuration](../docs/mobile_staging_configuration.md).
-
-Expo/React Native TypeScript client for the five supported PhysioVision AI rule-based analyzers. The app performs no on-device pose estimation or ML/DL; videos are uploaded temporarily to FastAPI for backend-side analysis.
-
-Sprint 21 completed the engineering MVP. Sprint 22 prepares internal physical-device QA and cloud deployment; it is not a public release.
-
-## Setup
+Create the mobile environment file:
 
 ```powershell
-cd mobile
-npm install
+Set-Location mobile
 Copy-Item .env.example .env
-npx expo start
+notepad .env
 ```
 
-Set `EXPO_PUBLIC_API_BASE_URL` in `.env`:
+Set the values to the backend computer's LAN IPv4 address:
 
-- Android emulator: `http://10.0.2.2:8010`
-- Physical phone on the same Wi-Fi: `http://192.168.x.x:8010` using the development computer's LAN address
-- iOS simulator on the same computer may use `http://127.0.0.1:8010`
-- Expo web defaults to `http://127.0.0.1:8010` when no `.env` override is provided
+```dotenv
+EXPO_PUBLIC_API_BASE_URL=http://192.168.1.50:8010
+EXPO_PUBLIC_APP_ENV=development
+```
 
-Start FastAPI on the matching LAN-visible host/port, for example `python -m uvicorn app.main:app --host 0.0.0.0 --port 8010` from `backend/`. The phone and computer must share Wi-Fi, the private-network firewall must allow Python/TCP 8010, and VPN/WARP must not block LAN traffic. Never use `localhost` on a physical phone. Configure `CORS_ALLOWED_ORIGINS` explicitly when required; native requests do not use a browser origin, while Expo web does.
-
-## Commands
+Replace `192.168.1.50` with the value returned by:
 
 ```powershell
-npm test
+Get-NetIPAddress -AddressFamily IPv4 |
+  Where-Object { $_.IPAddress -notlike '127.*' -and $_.IPAddress -notlike '169.254.*' } |
+  Select-Object InterfaceAlias,IPAddress
+```
+
+Start the backend from the repository root:
+
+```powershell
+Set-Location backend
+..\.venv\Scripts\python.exe -m uvicorn app.main:app --env-file ..\.env --host 0.0.0.0 --port 8010
+```
+
+Test from the phone browser before opening the app:
+
+```text
+http://192.168.1.50:8010/health
+http://192.168.1.50:8010/api/v1/exercises
+```
+
+The phone and computer must share Wi-Fi. Do not use `localhost` or `127.0.0.1` on a physical phone because those addresses refer to the phone itself.
+
+### Android emulator with a local backend
+
+Use Android's host-machine alias:
+
+```dotenv
+EXPO_PUBLIC_API_BASE_URL=http://10.0.2.2:8010
+EXPO_PUBLIC_APP_ENV=development
+```
+
+### Deployed staging backend
+
+The `preview-staging` EAS profile currently uses:
+
+```text
+https://name-physiovision-api-staging.onrender.com
+```
+
+Verify it before building:
+
+```powershell
+Invoke-RestMethod https://name-physiovision-api-staging.onrender.com/health
+Invoke-RestMethod https://name-physiovision-api-staging.onrender.com/ready
+Invoke-RestMethod https://name-physiovision-api-staging.onrender.com/api/v1/recognition/models
+```
+
+## Run the application for development
+
+Start Expo with a clean bundler cache:
+
+```powershell
+Set-Location mobile
+npx expo start --clear
+```
+
+Then choose one of these options:
+
+- Press `a` for an Android emulator.
+- Scan the QR code with a compatible development client.
+- Run `npx expo start --web` for layout testing; browser CORS rules apply to web but not native Android requests.
+
+For a development-client build:
+
+```powershell
+Set-Location mobile
+npx expo start --dev-client --clear
+```
+
+## Validate before building
+
+Run every command from `mobile/`:
+
+```powershell
+npm ci
+npx expo install --check
 npm run typecheck
-npx expo start
-npx expo start --dev-client
+npm test -- --runInBand
+npx expo export --platform android
 ```
 
-The project targets Expo SDK 57. Press `a` for an Android emulator or use an SDK 57 development build. During Expo SDK transition periods, the store version of Expo Go may lag the newest SDK; follow the current Expo compatibility guidance before scanning a physical-device QR code.
+Do not continue to EAS if TypeScript, tests, dependency checks, or the Android bundle fails.
 
-## Mobile flow
+## Build an installable Android APK
 
-Onboarding → Exercise Library → Exercise Details → Camera Guidance → Video Selection/Recording → Upload → Result. History, login/profile, and safety screens are also included. JWT access tokens are stored with `expo-secure-store`, never AsyncStorage.
+The `preview-staging` profile creates an internally distributed APK, uses the deployed HTTPS backend, includes the PhysioVision icon/splash assets, and automatically increments Android `versionCode`.
 
-Supported exercises are bodyweight squat, sit-to-stand, knee extension, shoulder abduction, and hip abduction. Planned exercises appear disabled. Manual exercise selection and rule-based biomechanics remain primary; exercise recognition and ML/DL remain experimental.
-
-The picker supports existing videos and a camera recording up to 60 seconds where the platform camera honors that setting. The UI displays available metadata, rejects unsupported or oversized files early, reports upload progress, permits cancellation, prevents double submit, retains the selection for retry, parses structured FastAPI errors, and suppresses movement scores for rejected/error input.
-
-## Internal EAS development build
+Run these exact PowerShell commands manually:
 
 ```powershell
-npm install -g eas-cli
-eas login
-eas build:configure
-eas build --profile development --platform android
+Set-Location C:\Users\Admin\Documents\GitHub\PhysioVision-AI\mobile
+
+npm ci
+npx expo install --check
+npm run typecheck
+npm test -- --runInBand
+npx expo export --platform android
+
+npx eas-cli login
+npx eas-cli whoami
+npx eas-cli build --platform android --profile preview-staging --non-interactive --wait
 ```
 
-`eas.json` contains internal development/preview profiles and a production placeholder only. Do not place secrets in `EXPO_PUBLIC_*` values or commit `.env`. EAS login, project linking, signing, and a physical-device install require owner credentials and remain manual gates.
+The final command uploads the source to EAS, signs the Android application with the configured remote keystore, waits for completion, and prints the APK installation URL.
 
-## Limitations and safety
+To submit the build and return immediately instead of waiting in the terminal:
 
-- Analysis requires network access to a configured FastAPI backend.
-- Upload progress covers transfer; backend processing duration depends on video length and CPU.
-- Artifacts are temporary and may expire.
-- Expired/invalid access tokens are cleared from SecureStore, but auth has no refresh-token or server-side logout revocation flow yet.
-- Physical Android/iOS execution is not proven by automated tests; follow the physical-device and internal-test checklists.
-- `npm audit` currently reports moderate transitive advisories in Expo CLI/config build tooling. Expo 57 is the current compatible SDK and Expo's checker passes; reassess advisories with each SDK/toolchain patch rather than applying an incompatible forced downgrade.
-- This development app is not medical-record infrastructure and must not contain real patient-identifiable information.
-- PhysioVision AI supports exercise monitoring and does not replace assessment by a licensed physiotherapist. It does not diagnose, detect injury or weakness, or prescribe treatment.
+```powershell
+npx eas-cli build --platform android --profile preview-staging --non-interactive --no-wait
+```
+
+Check the latest Android build later:
+
+```powershell
+npx eas-cli build:list --platform android --limit 1
+```
+
+Open the printed EAS build URL on the phone, download the APK, permit installation from that browser when Android asks, and install the application.
+
+## Build a local Android debug APK on Windows
+
+The local Gradle build requires the Android SDK path and Android Studio's bundled JDK. Run the commands in this order:
+
+```powershell
+Set-Location C:\Users\Admin\Documents\GitHub\PhysioVision-AI\mobile
+
+$env:ANDROID_HOME = "$env:LOCALAPPDATA\Android\Sdk"
+$env:ANDROID_SDK_ROOT = $env:ANDROID_HOME
+$env:JAVA_HOME = "C:\Program Files\Android\Android Studio\jbr"
+$env:Path = "$env:JAVA_HOME\bin;$env:ANDROID_HOME\platform-tools;$env:Path"
+
+npm ci
+npx expo prebuild --platform android --clean
+Set-Content -LiteralPath android\local.properties -Value "sdk.dir=$($env:ANDROID_HOME.Replace('\','/'))"
+
+Set-Location android
+.\gradlew.bat assembleDebug --no-daemon
+```
+
+The APK is created at:
+
+```text
+mobile/android/app/build/outputs/apk/debug/app-debug.apk
+```
+
+The `android/` directory is generated native output in this managed Expo project. After copying the APK elsewhere, it can be removed:
+
+```powershell
+Set-Location C:\Users\Admin\Documents\GitHub\PhysioVision-AI\mobile
+Remove-Item -LiteralPath android -Recurse -Force
+```
+
+## Build a local-network preview APK
+
+The current `preview` profile contains a LAN backend address. Confirm that `mobile/eas.json` contains the current computer IP before running this profile.
+
+```powershell
+Set-Location C:\Users\Admin\Documents\GitHub\PhysioVision-AI\mobile
+npx eas-cli build --platform android --profile preview --non-interactive --wait
+```
+
+This APK works only while the phone can reach that LAN address and the local backend is running on port `8010`.
+
+## Build a development-client APK
+
+Use this build when native-module debugging or Expo development-client features are required:
+
+```powershell
+Set-Location C:\Users\Admin\Documents\GitHub\PhysioVision-AI\mobile
+npx eas-cli build --platform android --profile development --non-interactive --wait
+```
+
+After installation, start Metro:
+
+```powershell
+npx expo start --dev-client --clear
+```
+
+## Build a production Android App Bundle
+
+Google Play uses an Android App Bundle (`.aab`), not the internal APK profile. Before building, configure the production EAS public variables:
+
+```powershell
+Set-Location C:\Users\Admin\Documents\GitHub\PhysioVision-AI\mobile
+$env:PHYSIOVISION_PRODUCTION_API = "https://api.physiovision.ai"
+npx eas-cli env:create --environment production --name EXPO_PUBLIC_API_BASE_URL --value $env:PHYSIOVISION_PRODUCTION_API --visibility plaintext
+npx eas-cli env:list --environment production
+```
+
+Then validate and build:
+
+```powershell
+npm ci
+npx expo install --check
+npm run typecheck
+npm test -- --runInBand
+npx expo export --platform android
+npx eas-cli build --platform android --profile production --non-interactive --wait
+```
+
+Replace the staging Render URL with the reviewed production API URL before a real store release.
+
+## Android branding
+
+Brand assets are configured in `app.json`:
+
+```text
+assets/images/icon.png
+assets/images/adaptive-icon.png
+assets/images/splash-icon.png
+assets/images/favicon.png
+```
+
+After changing any icon, splash screen, native plugin, Android package setting, or permission, create a new native build. Restarting Metro alone does not update installed native assets.
+
+## Build profiles
+
+| Profile | Output/use | Backend |
+|---|---|---|
+| `development` | Internal development-client APK | Development environment |
+| `preview` | Internal LAN-test APK | IP configured in `eas.json` |
+| `preview-staging` | Internal installable staging APK | Deployed HTTPS staging API |
+| `production` | Store-oriented Android App Bundle | Production EAS environment |
+
+## Common problems
+
+### `Cannot reach PhysioVision AI`
+
+- Confirm `/health` works from the phone browser.
+- Confirm the app was built with the intended `EXPO_PUBLIC_API_BASE_URL`.
+- For local testing, keep the phone and computer on the same Wi-Fi.
+- Allow Python through Windows Firewall on private networks.
+- Disable VPN/WARP temporarily if it blocks LAN traffic.
+
+### Recognition model unavailable
+
+Check:
+
+```powershell
+$env:PHYSIOVISION_API = "https://name-physiovision-api-staging.onrender.com"
+Invoke-RestMethod "$env:PHYSIOVISION_API/api/v1/recognition/models"
+```
+
+The response must report an available temporal recognition model.
+
+### Camera unavailable
+
+An emulator, desktop browser, or computer without a camera may report this normally. On a phone, verify Android camera permission under **Settings → Apps → PhysioVision AI → Permissions**. Users can still choose an existing video.
+
+### APK will not update
+
+The installed build and new build must use the same Android package and signing key, and the new build needs a higher `versionCode`. The `preview-staging` and `production` profiles use `autoIncrement`.
+
+### PowerShell blocks npm scripts
+
+Use the command shim without changing machine-wide policy:
+
+```powershell
+npm.cmd ci
+npm.cmd run typecheck
+npm.cmd test -- --runInBand
+```
+
+## Security and data handling
+
+- Never place secrets in `EXPO_PUBLIC_*`; these variables are readable in the built client.
+- JWT access tokens use Expo SecureStore.
+- Videos are uploaded temporarily to the configured backend.
+- Artifact URLs may expire.
+- Use non-identifying test videos until privacy, consent, retention, and deletion workflows are approved.
+- The application is not medical-record infrastructure.
+
+## Safety boundary
+
+PhysioVision AI supports exercise monitoring and coaching conversations. It does not diagnose conditions, prescribe treatment, replace clinical assessment, or provide emergency guidance. Stop if pain, dizziness, or unusual symptoms occur.
+
+## Related documentation
+
+- [Physical-device testing](../docs/mobile_physical_device_testing.md)
+- [Mobile API contract](../docs/mobile_api_contract.md)
+- [Mobile staging configuration](../docs/mobile_staging_configuration.md)
+- [Internal mobile test checklist](../docs/mobile_internal_test_checklist.md)
+- [Development journey](../docs/development_journey.md)

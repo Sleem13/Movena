@@ -91,6 +91,29 @@ def test_no_pose_returns_clean_error(monkeypatch, tmp_path):
     assert_error(response, 422, "NO_POSE_DETECTED")
 
 
+def test_subject_switch_returns_structured_rejection(monkeypatch, tmp_path):
+    monkeypatch.setattr(get_settings(), "upload_dir", tmp_path)
+
+    def fail_pose(_path: Path):
+        raise PoseEstimationError(
+            "The tracked pose appears to switch between people.",
+            error_code="SUBJECT_SWITCH_DETECTED",
+            details=["Possible subject switch near 12.87s.", "Record only one person."],
+        )
+
+    monkeypatch.setattr("app.api.routes.squat_analysis.extract_pose_landmarks", fail_pose)
+    response = client.post(
+        "/api/v1/analyze/squat",
+        files={"video": ("two-people.mp4", b"video", "video/mp4")},
+    )
+
+    assert_error(response, 422, "SUBJECT_SWITCH_DETECTED")
+    assert response.json()["details"] == [
+        "Possible subject switch near 12.87s.",
+        "Record only one person.",
+    ]
+
+
 def test_success_response_contract_and_cleanup(monkeypatch, tmp_path):
     monkeypatch.setattr(get_settings(), "upload_dir", tmp_path)
     artifact_dir = tmp_path / "artifacts"

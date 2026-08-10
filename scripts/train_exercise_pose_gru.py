@@ -390,7 +390,8 @@ def train_candidate(
     cpu_model = model.cpu()
     example = torch.zeros(1, sequence_length, len(columns), dtype=torch.float32)
     traced = torch.jit.trace(cpu_model, example)
-    traced.save(str(model_dir / "model.pt"))
+    artifact_path = model_dir / "model.pt"
+    traced.save(str(artifact_path))
     metadata = {
         "model_id": model_id,
         "model_name": "bidirectional_gru_attention_pose_classifier",
@@ -410,6 +411,8 @@ def train_candidate(
         "abstention_status": "enabled",
         "participant_grouped_holdout": False,
         "validation_scope": metrics["validation_scope"],
+        "artifact_sha256": hashlib.sha256(artifact_path.read_bytes()).hexdigest(),
+        "artifact_size_bytes": artifact_path.stat().st_size,
         "architecture": {
             "type": "bidirectional_gru_attention",
             "input_size": len(columns),

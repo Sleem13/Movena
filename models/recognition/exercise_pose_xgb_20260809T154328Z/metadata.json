@@ -57,6 +57,8 @@
   "requires_manual_confirmation": true,
   "participant_grouped_holdout": false,
   "validation_scope": "stratified_video_group_holdout",
+  "artifact_sha256": "bf4d46a9d09470276b0c6182a807526e4a422b3585664999a5fa5ab6bdf67d8e",
+  "artifact_size_bytes": 736258,
   "source_features_sha256": "7b1483f61bdb83234517ffc2c3e18735480d89612c49ab25e2af80d3e90bc410",
   "training_dependencies": {
     "pandas": "2.2.3",

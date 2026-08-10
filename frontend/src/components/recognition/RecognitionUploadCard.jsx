@@ -4,7 +4,7 @@ import { BrainCircuit, CheckCircle2, FileVideo2, UploadCloud } from "lucide-reac
 import { Alert, Badge, Button, Card, LoadingSpinner } from "../common/UI.jsx";
 import { EXERCISES, exerciseById } from "../../data/exercises.js";
 import { useLocale } from "../../i18n/LocaleContext.jsx";
-import { recognizeExerciseVideo } from "../../services/api.js";
+import { confirmRecognitionSuggestion, recognizeExerciseVideo } from "../../services/api.js";
 
 
 function confidencePercent(value) {
@@ -19,6 +19,8 @@ export default function RecognitionUploadCard({ models = [], onConfirmSuggestion
   const [error, setError] = useState("");
   const [progress, setProgress] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const [isConfirming, setIsConfirming] = useState(false);
+  const [confirmationError, setConfirmationError] = useState("");
   const sequenceModel = models.find((model) => model.artifact_format === "torchscript_sequence");
   const suggested = result ? exerciseById(result.suggested_exercise_id, EXERCISES) : null;
   const isUncertain = result?.status === "uncertain";
@@ -28,6 +30,23 @@ export default function RecognitionUploadCard({ models = [], onConfirmSuggestion
     setResult(null);
     setError("");
     setProgress(0);
+    setConfirmationError("");
+  }
+
+  async function confirmSuggestion() {
+    if (!suggested?.supported_in_app || isUncertain) return;
+    setConfirmationError("");
+    setIsConfirming(true);
+    try {
+      if (result.recognition_event_id) {
+        await confirmRecognitionSuggestion(result.recognition_event_id, suggested.exercise_id);
+      }
+      onConfirmSuggestion?.(suggested.exercise_id, file);
+    } catch {
+      setConfirmationError(t("coach.confirmationAuditError"));
+    } finally {
+      setIsConfirming(false);
+    }
   }
 
   async function identifyExercise() {
@@ -39,7 +58,11 @@ export default function RecognitionUploadCard({ models = [], onConfirmSuggestion
     try {
       setResult(await recognizeExerciseVideo(file, setProgress));
     } catch (requestError) {
-      setError(requestError.response?.data?.message || t("coach.recognitionError"));
+      setError(
+        requestError.response?.data?.error_code === "SUBJECT_SWITCH_DETECTED"
+          ? t("upload.subjectSwitch")
+          : requestError.response?.data?.message || t("coach.recognitionError"),
+      );
     } finally {
       setIsLoading(false);
     }
@@ -128,12 +151,13 @@ export default function RecognitionUploadCard({ models = [], onConfirmSuggestion
                   {t("coach.uncertainText", { threshold: confidencePercent(result.confidence_threshold) })}
                 </Alert>
               ) : suggested?.supported_in_app ? (
-                <Button className="mt-5 w-full" type="button" onClick={() => onConfirmSuggestion?.(suggested.exercise_id)}>
-                  <CheckCircle2 size={17} aria-hidden="true" />{t("coach.confirmSuggestion", { exercise: exerciseText(suggested.exercise_id).short })}
+                <Button className="mt-5 w-full" type="button" onClick={confirmSuggestion} disabled={isConfirming}>
+                  <CheckCircle2 size={17} aria-hidden="true" />{isConfirming ? t("coach.confirmingSuggestion") : t("coach.confirmSuggestion", { exercise: exerciseText(suggested.exercise_id).short })}
                 </Button>
               ) : (
                 <Alert tone="warning" className="mt-5" title={t("coach.noAnalyzerTitle")}>{t("coach.noAnalyzerText")}</Alert>
               )}
+              {confirmationError ? <Alert className="mt-3" title={t("coach.confirmationAuditTitle")}>{confirmationError}</Alert> : null}
             </div>
           )}
         </div>

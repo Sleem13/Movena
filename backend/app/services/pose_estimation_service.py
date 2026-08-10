@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import Any
 
 from app.core.config import get_settings
+from app.services.subject_tracking_service import SubjectContinuityReport, evaluate_subject_continuity
 
 logger = logging.getLogger(__name__)
 
@@ -40,7 +41,22 @@ QUALITY_LANDMARK_NAMES = {
 
 
 class PoseEstimationError(RuntimeError):
-    pass
+    def __init__(self, message: str, *, error_code: str | None = None, details: list[str] | None = None):
+        super().__init__(message)
+        self.error_code = error_code
+        self.details = details or []
+
+
+class SubjectContinuityError(PoseEstimationError):
+    def __init__(self, report: SubjectContinuityReport):
+        details = report.details()
+        details.append("Record only the person being analyzed, with coaches and bystanders outside the frame.")
+        super().__init__(
+            "The tracked pose appears to switch between people. Analysis was stopped to avoid mixing subjects.",
+            error_code="SUBJECT_SWITCH_DETECTED",
+            details=details,
+        )
+        self.report = report
 
 
 def _landmark_to_dict(landmark: Any) -> dict[str, float]:
@@ -134,5 +150,25 @@ def extract_pose_landmarks(video_path: Path) -> list[dict[str, Any]]:
         )
     if not frame_landmarks:
         raise PoseEstimationError("No pose detected in the uploaded video.")
+
+    if settings.enable_subject_continuity_guard:
+        continuity = evaluate_subject_continuity(
+            frame_landmarks,
+            min_visibility=settings.subject_min_visibility,
+            max_centroid_jump=settings.subject_max_centroid_jump,
+            severe_centroid_jump=settings.subject_severe_centroid_jump,
+            max_scale_ratio=settings.subject_max_scale_ratio,
+            suspicious_event_limit=settings.subject_switch_event_limit,
+            max_tracking_gap_frames=settings.subject_max_tracking_gap_frames,
+        )
+        if continuity.suspected_subject_switch:
+            logger.warning(
+                "Subject continuity rejected video: events=%s severe=%s max_jump=%.3f max_scale_ratio=%.2f",
+                len(continuity.suspicious_events),
+                continuity.severe_event_count,
+                continuity.max_centroid_jump,
+                continuity.max_scale_ratio,
+            )
+            raise SubjectContinuityError(continuity)
 
     return frame_landmarks

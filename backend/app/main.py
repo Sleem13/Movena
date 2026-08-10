@@ -23,6 +23,7 @@ from app.api.dependencies.auth import AuthError
 from app.core.config import get_settings
 from app.core.cors import cors_middleware_options
 from app.services.artifact_service import ensure_artifact_directories
+from app.services.exercise_recognition_service import initialize_active_recognition_models
 from app.db.database import init_db
 from app.core.logging_config import configure_logging
 from app.schemas.analysis_schema import ErrorResponse
@@ -32,6 +33,10 @@ settings = get_settings()
 settings.validate_deployment_safety()
 ensure_artifact_directories()
 init_db()
+initialize_active_recognition_models(
+    settings,
+    strict=settings.app_env in {"staging", "production"},
+)
 if os.getenv("SEED_ADMIN_ON_START", "").strip().lower() in {"1", "true", "yes", "on"}:
     from app.services.admin_seed_service import seed_admin_from_environment
 

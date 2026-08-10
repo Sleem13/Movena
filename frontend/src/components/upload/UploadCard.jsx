@@ -7,6 +7,7 @@ import { useLocale } from "../../i18n/LocaleContext.jsx";
 export default function UploadCard({
   exercise = "bodyweight_squat",
   file,
+  fileSource,
   error,
   isLoading,
   progress,
@@ -42,6 +43,17 @@ export default function UploadCard({
         </div>
       </div>
       <div className="p-5 sm:p-6">
+        {file && fileSource === "recognition" ? (
+          <div role="status" className="mb-4 flex items-start gap-3 rounded-2xl border border-teal-200 bg-teal-50 p-4 text-teal-950">
+            <span className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-full bg-teal-100 text-clinical-teal">
+              <Check size={17} aria-hidden="true" />
+            </span>
+            <div>
+              <p className="text-sm font-bold">{t("upload.recognitionReadyTitle")}</p>
+              <p className="mt-1 text-xs leading-5 text-teal-800">{t("upload.recognitionReadyText", { exercise: names.short })}</p>
+            </div>
+          </div>
+        ) : null}
         <label
           onDragEnter={(event) => {
             event.preventDefault();

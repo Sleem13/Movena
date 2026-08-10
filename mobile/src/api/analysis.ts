@@ -9,6 +9,9 @@ export const ANALYSIS_ENDPOINTS: Record<string, string> = {
   knee_extension: "/api/v1/analyze/knee-extension",
   shoulder_abduction: "/api/v1/analyze/shoulder-abduction",
   hip_abduction: "/api/v1/analyze/hip-abduction",
+  push_up: "/api/v1/analyze/push-up",
+  shoulder_press: "/api/v1/analyze/shoulder-press",
+  bicep_curl: "/api/v1/analyze/bicep-curl",
 };
 
 export function getAnalysisEndpoint(exerciseId: string): string {

@@ -26,6 +26,9 @@ function analysisErrorMessage(requestError, t) {
   if (status === 400 && apiError?.error_code === "UNSUPPORTED_FILE_TYPE") {
     return t("upload.unsupported");
   }
+  if (status === 422 && apiError?.error_code === "SUBJECT_SWITCH_DETECTED") {
+    return t("upload.subjectSwitch");
+  }
   if (!requestError.response) return t("upload.network");
   if (status >= 500) return t("upload.genericError");
   return apiError?.message || apiError?.detail || t("upload.genericError");
@@ -43,6 +46,7 @@ function AppContent() {
   const { t } = useLocale();
   const [page, setPage] = useState(initialPage);
   const [file, setFile] = useState(null);
+  const [fileSource, setFileSource] = useState(null);
   const [report, setReport] = useState(null);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -63,7 +67,11 @@ function AppContent() {
     return () => URL.revokeObjectURL(url);
   }, [file]);
 
-  function selectFile(selected) { setError(""); setFile(selected || null); }
+  function selectFile(selected, source = "manual") {
+    setError("");
+    setFile(selected || null);
+    setFileSource(selected ? source : null);
+  }
   function navigate(nextPage) { setPage(nextPage); window.history.pushState({}, "", PAGE_PATHS[nextPage] || "/"); }
   function handleFileChange(event) { selectFile(event.target.files?.[0]); }
 
@@ -80,16 +88,16 @@ function AppContent() {
     } finally { setIsLoading(false); }
   }
 
-  function handleAnalyzeAnother() { setFile(null); setReport(null); setError(""); setProgress(0); setPage("analyze"); }
+  function handleAnalyzeAnother() { setFile(null); setFileSource(null); setReport(null); setError(""); setProgress(0); setPage("analyze"); }
 
   return <AppShell currentPage={page} hasReport={Boolean(report)} onNavigate={navigate} user={user}>
     {page === "home" && <Home onStart={() => navigate("analyze")} />}
-    {page === "exercises" && <ExerciseLibrary exercises={exercises} onAnalyze={(value) => { setExercise(value); navigate("analyze"); }} />}
-    {page === "analyze" && <UploadSquat exercises={exercises} exercise={exercise} onExerciseChange={(value) => { setExercise(value); setFile(null); setError(""); if (value !== "bodyweight_squat") setOptions((current) => ({ ...current, include_ml: false })); }} file={file} error={error} isLoading={isLoading} progress={progress} options={options} onOptionsChange={setOptions} onFileChange={handleFileChange} onFileSelect={selectFile} onSubmit={handleSubmit} />}
+    {page === "exercises" && <ExerciseLibrary exercises={exercises} onAnalyze={(value) => { setExercise(value); setFile(null); setFileSource(null); navigate("analyze"); }} />}
+    {page === "analyze" && <UploadSquat exercises={exercises} exercise={exercise} onExerciseChange={(value) => { setExercise(value); setFile(null); setFileSource(null); setError(""); if (value !== "bodyweight_squat") setOptions((current) => ({ ...current, include_ml: false })); }} file={file} fileSource={fileSource} error={error} isLoading={isLoading} progress={progress} options={options} onOptionsChange={setOptions} onFileChange={handleFileChange} onFileSelect={selectFile} onRecognitionConfirm={(exerciseId, recognizedFile) => { setExercise(exerciseId); selectFile(recognizedFile, "recognition"); if (exerciseId !== "bodyweight_squat") setOptions((current) => ({ ...current, include_ml: false })); }} onSubmit={handleSubmit} />}
     {page === "results" && <Results report={report} originalVideoUrl={originalVideoUrl} onAnalyzeAnother={handleAnalyzeAnother} onGoAnalyze={() => setPage("analyze")} onViewHistory={() => setPage("history")} />}
     {page === "history" && <SessionHistory />}
     {page === "therapist" && <TherapistDashboard />}
-    {page === "coach" && ENABLE_REALTIME_COACHING_SPIKE && <RealtimeCoachingSpike onConfirmSuggestion={(exerciseId) => { setExercise(exerciseId); setFile(null); setError(""); navigate("analyze"); }} />}
+    {page === "coach" && ENABLE_REALTIME_COACHING_SPIKE && <RealtimeCoachingSpike onConfirmSuggestion={(exerciseId, recognizedFile) => { setExercise(exerciseId); selectFile(recognizedFile, "recognition"); if (exerciseId !== "bodyweight_squat") setOptions((current) => ({ ...current, include_ml: false })); navigate("analyze"); }} />}
     {page === "about" && <About onStart={() => navigate("analyze")} />}
     {page === "login" && <Login onSuccess={() => navigate("profile")} onRegister={() => navigate("register")} />}
     {page === "register" && <Register onLogin={() => navigate("login")} />}

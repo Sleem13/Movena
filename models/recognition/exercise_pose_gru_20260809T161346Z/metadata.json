@@ -146,6 +146,8 @@
   "abstention_status": "enabled",
   "participant_grouped_holdout": false,
   "validation_scope": "stratified_video_group_train_validation_holdout",
+  "artifact_sha256": "f45b676999a11939cdce8f95fe02c689c1df6ba0f2c2c4dcc483317f3b5de086",
+  "artifact_size_bytes": 515271,
   "architecture": {
     "type": "bidirectional_gru_attention",
     "input_size": 40,

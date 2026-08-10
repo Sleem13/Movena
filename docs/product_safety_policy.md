@@ -2,7 +2,7 @@
 
 ## Sprint 29E first-wave boundary
 
-No tester begins before genuine consent is recorded. Only five supported exercises and non-identifying test videos are allowed. Real patient data, clinical use, diagnosis/treatment claims, public release, unsupported exercises, and ML/DL promotion are prohibited. Any patient data, privacy/artifact exposure, diagnostic wording, fake rejected score, launch crash, or majority upload failure pauses the beta.
+No tester begins before genuine consent is recorded. Only the eight registered analyzers and non-identifying test videos are allowed. Real patient data, clinical use, diagnosis/treatment claims, public release, unsupported exercises, and recognition-as-form-evidence are prohibited. Any patient data, privacy/artifact exposure, diagnostic wording, fake rejected score, launch crash, or majority upload failure pauses the beta.
 
 ## Sprint 31 second-wave boundary
 

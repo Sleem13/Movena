@@ -20,6 +20,8 @@ New code, APIs, model IDs, UI labels, and artifacts use PhysioVision terminology
 - A synthetic-only bicep-curl analyzer with extended-flexed-extended counting, upright-position rejection, upper-arm/trunk observations, and explicit grip/load limitations.
 - Product metadata for hammer curl as a disabled recognition candidate.
 - Exercise Library and Coaching Lab UI states that distinguish supported analysis from recognition candidates.
+- Explicit active-model pins, artifact SHA-256 verification, startup contract/smoke checks, and fail-closed staging/production startup.
+- Privacy-safe recognition audit events and explicit confirmation recording without retaining uploaded video, filenames, or pose sequences.
 
 ## Data Contract
 
@@ -45,13 +47,21 @@ Each model lives below `models/recognition/<model_id>/` and contains:
 - `classification_report.json`
 - `model_card.md`
 
-The service accepts existing joblib baselines, `xgboost_json` frame candidates, and `torchscript_sequence` temporal candidates. A model may return top predictions, confidence, analyzer availability, and a manual-confirmation requirement. It cannot auto-route, activate a planned analyzer, score form, or override a validity rejection.
+The service accepts existing joblib baselines, `xgboost_json` frame candidates, and `torchscript_sequence` temporal candidates. Runtime selection uses configured active model IDs rather than the newest artifact directory. A model may return top predictions, confidence, analyzer availability, and a manual-confirmation requirement. It cannot auto-route, activate a planned analyzer, score form, or override a validity rejection.
 
 The current trained candidates are `exercise_pose_xgb_20260809T154328Z` and `exercise_pose_gru_20260809T161346Z`. The GRU achieved 0.826087 holdout accuracy and 0.835556 macro F1 on 23 held-out videos. Its validation-derived 0.635556 threshold accepted 60.87% of validation videos at 85.71% selective accuracy; on untouched holdout data it accepted 65.22% at 93.33% selective accuracy and abstained on 34.78%. Artifact-specific metrics, calibration evidence, and split manifests are stored beside each model.
 
 The recognition API accepts prepared frame/sequence payloads and temporary video uploads. Runtime MediaPipe output is mapped explicitly to COCO-17 ordering before the shared 40-feature contract is applied; uploaded files follow the existing validation and cleanup path.
 
-The Coaching Lab provides the corresponding user flow: select a short video, request temporal recognition, review ranked calibrated confidence values, and explicitly confirm a supported suggestion above the acceptance threshold before navigating to its analyzer. Uncertain results and recognized labels without active analyzers cannot be confirmed or routed.
+The Analyze page provides the primary recognition flow beside manual selection: select a short video, request temporal recognition, review ranked calibrated confidence values, and explicitly confirm a supported suggestion above the acceptance threshold without leaving `/analyze`. The confirmation is saved against the recognition event before the detected exercise is selected. The browser keeps the user-selected `File` in transient in-memory state and carries it into the confirmed analyzer, so the user does not need to choose the same file again; the recognition audit path still stores no raw video or filename. Uncertain results and recognized labels without active analyzers cannot be confirmed or routed. This Analyze-page workflow is independent of the optional Coaching Lab feature flag; model readiness determines whether its recognition action can run.
+
+Mobile now follows the same contract through its Exercise Library: **Identify Exercise from Video** opens a dedicated native route, accepts an existing or newly recorded clip, checks for an active integrity-valid temporal model, displays ranked suggestions, records confirmation, and carries the same transient video into one of the eight registered analyzers. Manual selection remains available throughout. Mobile also maps `SUBJECT_SWITCH_DETECTED` to single-person re-recording guidance.
+
+## Subject Identity Safety
+
+The current MediaPipe pipeline is single-subject. Before recognition, rep counting, scoring, report creation, or overlay generation, PhysioVision evaluates pose-center and body-scale continuity across usable frames. A severe discontinuity, or repeated suspicious discontinuities, raises `SUBJECT_SWITCH_DETECTED`; analysis stops and the API returns bounded frame/timestamp diagnostics plus single-person recording guidance. Thresholds are configurable through `SUBJECT_*` environment values, and the guard defaults to enabled.
+
+This guard prevents mixed-person reports but does not claim to identify every visible person. The next multi-person phase must introduce a multi-person detector or pose model, persistent track IDs, explicit athlete selection, and separate temporal/analyzer state per track. Instance segmentation may improve overlapping-person handling, but segmentation alone cannot preserve identity. Until that phase is validated, coaches, spotters, and bystanders must remain outside the recording frame and the product analyzes one person at a time.
 
 ## Exercise Delivery Sequence
 

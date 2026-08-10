@@ -93,6 +93,27 @@ class AuditLog(Base):
     metadata_json: Mapped[str | None] = mapped_column(Text)
 
 
+class RecognitionEvent(Base):
+    """Privacy-safe recognition audit record; uploaded media is never retained here."""
+
+    __tablename__ = "recognition_events"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    event_id: Mapped[str] = mapped_column(String(36), unique=True, index=True, nullable=False)
+    actor_user_id: Mapped[str | None] = mapped_column(String(36), index=True)
+    model_id: Mapped[str] = mapped_column(String(128), index=True, nullable=False)
+    source_type: Mapped[str] = mapped_column(String(32), nullable=False)
+    status: Mapped[str] = mapped_column(String(32), index=True, nullable=False)
+    predicted_exercise_id: Mapped[str] = mapped_column(String(64), index=True, nullable=False)
+    confidence: Mapped[float] = mapped_column(Float, nullable=False)
+    confidence_threshold: Mapped[float | None] = mapped_column(Float)
+    abstained: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    analyzer_available: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    usable_pose_frames: Mapped[int | None] = mapped_column(Integer)
+    confirmed_exercise_id: Mapped[str | None] = mapped_column(String(64), index=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now, nullable=False)
+    confirmed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+
 class PatientProfile(Base):
     __tablename__ = "patient_profiles"
 

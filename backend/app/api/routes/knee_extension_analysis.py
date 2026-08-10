@@ -5,7 +5,7 @@ import logging
 from fastapi import APIRouter, Depends, File, Query, UploadFile, status
 
 from app.api.dependencies.auth import analysis_current_user
-from app.api.routes.squat_analysis import error_response, pose_error_code
+from app.api.routes.squat_analysis import error_response, pose_error_code, pose_error_details
 from app.core.config import get_settings
 from app.db.models import User
 from app.exercises.knee_extension.analyzer import knee_extension_analyzer
@@ -102,7 +102,7 @@ async def analyze_knee_extension(
             )
         return report
     except PoseEstimationError as exc:
-        return error_response(status.HTTP_422_UNPROCESSABLE_ENTITY, pose_error_code(str(exc)), str(exc))
+        return error_response(status.HTTP_422_UNPROCESSABLE_ENTITY, pose_error_code(exc), str(exc), pose_error_details(exc))
     except Exception:
         logger.exception("Unable to complete knee-extension analysis")
         for artifact_path in generated_artifacts:

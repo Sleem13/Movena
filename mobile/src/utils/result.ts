@@ -13,6 +13,9 @@ const REJECTED_TIPS: Record<string, string> = {
   knee_extension: "Use a stable side view while seated, keeping the hip, knee, ankle, and lower limb visible.",
   shoulder_abduction: "Use a stable front view with the shoulder, elbow, wrist, and trunk visible; avoid trunk leaning.",
   hip_abduction: "Use a stable front view with the pelvis, hip, knee, and ankle visible; avoid trunk leaning.",
+  push_up: "Use a stable side view with shoulders, hips, and ankles visible through controlled lowering and return phases.",
+  shoulder_press: "Use a stable front view with shoulders, elbows, wrists, and trunk visible; use an approved load or unloaded practice.",
+  bicep_curl: "Use a stable front or slight side view with the shoulder, elbow, wrist, and trunk visible through extension, flexion, and return.",
 };
 
 export const rejectedRecordingTip = (exerciseId?: string | null) => REJECTED_TIPS[exerciseId || ""] || "Keep required body parts visible, use a stable camera and good lighting, and perform controlled repetitions where appropriate.";

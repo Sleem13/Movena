@@ -1,7 +1,7 @@
 import * as SecureStore from "expo-secure-store";
 import { ApiError, handleAuthenticationFailure } from "@/src/api/client";
 
-jest.mock("expo-secure-store", () => ({ setItemAsync: jest.fn(), getItemAsync: jest.fn(), deleteItemAsync: jest.fn() }));
+jest.mock("expo-secure-store", () => ({ isAvailableAsync: jest.fn().mockResolvedValue(true), setItemAsync: jest.fn(), getItemAsync: jest.fn(), deleteItemAsync: jest.fn() }));
 
 describe("token lifecycle", () => {
   it.each([["INVALID_TOKEN", 401], ["TOKEN_EXPIRED", 401]])("clears SecureStore for %s", async (code, status) => {

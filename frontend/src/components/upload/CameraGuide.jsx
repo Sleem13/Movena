@@ -71,7 +71,10 @@ const tipsByExercise = {
 
 export default function CameraGuide({ exercise = "bodyweight_squat", metadata }) {
   const { t } = useLocale();
-  const tips = tipsByExercise[exercise] || tipsByExercise.bodyweight_squat;
+  const tips = [
+    ["camera.tip.singleSubject", "camera.tip.singleSubjectText"],
+    ...(tipsByExercise[exercise] || tipsByExercise.bodyweight_squat),
+  ];
   const landmarks = metadata?.required_landmarks?.join(", ");
 
   return (

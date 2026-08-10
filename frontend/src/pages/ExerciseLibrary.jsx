@@ -1,5 +1,6 @@
-import { Activity, ArrowRight, Clock3, Search, ShieldCheck, SlidersHorizontal, Video, X } from "lucide-react";
+import { ArrowRight, Clock3, Search, ShieldCheck, SlidersHorizontal, Video, X } from "lucide-react";
 import { Badge, Button, Card, EmptyState } from "../components/common/UI.jsx";
+import ExercisePoseGraph from "../components/exercises/ExercisePoseGraph.jsx";
 import { useMemo, useState } from "react";
 import { PageHeader } from "../components/layout/AppShell.jsx";
 import { useLocale } from "../i18n/LocaleContext.jsx";
@@ -23,17 +24,17 @@ function ExerciseCard({ exercise, onAnalyze }) {
   const supported = exercise.supported_in_app;
   const recognitionCandidate = exercise.recognition_status === "experimental_candidate_data_available";
   return (
-    <Card className={`group flex h-full flex-col overflow-hidden p-5 transition duration-200 ${supported ? "hover:-translate-y-1 hover:shadow-lift" : "bg-slate-50/70 opacity-90"}`}>
-      <div className={`-mx-5 -mt-5 mb-5 h-1 ${supported ? "bg-gradient-to-r from-clinical-blue to-clinical-teal" : "bg-slate-200"}`} />
-      <div className="flex items-start justify-between gap-3">
-        <span className={`grid h-12 w-12 place-items-center rounded-2xl transition ${supported ? "bg-blue-50 text-clinical-blue group-hover:bg-clinical-blue group-hover:text-white" : "bg-slate-100 text-slate-400"}`}>
-          <Activity size={21} />
-        </span>
-        <Badge tone={supported ? "teal" : recognitionCandidate ? "blue" : "slate"}>
-          {supported ? t("status.supported") : recognitionCandidate ? t("status.recognitionResearch") : t("status.planned")}
-        </Badge>
+    <Card className={`group flex h-full flex-col overflow-hidden p-0 transition duration-200 ${supported ? "hover:-translate-y-1 hover:shadow-lift" : "bg-slate-50/70 opacity-90"}`}>
+      <div className={`relative aspect-[16/9] overflow-hidden border-b p-3 ${supported ? "border-blue-100 bg-gradient-to-br from-white via-blue-50 to-teal-50" : "border-slate-200 bg-slate-100"}`}>
+        <ExercisePoseGraph exerciseId={exercise.exercise_id} label={`${exercise.display_name} ${t("exercises.posePreview")}`} supported={supported} />
+        <div className="absolute right-3 top-3">
+          <Badge tone={supported ? "teal" : recognitionCandidate ? "blue" : "slate"}>
+            {supported ? t("status.supported") : recognitionCandidate ? t("status.recognitionResearch") : t("status.planned")}
+          </Badge>
+        </div>
       </div>
-      <h2 className="mt-4 text-lg font-bold text-clinical-ink">{exercise.display_name}</h2>
+      <div className="flex flex-1 flex-col p-5">
+      <h2 className="text-lg font-bold text-clinical-ink">{exercise.display_name}</h2>
       <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-clinical-teal">{exercise.body_region} · {exercise.exercise_family}</p>
       <p className="mt-3 flex items-start gap-2 text-sm text-slate-600"><Video className="mt-0.5 shrink-0" size={16} />{exercise.recommended_camera_view}</p>
       <p className="mt-3 text-sm leading-6 text-slate-600">{exercise.movement_description}</p>
@@ -50,6 +51,7 @@ function ExerciseCard({ exercise, onAnalyze }) {
             {t("status.notAvailable")}
           </Button>
         )}
+      </div>
       </div>
     </Card>
   );

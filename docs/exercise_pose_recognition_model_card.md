@@ -23,6 +23,15 @@ The frame classifier accepts forty ordered numeric features derived from 17 body
 
 Top exercise suggestions with calibrated confidence, analyzer availability, and `requires_manual_confirmation=true`. The temporal candidate returns `status=uncertain` below its validation-derived acceptance threshold and prevents suggestion confirmation. Incompatible features fail safely.
 
+## Operational Controls
+
+- Normal inference uses the explicitly configured `ACTIVE_SEQUENCE_RECOGNITION_MODEL_ID` or `ACTIVE_FRAME_RECOGNITION_MODEL_ID`; directory ordering never chooses a model.
+- Artifact metadata includes the artifact byte size and SHA-256 digest.
+- Startup verifies the pinned artifact ID, hash, feature/class contract, normalization vectors, calibration values, loadability, and output shape using smoke inference.
+- Invalid pinned artifacts disable recognition in development and test environments. Staging and production startup fail closed.
+- Successful and uncertain recognition results create a `recognition_events` audit row. It contains model ID, predicted label, confidence, threshold, abstention, analyzer availability, source type, usable-pose-frame count, confirmation, and timestamps.
+- Recognition audit rows never contain uploaded video bytes, a storage path, the original filename, or pose sequences.
+
 ## Known Limitations
 
 - The XGBoost frame classifier omits movement timing; the GRU candidate models temporal order at video level.
@@ -63,4 +72,4 @@ Use the promotion gates in `docs/exercise_coaching_adoption_plan.md`. Every conc
 
 Both artifacts are registered as development candidates and are available to the optional suggestion API. Their video groups are disjoint, but participant-independent performance cannot be calculated because the source table has no participant identifiers.
 
-Inference endpoints are `POST /api/v1/recognition/exercise` for prepared features or sequences and `POST /api/v1/recognition/video` for a validated temporary video upload. The video endpoint extracts MediaPipe landmarks, maps them to the COCO-17 contract, calls the calibrated temporal candidate, and removes the upload after processing. Calibration and threshold selection use only the validation split; the holdout figures above are evaluation results, not threshold-tuning inputs.
+Inference endpoints are `POST /api/v1/recognition/exercise` for prepared features or sequences and `POST /api/v1/recognition/video` for a validated temporary video upload. `POST /api/v1/recognition/confirm` records the user's confirmed label against the generated event ID before analyzer routing. The video endpoint extracts MediaPipe landmarks, maps them to the COCO-17 contract, calls the calibrated temporal candidate, and removes the upload after processing. Calibration and threshold selection use only the validation split; the holdout figures above are evaluation results, not threshold-tuning inputs.

@@ -3,6 +3,7 @@
     "name": "PhysioVision AI",
     "slug": "physiovision-ai-mobile",
     "version": "0.28.0",
+    "icon": "./assets/images/icon.png",
     "orientation": "portrait",
     "scheme": "physiovision",
     "userInterfaceStyle": "light",
@@ -12,12 +13,33 @@
       "bundleIdentifier": "ai.physiovision.mobile"
     },
     "android": {
-      "package": "ai.physiovision.mobile"
+      "package": "ai.physiovision.mobile",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#2563EB"
+      }
     },
     "plugins": [
       "expo-router",
       "expo-dev-client",
       "expo-secure-store",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/splash-icon.png",
+          "imageWidth": 210,
+          "resizeMode": "contain",
+          "backgroundColor": "#F5F8FC"
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "usesCleartextTraffic": true
+          }
+        }
+      ],
       [
         "expo-image-picker",
         {
@@ -29,6 +51,9 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "web": {
+      "favicon": "./assets/images/favicon.png"
     },
     "extra": {
       "releaseStatus": "external-beta-launch-candidate-no-go",

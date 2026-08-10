@@ -22,6 +22,7 @@ import {
   getTherapistDashboard,
   listSavedSessions,
   recognizeExerciseVideo,
+  confirmRecognitionSuggestion,
 } from "./api.js";
 
 describe("deployment API configuration", () => {
@@ -68,5 +69,13 @@ describe("deployment API configuration", () => {
       expect.any(FormData),
       expect.objectContaining({ headers: { "Content-Type": "multipart/form-data" } }),
     );
+  });
+
+  it("records a confirmed recognition label", async () => {
+    mocks.post.mockResolvedValue({ data: { status: "confirmed" } });
+    await confirmRecognitionSuggestion("event-id", "push_up");
+    expect(mocks.post).toHaveBeenCalledWith("/api/v1/recognition/confirm", {
+      event_id: "event-id", confirmed_exercise_id: "push_up",
+    });
   });
 });

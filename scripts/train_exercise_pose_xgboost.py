@@ -125,7 +125,8 @@ def train_candidate(
     model_id = f"exercise_pose_xgb_{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')}"
     model_dir = output_dir / model_id
     model_dir.mkdir(parents=True, exist_ok=False)
-    model.save_model(model_dir / "model.json")
+    artifact_path = model_dir / "model.json"
+    model.save_model(artifact_path)
     metadata = {
         "model_id": model_id, "model_name": "xgboost_pose_classifier",
         "artifact_format": "xgboost_json", "track": "video_pose_recognition",
@@ -133,6 +134,8 @@ def train_candidate(
         "promoted_to_app": False, "requires_manual_confirmation": True,
         "participant_grouped_holdout": False,
         "validation_scope": "stratified_video_group_holdout",
+        "artifact_sha256": hashlib.sha256(artifact_path.read_bytes()).hexdigest(),
+        "artifact_size_bytes": artifact_path.stat().st_size,
         "source_features_sha256": hashlib.sha256(features_path.read_bytes()).hexdigest(),
         "training_dependencies": {
             "pandas": pd.__version__, "scikit_learn": sklearn.__version__,

@@ -4,7 +4,7 @@ import logging
 
 from fastapi import APIRouter, Depends, File, Query, UploadFile, status
 
-from app.api.routes.squat_analysis import error_response, pose_error_code
+from app.api.routes.squat_analysis import error_response, pose_error_code, pose_error_details
 from app.exercises.sit_to_stand.analyzer import sit_to_stand_analyzer
 from app.services.artifact_service import build_artifact_url, create_artifact
 from app.services.overlay_video_service import create_overlay_video
@@ -99,7 +99,7 @@ async def analyze_sit_to_stand(
             )
         return report
     except PoseEstimationError as exc:
-        return error_response(status.HTTP_422_UNPROCESSABLE_ENTITY, pose_error_code(str(exc)), str(exc))
+        return error_response(status.HTTP_422_UNPROCESSABLE_ENTITY, pose_error_code(exc), str(exc), pose_error_details(exc))
     except Exception:
         logger.exception("Unable to complete sit-to-stand analysis")
         for artifact_path in generated_artifacts:
