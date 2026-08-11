@@ -27,5 +27,5 @@ export type AnalysisResult = {
   [key: string]: unknown;
 };
 
-export type MobileVideo = { uri: string; name: string; type: string; size?: number; duration?: number };
+export type MobileVideo = { uri: string; name: string; type: string; size?: number; duration?: number; file?: File };
 export type AnalysisOptions = { saveSession?: boolean; patientId?: string; includeOverlay?: boolean; generateReport?: boolean; signal?: AbortSignal };

@@ -1,5 +1,6 @@
 import { API_BASE_URL, API_TIMEOUT_MS } from "@/src/config/env";
 import type { AnalysisOptions, AnalysisResult, MobileVideo } from "@/src/types/analysis";
+import { appendVideoToFormData } from "@/src/utils/mobileVideo";
 import { getToken } from "@/src/utils/secureTokenStorage";
 import { ApiError, handleAuthenticationFailure, parseApiError } from "./client";
 
@@ -32,7 +33,7 @@ export async function analyzeExercise(exerciseId: string, video: MobileVideo, op
   if (options.patientId) query.set("patient_id", options.patientId);
   const token = await getToken();
   const form = new FormData();
-  form.append("video", { uri: video.uri, name: video.name, type: video.type } as unknown as Blob);
+  appendVideoToFormData(form, video);
 
   return new Promise((resolve, reject) => {
     const request = new XMLHttpRequest();

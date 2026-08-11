@@ -1,6 +1,7 @@
 import { API_BASE_URL, API_TIMEOUT_MS } from "@/src/config/env";
 import type { MobileVideo } from "@/src/types/analysis";
 import type { RecognitionModelsResponse, RecognitionResult } from "@/src/types/recognition";
+import { appendVideoToFormData } from "@/src/utils/mobileVideo";
 import { getToken } from "@/src/utils/secureTokenStorage";
 import { ApiError, apiRequest, handleAuthenticationFailure, parseApiError } from "./client";
 
@@ -13,7 +14,7 @@ export function selectTemporalModel(models: RecognitionModelsResponse["models"])
 export async function recognizeExerciseVideo(video: MobileVideo, onProgress?: (percent: number) => void, signal?: AbortSignal): Promise<RecognitionResult> {
   const token = await getToken();
   const form = new FormData();
-  form.append("video", { uri: video.uri, name: video.name, type: video.type } as unknown as Blob);
+  appendVideoToFormData(form, video);
 
   return new Promise((resolve, reject) => {
     const request = new XMLHttpRequest();

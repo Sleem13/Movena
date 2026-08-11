@@ -126,7 +126,16 @@ Then choose one of these options:
 
 - Press `a` for an Android emulator.
 - Scan the QR code with a compatible development client.
-- Run `npx expo start --web` for layout testing; browser CORS rules apply to web but not native Android requests.
+- Run `npx expo start --web` for layout testing. Expo web runs on port `8081` and automatically calls the standard local FastAPI backend at `http://127.0.0.1:8000`; browser CORS rules apply to web but not native Android requests.
+
+For Expo web, start the backend on its standard local port before starting Expo:
+
+```powershell
+Set-Location backend
+..\.venv\Scripts\python.exe -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
+```
+
+Set `EXPO_PUBLIC_API_BASE_URL` only when the API runs somewhere else. An explicit value always overrides the development default.
 
 For a development-client build:
 

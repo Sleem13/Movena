@@ -14,14 +14,11 @@ import { UploadProgress } from "@/src/components/UploadProgress";
 import { colors } from "@/src/config/theme";
 import { useAnalysis } from "@/src/context/AnalysisContext";
 import type { MobileVideo } from "@/src/types/analysis";
+import { toMobileVideo } from "@/src/utils/mobileVideo";
 import type { RecognitionModelsResponse, RecognitionResult } from "@/src/types/recognition";
 import { validateSelectedVideo } from "@/src/utils/uploadValidation";
 import { buildRecognitionHandoff } from "@/src/utils/recognitionHandoff";
 
-function toVideo(asset: ImagePicker.ImagePickerAsset): MobileVideo {
-  const extension = asset.fileName?.split(".").pop()?.toLowerCase() || "mp4";
-  return { uri: asset.uri, name: asset.fileName || `movement-${Date.now()}.${extension}`, type: asset.mimeType || (extension === "mov" ? "video/quicktime" : "video/mp4"), size: asset.fileSize, duration: asset.duration ?? undefined };
-}
 const percent = (value?: number) => `${Math.round((value || 0) * 100)}%`;
 
 export default function IdentifyExerciseScreen() {
@@ -31,7 +28,7 @@ export default function IdentifyExerciseScreen() {
   const abortRef = useRef<AbortController | null>(null); const temporalModel = useMemo(() => selectTemporalModel(models?.models || []), [models]);
   const uncertain = result?.status === "uncertain"; const hasSuggestion = Boolean(result?.suggested_exercise_id);
   useEffect(() => { let cancelled = false; getRecognitionModels().then((response) => { if (!cancelled) setModels(response); }).catch((requestError) => { if (!cancelled) setError((requestError as Error).message); }).finally(() => { if (!cancelled) setLoadingModels(false); }); return () => { cancelled = true; abortRef.current?.abort(); }; }, []);
-  function accept(asset?: ImagePicker.ImagePickerAsset) { if (!asset) return; const selected = toVideo(asset); const validationError = validateSelectedVideo(selected); if (validationError) { setError(validationError); return; } setVideo(selected); setResult(null); setProgress(0); setError(""); setDeniedPermission(null); }
+  function accept(asset?: ImagePicker.ImagePickerAsset) { if (!asset) return; const selected = toMobileVideo(asset); const validationError = validateSelectedVideo(selected); if (validationError) { setError(validationError); return; } setVideo(selected); setResult(null); setProgress(0); setError(""); setDeniedPermission(null); }
   async function pickVideo() { const permission = await ImagePicker.requestMediaLibraryPermissionsAsync(); if (!permission.granted) { setDeniedPermission("library"); return; } const selection = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ["videos"], allowsEditing: false, quality: 0.8 }); if (!selection.canceled) accept(selection.assets[0]); }
   async function recordVideo() { const permission = await ImagePicker.requestCameraPermissionsAsync(); if (!permission.granted) { setDeniedPermission("camera"); return; } const selection = await ImagePicker.launchCameraAsync({ mediaTypes: ["videos"], videoMaxDuration: 60, quality: 0.8 }); if (!selection.canceled) accept(selection.assets[0]); }
   async function identify() { if (!video || !temporalModel || busy) return; const controller = new AbortController(); abortRef.current = controller; setBusy(true); setProgress(0); setError(""); setResult(null); try { setResult(await recognizeExerciseVideo(video, setProgress, controller.signal)); } catch (requestError) { setError((requestError as Error).message); } finally { abortRef.current = null; setBusy(false); } }
