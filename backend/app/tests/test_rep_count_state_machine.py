@@ -27,6 +27,13 @@ def test_noisy_five_rep_sequence_still_counts_five():
     assert result.total_reps == 5
 
 
+def test_one_rep_counts_when_upright_angle_is_just_under_160_degrees():
+    values = [159] * 6 + [150, 140, 125, 105, 105, 108, 125, 140, 150] + [159] * 6
+    result = count_squat_reps(values, timed(values))
+    assert result.total_reps == 1
+    assert result.ignored_partial_reps == 0
+
+
 def test_tiny_knee_movement_does_not_count():
     values = ([170, 168, 165, 162, 165, 168, 170] * 4)
     result = count_squat_reps(values, timed(values))

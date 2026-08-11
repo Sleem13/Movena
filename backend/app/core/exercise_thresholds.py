@@ -1,6 +1,6 @@
 """Clinically reviewable constants for the rule-based squat prototype."""
 
-STANDING_KNEE_ANGLE_DEG = 160.0
+STANDING_KNEE_ANGLE_DEG = 158.0
 SQUAT_DEPTH_KNEE_ANGLE_DEG = 115.0
 SQUAT_ATTEMPT_KNEE_ANGLE_DEG = 140.0
 TRUNK_LEAN_THRESHOLD_DEG = 35.0

@@ -4,11 +4,11 @@ The counter operates on the average left/right knee angle. Values outside 20–1
 
 ## State machine
 
-1. **Standing:** at least three consecutive frames are near or above 160°.
+1. **Standing:** at least three consecutive frames are near or above 158°.
 2. **Descending:** angle decreases after confirmed standing for at least three phase frames.
 3. **Bottom:** an attempt reaches at most 140° after at least 40° of excursion and holds bottom evidence for two frames. The stricter 115° threshold remains the depth-quality rule.
 4. **Ascending:** angle rises at least 8° from the tracked minimum; bottom jitter remains in the same candidate.
-5. **Standing:** returning to at least 160° completes the repetition.
+5. **Standing:** returning to at least 158° completes the repetition.
 
 A completed event must have a plausible duration of 0.8–8.0 seconds when timestamps are available and must respect an inclusive 12-frame cooldown.
 
