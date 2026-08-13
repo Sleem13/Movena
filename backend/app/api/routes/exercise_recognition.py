@@ -112,6 +112,7 @@ def recognize_exercise(
 async def recognize_exercise_video(
     video: UploadFile = File(...),
     model_id: str | None = Query(None),
+    continue_on_subject_warning: bool = Query(False),
     db: Session = Depends(get_db),
     current_user: User | None = Depends(optional_current_user),
 ):
@@ -125,7 +126,7 @@ async def recognize_exercise_video(
             content={"status": "invalid_upload", "error_code": exc.error_code, "message": exc.message},
         )
     try:
-        frames = extract_pose_landmarks(video_path)
+        frames = extract_pose_landmarks(video_path, continue_on_subject_warning=True) if continue_on_subject_warning else extract_pose_landmarks(video_path)
         sequence = extract_mediapipe_sequence_features(frames)
         if not sequence:
             return JSONResponse(

@@ -1,6 +1,6 @@
 import math
 
-from app.exercises.bicep_curl import bicep_curl_analyzer, count_bicep_curl_reps
+from app.exercises.bicep_curl import bicep_curl_analyzer, count_bicep_curl_reps, hammer_curl_analyzer
 
 
 CURL_CYCLE = [165] * 5 + [155, 140, 120, 95, 75, 60, 55, 55, 58] + [72, 92, 118, 140, 155, 165, 165, 165]
@@ -49,3 +49,12 @@ def test_bicep_curl_analyzer_rejects_horizontal_position():
     response = bicep_curl_analyzer.analyze_landmarks(_frames(upright=False))
     assert response.status == "rejected"
     assert "upright_curl_position_not_visible" in response.detected_issues
+
+
+def test_hammer_curl_analyzer_uses_curl_mechanics_with_grip_limitation():
+    response = hammer_curl_analyzer.analyze_landmarks(_frames(), include_frame_data=True)
+    assert response.status == "success"
+    assert response.exercise_id == "hammer_curl"
+    assert response.exercise_name == "Hammer Curl"
+    assert response.total_reps == 1
+    assert any("grip" in limitation.lower() for limitation in response.limitations)

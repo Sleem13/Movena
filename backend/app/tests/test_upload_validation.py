@@ -114,6 +114,35 @@ def test_subject_switch_returns_structured_rejection(monkeypatch, tmp_path):
     ]
 
 
+def test_subject_switch_warning_can_be_overridden_with_report_warning(monkeypatch, tmp_path):
+    monkeypatch.setattr(get_settings(), "upload_dir", tmp_path)
+
+    def extract_with_warning(_path: Path, *, continue_on_subject_warning: bool = False):
+        assert continue_on_subject_warning is True
+        return [{"landmarks": {}, "subject_continuity_warning": "Subject-continuity warning overridden by user request. Possible subject switch near 12.87s."}]
+
+    monkeypatch.setattr("app.api.routes.squat_analysis.extract_pose_landmarks", extract_with_warning)
+    monkeypatch.setattr(
+        "app.api.routes.squat_analysis.analyze_squat_landmarks",
+        lambda _frames, include_frame_data=False: AnalysisResponse(
+            total_reps=1,
+            movement_score=80,
+            feedback=["Educational only."],
+            limitations=["Does not replace clinical assessment."],
+        ),
+    )
+
+    response = client.post(
+        "/api/v1/analyze/squat?continue_on_subject_warning=true",
+        files={"video": ("two-people.mp4", b"video", "video/mp4")},
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert any("Subject-continuity warning overridden" in warning for warning in body["validation_warnings"])
+    assert any("manually review" in limitation for limitation in body["limitations"])
+
+
 def test_success_response_contract_and_cleanup(monkeypatch, tmp_path):
     monkeypatch.setattr(get_settings(), "upload_dir", tmp_path)
     artifact_dir = tmp_path / "artifacts"

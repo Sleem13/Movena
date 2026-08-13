@@ -47,7 +47,7 @@ export function Navbar({ currentPage, hasReport, onNavigate, user }) {
   );
 
   return (
-    <header className="sticky top-0 z-30 border-b border-slate-200/80 bg-white/85 backdrop-blur-xl">
+    <header className="sticky top-0 z-30 border-b border-slate-200/80 bg-white/90 shadow-[0_1px_12px_rgba(31,62,89,0.04)] backdrop-blur-xl">
       <nav
         aria-label="Primary navigation"
         className="mx-auto flex min-h-[4.5rem] max-w-7xl items-center justify-between gap-4 px-4 sm:px-6"
@@ -74,9 +74,9 @@ export function Navbar({ currentPage, hasReport, onNavigate, user }) {
               onClick={() => onNavigate(id)}
               aria-label={t(labelKey)}
               aria-current={currentPage === id ? "page" : undefined}
-              className={`inline-flex min-h-10 shrink-0 items-center gap-2 rounded-xl px-3 text-sm font-semibold transition ${
+              className={`nav-item relative inline-flex min-h-10 shrink-0 items-center gap-2 rounded-xl px-3 text-sm font-semibold transition duration-200 ${
                 currentPage === id
-                  ? "bg-blue-50 text-clinical-blue shadow-sm ring-1 ring-blue-100"
+                  ? "nav-item-active bg-blue-50 text-clinical-blue shadow-sm ring-1 ring-blue-100"
                   : "text-slate-500 hover:bg-slate-50 hover:text-clinical-ink"
               }`}
             >
@@ -104,12 +104,12 @@ export function Navbar({ currentPage, hasReport, onNavigate, user }) {
 
 export function PageHeader({ eyebrow, title, description, actions }) {
   return (
-    <div className="mb-8 flex flex-col gap-5 border-b border-slate-200/80 pb-7 lg:flex-row lg:items-end lg:justify-between">
+    <div className="page-header mb-8 flex flex-col gap-5 border-b border-slate-200/80 pb-7 lg:flex-row lg:items-end lg:justify-between">
       <div>
         <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-clinical-teal before:h-px before:w-6 before:bg-clinical-teal">
           {eyebrow}
         </p>
-        <h1 className="mt-3 text-3xl font-extrabold tracking-tight text-clinical-ink sm:text-4xl">{title}</h1>
+        <h1 className="mt-3 text-balance text-3xl font-extrabold tracking-tight text-clinical-ink sm:text-4xl">{title}</h1>
         {description && (
           <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-600 sm:text-base">{description}</p>
         )}
@@ -136,7 +136,7 @@ export default function AppShell({
         onNavigate={onNavigate}
         user={user}
       />
-      {children}
+      <div key={currentPage} className="app-page">{children}</div>
       <footer className="mt-16 border-t border-slate-200 bg-white">
         <div className="mx-auto max-w-7xl px-6 py-8 text-xs leading-5 text-slate-500 sm:flex sm:items-center sm:justify-between">
           <p className="font-semibold">{t("footer.product")}</p>

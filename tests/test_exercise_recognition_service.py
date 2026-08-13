@@ -87,7 +87,7 @@ def test_sequence_prediction_abstains_below_calibrated_threshold(monkeypatch):
 
 def test_unsupported_recognition_is_not_actionable():
     result = service.format_recognition_result({
-        "status": "success", "suggested_exercise_id": "hammer_curl", "confidence": 0.9,
+        "status": "success", "suggested_exercise_id": "hip_flexion", "confidence": 0.9,
     })
     assert result["analyzer_available"] is False
     assert result["suggestion_actionable"] is False

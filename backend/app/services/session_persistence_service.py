@@ -19,7 +19,14 @@ DISPLAY_NAMES = {
     "sit_to_stand": "Sit-to-Stand",
     "knee_extension": "Knee Extension",
     "shoulder_abduction": "Shoulder Abduction",
+    "shoulder_flexion": "Shoulder Flexion",
     "hip_abduction": "Hip Abduction",
+    "walking_gait_screen": "Walking Gait Screen",
+    "balance": "Static Balance Screen",
+    "push_up": "Push-Up",
+    "shoulder_press": "Shoulder Press",
+    "bicep_curl": "Bicep Curl",
+    "hammer_curl": "Hammer Curl",
 }
 
 

@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import App from "./App.jsx";
 import { analyzeExerciseVideo } from "./services/api.js";
-import { getExercises, getSavedSession, listSavedSessions } from "./services/api.js";
+import { getArtifactBlob, getExercises, getSavedSession, listSavedSessions } from "./services/api.js";
 import { confirmRecognitionSuggestion, getRecognitionModels, recognizeExerciseVideo } from "./services/api.js";
 import { EXERCISES } from "./data/exercises.js";
 import { createPatientProfile, getPatientProfile, getPatientProgress, getTherapistDashboard, listPatientProfiles, listPatientSessions } from "./services/api.js";
@@ -25,6 +25,7 @@ vi.mock("./services/api.js", () => ({
   confirmRecognitionSuggestion: vi.fn().mockResolvedValue({ status: "confirmed" }),
   listSavedSessions: vi.fn(),
   getSavedSession: vi.fn(),
+  getArtifactBlob: vi.fn(),
   deleteSavedSession: vi.fn(),
   getTherapistDashboard: vi.fn(),
   listPatientProfiles: vi.fn(),
@@ -123,7 +124,9 @@ describe("Squat Analyzer healthcare dashboard", () => {
     expect(await screen.findByText("Supported exercises")).toBeInTheDocument();
     expect(screen.getByText("Bodyweight Squat")).toBeInTheDocument();
     expect(screen.getByText("Hip Abduction")).toBeInTheDocument();
-    expect(screen.getAllByText("Planned — not available yet")).toHaveLength(7);
+    expect(screen.getByText("Walking Gait Screen")).toBeInTheDocument();
+    expect(screen.getByText("Static Balance Screen")).toBeInTheDocument();
+    expect(screen.getAllByText("Planned — not available yet")).toHaveLength(4);
     expect(screen.getAllByRole("button", { name: "Not available" })[0]).toBeDisabled();
   });
 
@@ -133,10 +136,10 @@ describe("Squat Analyzer healthcare dashboard", () => {
     expect(await screen.findByText("Supported exercises")).toBeInTheDocument();
     fireEvent.change(screen.getByLabelText("Search exercises"), { target: { value: "shoulder" } });
     fireEvent.change(screen.getByLabelText("Availability"), { target: { value: "supported" } });
-    expect(screen.getByText("2 exercises match your filters.")).toBeInTheDocument();
+    expect(screen.getByText("3 exercises match your filters.")).toBeInTheDocument();
     expect(screen.getByText("Shoulder Abduction")).toBeInTheDocument();
+    expect(screen.getByText("Shoulder Flexion")).toBeInTheDocument();
     expect(screen.getByText("Shoulder Press")).toBeInTheDocument();
-    expect(screen.queryByText("Shoulder Flexion")).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Clear exercise filters" }));
     expect(screen.getByText("16 exercises match your filters.")).toBeInTheDocument();
     expect(screen.getByText("Shoulder Flexion")).toBeInTheDocument();
@@ -203,7 +206,7 @@ describe("Squat Analyzer healthcare dashboard", () => {
     openUpload();
     fireEvent.change(screen.getByLabelText("Exercise selector"), { target: { value: "sit_to_stand" } });
     expect(screen.getByText("Use a stable chair")).toBeInTheDocument();
-    expect(screen.getByLabelText("ML second opinion")).toBeDisabled();
+    expect(screen.getByLabelText("ML second opinion")).toBeEnabled();
     const file = new File(["video"], "chair.mp4", { type: "video/mp4" });
     fireEvent.change(screen.getByLabelText(/choose a sit-to-stand exercise video/i), { target: { files: [file] } });
     fireEvent.click(screen.getByRole("button", { name: "Analyze sit-to-stand" }));
@@ -228,7 +231,7 @@ describe("Squat Analyzer healthcare dashboard", () => {
     openUpload();
     fireEvent.change(screen.getByLabelText("Exercise selector"), { target: { value: "knee_extension" } });
     expect(screen.getByText("Seated position visible")).toBeInTheDocument();
-    expect(screen.getByLabelText("ML second opinion")).toBeDisabled();
+    expect(screen.getByLabelText("ML second opinion")).toBeEnabled();
     const file = new File(["video"], "extension.mp4", { type: "video/mp4" });
     fireEvent.change(screen.getByLabelText(/choose a knee extension exercise video/i), { target: { files: [file] } });
     fireEvent.click(screen.getByRole("button", { name: "Analyze knee extension" }));
@@ -254,7 +257,7 @@ describe("Squat Analyzer healthcare dashboard", () => {
     openUpload();
     fireEvent.change(screen.getByLabelText("Exercise selector"), { target: { value: "shoulder_abduction" } });
     expect(screen.getByText("Upper body visible")).toBeInTheDocument();
-    expect(screen.getByLabelText("ML second opinion")).toBeDisabled();
+    expect(screen.getByLabelText("ML second opinion")).toBeEnabled();
     const file = new File(["video"], "shoulder.mp4", { type: "video/mp4" });
     fireEvent.change(screen.getByLabelText(/choose a shoulder abduction exercise video/i), { target: { files: [file] } });
     fireEvent.click(screen.getByRole("button", { name: "Analyze shoulder abduction" }));
@@ -262,6 +265,33 @@ describe("Squat Analyzer healthcare dashboard", () => {
     expect(analyzeExerciseVideo).toHaveBeenCalledWith("shoulder_abduction", expect.any(File), expect.any(Object), expect.any(Function));
     expect(screen.getByText("Average shoulder")).toBeInTheDocument();
     expect(screen.getByText("Abduction range")).toBeInTheDocument();
+  });
+
+  it("selects shoulder flexion, shows forward-raise guidance, and renders its rule-based result", async () => {
+    const flexionReport = {
+      ...report,
+      exercise: "shoulder_flexion",
+      exercise_id: "shoulder_flexion",
+      exercise_name: "Shoulder Flexion",
+      average_shoulder_angle: 118,
+      valid_reps: 2,
+      summary: "Two complete shoulder flexion repetitions analyzed.",
+      ml_prediction: { enabled: false, model_version: "not_applicable", warning: "ML prediction is not applicable for shoulder flexion." },
+      score_breakdown: { extension_range_score: 90, control_score: 88, consistency_score: 85, posture_visibility_score: 92, rep_completion_score: 100 },
+      frame_analysis: [{ frame_index: 0, timestamp_sec: 0, knee_angle: 0, hip_angle: 0, shoulder_angle: 25, trunk_angle: 5, phase: "lowered", detected_issue: null }],
+    };
+    analyzeExerciseVideo.mockResolvedValue(flexionReport);
+    openUpload();
+    fireEvent.change(screen.getByLabelText("Exercise selector"), { target: { value: "shoulder_flexion" } });
+    expect(screen.getByText("Raise the arm forward through a comfortable visible range and return to the side.")).toBeInTheDocument();
+    expect(screen.getByLabelText("ML second opinion")).toBeEnabled();
+    const file = new File(["video"], "flexion.mp4", { type: "video/mp4" });
+    fireEvent.change(screen.getByLabelText(/choose a shoulder flexion exercise video/i), { target: { files: [file] } });
+    fireEvent.click(screen.getByRole("button", { name: "Analyze shoulder flexion" }));
+    await screen.findByText("Shoulder Flexion report");
+    expect(analyzeExerciseVideo).toHaveBeenCalledWith("shoulder_flexion", expect.any(File), expect.any(Object), expect.any(Function));
+    expect(screen.getByText("Average shoulder")).toBeInTheDocument();
+    expect(screen.getByText("Flexion range")).toBeInTheDocument();
   });
 
   it("selects hip abduction, shows lower-body guidance, and renders its rule-based result", async () => {
@@ -281,7 +311,7 @@ describe("Squat Analyzer healthcare dashboard", () => {
     openUpload();
     fireEvent.change(screen.getByLabelText("Exercise selector"), { target: { value: "hip_abduction" } });
     expect(screen.getByText("Full lower body visible")).toBeInTheDocument();
-    expect(screen.getByLabelText("ML second opinion")).toBeDisabled();
+    expect(screen.getByLabelText("ML second opinion")).toBeEnabled();
     const file = new File(["video"], "hip.mp4", { type: "video/mp4" });
     fireEvent.change(screen.getByLabelText(/choose a hip abduction exercise video/i), { target: { files: [file] } });
     fireEvent.click(screen.getByRole("button", { name: "Analyze hip abduction" }));
@@ -289,6 +319,69 @@ describe("Squat Analyzer healthcare dashboard", () => {
     expect(analyzeExerciseVideo).toHaveBeenCalledWith("hip_abduction", expect.any(File), expect.any(Object), expect.any(Function));
     expect(screen.getByText("Average hip abduction")).toBeInTheDocument();
     expect(screen.getByText("Pelvis/trunk stability")).toBeInTheDocument();
+  });
+
+  it("selects hammer curl, shows grip-limited guidance, and renders its rule-based result", async () => {
+    const hammerReport = {
+      ...report,
+      exercise: "hammer_curl",
+      exercise_id: "hammer_curl",
+      exercise_name: "Hammer Curl",
+      average_elbow_angle: 126,
+      valid_reps: 2,
+      summary: "Two complete hammer curl repetitions analyzed.",
+      limitations: ["Hammer-curl grip orientation cannot be confirmed from body pose alone."],
+      ml_prediction: { enabled: false, model_version: "not_applicable", warning: "ML prediction is not applicable for hammer curl." },
+      score_breakdown: { extension_range_score: 87, control_score: 88, consistency_score: 85, posture_visibility_score: 92, rep_completion_score: 100 },
+      frame_analysis: [{ frame_index: 0, timestamp_sec: 0, knee_angle: 0, hip_angle: 0, elbow_angle: 160, trunk_angle: 5, phase: "extended", detected_issue: null }],
+    };
+    analyzeExerciseVideo.mockResolvedValue(hammerReport);
+    openUpload();
+    fireEvent.change(screen.getByLabelText("Exercise selector"), { target: { value: "hammer_curl" } });
+    expect(screen.getByText(/body pose cannot confirm neutral grip/i)).toBeInTheDocument();
+    expect(screen.getByLabelText("ML second opinion")).toBeEnabled();
+    const file = new File(["video"], "hammer.mp4", { type: "video/mp4" });
+    fireEvent.change(screen.getByLabelText(/choose a hammer curl exercise video/i), { target: { files: [file] } });
+    fireEvent.click(screen.getByRole("button", { name: "Analyze hammer curl" }));
+    await screen.findByText("Hammer Curl report");
+    expect(analyzeExerciseVideo).toHaveBeenCalledWith("hammer_curl", expect.any(File), expect.any(Object), expect.any(Function));
+    expect(screen.getByText("Average elbow")).toBeInTheDocument();
+    expect(screen.getByText("Flexion range")).toBeInTheDocument();
+  });
+
+  it("selects balance, shows safe support guidance, and renders balance metrics", async () => {
+    const balanceReport = {
+      ...report,
+      exercise: "balance",
+      exercise_id: "balance",
+      exercise_name: "Static Balance Screen",
+      total_reps: 0,
+      valid_reps: 1,
+      summary: "A static balance hold was analyzed.",
+      balance_metrics: {
+        hold_duration_sec: 5,
+        balance_mode: "quiet_standing",
+        sway_rms: 0.018,
+        sway_velocity: 0.034,
+        max_trunk_lean_deg: 5.2,
+      },
+      ml_prediction: { enabled: false, model_version: "not_applicable", warning: "ML prediction is not applicable for balance screening." },
+      score_breakdown: { hold_duration_score: 50, sway_control_score: 88, trunk_control_score: 90, pelvis_control_score: 92, knee_stability_score: 86, posture_visibility_score: 91 },
+      frame_analysis: [{ frame_index: 0, timestamp_sec: 0, knee_angle: 178, hip_angle: 0, trunk_angle: 4, phase: "balance_hold", detected_issue: null }],
+    };
+    analyzeExerciseVideo.mockResolvedValue(balanceReport);
+    openUpload();
+    fireEvent.change(screen.getByLabelText("Exercise selector"), { target: { value: "balance" } });
+    expect(screen.getByText("Hold steady")).toBeInTheDocument();
+    expect(screen.getByText(/stable counter, rail, or chair nearby/i)).toBeInTheDocument();
+    expect(screen.getByLabelText("ML second opinion")).toBeEnabled();
+    const file = new File(["video"], "balance.mp4", { type: "video/mp4" });
+    fireEvent.change(screen.getByLabelText(/choose a balance screen exercise video/i), { target: { files: [file] } });
+    fireEvent.click(screen.getByRole("button", { name: "Analyze balance screen" }));
+    await screen.findByText("Static Balance Screen report");
+    expect(analyzeExerciseVideo).toHaveBeenCalledWith("balance", expect.any(File), expect.any(Object), expect.any(Function));
+    expect(screen.getAllByText("Hold duration")).toHaveLength(2);
+    expect(screen.getByText("Sway control")).toBeInTheDocument();
   });
 
   it("renders the camera placement guide", () => {
@@ -347,6 +440,41 @@ describe("Squat Analyzer healthcare dashboard", () => {
     expect(screen.getByText("Poor Control")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "View details" }));
     expect(await screen.findByText("Three repetitions analyzed.")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Hide details" })).toHaveAttribute("aria-expanded", "true");
+    fireEvent.click(screen.getByRole("button", { name: "Hide details" }));
+    expect(screen.queryByText("Three repetitions analyzed.")).not.toBeInTheDocument();
+  });
+
+  it("opens a saved report in an authenticated in-page viewer", async () => {
+    const saved = {
+      session_id: "report12-session", exercise_id: "bodyweight_squat", exercise_display_name: "Bodyweight Squat",
+      status: "success", created_at: "2026-07-29T12:00:00Z", report_download_url: "/api/v1/artifacts/reports/report-1",
+    };
+    listSavedSessions.mockResolvedValue({ items: [saved], total: 1, limit: 50, offset: 0 });
+    getArtifactBlob.mockResolvedValue(new Blob(["pdf"], { type: "application/pdf" }));
+    const createObjectUrl = vi.spyOn(URL, "createObjectURL").mockReturnValue("blob:report-1");
+    render(<App />);
+    fireEvent.click(screen.getByRole("button", { name: "History" }));
+    await screen.findByText("Bodyweight Squat");
+    fireEvent.click(screen.getByRole("button", { name: "Report" }));
+    expect(await screen.findByRole("dialog", { name: "Session report" })).toBeInTheDocument();
+    expect(getArtifactBlob).toHaveBeenCalledWith(saved.report_download_url);
+    expect(screen.getByTitle("Session report")).toHaveAttribute("src", "blob:report-1");
+    createObjectUrl.mockRestore();
+  });
+
+  it("shows an expired artifact message instead of navigating silently", async () => {
+    const saved = {
+      session_id: "oldreport-session", exercise_id: "bodyweight_squat", exercise_display_name: "Bodyweight Squat",
+      status: "success", created_at: "2026-07-23T12:00:00Z", overlay_preview_url: "/api/v1/artifacts/overlays/missing/preview",
+    };
+    listSavedSessions.mockResolvedValue({ items: [saved], total: 1, limit: 50, offset: 0 });
+    getArtifactBlob.mockRejectedValue({ response: { status: 404, data: { error_code: "ARTIFACT_NOT_FOUND" } } });
+    render(<App />);
+    fireEvent.click(screen.getByRole("button", { name: "History" }));
+    await screen.findByText("Bodyweight Squat");
+    fireEvent.click(screen.getByRole("button", { name: "Overlay" }));
+    expect(await screen.findByText(/temporary artifact has expired/i)).toBeInTheDocument();
   });
 
   it("renders therapist dashboard summary, empty profiles, and privacy warning", async () => {
@@ -467,18 +595,95 @@ describe("Squat Analyzer healthcare dashboard", () => {
     expect(await screen.findByRole("alert")).toHaveTextContent("Unsupported video format. Please upload MP4, MOV, AVI, MKV, or WEBM.");
   });
 
-  it("shows safe recording guidance when pose tracking switches people", async () => {
-    analyzeExerciseVideo.mockRejectedValue({
-      response: {
-        status: 422,
-        data: { error_code: "SUBJECT_SWITCH_DETECTED", message: "Internal subject tracking message." },
-      },
-    });
+  it("automatically proceeds with a warning when pose tracking switches people", async () => {
+    analyzeExerciseVideo
+      .mockRejectedValueOnce({
+        response: {
+          status: 422,
+          data: { error_code: "SUBJECT_SWITCH_DETECTED", message: "Internal subject tracking message." },
+        },
+      })
+      .mockResolvedValueOnce({ ...report, validation_warnings: ["Subject-continuity warning overridden by user request."] });
     openUpload(); selectVideo();
     fireEvent.click(screen.getByRole("button", { name: "Analyze squat" }));
-    expect(await screen.findByRole("alert")).toHaveTextContent(
-      "More than one person may have been tracked. Record only the person being analyzed",
+    const warningAlert = await screen.findByRole("alert");
+    expect(warningAlert).toHaveTextContent(
+      "More than one person may have been tracked. For best reliability, record only the person being analyzed",
     );
+    expect(warningAlert).toHaveTextContent("Continuing automatically with this warning included in the report.");
+    expect(screen.queryByRole("button", { name: "Proceed with warning" })).not.toBeInTheDocument();
+    await screen.findByText("Bodyweight Squat report");
+    expect(analyzeExerciseVideo).toHaveBeenCalledTimes(2);
+    expect(analyzeExerciseVideo).toHaveBeenLastCalledWith(
+      "bodyweight_squat",
+      expect.any(File),
+      expect.objectContaining({ continue_on_subject_warning: true }),
+      expect.any(Function),
+    );
+  });
+
+  it("auto-routes after a subject-warning retry when the selected class still rejects", async () => {
+    const gaitReport = {
+      ...report,
+      exercise: "walking_gait_screen",
+      exercise_id: "walking_gait_screen",
+      exercise_name: "Walking Gait Screen",
+      movement_score: 84,
+      summary: "A walking gait screen was analyzed.",
+      detected_issues: [],
+      gait_metrics: { step_count: 6, gait_cycles: 3, cadence_steps_per_min: 96 },
+      validation_warnings: ["Subject-continuity warning overridden by user request."],
+    };
+    analyzeExerciseVideo
+      .mockRejectedValueOnce({
+        response: {
+          status: 422,
+          data: { error_code: "SUBJECT_SWITCH_DETECTED", message: "Internal subject tracking message." },
+        },
+      })
+      .mockResolvedValueOnce(rejectedReport)
+      .mockResolvedValueOnce(gaitReport);
+    recognizeExerciseVideo
+      .mockRejectedValueOnce({
+        response: {
+          status: 422,
+          data: { error_code: "SUBJECT_SWITCH_DETECTED", message: "Internal subject tracking message." },
+        },
+      })
+      .mockResolvedValueOnce({
+        status: "success",
+        suggested_exercise_id: "walking_gait_screen",
+        confidence: 0.91,
+        analyzer_available: true,
+        suggestion_actionable: true,
+        top_predictions: [{ exercise_id: "walking_gait_screen", confidence: 0.91 }],
+      });
+
+    openUpload(); selectVideo();
+    fireEvent.click(screen.getByRole("button", { name: "Analyze squat" }));
+
+    await screen.findByText("Walking Gait Screen report");
+    expect(analyzeExerciseVideo).toHaveBeenCalledTimes(3);
+    expect(analyzeExerciseVideo).toHaveBeenNthCalledWith(
+      2,
+      "bodyweight_squat",
+      expect.any(File),
+      expect.objectContaining({ continue_on_subject_warning: true }),
+      expect.any(Function),
+    );
+    expect(analyzeExerciseVideo).toHaveBeenNthCalledWith(
+      3,
+      "walking_gait_screen",
+      expect.any(File),
+      expect.objectContaining({ continue_on_subject_warning: true }),
+      expect.any(Function),
+    );
+    expect(recognizeExerciseVideo).toHaveBeenLastCalledWith(
+      expect.any(File),
+      undefined,
+      expect.objectContaining({ continue_on_subject_warning: true }),
+    );
+    expect(screen.getAllByText(/recognition suggested walking gait screen with 91% confidence/i).length).toBeGreaterThan(0);
   });
 
   it("shows a connection message for a network or CORS failure", async () => {
@@ -502,5 +707,48 @@ describe("Squat Analyzer healthcare dashboard", () => {
     expect(screen.getByText("Camera placement guide")).toBeInTheDocument();
     expect(screen.queryByText("Movement score")).not.toBeInTheDocument();
     expect(screen.queryByText("ML second opinion")).not.toBeInTheDocument();
+  });
+
+  it("auto-routes to the recognized analyzer when the selected movement class rejects", async () => {
+    const gaitReport = {
+      ...report,
+      exercise: "walking_gait_screen",
+      exercise_id: "walking_gait_screen",
+      exercise_name: "Walking Gait Screen",
+      movement_score: 84,
+      summary: "A walking gait screen was analyzed.",
+      detected_issues: [],
+      gait_metrics: { step_count: 6, gait_cycles: 3, cadence_steps_per_min: 96 },
+    };
+    analyzeExerciseVideo.mockResolvedValueOnce(rejectedReport).mockResolvedValueOnce(gaitReport);
+    recognizeExerciseVideo.mockResolvedValueOnce({
+      status: "success",
+      suggested_exercise_id: "walking_gait_screen",
+      confidence: 0.91,
+      analyzer_available: true,
+      suggestion_actionable: true,
+      top_predictions: [{ exercise_id: "walking_gait_screen", confidence: 0.91 }],
+    });
+
+    openUpload(); selectVideo();
+    fireEvent.click(screen.getByRole("button", { name: "Analyze squat" }));
+
+    await screen.findByText("Walking Gait Screen report");
+    expect(recognizeExerciseVideo).toHaveBeenCalledTimes(1);
+    expect(analyzeExerciseVideo).toHaveBeenNthCalledWith(
+      1,
+      "bodyweight_squat",
+      expect.any(File),
+      expect.any(Object),
+      expect.any(Function),
+    );
+    expect(analyzeExerciseVideo).toHaveBeenNthCalledWith(
+      2,
+      "walking_gait_screen",
+      expect.any(File),
+      expect.any(Object),
+      expect.any(Function),
+    );
+    expect(screen.getAllByText(/recognition suggested walking gait screen with 91% confidence/i).length).toBeGreaterThan(0);
   });
 });

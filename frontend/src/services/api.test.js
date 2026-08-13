@@ -54,10 +54,22 @@ describe("deployment API configuration", () => {
     ["push_up", "push-up"],
     ["shoulder_press", "shoulder-press"],
     ["bicep_curl", "bicep-curl"],
+    ["hammer_curl", "hammer-curl"],
+    ["shoulder_flexion", "shoulder-flexion"],
+    ["walking_gait_screen", "gait"],
+    ["balance", "balance"],
   ])("routes %s to its dedicated analysis endpoint", async (exerciseId, endpoint) => {
     mocks.post.mockResolvedValue({ data: { exercise_id: exerciseId } });
     await analyzeExerciseVideo(exerciseId, new File(["video"], "movement.mp4", { type: "video/mp4" }));
     expect(mocks.post.mock.calls[0][0]).toContain(`/api/v1/analyze/${endpoint}?`);
+  });
+
+  it("sends the subject-warning override only when requested", async () => {
+    mocks.post.mockResolvedValue({ data: { exercise_id: "walking_gait_screen" } });
+    await analyzeExerciseVideo("walking_gait_screen", new File(["video"], "gait.mp4", { type: "video/mp4" }), {
+      continue_on_subject_warning: true,
+    });
+    expect(mocks.post.mock.calls[0][0]).toContain("continue_on_subject_warning=true");
   });
 
   it("uploads a video to the temporal recognition endpoint", async () => {
@@ -65,10 +77,17 @@ describe("deployment API configuration", () => {
     const file = new File(["video"], "movement.mp4", { type: "video/mp4" });
     await recognizeExerciseVideo(file);
     expect(mocks.post).toHaveBeenCalledWith(
-      "/api/v1/recognition/video",
+      "/api/v1/recognition/video?continue_on_subject_warning=false",
       expect.any(FormData),
       expect.objectContaining({ headers: { "Content-Type": "multipart/form-data" } }),
     );
+  });
+
+  it("can send the subject-warning override to video recognition", async () => {
+    mocks.post.mockResolvedValue({ data: { suggested_exercise_id: "walking_gait_screen" } });
+    const file = new File(["video"], "movement.mp4", { type: "video/mp4" });
+    await recognizeExerciseVideo(file, undefined, { continue_on_subject_warning: true });
+    expect(mocks.post.mock.calls[0][0]).toContain("continue_on_subject_warning=true");
   });
 
   it("records a confirmed recognition label", async () => {

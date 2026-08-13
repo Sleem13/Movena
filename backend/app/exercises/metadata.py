@@ -5,6 +5,9 @@ from __future__ import annotations
 from pydantic import BaseModel
 
 
+OPTIONAL_ML_SECOND_OPINION = "optional_experimental_second_opinion"
+
+
 class ExerciseMetadata(BaseModel):
     exercise_id: str
     display_name: str
@@ -29,7 +32,7 @@ _SUPPORTED = (
         movement_description="A controlled bodyweight squat through a comfortable range.",
         expected_movement_pattern="Perform 3–5 controlled squats with the full body visible.",
         safety_notes="Stop if pain, dizziness, or unusual symptoms occur; seek professional review when appropriate.",
-        endpoint_path="/api/v1/analyze/squat", ml_model_status="optional_experimental_second_opinion",
+        endpoint_path="/api/v1/analyze/squat", ml_model_status=OPTIONAL_ML_SECOND_OPINION,
     ),
     ExerciseMetadata(
         exercise_id="sit_to_stand", display_name="Sit-to-Stand", supported_in_app=True,
@@ -39,6 +42,7 @@ _SUPPORTED = (
         expected_movement_pattern="Show complete sitting, rising, standing, lowering, and return-to-sitting cycles.",
         safety_notes="Use a stable chair and stop if pain, dizziness, or unusual symptoms occur.",
         endpoint_path="/api/v1/analyze/sit-to-stand",
+        ml_model_status=OPTIONAL_ML_SECOND_OPINION,
     ),
     ExerciseMetadata(
         exercise_id="knee_extension", display_name="Knee Extension", supported_in_app=True,
@@ -48,6 +52,7 @@ _SUPPORTED = (
         expected_movement_pattern="Extend the knee comfortably, pause if appropriate, then return with control.",
         safety_notes="Use a secure chair and stop if pain or unusual symptoms occur.",
         endpoint_path="/api/v1/analyze/knee-extension",
+        ml_model_status=OPTIONAL_ML_SECOND_OPINION,
     ),
     ExerciseMetadata(
         exercise_id="shoulder_abduction", display_name="Shoulder Abduction", supported_in_app=True,
@@ -57,6 +62,18 @@ _SUPPORTED = (
         expected_movement_pattern="Raise the arm outward through a comfortable range and return to the side.",
         safety_notes="Stop if pain, numbness, dizziness, or unusual symptoms occur.",
         endpoint_path="/api/v1/analyze/shoulder-abduction",
+        ml_model_status=OPTIONAL_ML_SECOND_OPINION,
+    ),
+    ExerciseMetadata(
+        exercise_id="shoulder_flexion", display_name="Shoulder Flexion", supported_in_app=True,
+        body_region="Shoulder and upper limb", exercise_family="Upper-limb range of motion", recommended_camera_view="Front or slight side view",
+        required_landmarks=["shoulders", "elbows", "wrists", "trunk"],
+        movement_description="A forward arm raise followed by a controlled return.",
+        expected_movement_pattern="Raise the arm forward through a comfortable visible range and return to the side.",
+        safety_notes="Stop if pain, numbness, dizziness, or unusual symptoms occur; the analyzer estimates visible 2D flexion only.",
+        endpoint_path="/api/v1/analyze/shoulder-flexion",
+        ml_model_status=OPTIONAL_ML_SECOND_OPINION,
+        recognition_status="experimental_manual_selection_required",
     ),
     ExerciseMetadata(
         exercise_id="hip_abduction", display_name="Hip Abduction", supported_in_app=True,
@@ -66,6 +83,29 @@ _SUPPORTED = (
         expected_movement_pattern="Move one leg outward through a comfortable range while keeping the setup stable.",
         safety_notes="Use safe support if needed and stop if pain, dizziness, or unusual symptoms occur.",
         endpoint_path="/api/v1/analyze/hip-abduction",
+        ml_model_status=OPTIONAL_ML_SECOND_OPINION,
+    ),
+    ExerciseMetadata(
+        exercise_id="walking_gait_screen", display_name="Walking Gait Screen", supported_in_app=True,
+        body_region="Gait and lower-limb mobility", exercise_family="Walking gait screen", recommended_camera_view="Side view preferred",
+        required_landmarks=["shoulders", "hips", "knees", "ankles", "heels", "toes"],
+        movement_description="A short walking pass used to estimate gait timing, stance/swing balance, cadence, and left-right symmetry from visible pose landmarks.",
+        expected_movement_pattern="Walk at a comfortable pace across the frame for several steps with both feet visible.",
+        safety_notes="Use a clear, obstacle-free path and stop if pain, dizziness, imbalance, or unusual symptoms occur.",
+        endpoint_path="/api/v1/analyze/gait",
+        ml_model_status=OPTIONAL_ML_SECOND_OPINION,
+        recognition_status="experimental_manual_selection_required",
+    ),
+    ExerciseMetadata(
+        exercise_id="balance", display_name="Static Balance Screen", supported_in_app=True,
+        body_region="Balance and postural control", exercise_family="Static balance hold", recommended_camera_view="Front or slight diagonal view",
+        required_landmarks=["shoulders", "hips", "knees", "ankles", "heels", "toes"],
+        movement_description="A short standing balance hold used to estimate visible postural sway, trunk lean, pelvis level, knee steadiness, and foot adjustments.",
+        expected_movement_pattern="Hold a safe standing balance position for several seconds with a support surface nearby and the full body visible.",
+        safety_notes="Use a stable support surface nearby and stop if pain, dizziness, imbalance, or unusual symptoms occur.",
+        endpoint_path="/api/v1/analyze/balance",
+        ml_model_status=OPTIONAL_ML_SECOND_OPINION,
+        recognition_status="experimental_manual_selection_required",
     ),
 )
 
@@ -77,7 +117,7 @@ _COACHING_CANDIDATES = (
         movement_description="A controlled push-up through a comfortable range with the trunk supported as one unit.",
         expected_movement_pattern="From a visible side-view support position, bend and extend the elbows with the body supported as one unit.",
         safety_notes="Use an appropriate supported variation and stop if pain, dizziness, numbness, or unusual symptoms occur.", endpoint_path="/api/v1/analyze/push-up",
-        ml_model_status="not_applicable_rule_based_primary", recognition_status="experimental_suggestion_only_analyzer_available",
+        ml_model_status=OPTIONAL_ML_SECOND_OPINION, recognition_status="experimental_suggestion_only_analyzer_available",
     ),
     ExerciseMetadata(
         exercise_id="shoulder_press", display_name="Shoulder Press", supported_in_app=True,
@@ -86,7 +126,7 @@ _COACHING_CANDIDATES = (
         movement_description="An overhead pressing movement distinct from shoulder abduction.",
         expected_movement_pattern="Begin with flexed elbows visible, extend overhead, then return with control.",
         safety_notes="Use only a clinician-approved load or unloaded practice; stop if pain, numbness, dizziness, or unusual symptoms occur.", endpoint_path="/api/v1/analyze/shoulder-press",
-        ml_model_status="not_applicable_rule_based_primary", recognition_status="experimental_suggestion_only_analyzer_available",
+        ml_model_status=OPTIONAL_ML_SECOND_OPINION, recognition_status="experimental_suggestion_only_analyzer_available",
     ),
     ExerciseMetadata(
         exercise_id="bicep_curl", display_name="Bicep Curl", supported_in_app=True,
@@ -95,20 +135,20 @@ _COACHING_CANDIDATES = (
         movement_description="A controlled elbow-flexion movement observed with conservative upper-arm and trunk rules.",
         expected_movement_pattern="Begin with the elbow extended, flex through a comfortable visible range, then return with control.",
         safety_notes="Use only a clinician-approved load or unloaded practice; the analyzer cannot assess grip or safe load.", endpoint_path="/api/v1/analyze/bicep-curl",
-        ml_model_status="not_applicable_rule_based_primary", recognition_status="experimental_suggestion_only_analyzer_available",
+        ml_model_status=OPTIONAL_ML_SECOND_OPINION, recognition_status="experimental_suggestion_only_analyzer_available",
     ),
     ExerciseMetadata(
-        exercise_id="hammer_curl", display_name="Hammer Curl", supported_in_app=False,
+        exercise_id="hammer_curl", display_name="Hammer Curl", supported_in_app=True,
         body_region="Elbow, forearm, and upper limb", exercise_family="Neutral-grip elbow flexion",
         recommended_camera_view="Front or slight side view", required_landmarks=["shoulders", "elbows", "wrists", "hands", "hips"],
-        movement_description="A neutral-grip curl candidate that requires hand-orientation evidence.",
-        expected_movement_pattern="Research candidate only; the current body-pose contract cannot verify grip orientation.",
-        safety_notes="Do not use PhysioVision AI to distinguish or assess hammer curls yet.", endpoint_path=None,
-        ml_model_status="experimental_recognition_research_only", recognition_status="experimental_candidate_data_available",
+        movement_description="A neutral-grip curl analyzed for visible elbow-flexion mechanics with grip-orientation limitations.",
+        expected_movement_pattern="Begin with the elbow extended, flex through a comfortable visible range, then return with control while keeping the thumb side oriented upward when visible.",
+        safety_notes="Use only a clinician-approved load or unloaded practice; body pose cannot confirm neutral grip or safe load.", endpoint_path="/api/v1/analyze/hammer-curl",
+        ml_model_status=OPTIONAL_ML_SECOND_OPINION, recognition_status="experimental_suggestion_only_analyzer_available",
     ),
 )
 
-_PLANNED_IDS = ("heel_raise", "lunge", "step_up", "balance", "walking_gait_screen", "shoulder_flexion", "hip_flexion")
+_PLANNED_IDS = ("heel_raise", "lunge", "step_up", "hip_flexion")
 _PLANNED = tuple(
     ExerciseMetadata(
         exercise_id=exercise_id,

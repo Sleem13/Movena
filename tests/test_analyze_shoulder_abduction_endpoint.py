@@ -17,4 +17,7 @@ def test_endpoint_schema_and_ml_not_applicable(monkeypatch, tmp_path):
     body = response.json()
     assert body["exercise_id"] == "shoulder_abduction"
     assert body["average_shoulder_angle"] == 88
-    assert body["ml_prediction"]["enabled"] is False
+    prediction = body["ml_prediction"]
+    assert prediction["enabled"] is False
+    assert prediction["provider_status"] == "not_configured"
+    assert prediction["exercise_id"] == "shoulder_abduction"

@@ -13,10 +13,13 @@ from app.api.routes.sit_to_stand_analysis import router as sit_to_stand_router
 from app.api.routes.knee_extension_analysis import router as knee_extension_router
 from app.api.routes.shoulder_abduction_analysis import router as shoulder_abduction_router
 from app.api.routes.hip_abduction_analysis import router as hip_abduction_router
+from app.api.routes.gait_analysis import router as gait_router
+from app.api.routes.balance_analysis import router as balance_router
 from app.api.routes.upper_body_analysis import router as upper_body_router
 from app.api.routes.sessions import router as sessions_router
 from app.api.routes.exercise_recognition import router as exercise_recognition_router
 from app.api.routes.exercises import router as exercises_router
+from app.api.routes.realtime_coaching import router as realtime_coaching_router
 from app.api.v1.therapist import router as therapist_router
 from app.api.v1.auth import router as auth_router
 from app.api.dependencies.auth import AuthError
@@ -91,10 +94,13 @@ app.include_router(sit_to_stand_router)
 app.include_router(knee_extension_router)
 app.include_router(shoulder_abduction_router)
 app.include_router(hip_abduction_router)
+app.include_router(gait_router)
+app.include_router(balance_router)
 app.include_router(upper_body_router)
 app.include_router(artifacts_router)
 app.include_router(exercise_recognition_router)
 app.include_router(exercises_router)
+app.include_router(realtime_coaching_router)
 app.include_router(auth_router)
 if settings.enable_session_history:
     app.include_router(sessions_router)

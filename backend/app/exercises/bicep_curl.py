@@ -38,6 +38,9 @@ TRUNK_COMPENSATION_ANGLE = 20.0
 class CurlConfig:
     exercise_id: str = "bicep_curl"
     display_name: str = "Bicep Curl"
+    error_code: str = "INVALID_BICEP_CURL_VIDEO"
+    invalid_reason: str = "no_valid_bicep_curl"
+    grip_note: str = "Body pose cannot verify grip orientation or distinguish a hammer curl reliably."
 
 
 @dataclass(frozen=True)
@@ -206,7 +209,7 @@ def _metrics(frame: dict[str, Any], side: str) -> tuple[float, float, float, boo
     return elbow_angle, trunk_angle, upper_arm_angle, upright, posture_ok
 
 
-def _feedback(issues: list[str]) -> list[str]:
+def _feedback(issues: list[str], grip_note: str) -> list[str]:
     messages = {
         "incomplete_repetition": "Return to the visible extended starting position before beginning the next repetition.",
         "limited_observed_flexion_range": "The system observed limited elbow-flexion range in some repetitions.",
@@ -218,13 +221,14 @@ def _feedback(issues: list[str]) -> list[str]:
     result = [messages[issue] for issue in issues if issue in messages]
     if not result:
         result.append("The observed repetitions were completed with a generally controlled visible elbow movement pattern.")
-    result.extend(["Body pose cannot verify grip orientation or distinguish a hammer curl reliably.", "This educational feedback does not assess resistance or safe load and does not replace a licensed physiotherapist."])
+    result.extend([grip_note, "This educational feedback does not assess resistance or safe load and does not replace a licensed physiotherapist."])
     return result
 
 
 class BicepCurlAnalyzer(ExerciseAnalyzer):
-    exercise_id = "bicep_curl"
-    config = CurlConfig()
+    def __init__(self, config: CurlConfig | None = None) -> None:
+        self.config = config or CurlConfig()
+        self.exercise_id = self.config.exercise_id
 
     def analyze(self, video_path: Path, options: dict[str, Any] | None = None) -> AnalysisResponse:
         options = options or {}
@@ -264,13 +268,13 @@ class BicepCurlAnalyzer(ExerciseAnalyzer):
         return total, ScoreBreakdown(extension_range_score=flexion_range, control_score=control, consistency_score=consistency, posture_visibility_score=posture, rep_completion_score=completion, pose_confidence_score=round(visibility * 100)), issues
 
     def generate_feedback(self, issues: list[str]) -> list[str]:
-        return _feedback(issues)
+        return _feedback(issues, self.config.grip_note)
 
     def _ml_unavailable(self) -> MLPrediction:
-        return MLPrediction(enabled=False, model_version="not_applicable", warning="Recognition may suggest bicep curl, but recognition confidence is not form evidence and cannot verify grip or load.")
+        return MLPrediction(enabled=False, model_version="not_applicable", warning=f"Recognition may suggest {self.config.display_name.lower()}, but recognition confidence is not form evidence and cannot verify grip or load.")
 
     def _empty_rejection(self) -> AnalysisResponse:
-        return AnalysisResponse(exercise=self.exercise_id, exercise_id=self.exercise_id, exercise_name=self.config.display_name, status="rejected", error_code="INVALID_BICEP_CURL_VIDEO", message="No valid bicep curl movement was detected.", movement_score=None, valid_reps=0, detected_issues=["no_complete_curl"], feedback=self.generate_feedback(["no_complete_curl"]), ml_prediction=self._ml_unavailable(), limitations=["No usable pose-detected frames were available."])
+        return AnalysisResponse(exercise=self.exercise_id, exercise_id=self.exercise_id, exercise_name=self.config.display_name, status="rejected", error_code=self.config.error_code, message=f"No valid {self.config.display_name.lower()} movement was detected.", movement_score=None, valid_reps=0, detected_issues=["no_complete_curl"], feedback=self.generate_feedback(["no_complete_curl"]), ml_prediction=self._ml_unavailable(), limitations=["No usable pose-detected frames were available."])
 
     def analyze_landmarks(self, frames: list[dict[str, Any]], include_frame_data: bool = False) -> AnalysisResponse:
         if not frames:
@@ -294,20 +298,29 @@ class BicepCurlAnalyzer(ExerciseAnalyzer):
         posture_ratio = sum(posture) / len(posture)
         count = count_bicep_curl_reps(angles, timestamps, indexes, [bool(frame.get("low_confidence", False)) or value < MIN_VISIBILITY for frame, value in zip(usable_frames, visibilities)], quality.score, quality.pose_detection_rate)
         is_valid, warnings = self.validate_input(count=count, pose_quality=quality, visibility=visibility, upright_ratio=upright_ratio)
-        input_validity = InputValidity(is_valid=is_valid, reason=None if is_valid else "no_valid_bicep_curl", pose_detected_frames=quality.pose_detected_frames, pose_detection_rate=quality.pose_detection_rate, overall_pose_detection_rate=quality.pose_detection_rate, critical_landmark_visibility=visibility, knee_angle_range=0, hip_angle_range=0, motion_variation=round(max(angles) - min(angles), 2), valid_reps=count.total_reps, warnings=warnings)
+        input_validity = InputValidity(is_valid=is_valid, reason=None if is_valid else self.config.invalid_reason, pose_detected_frames=quality.pose_detected_frames, pose_detection_rate=quality.pose_detection_rate, overall_pose_detection_rate=quality.pose_detection_rate, critical_landmark_visibility=visibility, knee_angle_range=0, hip_angle_range=0, motion_variation=round(max(angles) - min(angles), 2), valid_reps=count.total_reps, warnings=warnings)
         confidence_score = round(min(1.0, 0.50 * count.confidence + 0.20 * quality.score + 0.15 * visibility + 0.15 * upright_ratio), 3)
         confidence = AnalysisConfidence(score=confidence_score if is_valid else min(0.39, confidence_score), level="high" if is_valid and confidence_score >= 0.8 else "medium" if is_valid and confidence_score >= 0.6 else "low", reasons=[f"Rep-count confidence was {round(count.confidence * 100)}%.", f"Selected {side}-side visibility was {round(visibility * 100)}%.", f"Frames matching an upright curl position: {round(upright_ratio * 100)}%."], warnings=warnings)
         common = dict(exercise=self.exercise_id, exercise_id=self.exercise_id, exercise_name=self.config.display_name, total_reps=count.total_reps, valid_reps=count.total_reps, average_elbow_angle=round(mean(angles), 2), average_trunk_angle=round(mean(trunks), 2), rep_events=[RepEvent(start_frame=event.start_frame, bottom_frame=event.flexed_frame, end_frame=event.end_frame, duration_sec=event.duration_sec, minimum_knee_angle=event.minimum_angle, maximum_knee_angle=event.maximum_angle) for event in count.rep_events], rep_durations=count.rep_durations, ignored_partial_reps=count.ignored_partial_reps, rep_count_confidence=count.confidence, phase_transitions=count.phase_transitions, pose_quality=quality, analysis_confidence=confidence, input_validity=input_validity, validation_warnings=warnings, ml_prediction=self._ml_unavailable())
-        limitations = ["Synthetic tests cover the current state machine; reviewed real-video validation is not available.", "2D body pose cannot verify grip, forearm rotation, resistance, safe load, pain, tissue status, or treatment suitability.", "Hammer Curl remains disabled because grip orientation is not observable in the current pose contract.", "Stop if pain, dizziness, numbness, or unusual symptoms occur."]
+        limitations = ["Synthetic tests cover the current state machine; reviewed real-video validation is not available.", "2D body pose cannot verify grip, forearm rotation, resistance, safe load, pain, tissue status, or treatment suitability.", self.config.grip_note, "Stop if pain, dizziness, numbness, or unusual symptoms occur."]
         if not is_valid:
             issues = ["upright_curl_position_not_visible"] if upright_ratio < MIN_UPRIGHT_RATIO else ["no_complete_curl"]
-            return AnalysisResponse(**common, status="rejected", error_code="INVALID_BICEP_CURL_VIDEO", message="No valid bicep curl movement was detected.", movement_score=None, detected_issues=issues, feedback=self.generate_feedback(issues), summary="The recording did not contain a complete visible upright bicep curl repetition.", limitations=limitations)
+            return AnalysisResponse(**common, status="rejected", error_code=self.config.error_code, message=f"No valid {self.config.display_name.lower()} movement was detected.", movement_score=None, detected_issues=issues, feedback=self.generate_feedback(issues), summary=f"The recording did not contain a complete visible upright {self.config.display_name.lower()} repetition.", limitations=limitations)
         score, breakdown, issues = self.score_movement(count, visibility, posture_ratio)
         frame_rows = [FrameAnalysis(frame_index=indexes[index], timestamp_sec=timestamps[index], knee_angle=0, hip_angle=0, trunk_angle=round(trunks[index], 2), elbow_angle=count.smoothed_angles[index], phase=count.phases[index], detected_issue="possible_upper_arm_drift" if upper_arms[index] >= UPPER_ARM_DRIFT_ANGLE else "possible_trunk_compensation" if trunks[index] >= TRUNK_COMPENSATION_ANGLE else None) for index in range(len(usable_frames))]
         if include_frame_data and len(frame_rows) > 300:
             step = max(1, len(frame_rows) // 300)
             frame_rows = frame_rows[::step][:300]
-        return AnalysisResponse(**common, status="success", movement_score=score, score_breakdown=breakdown, detected_issues=issues, feedback=self.generate_feedback(issues), summary=f"Analyzed {len(usable_frames)} pose-detected frames using the {side} arm and counted {count.total_reps} complete bicep curl repetition{'s' if count.total_reps != 1 else ''}.", limitations=limitations, frame_analysis=frame_rows if include_frame_data else None)
+        return AnalysisResponse(**common, status="success", movement_score=score, score_breakdown=breakdown, detected_issues=issues, feedback=self.generate_feedback(issues), summary=f"Analyzed {len(usable_frames)} pose-detected frames using the {side} arm and counted {count.total_reps} complete {self.config.display_name.lower()} repetition{'s' if count.total_reps != 1 else ''}.", limitations=limitations, frame_analysis=frame_rows if include_frame_data else None)
 
 
 bicep_curl_analyzer = BicepCurlAnalyzer()
+hammer_curl_analyzer = BicepCurlAnalyzer(
+    CurlConfig(
+        exercise_id="hammer_curl",
+        display_name="Hammer Curl",
+        error_code="INVALID_HAMMER_CURL_VIDEO",
+        invalid_reason="no_valid_hammer_curl",
+        grip_note="Hammer-curl grip orientation cannot be confirmed from body pose alone; this analyzer evaluates the visible elbow-flexion pattern and flags grip evidence as limited.",
+    )
+)

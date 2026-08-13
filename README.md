@@ -91,8 +91,7 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 python -m pip install --upgrade pip
 python -m pip install -r requirements-dev.txt
 Copy-Item .env.example .env
-Set-Location backend
-..\.venv\Scripts\python.exe -m uvicorn app.main:app --env-file ..\.env --reload --host 127.0.0.1 --port 8000
+.\scripts\start_backend.ps1 -Reload
 ```
 
 Verify the API:
@@ -106,8 +105,7 @@ Invoke-RestMethod http://127.0.0.1:8000/api/v1/exercises
 For a physical phone on the same Wi-Fi, expose the backend on port `8010`:
 
 ```powershell
-Set-Location backend
-..\.venv\Scripts\python.exe -m uvicorn app.main:app --env-file ..\.env --host 0.0.0.0 --port 8010
+.\scripts\start_backend.ps1 -HostAddress 0.0.0.0 -Port 8010
 ```
 
 Use the computer's LAN IPv4 address in the mobile environment. Do not use `localhost` on a physical phone.
@@ -170,7 +168,7 @@ These commands are documentation only; run them manually when a new Android arti
 Install the optional recognition dependencies in the active project environment:
 
 ```powershell
-python -m pip install -r requirements-ml.txt
+.\.venv\Scripts\python.exe -m pip install -r requirements-ml.txt
 ```
 
 Run dry checks before training:

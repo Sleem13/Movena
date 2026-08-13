@@ -15,4 +15,7 @@ if (!globalThis.localStorage) {
   });
 }
 
+if (!URL.createObjectURL) URL.createObjectURL = () => "blob:test-artifact";
+if (!URL.revokeObjectURL) URL.revokeObjectURL = () => {};
+
 afterEach(() => cleanup());

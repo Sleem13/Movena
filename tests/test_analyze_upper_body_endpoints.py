@@ -38,3 +38,22 @@ def test_bicep_curl_endpoint_uses_dedicated_analyzer(monkeypatch, tmp_path):
     response = client.post("/api/v1/analyze/bicep-curl", files={"video": ("curl.mp4", b"video", "video/mp4")})
     assert response.status_code == 200
     assert response.json()["exercise_id"] == "bicep_curl"
+
+
+def test_hammer_curl_endpoint_uses_dedicated_analyzer(monkeypatch, tmp_path):
+    monkeypatch.setattr(get_settings(), "upload_dir", tmp_path)
+    monkeypatch.setattr("app.api.routes.upper_body_analysis.extract_pose_landmarks", lambda _path: [{"landmarks": {}}])
+    monkeypatch.setattr("app.api.routes.upper_body_analysis.hammer_curl_analyzer.analyze_landmarks", lambda _frames, include_frame_data=False: _response("hammer_curl", "Hammer Curl"))
+    response = client.post("/api/v1/analyze/hammer-curl", files={"video": ("hammer.mp4", b"video", "video/mp4")})
+    assert response.status_code == 200
+    assert response.json()["exercise_id"] == "hammer_curl"
+
+
+def test_shoulder_flexion_endpoint_uses_dedicated_analyzer(monkeypatch, tmp_path):
+    monkeypatch.setattr(get_settings(), "upload_dir", tmp_path)
+    monkeypatch.setattr("app.api.routes.upper_body_analysis.extract_pose_landmarks", lambda _path: [{"landmarks": {}}])
+    monkeypatch.setattr("app.api.routes.upper_body_analysis.shoulder_flexion_analyzer.analyze_landmarks", lambda _frames, include_frame_data=False: AnalysisResponse(exercise="shoulder_flexion", exercise_id="shoulder_flexion", exercise_name="Shoulder Flexion", total_reps=2, valid_reps=2, movement_score=82, average_shoulder_angle=130, ml_prediction=MLPrediction(enabled=False, model_version="not_applicable", warning="Rule-based analyzer remains primary.")))
+    response = client.post("/api/v1/analyze/shoulder-flexion", files={"video": ("flexion.mp4", b"video", "video/mp4")})
+    assert response.status_code == 200
+    assert response.json()["exercise_id"] == "shoulder_flexion"
+    assert response.json()["average_shoulder_angle"] == 130

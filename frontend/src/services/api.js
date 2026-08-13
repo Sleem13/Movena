@@ -22,6 +22,7 @@ export async function analyzeExerciseVideo(exerciseId, videoFile, options = {}, 
     generate_report: String(Boolean(options.generate_report)),
     include_ml: String(Boolean(options.include_ml)),
     include_frame_data: String(Boolean(options.include_frame_data)),
+    continue_on_subject_warning: String(Boolean(options.continue_on_subject_warning)),
     save_session: String(Boolean(options.save_session)),
   });
 
@@ -30,10 +31,14 @@ export async function analyzeExerciseVideo(exerciseId, videoFile, options = {}, 
     sit_to_stand: "sit-to-stand",
     knee_extension: "knee-extension",
     shoulder_abduction: "shoulder-abduction",
+    shoulder_flexion: "shoulder-flexion",
     hip_abduction: "hip-abduction",
     push_up: "push-up",
     shoulder_press: "shoulder-press",
     bicep_curl: "bicep-curl",
+    hammer_curl: "hammer-curl",
+    walking_gait_screen: "gait",
+    balance: "balance",
   }[exerciseId];
   if (!endpoint) throw new Error(`Unsupported exercise: ${exerciseId}`);
   const response = await api.post(`/api/v1/analyze/${endpoint}?${query}`, formData, {
@@ -64,8 +69,20 @@ export function analyzeShoulderAbductionVideo(videoFile, options = {}, onProgres
   return analyzeExerciseVideo("shoulder_abduction", videoFile, options, onProgress);
 }
 
+export function analyzeShoulderFlexionVideo(videoFile, options = {}, onProgress) {
+  return analyzeExerciseVideo("shoulder_flexion", videoFile, options, onProgress);
+}
+
 export function analyzeHipAbductionVideo(videoFile, options = {}, onProgress) {
   return analyzeExerciseVideo("hip_abduction", videoFile, options, onProgress);
+}
+
+export function analyzeGaitVideo(videoFile, options = {}, onProgress) {
+  return analyzeExerciseVideo("walking_gait_screen", videoFile, options, onProgress);
+}
+
+export function analyzeBalanceVideo(videoFile, options = {}, onProgress) {
+  return analyzeExerciseVideo("balance", videoFile, options, onProgress);
 }
 
 export function artifactUrl(path) {
@@ -84,10 +101,17 @@ export async function getRecognitionModels() {
   return (await api.get("/api/v1/recognition/models")).data;
 }
 
-export async function recognizeExerciseVideo(videoFile, onProgress) {
+export async function getCoachingReadiness() {
+  return (await api.get("/api/v1/coaching/readiness")).data;
+}
+
+export async function recognizeExerciseVideo(videoFile, onProgress, options = {}) {
   const formData = new FormData();
   formData.append("video", videoFile);
-  const response = await api.post("/api/v1/recognition/video", formData, {
+  const query = new URLSearchParams({
+    continue_on_subject_warning: String(Boolean(options.continue_on_subject_warning)),
+  });
+  const response = await api.post(`/api/v1/recognition/video?${query}`, formData, {
     headers: { "Content-Type": "multipart/form-data" },
     onUploadProgress: (event) => {
       if (onProgress && event.total) onProgress(Math.round((event.loaded * 100) / event.total));
@@ -110,6 +134,11 @@ export async function listSavedSessions(params = {}) {
 
 export async function getSavedSession(sessionId) {
   const response = await api.get(`/api/v1/sessions/${sessionId}`);
+  return response.data;
+}
+
+export async function getArtifactBlob(path) {
+  const response = await api.get(path, { responseType: "blob" });
   return response.data;
 }
 

@@ -5,12 +5,13 @@ import logging
 from fastapi import APIRouter, Depends, File, Query, UploadFile, status
 
 from app.api.dependencies.auth import analysis_current_user
-from app.api.routes.squat_analysis import error_response, pose_error_code, pose_error_details
+from app.api.routes.squat_analysis import apply_subject_continuity_warning, error_response, pose_error_code, pose_error_details
 from app.core.config import get_settings
 from app.db.models import User
 from app.exercises.knee_extension.analyzer import knee_extension_analyzer
 from app.schemas.analysis_schema import AnalysisResponse, ErrorResponse
 from app.services.artifact_service import build_artifact_url, create_artifact
+from app.services.ml_second_opinion_service import apply_ml_second_opinion
 from app.services.overlay_video_service import create_overlay_video
 from app.services.pose_estimation_service import PoseEstimationError, extract_pose_landmarks
 from app.services.report_service import generate_session_report
@@ -37,12 +38,12 @@ async def analyze_knee_extension(
     include_frame_data: bool = Query(False),
     generate_report: bool = Query(False),
     include_ml: bool = Query(False),
+    continue_on_subject_warning: bool = Query(False),
     save_session: bool = Query(False),
     patient_id: str | None = Query(None),
     current_user: User | None = Depends(analysis_current_user),
 ):
     settings = get_settings()
-    del include_ml  # Explicitly not applicable; response includes a disabled ML result.
     try:
         video_path = await save_upload_file(video)
     except UploadValidationError as exc:
@@ -50,10 +51,12 @@ async def analyze_knee_extension(
 
     generated_artifacts = []
     try:
-        landmarks = extract_pose_landmarks(video_path)
+        landmarks = extract_pose_landmarks(video_path, continue_on_subject_warning=True) if continue_on_subject_warning else extract_pose_landmarks(video_path)
         report = knee_extension_analyzer.analyze_landmarks(
             landmarks, include_frame_data=include_frame_data or include_overlay
         )
+        apply_subject_continuity_warning(report, landmarks)
+        apply_ml_second_opinion(report, landmarks, include_ml, settings.enable_ml_second_opinion)
         if generate_report and settings.enable_report_generation and report.status == "success":
             report_id, report_path = create_artifact("report")
             generated_artifacts.append(report_path)

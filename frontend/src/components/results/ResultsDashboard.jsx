@@ -24,9 +24,21 @@ export function KPIGrid({ report }) {
     <MetricCard key="reps" label={t("results.totalReps")} value={report.total_reps} icon={Activity} tone="teal" />,
   ];
   const issue = <MetricCard key="issues" label={t("results.detectedIssues")} value={report.detected_issues?.length || 0} icon={AlertTriangle} tone="amber" />;
-  if (report.exercise === "shoulder_abduction") return <section aria-label={t("results.metrics")} className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">{common}<MetricCard label={t("results.averageShoulder")} value={report.average_shoulder_angle} unit={t("results.unitDegrees")} icon={HeartPulse} /><MetricCard label={t("results.averageTrunk")} value={report.average_trunk_angle} unit={t("results.unitDegrees")} icon={HeartPulse} />{issue}</section>;
+  if (report.exercise === "balance") {
+    const balance = report.balance_metrics || {};
+    const mode = balance.balance_mode ? balance.balance_mode.replaceAll("_", " ") : t("common.notAvailable");
+    return <section aria-label={t("results.metrics")} className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-8"><MetricCard label={t("results.movementScore")} value={report.movement_score} unit="/ 100" icon={Gauge} /><MetricCard label={t("results.analysisConfidence")} value={confidenceValue} icon={ShieldAlert} tone={confidenceTone} /><MetricCard label={t("results.balanceDuration")} value={balance.hold_duration_sec} unit={t("results.unitSeconds")} icon={Activity} tone="teal" /><MetricCard label={t("results.balanceSway")} value={balance.sway_rms} unit={t("results.unitNormalized")} icon={HeartPulse} /><MetricCard label={t("results.balanceVelocity")} value={balance.sway_velocity} unit={t("results.unitNormalized")} icon={HeartPulse} /><MetricCard label={t("results.balanceTrunkLean")} value={balance.max_trunk_lean_deg} unit={t("results.unitDegrees")} icon={HeartPulse} /><MetricCard label={t("results.balanceMode")} value={mode} icon={Activity} tone="teal" />{issue}</section>;
+  }
+  if (report.exercise === "walking_gait_screen") {
+    const gait = report.gait_metrics || {};
+    const stanceSwing = gait.average_stance_percent == null || gait.average_swing_percent == null
+      ? t("common.notAvailable")
+      : `${gait.average_stance_percent}% / ${gait.average_swing_percent}%`;
+    return <section aria-label={t("results.metrics")} className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-8">{common}<MetricCard label={t("results.gaitCadence")} value={gait.cadence_steps_per_min} unit={t("results.unitStepsMin")} icon={Activity} /><MetricCard label={t("results.gaitCycles")} value={gait.gait_cycles} icon={Activity} tone="teal" /><MetricCard label={t("results.gaitStanceSwing")} value={stanceSwing} icon={HeartPulse} /><MetricCard label={t("results.gaitSymmetry")} value={gait.temporal_symmetry_index} unit={t("results.unitPercent")} icon={HeartPulse} />{issue}</section>;
+  }
+  if (["shoulder_abduction", "shoulder_flexion"].includes(report.exercise)) return <section aria-label={t("results.metrics")} className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">{common}<MetricCard label={t("results.averageShoulder")} value={report.average_shoulder_angle} unit={t("results.unitDegrees")} icon={HeartPulse} /><MetricCard label={t("results.averageTrunk")} value={report.average_trunk_angle} unit={t("results.unitDegrees")} icon={HeartPulse} />{issue}</section>;
   if (report.exercise === "hip_abduction") return <section aria-label={t("results.metrics")} className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">{common}<MetricCard label={t("results.averageHipAbduction")} value={report.average_hip_abduction_angle} unit={t("results.unitDegrees")} icon={HeartPulse} /><MetricCard label={t("results.averageTrunk")} value={report.average_trunk_angle} unit={t("results.unitDegrees")} icon={HeartPulse} />{issue}</section>;
-  if (["push_up", "shoulder_press", "bicep_curl"].includes(report.exercise)) return <section aria-label={t("results.metrics")} className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">{common}<MetricCard label={t("results.averageElbow")} value={report.average_elbow_angle} unit={t("results.unitDegrees")} icon={HeartPulse} /><MetricCard label={t("results.averageTrunk")} value={report.average_trunk_angle} unit={t("results.unitDegrees")} icon={HeartPulse} />{issue}</section>;
+  if (["push_up", "shoulder_press", "bicep_curl", "hammer_curl"].includes(report.exercise)) return <section aria-label={t("results.metrics")} className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">{common}<MetricCard label={t("results.averageElbow")} value={report.average_elbow_angle} unit={t("results.unitDegrees")} icon={HeartPulse} /><MetricCard label={t("results.averageTrunk")} value={report.average_trunk_angle} unit={t("results.unitDegrees")} icon={HeartPulse} />{issue}</section>;
   return <section aria-label={t("results.metrics")} className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7">{common}<MetricCard label={t("results.averageKnee")} value={report.average_knee_angle} unit={t("results.unitDegrees")} icon={HeartPulse} /><MetricCard label={t("results.averageHip")} value={report.average_hip_angle} unit={t("results.unitDegrees")} icon={HeartPulse} /><MetricCard label={t("results.averageTrunk")} value={report.average_trunk_angle} unit={t("results.unitDegrees")} icon={HeartPulse} />{issue}</section>;
 }
 
@@ -39,10 +51,14 @@ export function ConfidenceAndScoringPanel({ report }) {
     sit_to_stand: [[t("results.breakdown.completion"), breakdown?.completion_score], [t("results.breakdown.movementControl"), breakdown?.control_score], [t("results.breakdown.trunkControl"), breakdown?.trunk_control_score], [t("results.breakdown.consistency"), breakdown?.consistency_score], [t("results.breakdown.poseConfidence"), breakdown?.pose_confidence_score]],
     knee_extension: [[t("results.breakdown.extensionRange"), breakdown?.extension_range_score], [t("results.breakdown.movementControl"), breakdown?.control_score], [t("results.breakdown.consistency"), breakdown?.consistency_score], [t("results.breakdown.visibility"), breakdown?.posture_visibility_score], [t("results.breakdown.repCompletion"), breakdown?.rep_completion_score]],
     shoulder_abduction: [[t("results.breakdown.abductionRange"), breakdown?.abduction_range_score], [t("results.breakdown.movementControl"), breakdown?.control_score], [t("results.breakdown.consistency"), breakdown?.consistency_score], [t("results.breakdown.visibility"), breakdown?.posture_visibility_score], [t("results.breakdown.repCompletion"), breakdown?.rep_completion_score]],
+    shoulder_flexion: [[t("results.breakdown.flexionRange"), breakdown?.extension_range_score], [t("results.breakdown.movementControl"), breakdown?.control_score], [t("results.breakdown.consistency"), breakdown?.consistency_score], [t("results.breakdown.visibility"), breakdown?.posture_visibility_score], [t("results.breakdown.repCompletion"), breakdown?.rep_completion_score]],
     hip_abduction: [[t("results.breakdown.abductionRange"), breakdown?.abduction_range_score], [t("results.breakdown.movementControl"), breakdown?.control_score], [t("results.breakdown.consistency"), breakdown?.consistency_score], [t("results.breakdown.visibility"), breakdown?.posture_visibility_score], [t("results.breakdown.repCompletion"), breakdown?.rep_completion_score], [t("results.breakdown.pelvisTrunkStability"), breakdown?.pelvis_trunk_stability_score]],
+    walking_gait_screen: [[t("results.breakdown.gaitPhase"), breakdown?.gait_phase_score], [t("results.breakdown.cadence"), breakdown?.cadence_score], [t("results.breakdown.symmetry"), breakdown?.symmetry_score], [t("results.breakdown.strideConsistency"), breakdown?.stride_consistency_score], [t("results.breakdown.kinematicRange"), breakdown?.kinematic_range_score], [t("results.breakdown.visibility"), breakdown?.posture_visibility_score]],
+    balance: [[t("results.breakdown.holdDuration"), breakdown?.hold_duration_score], [t("results.breakdown.swayControl"), breakdown?.sway_control_score], [t("results.breakdown.trunkControl"), breakdown?.trunk_control_score], [t("results.breakdown.pelvisControl"), breakdown?.pelvis_control_score], [t("results.breakdown.kneeStability"), breakdown?.knee_stability_score], [t("results.breakdown.visibility"), breakdown?.posture_visibility_score]],
     push_up: [[t("results.breakdown.extensionRange"), breakdown?.extension_range_score], [t("results.breakdown.movementControl"), breakdown?.control_score], [t("results.breakdown.consistency"), breakdown?.consistency_score], [t("results.breakdown.visibility"), breakdown?.posture_visibility_score], [t("results.breakdown.repCompletion"), breakdown?.rep_completion_score]],
     shoulder_press: [[t("results.breakdown.extensionRange"), breakdown?.extension_range_score], [t("results.breakdown.movementControl"), breakdown?.control_score], [t("results.breakdown.consistency"), breakdown?.consistency_score], [t("results.breakdown.visibility"), breakdown?.posture_visibility_score], [t("results.breakdown.repCompletion"), breakdown?.rep_completion_score]],
     bicep_curl: [[t("results.breakdown.flexionRange"), breakdown?.extension_range_score], [t("results.breakdown.movementControl"), breakdown?.control_score], [t("results.breakdown.consistency"), breakdown?.consistency_score], [t("results.breakdown.visibility"), breakdown?.posture_visibility_score], [t("results.breakdown.repCompletion"), breakdown?.rep_completion_score]],
+    hammer_curl: [[t("results.breakdown.flexionRange"), breakdown?.extension_range_score], [t("results.breakdown.movementControl"), breakdown?.control_score], [t("results.breakdown.consistency"), breakdown?.consistency_score], [t("results.breakdown.visibility"), breakdown?.posture_visibility_score], [t("results.breakdown.repCompletion"), breakdown?.rep_completion_score]],
     bodyweight_squat: [[t("results.breakdown.depth"), breakdown?.depth_score], [t("results.breakdown.kneeAlignment"), breakdown?.knee_alignment_score], [t("results.breakdown.trunkControl"), breakdown?.trunk_control_score], [t("results.breakdown.consistency"), breakdown?.consistency_score], [t("results.breakdown.poseConfidence"), breakdown?.pose_confidence_score]],
   };
   const rows = breakdown ? (scoreRows[report.exercise] || scoreRows.bodyweight_squat).filter(([, value]) => value != null) : [];
@@ -94,7 +110,40 @@ export function MLSecondOpinionCard({ prediction }) {
   const { t, pretty } = useLocale();
   if (!prediction) return null;
   const confidence = prediction.confidence == null ? t("common.notAvailable") : `${Math.round(prediction.confidence * 100)}%`;
-  return <Card className="overflow-hidden"><div className="flex flex-wrap items-center justify-between gap-3 border-b border-clinical-line bg-violet-50/60 p-5"><div className="flex items-center gap-3"><span className="grid h-10 w-10 place-items-center rounded-xl bg-violet-100 text-violet-700"><BrainCircuit size={20} aria-hidden="true" /></span><div><h2 className="text-lg font-bold text-clinical-ink">{t("results.mlTitle")}</h2><p className="text-xs text-slate-500">{t("results.mlHelp")}</p></div></div><Badge tone="amber">{t("results.mlBadge")}</Badge></div><div className="p-5"><div className="grid gap-3 sm:grid-cols-3"><div className="rounded-xl bg-slate-50 p-3"><p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">{t("results.predictedLabel")}</p><p className="mt-2 text-sm font-bold text-slate-800">{prediction.predicted_label ? pretty(prediction.predicted_label) : t("common.unavailable")}</p></div><div className="rounded-xl bg-slate-50 p-3"><p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">{t("common.confidence")}</p><p className="mt-2 text-sm font-bold text-slate-800">{confidence}</p></div><div className="rounded-xl bg-slate-50 p-3"><p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">{t("results.model")}</p><p className="mt-2 text-sm font-bold text-slate-800">{prediction.model_name || t("results.baselineUnavailable")}</p><p className="mt-1 text-[11px] text-slate-500">{prediction.model_version}</p></div></div><div className="mt-4"><Alert tone="warning" title={t("results.mlPrimary")}>{prediction.warning || t("results.mlWarning")}</Alert></div></div></Card>;
+  return (
+    <Card className="overflow-hidden">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-clinical-line bg-violet-50/60 p-5">
+        <div className="flex items-center gap-3">
+          <span className="grid h-10 w-10 place-items-center rounded-xl bg-violet-100 text-violet-700"><BrainCircuit size={20} aria-hidden="true" /></span>
+          <div><h2 className="text-lg font-bold text-clinical-ink">{t("results.mlTitle")}</h2><p className="text-xs text-slate-500">{t("results.mlHelp")}</p></div>
+        </div>
+        <Badge tone="amber">{t("results.mlBadge")}</Badge>
+      </div>
+      <div className="p-5">
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="rounded-xl bg-slate-50 p-3">
+            <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">{t("results.predictedLabel")}</p>
+            <p className="mt-2 text-sm font-bold text-slate-800">{prediction.predicted_label ? pretty(prediction.predicted_label) : t("common.unavailable")}</p>
+          </div>
+          <div className="rounded-xl bg-slate-50 p-3">
+            <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">{t("common.confidence")}</p>
+            <p className="mt-2 text-sm font-bold text-slate-800">{confidence}</p>
+          </div>
+          <div className="rounded-xl bg-slate-50 p-3">
+            <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">{t("results.model")}</p>
+            <p className="mt-2 text-sm font-bold text-slate-800">{prediction.model_name || t("results.baselineUnavailable")}</p>
+            <p className="mt-1 text-[11px] text-slate-500">{prediction.model_version}</p>
+          </div>
+          <div className="rounded-xl bg-slate-50 p-3">
+            <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">{t("results.providerStatus")}</p>
+            <p className="mt-2 text-sm font-bold text-slate-800">{prediction.provider_status ? pretty(prediction.provider_status) : t("common.unavailable")}</p>
+            <p className="mt-1 text-[11px] text-slate-500">{prediction.model_mode ? pretty(prediction.model_mode) : t("results.modelMode")}</p>
+          </div>
+        </div>
+        <div className="mt-4"><Alert tone="warning" title={t("results.mlPrimary")}>{prediction.warning || t("results.mlWarning")}</Alert></div>
+      </div>
+    </Card>
+  );
 }
 
 export function MLDisagreementNote({ prediction }) {

@@ -5,14 +5,10 @@ from fastapi.responses import JSONResponse
 
 from app.schemas.analysis_schema import AnalysisResponse, ErrorResponse
 from app.core.config import get_settings
-from app.services.pose_estimation_service import PoseEstimationError, extract_pose_landmarks
+from app.services.pose_estimation_service import PoseEstimationError, extract_pose_landmarks, subject_continuity_warning
 from app.services.artifact_service import build_artifact_url, create_artifact
 from app.services.overlay_video_service import create_overlay_video
-from app.services.ml_prediction_service import invalid_squat_prediction, predict_experimental_quality
-from app.services.analysis_confidence_service import (
-    apply_ml_confidence_context,
-    enrich_ml_prediction,
-)
+from app.services.ml_second_opinion_service import apply_ml_second_opinion
 from app.services.report_service import generate_session_report
 from app.services.squat_analysis_service import analyze_squat_landmarks, create_frame_analysis
 from app.services.session_persistence_service import save_analysis_session
@@ -51,6 +47,18 @@ def pose_error_details(error: Exception) -> list[str]:
     return list(getattr(error, "details", []) or [])
 
 
+def apply_subject_continuity_warning(report: AnalysisResponse, landmarks: list[dict]) -> AnalysisResponse:
+    warning = subject_continuity_warning(landmarks)
+    if not warning:
+        return report
+    if warning not in report.validation_warnings:
+        report.validation_warnings.append(warning)
+    limitation = "Subject-continuity warning was overridden by user request; manually review that only the intended person is analyzed."
+    if limitation not in report.limitations:
+        report.limitations.append(limitation)
+    return report
+
+
 @router.post(
     "/squat",
     response_model=AnalysisResponse,
@@ -66,6 +74,7 @@ async def analyze_squat(
     include_frame_data: bool = Query(False),
     generate_report: bool = Query(False),
     include_ml: bool = Query(False),
+    continue_on_subject_warning: bool = Query(False),
     save_session: bool = Query(False),
     patient_id: str | None = Query(None),
     current_user: User | None = Depends(analysis_current_user),
@@ -79,23 +88,13 @@ async def analyze_squat(
 
     generated_artifacts = []
     try:
-        landmarks = extract_pose_landmarks(video_path)
+        landmarks = extract_pose_landmarks(video_path, continue_on_subject_warning=True) if continue_on_subject_warning else extract_pose_landmarks(video_path)
         logger.info("Landmarks detected in %s frames", len(landmarks))
         report = analyze_squat_landmarks(
             landmarks, include_frame_data=include_frame_data
         )
-        if include_ml and settings.enable_ml_second_opinion:
-            if report.status == "rejected":
-                report.ml_prediction = invalid_squat_prediction()
-            else:
-                report.ml_prediction = enrich_ml_prediction(
-                    predict_experimental_quality(landmarks), report.detected_issues
-                )
-                report.analysis_confidence = apply_ml_confidence_context(
-                    report.analysis_confidence, report.ml_prediction
-                )
-        elif include_ml:
-            report.validation_warnings.append("ML second opinion is disabled by deployment configuration.")
+        apply_subject_continuity_warning(report, landmarks)
+        apply_ml_second_opinion(report, landmarks, include_ml, settings.enable_ml_second_opinion)
         if generate_report and settings.enable_report_generation and report.status == "success":
             report_id, report_path = create_artifact("report")
             generated_artifacts.append(report_path)

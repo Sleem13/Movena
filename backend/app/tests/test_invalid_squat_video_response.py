@@ -52,7 +52,7 @@ def test_ml_is_skipped_for_invalid_video(monkeypatch, tmp_path):
         raise AssertionError("ML inference must not run for rejected input")
 
     monkeypatch.setattr(
-        "app.api.routes.squat_analysis.predict_experimental_quality", should_not_run
+        "app.services.ml_second_opinion_service.predict_experimental_quality", should_not_run
     )
     response = client.post(
         "/api/v1/analyze/squat?include_ml=true",

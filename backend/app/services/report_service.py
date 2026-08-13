@@ -30,10 +30,14 @@ def generate_session_report(report: AnalysisResponse, output_path: Path) -> Path
         "sit_to_stand": "Sit-to-Stand",
         "knee_extension": "Knee Extension",
         "shoulder_abduction": "Shoulder Abduction",
+        "shoulder_flexion": "Shoulder Flexion",
         "hip_abduction": "Hip Abduction",
+        "walking_gait_screen": "Walking Gait Screen",
+        "balance": "Static Balance Screen",
         "push_up": "Push-Up",
         "shoulder_press": "Shoulder Press",
         "bicep_curl": "Bicep Curl",
+        "hammer_curl": "Hammer Curl",
     }
     exercise_name = report.exercise_name or display_names.get(report.exercise, report.exercise.replace("_", " ").title())
     story = [
@@ -55,11 +59,11 @@ def generate_session_report(report: AnalysisResponse, output_path: Path) -> Path
         ["Movement score", "Not scored" if report.movement_score is None else f"{report.movement_score}/100"],
         ["Average trunk angle", f"{report.average_trunk_angle:.2f} deg"],
     ]
-    if report.exercise == "shoulder_abduction":
+    if report.exercise in {"shoulder_abduction", "shoulder_flexion"}:
         data.insert(3, ["Average shoulder angle", f"{(report.average_shoulder_angle or 0):.2f} deg"])
     elif report.exercise == "hip_abduction":
         data.insert(3, ["Average hip-abduction angle", f"{(report.average_hip_abduction_angle or 0):.2f} deg"])
-    elif report.exercise in {"push_up", "shoulder_press", "bicep_curl"}:
+    elif report.exercise in {"push_up", "shoulder_press", "bicep_curl", "hammer_curl"}:
         data.insert(3, ["Average elbow angle", f"{(report.average_elbow_angle or 0):.2f} deg"])
     else:
         data[3:3] = [["Average knee angle", f"{report.average_knee_angle:.2f} deg"], ["Average hip angle", f"{report.average_hip_angle:.2f} deg"]]

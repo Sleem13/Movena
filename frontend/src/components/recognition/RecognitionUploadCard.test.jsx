@@ -54,10 +54,10 @@ describe("RecognitionUploadCard", () => {
   it("does not offer analyzer routing for a recognized unsupported label", async () => {
     recognizeExerciseVideo.mockResolvedValue({
       status: "success",
-      suggested_exercise_id: "hammer_curl",
+      suggested_exercise_id: "hip_flexion",
       confidence: 0.72,
       analyzer_available: false,
-      top_predictions: [{ exercise_id: "hammer_curl", confidence: 0.72 }],
+      top_predictions: [{ exercise_id: "hip_flexion", confidence: 0.72 }],
     });
     render(<LocaleProvider><RecognitionUploadCard models={[temporalModel]} /></LocaleProvider>);
     fireEvent.change(screen.getByLabelText("Choose a movement video"), {

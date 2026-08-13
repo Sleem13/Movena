@@ -9,9 +9,12 @@ def test_taxonomy_supports_only_current_exercises():
         "sit_to_stand",
         "knee_extension",
         "shoulder_abduction",
+        "shoulder_flexion",
         "hip_abduction",
+        "walking_gait_screen",
+        "balance",
         "push_up",
         "shoulder_press",
         "bicep_curl",
+        "hammer_curl",
     }
-    assert {"walking_gait_screen"} <= set(taxonomy.exercise_id)

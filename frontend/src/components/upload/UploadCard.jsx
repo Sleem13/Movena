@@ -9,6 +9,7 @@ export default function UploadCard({
   file,
   fileSource,
   error,
+  canContinueAfterWarning = false,
   isLoading,
   progress,
   onFileChange,
@@ -90,7 +91,17 @@ export default function UploadCard({
         </label>
         {error && (
           <div className="mt-4">
-            <Alert title={t("upload.errorTitle")}>{error}</Alert>
+            <Alert title={canContinueAfterWarning ? t("upload.warningTitle") : t("upload.errorTitle")}>
+              <div className="space-y-3">
+                <p>{error}</p>
+                {canContinueAfterWarning ? (
+                  <div>
+                    <p className="text-sm leading-6">{t("upload.subjectSwitchOverrideHelp")}</p>
+                    <p className="mt-2 text-sm font-semibold">{t("upload.subjectSwitchAutoProceed")}</p>
+                  </div>
+                ) : null}
+              </div>
+            </Alert>
           </div>
         )}
         <UploadProgress progress={progress} isLoading={isLoading} />

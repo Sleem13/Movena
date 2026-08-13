@@ -4,9 +4,10 @@ import logging
 
 from fastapi import APIRouter, Depends, File, Query, UploadFile, status
 
-from app.api.routes.squat_analysis import error_response, pose_error_code, pose_error_details
+from app.api.routes.squat_analysis import apply_subject_continuity_warning, error_response, pose_error_code, pose_error_details
 from app.exercises.sit_to_stand.analyzer import sit_to_stand_analyzer
 from app.services.artifact_service import build_artifact_url, create_artifact
+from app.services.ml_second_opinion_service import apply_ml_second_opinion
 from app.services.overlay_video_service import create_overlay_video
 from app.services.pose_estimation_service import PoseEstimationError, extract_pose_landmarks
 from app.services.report_service import generate_session_report
@@ -37,22 +38,24 @@ async def analyze_sit_to_stand(
     include_frame_data: bool = Query(False),
     generate_report: bool = Query(False),
     include_ml: bool = Query(False),
+    continue_on_subject_warning: bool = Query(False),
     save_session: bool = Query(False),
     patient_id: str | None = Query(None),
     current_user: User | None = Depends(analysis_current_user),
 ):
     settings = get_settings()
-    del include_ml  # Explicitly unavailable for this exercise in Sprint 9.
     try:
         video_path = await save_upload_file(video)
     except UploadValidationError as exc:
         return error_response(status.HTTP_400_BAD_REQUEST, exc.error_code, exc.message)
     generated_artifacts = []
     try:
-        landmarks = extract_pose_landmarks(video_path)
+        landmarks = extract_pose_landmarks(video_path, continue_on_subject_warning=True) if continue_on_subject_warning else extract_pose_landmarks(video_path)
         report = sit_to_stand_analyzer.analyze_landmarks(
             landmarks, include_frame_data=include_frame_data or include_overlay
         )
+        apply_subject_continuity_warning(report, landmarks)
+        apply_ml_second_opinion(report, landmarks, include_ml, settings.enable_ml_second_opinion)
         if generate_report and settings.enable_report_generation and report.status == "success":
             report_id, report_path = create_artifact("report")
             generated_artifacts.append(report_path)

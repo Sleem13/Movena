@@ -1,4 +1,4 @@
-"""Upload endpoints for push-up and shoulder-press rule-based analyzers."""
+"""Upload endpoints for upper-body rule-based analyzers."""
 
 from __future__ import annotations
 
@@ -8,14 +8,16 @@ from typing import Any
 from fastapi import APIRouter, Depends, File, Query, UploadFile, status
 
 from app.api.dependencies.auth import analysis_current_user
-from app.api.routes.squat_analysis import error_response, pose_error_code, pose_error_details
+from app.api.routes.squat_analysis import apply_subject_continuity_warning, error_response, pose_error_code, pose_error_details
 from app.core.config import get_settings
 from app.db.models import User
 from app.exercises.upper_body_cyclic import push_up_analyzer, shoulder_press_analyzer
-from app.exercises.bicep_curl import bicep_curl_analyzer
+from app.exercises.bicep_curl import bicep_curl_analyzer, hammer_curl_analyzer
+from app.exercises.shoulder_flexion.analyzer import shoulder_flexion_analyzer
 from app.schemas.analysis_schema import AnalysisResponse, ErrorResponse
 from app.services.artifact_service import build_artifact_url, create_artifact
 from app.services.overlay_video_service import create_overlay_video
+from app.services.ml_second_opinion_service import apply_ml_second_opinion
 from app.services.pose_estimation_service import PoseEstimationError, extract_pose_landmarks
 from app.services.report_service import generate_session_report
 from app.services.session_persistence_service import save_analysis_session
@@ -32,6 +34,8 @@ async def _analyze_upper_body(
     include_overlay: bool,
     include_frame_data: bool,
     generate_report: bool,
+    include_ml: bool,
+    continue_on_subject_warning: bool,
     save_session: bool,
     patient_id: str | None,
     current_user: User | None,
@@ -43,8 +47,10 @@ async def _analyze_upper_body(
         return error_response(status.HTTP_400_BAD_REQUEST, exc.error_code, exc.message)
     generated_artifacts = []
     try:
-        landmarks = extract_pose_landmarks(video_path)
+        landmarks = extract_pose_landmarks(video_path, continue_on_subject_warning=True) if continue_on_subject_warning else extract_pose_landmarks(video_path)
         report = analyzer.analyze_landmarks(landmarks, include_frame_data=include_frame_data or include_overlay)
+        apply_subject_continuity_warning(report, landmarks)
+        apply_ml_second_opinion(report, landmarks, include_ml, settings.enable_ml_second_opinion)
         if generate_report and settings.enable_report_generation and report.status == "success":
             report_id, report_path = create_artifact("report")
             generated_artifacts.append(report_path)
@@ -105,12 +111,12 @@ async def analyze_push_up(
     include_frame_data: bool = Query(False),
     generate_report: bool = Query(False),
     include_ml: bool = Query(False),
+    continue_on_subject_warning: bool = Query(False),
     save_session: bool = Query(False),
     patient_id: str | None = Query(None),
     current_user: User | None = Depends(analysis_current_user),
 ):
-    del include_ml
-    return await _analyze_upper_body(push_up_analyzer, video, include_overlay, include_frame_data, generate_report, save_session, patient_id, current_user)
+    return await _analyze_upper_body(push_up_analyzer, video, include_overlay, include_frame_data, generate_report, include_ml, continue_on_subject_warning, save_session, patient_id, current_user)
 
 
 @router.post("/shoulder-press", response_model=AnalysisResponse, responses={400: {"model": ErrorResponse}, 422: {"model": ErrorResponse}, 500: {"model": ErrorResponse}})
@@ -120,12 +126,12 @@ async def analyze_shoulder_press(
     include_frame_data: bool = Query(False),
     generate_report: bool = Query(False),
     include_ml: bool = Query(False),
+    continue_on_subject_warning: bool = Query(False),
     save_session: bool = Query(False),
     patient_id: str | None = Query(None),
     current_user: User | None = Depends(analysis_current_user),
 ):
-    del include_ml
-    return await _analyze_upper_body(shoulder_press_analyzer, video, include_overlay, include_frame_data, generate_report, save_session, patient_id, current_user)
+    return await _analyze_upper_body(shoulder_press_analyzer, video, include_overlay, include_frame_data, generate_report, include_ml, continue_on_subject_warning, save_session, patient_id, current_user)
 
 
 @router.post("/bicep-curl", response_model=AnalysisResponse, responses={400: {"model": ErrorResponse}, 422: {"model": ErrorResponse}, 500: {"model": ErrorResponse}})
@@ -135,9 +141,39 @@ async def analyze_bicep_curl(
     include_frame_data: bool = Query(False),
     generate_report: bool = Query(False),
     include_ml: bool = Query(False),
+    continue_on_subject_warning: bool = Query(False),
     save_session: bool = Query(False),
     patient_id: str | None = Query(None),
     current_user: User | None = Depends(analysis_current_user),
 ):
-    del include_ml
-    return await _analyze_upper_body(bicep_curl_analyzer, video, include_overlay, include_frame_data, generate_report, save_session, patient_id, current_user)
+    return await _analyze_upper_body(bicep_curl_analyzer, video, include_overlay, include_frame_data, generate_report, include_ml, continue_on_subject_warning, save_session, patient_id, current_user)
+
+
+@router.post("/hammer-curl", response_model=AnalysisResponse, responses={400: {"model": ErrorResponse}, 422: {"model": ErrorResponse}, 500: {"model": ErrorResponse}})
+async def analyze_hammer_curl(
+    video: UploadFile = File(...),
+    include_overlay: bool = Query(False),
+    include_frame_data: bool = Query(False),
+    generate_report: bool = Query(False),
+    include_ml: bool = Query(False),
+    continue_on_subject_warning: bool = Query(False),
+    save_session: bool = Query(False),
+    patient_id: str | None = Query(None),
+    current_user: User | None = Depends(analysis_current_user),
+):
+    return await _analyze_upper_body(hammer_curl_analyzer, video, include_overlay, include_frame_data, generate_report, include_ml, continue_on_subject_warning, save_session, patient_id, current_user)
+
+
+@router.post("/shoulder-flexion", response_model=AnalysisResponse, responses={400: {"model": ErrorResponse}, 422: {"model": ErrorResponse}, 500: {"model": ErrorResponse}})
+async def analyze_shoulder_flexion(
+    video: UploadFile = File(...),
+    include_overlay: bool = Query(False),
+    include_frame_data: bool = Query(False),
+    generate_report: bool = Query(False),
+    include_ml: bool = Query(False),
+    continue_on_subject_warning: bool = Query(False),
+    save_session: bool = Query(False),
+    patient_id: str | None = Query(None),
+    current_user: User | None = Depends(analysis_current_user),
+):
+    return await _analyze_upper_body(shoulder_flexion_analyzer, video, include_overlay, include_frame_data, generate_report, include_ml, continue_on_subject_warning, save_session, patient_id, current_user)

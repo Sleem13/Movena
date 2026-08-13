@@ -24,5 +24,8 @@ def test_endpoint_returns_rule_result_and_ml_not_applicable(monkeypatch, tmp_pat
     body = response.json()
     assert body["exercise_id"] == "knee_extension"
     assert body["valid_reps"] == 2
-    assert body["ml_prediction"]["enabled"] is False
-    assert "not applicable" in body["ml_prediction"]["warning"]
+    prediction = body["ml_prediction"]
+    assert prediction["enabled"] is False
+    assert prediction["model_version"] == "not_configured"
+    assert prediction["provider_status"] == "not_configured"
+    assert "pretrained/fine-tuned/feature-extractor provider" in prediction["warning"]

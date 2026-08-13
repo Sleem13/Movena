@@ -60,3 +60,42 @@ def test_video_recognition_endpoint_extracts_sequence_and_removes_upload(tmp_pat
     assert confirmation.status_code == 200
     assert confirmation.json()["confirmed_exercise_id"] == "push_up"
     assert removed == [saved]
+
+
+def test_video_recognition_accepts_subject_warning_override(tmp_path, monkeypatch):
+    saved = tmp_path / "upload.mp4"
+    saved.write_bytes(b"video")
+    seen = {}
+
+    async def fake_save(_video):
+        return saved
+
+    def fake_extract(_path, *, continue_on_subject_warning=False):
+        seen["continue_on_subject_warning"] = continue_on_subject_warning
+        return [{"landmarks": {}}]
+
+    monkeypatch.setattr(route, "save_upload_file", fake_save)
+    monkeypatch.setattr(route, "extract_pose_landmarks", fake_extract)
+    monkeypatch.setattr(route, "extract_mediapipe_sequence_features", lambda _frames: [{"f1": 1.0}])
+    monkeypatch.setattr(
+        route,
+        "predict_exercise_from_sequence",
+        lambda sequence, model_id=None: {
+            "status": "success",
+            "suggested_exercise_id": "walking_gait_screen",
+            "confidence": 0.91,
+            "model_id": "exercise_pose_gru_test",
+            "analyzer_available": True,
+            "confidence_threshold": 0.6,
+        },
+    )
+    monkeypatch.setattr(route, "remove_file", lambda _path: None)
+
+    response = client.post(
+        "/api/v1/recognition/video?continue_on_subject_warning=true",
+        files={"video": ("clip.mp4", b"video", "video/mp4")},
+    )
+
+    assert response.status_code == 200
+    assert seen["continue_on_subject_warning"] is True
+    assert response.json()["suggested_exercise_id"] == "walking_gait_screen"

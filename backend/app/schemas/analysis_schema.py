@@ -2,6 +2,36 @@ from pydantic import BaseModel, Field
 from app.schemas.error_schema import ErrorResponse
 
 
+class GaitMetrics(BaseModel):
+    step_count: int = 0
+    gait_cycles: int = 0
+    cadence_steps_per_min: float | None = None
+    average_cycle_duration_sec: float | None = None
+    average_stance_percent: float | None = None
+    average_swing_percent: float | None = None
+    temporal_symmetry_index: float | None = Field(default=None, description="Percent left-right cycle-duration difference.")
+    stride_time_variability: float | None = Field(default=None, description="Coefficient of variation for stride/cycle duration.")
+    relative_stride_excursion: float | None = Field(default=None, description="Normalized side-view foot excursion proxy, not meter-calibrated stride length.")
+    average_knee_range_deg: float | None = None
+    reference_dataset_notes: list[str] = Field(default_factory=list)
+
+
+class BalanceMetrics(BaseModel):
+    hold_duration_sec: float | None = None
+    balance_mode: str = "unknown"
+    sway_rms: float | None = Field(default=None, description="2D pose-derived body-sway proxy normalized by body height.")
+    sway_max: float | None = None
+    sway_path: float | None = None
+    sway_velocity: float | None = None
+    average_trunk_lean_deg: float | None = None
+    max_trunk_lean_deg: float | None = None
+    pelvis_tilt_mean: float | None = None
+    knee_angle_variability_deg: float | None = None
+    support_base_width: float | None = None
+    foot_adjustment_index: float | None = None
+    reference_dataset_notes: list[str] = Field(default_factory=list)
+
+
 class FrameAnalysis(BaseModel):
     frame_index: int
     timestamp_sec: float
@@ -21,6 +51,12 @@ class MLPrediction(BaseModel):
     confidence: float | None = Field(default=None, ge=0, le=1)
     model_name: str | None = None
     model_version: str = "sprint_5_baseline"
+    model_mode: str | None = None
+    provider_status: str | None = None
+    feature_source: str | None = None
+    supported_model_modes: list[str] = Field(default_factory=list)
+    supported_exercises: list[str] = Field(default_factory=list)
+    exercise_id: str | None = None
     warning: str
     ml_confidence_level: str | None = None
     agrees_with_rule_based: bool | None = None
@@ -72,6 +108,15 @@ class ScoreBreakdown(BaseModel):
     rep_completion_score: int | None = Field(default=None, ge=0, le=100)
     abduction_range_score: int | None = Field(default=None, ge=0, le=100)
     pelvis_trunk_stability_score: int | None = Field(default=None, ge=0, le=100)
+    gait_phase_score: int | None = Field(default=None, ge=0, le=100)
+    cadence_score: int | None = Field(default=None, ge=0, le=100)
+    symmetry_score: int | None = Field(default=None, ge=0, le=100)
+    stride_consistency_score: int | None = Field(default=None, ge=0, le=100)
+    kinematic_range_score: int | None = Field(default=None, ge=0, le=100)
+    hold_duration_score: int | None = Field(default=None, ge=0, le=100)
+    sway_control_score: int | None = Field(default=None, ge=0, le=100)
+    pelvis_control_score: int | None = Field(default=None, ge=0, le=100)
+    knee_stability_score: int | None = Field(default=None, ge=0, le=100)
 
 
 class AnalysisConfidence(BaseModel):
@@ -136,6 +181,8 @@ class AnalysisResponse(BaseModel):
     overlay_preview_url: str | None = None
     overlay_download_url: str | None = None
     ml_prediction: MLPrediction | None = None
+    gait_metrics: GaitMetrics | None = None
+    balance_metrics: BalanceMetrics | None = None
 
 
 SquatAnalysisResponse = AnalysisResponse

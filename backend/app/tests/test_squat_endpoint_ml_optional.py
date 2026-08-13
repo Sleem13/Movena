@@ -34,7 +34,7 @@ def test_include_ml_false_keeps_optional_output_absent(monkeypatch, tmp_path):
 def test_include_ml_true_adds_experimental_second_opinion(monkeypatch, tmp_path):
     setup_success(monkeypatch, tmp_path)
     monkeypatch.setattr(
-        "app.api.routes.squat_analysis.predict_experimental_quality",
+        "app.services.ml_second_opinion_service.predict_experimental_quality",
         lambda _frames: MLPrediction(
             enabled=True,
             predicted_label="squat_trunk_lean",
@@ -56,7 +56,7 @@ def test_include_ml_true_adds_experimental_second_opinion(monkeypatch, tmp_path)
 def test_ml_failure_still_returns_rule_based_result(monkeypatch, tmp_path):
     setup_success(monkeypatch, tmp_path)
     monkeypatch.setattr(
-        "app.api.routes.squat_analysis.predict_experimental_quality",
+        "app.services.ml_second_opinion_service.predict_experimental_quality",
         lambda _frames: MLPrediction(
             enabled=False,
             warning="ML baseline unavailable. Rule-based analysis is still available.",

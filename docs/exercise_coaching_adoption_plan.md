@@ -84,16 +84,16 @@ This guard prevents mixed-person reports but does not claim to identify every vi
 - Implemented: one generic bicep-curl elbow-flexion analyzer while keeping recognition labels separate.
 - Implemented: extended-flexed-extended hysteresis, upright geometry, visibility, partial-rep, and upper-arm/trunk observation rules.
 - Current evidence is synthetic only; no real-video threshold or rep-count claim is made.
-- Hammer Curl remains disabled until hand-orientation evidence is available.
+- The real-time lab now combines local pose and hand landmarks to estimate neutral versus palm-facing hand orientation for curl development sessions. The upload analyzer remains disabled for Hammer Curl pending reviewed real-video validation.
 - Grip type, safe load, injury risk, and resistance are never inferred.
 
 ## Real-Time Delivery Sequence
 
-1. Keep the current local-only camera and readiness lab.
-2. Add an authenticated WebSocket session manager with TTL, limits, cleanup, and backpressure.
-3. Use binary frames at a bounded analysis rate rather than base64 REST polling.
-4. Define `session_started`, `frame_feedback`, `rep_event`, `session_summary`, `warning`, and `error` messages.
-5. Persist only approved session metadata and derived metrics.
+1. Implemented: local pose and hand extraction; camera frames remain on device.
+2. Implemented: authenticated WebSocket sessions with TTL, message limits, cleanup, and bounded landmark sampling.
+3. Implemented: derived normalized landmarks rather than image frames or base64 REST polling.
+4. Implemented: `session_started`, `frame_feedback`, `rep_event`, `session_summary`, `warning`, and `error` messages.
+5. Implemented: approved session metadata and derived metrics only; frames and landmark sequences are not retained.
 6. Add the same contract to mobile after web physical-device QA.
 
 ## Promotion Gates

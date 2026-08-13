@@ -40,5 +40,9 @@ def test_endpoint_returns_rule_result_and_ml_unavailable(monkeypatch, tmp_path):
     body = response.json()
     assert body["exercise"] == "sit_to_stand"
     assert body["total_reps"] == 3
-    assert body["ml_prediction"]["enabled"] is False
-    assert "not available" in body["ml_prediction"]["warning"]
+    prediction = body["ml_prediction"]
+    assert prediction["enabled"] is False
+    assert prediction["model_version"] == "not_configured"
+    assert prediction["provider_status"] == "not_configured"
+    assert "pretrained/fine-tuned/feature-extractor provider" in prediction["warning"]
+    assert {"pretrained_as_is", "fine_tuned", "feature_extractor"}.issubset(prediction["supported_model_modes"])

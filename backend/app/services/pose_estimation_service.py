@@ -59,6 +59,15 @@ class SubjectContinuityError(PoseEstimationError):
         self.report = report
 
 
+def subject_continuity_warning(frames: list[dict[str, Any]]) -> str | None:
+    return next((str(frame["subject_continuity_warning"]) for frame in frames if frame.get("subject_continuity_warning")), None)
+
+
+def _subject_continuity_warning(report: SubjectContinuityReport) -> str:
+    details = report.details()
+    return "Subject-continuity warning overridden by user request. " + " ".join(details)
+
+
 def _landmark_to_dict(landmark: Any) -> dict[str, float]:
     return {
         "x": float(landmark.x),
@@ -68,7 +77,7 @@ def _landmark_to_dict(landmark: Any) -> dict[str, float]:
     }
 
 
-def extract_pose_landmarks(video_path: Path) -> list[dict[str, Any]]:
+def extract_pose_landmarks(video_path: Path, *, continue_on_subject_warning: bool = False) -> list[dict[str, Any]]:
     try:
         import cv2
     except ImportError as exc:
@@ -163,12 +172,17 @@ def extract_pose_landmarks(video_path: Path) -> list[dict[str, Any]]:
         )
         if continuity.suspected_subject_switch:
             logger.warning(
-                "Subject continuity rejected video: events=%s severe=%s max_jump=%.3f max_scale_ratio=%.2f",
+                "Subject continuity %s video: events=%s severe=%s max_jump=%.3f max_scale_ratio=%.2f",
+                "warning override accepted for" if continue_on_subject_warning else "rejected",
                 len(continuity.suspicious_events),
                 continuity.severe_event_count,
                 continuity.max_centroid_jump,
                 continuity.max_scale_ratio,
             )
-            raise SubjectContinuityError(continuity)
+            if not continue_on_subject_warning:
+                raise SubjectContinuityError(continuity)
+            warning = _subject_continuity_warning(continuity)
+            for frame in frame_landmarks:
+                frame["subject_continuity_warning"] = warning
 
     return frame_landmarks
