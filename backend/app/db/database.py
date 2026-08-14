@@ -5,6 +5,7 @@ from __future__ import annotations
 import os
 from collections.abc import Generator
 from pathlib import Path
+from typing import Any
 
 from sqlalchemy import create_engine, inspect, text
 from sqlalchemy.engine import Engine
@@ -24,8 +25,20 @@ class Base(DeclarativeBase):
 
 
 def create_database_engine(database_url: str = DATABASE_URL) -> Engine:
-    connect_args = {"check_same_thread": False} if database_url.startswith("sqlite") else {}
-    return create_engine(database_url, connect_args=connect_args, pool_pre_ping=True)
+    normalized_url = normalize_database_url(database_url)
+    return create_engine(normalized_url, **_database_engine_options(normalized_url))
+
+
+def _database_engine_options(database_url: str) -> dict[str, Any]:
+    connect_args: dict[str, Any] = {}
+    if database_url.startswith("sqlite"):
+        connect_args["check_same_thread"] = False
+    elif database_url.startswith("postgresql+psycopg://"):
+        # Render/Neon/Supabase pooled PostgreSQL connections can reuse backend
+        # sessions across clients, which conflicts with psycopg's auto-prepared
+        # statement names during startup metadata checks.
+        connect_args["prepare_threshold"] = None
+    return {"connect_args": connect_args, "pool_pre_ping": True}
 
 
 engine = create_database_engine()
