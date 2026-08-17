@@ -15,9 +15,11 @@ import { EXERCISES } from "./data/exercises.js";
 import { AuthProvider, useAuth } from "./context/AuthContext.jsx";
 import { LocaleProvider, useLocale } from "./i18n/LocaleContext.jsx";
 import { ENABLE_REALTIME_COACHING_SPIKE } from "./config/featureFlags.js";
-import { analyzeExerciseVideo, getExercises, recognizeExerciseVideo } from "./services/api.js";
+import { analyzeExerciseVideo, getExercises } from "./services/api.js";
 
-const DEFAULT_OPTIONS = { include_overlay: true, generate_report: true, include_ml: false, include_frame_data: true, save_session: false };
+// Keep the default request on the low-latency path. Video encoding, PDF
+// generation, and chart payloads remain available as explicit opt-ins.
+const DEFAULT_OPTIONS = { include_overlay: false, generate_report: false, include_ml: false, include_frame_data: false, save_session: false };
 const PAGE_PATHS = { home: "/", exercises: "/exercises", analyze: "/analyze", results: "/results", history: "/history", therapist: "/therapist", coach: "/coach", about: "/about", login: "/login", register: "/register", profile: "/profile" };
 function analysisErrorMessage(requestError, t) {
   const status = requestError.response?.status;
@@ -36,12 +38,6 @@ function analysisErrorMessage(requestError, t) {
 
 function isSubjectSwitchError(requestError) {
   return requestError.response?.status === 422 && requestError.response?.data?.error_code === "SUBJECT_SWITCH_DETECTED";
-}
-
-function isNoValidMovementRejection(data) {
-  if (data?.status !== "rejected") return false;
-  const issueText = [...(data.detected_issues || []), data.error_code, data.message].filter(Boolean).join(" ").toLowerCase();
-  return data.movement_score == null && (issueText.includes("no_valid") || issueText.includes("no valid") || issueText.includes("no_complete"));
 }
 
 function initialPage() {
@@ -87,59 +83,8 @@ function AppContent() {
   function navigate(nextPage) { setPage(nextPage); window.history.pushState({}, "", PAGE_PATHS[nextPage] || "/"); }
   function handleFileChange(event) { selectFile(event.target.files?.[0]); }
 
-  function supportedExercise(exerciseId) {
-    return exercises.find((item) => item.exercise_id === exerciseId && item.supported_in_app);
-  }
-
-  function autoRouteNotice(fromExerciseId, toExerciseId, confidence) {
-    return t("upload.autoRerouteNotice", {
-      selected: exerciseText(fromExerciseId).name,
-      suggested: exerciseText(toExerciseId).name,
-      confidence: `${Math.round((Number(confidence) || 0) * 100)}%`,
-    });
-  }
-
-  function withAutoRouteNotice(data, fromExerciseId, recognition) {
-    const notice = autoRouteNotice(fromExerciseId, recognition.suggested_exercise_id, recognition.confidence);
-    return {
-      ...data,
-      validation_warnings: [...(data.validation_warnings || []), notice],
-      limitations: [...(data.limitations || []), notice],
-      analysis_confidence: data.analysis_confidence
-        ? { ...data.analysis_confidence, warnings: [...(data.analysis_confidence.warnings || []), notice] }
-        : data.analysis_confidence,
-    };
-  }
-
-  function startRecognitionFallback(continueOnSubjectWarning = false) {
-    return (async () => {
-      try {
-        return await recognizeExerciseVideo(file, undefined, { continue_on_subject_warning: continueOnSubjectWarning });
-      } catch {
-        return null;
-      }
-    })();
-  }
-
-  function actionableRecognition(result, selectedExercise) {
-    const suggested = result?.suggested_exercise_id;
-    if (result?.status !== "success" || !suggested || suggested === selectedExercise) return null;
-    if (result.suggestion_actionable === false || result.analyzer_available === false) return null;
-    return supportedExercise(suggested) ? result : null;
-  }
-
-  async function analyzeOrAutoRoute(selectedExercise, continueOnSubjectWarning, recognitionPromise) {
+  async function analyzeSelectedExercise(selectedExercise, continueOnSubjectWarning) {
     const data = await analyzeExerciseVideo(selectedExercise, file, { ...options, continue_on_subject_warning: continueOnSubjectWarning }, setProgress);
-    if (isNoValidMovementRejection(data)) {
-      const recognition = actionableRecognition(await recognitionPromise, selectedExercise);
-      if (recognition) {
-        const rerouted = await analyzeExerciseVideo(recognition.suggested_exercise_id, file, { ...options, continue_on_subject_warning: continueOnSubjectWarning }, setProgress);
-        setExercise(recognition.suggested_exercise_id);
-        setReport(withAutoRouteNotice(rerouted, selectedExercise, recognition));
-        setCanContinueAfterWarning(false); setPage("results");
-        return;
-      }
-    }
     setReport(data); setCanContinueAfterWarning(false); setPage("results");
   }
 
@@ -151,17 +96,15 @@ function AppContent() {
     const continueOnSubjectWarning = Boolean(overrides.continueOnSubjectWarning);
     setCanContinueAfterWarning(false);
     const selectedExercise = exercise;
-    const recognitionPromise = overrides.skipRecognitionFallback ? Promise.resolve(null) : startRecognitionFallback(continueOnSubjectWarning);
     try {
-      await analyzeOrAutoRoute(selectedExercise, continueOnSubjectWarning, recognitionPromise);
+      await analyzeSelectedExercise(selectedExercise, continueOnSubjectWarning);
     } catch (requestError) {
       if (!continueOnSubjectWarning && isSubjectSwitchError(requestError)) {
         setError(t("upload.subjectSwitch"));
         setCanContinueAfterWarning(true);
         try {
           await new Promise((resolve) => setTimeout(resolve, 0));
-          const retryRecognitionPromise = overrides.skipRecognitionFallback ? Promise.resolve(null) : startRecognitionFallback(true);
-          await analyzeOrAutoRoute(selectedExercise, true, retryRecognitionPromise);
+          await analyzeSelectedExercise(selectedExercise, true);
         } catch (retryError) {
           setError(analysisErrorMessage(retryError, t));
           setCanContinueAfterWarning(false);

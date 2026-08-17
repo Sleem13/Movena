@@ -31,8 +31,14 @@ def assess_pose_quality(frames: list[dict[str, Any]]) -> PoseQuality:
     total_frames = max(
         int(frame.get("source_total_frames", 0)) for frame in frames
     ) or (max(int(frame.get("frame_index", 0)) for frame in frames) + 1)
+    analyzed_frames = max(
+        int(frame.get("source_analyzed_frames", 0)) for frame in frames
+    ) or total_frames
     detected = len(frames)
-    detection_rate = min(1.0, detected / max(1, total_frames))
+    # Long videos are sampled before pose inference. Quality is the detection
+    # rate among analyzed frames, not among frames intentionally skipped for
+    # latency, while total_frames still describes the source recording.
+    detection_rate = min(1.0, detected / max(1, analyzed_frames))
     visibility_values: list[float] = []
     critical_values: list[float] = []
     missing = 0

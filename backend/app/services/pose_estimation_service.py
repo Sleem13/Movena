@@ -1,4 +1,5 @@
 import logging
+import math
 from pathlib import Path
 from typing import Any
 
@@ -98,8 +99,10 @@ def extract_pose_landmarks(video_path: Path, *, continue_on_subject_warning: boo
 
     settings = get_settings()
     fps = float(cap.get(cv2.CAP_PROP_FPS) or 30.0)
+    sample_stride = max(1, math.ceil(fps / settings.pose_target_fps))
     frame_landmarks: list[dict[str, Any]] = []
     processed_frames = 0
+    analyzed_frames = 0
     detected_frames = 0
 
     with mp.solutions.pose.Pose(
@@ -115,6 +118,10 @@ def extract_pose_landmarks(video_path: Path, *, continue_on_subject_warning: boo
                 break
 
             processed_frames += 1
+            if (processed_frames - 1) % sample_stride != 0:
+                continue
+
+            analyzed_frames += 1
             rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             result = pose.process(rgb_frame)
             if not result.pose_landmarks:
@@ -144,11 +151,17 @@ def extract_pose_landmarks(video_path: Path, *, continue_on_subject_warning: boo
     cap.release()
     for frame in frame_landmarks:
         frame["source_total_frames"] = processed_frames
+        frame["source_analyzed_frames"] = analyzed_frames
+        frame["source_sample_stride"] = sample_stride
         frame["source_pose_detected_frames"] = detected_frames
     logger.info(
-        "Frames processed=%s, landmarks detected=%s",
+        "Frames decoded=%s, pose frames analyzed=%s, landmarks detected=%s, source_fps=%.2f, target_fps=%.2f, stride=%s",
         processed_frames,
+        analyzed_frames,
         detected_frames,
+        fps,
+        settings.pose_target_fps,
+        sample_stride,
     )
 
     if processed_frames == 0:

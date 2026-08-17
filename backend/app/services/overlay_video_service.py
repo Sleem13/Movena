@@ -141,6 +141,7 @@ def create_overlay_video(
     input_path: Path,
     pose_frames: list[dict],
     frame_analysis: list[FrameAnalysis],
+    exercise_id: str | None = None,
 ) -> OverlayArtifact:
     overlay_id, overlay_path = create_artifact("overlay")
     try:
@@ -154,6 +155,6 @@ def create_overlay_video(
     return OverlayArtifact(
         overlay_id=overlay_id,
         overlay_path=overlay_path,
-        overlay_preview_url=build_artifact_url(f"/api/v1/artifacts/overlays/{overlay_id}/preview", overlay_id, "overlay"),
-        overlay_download_url=build_artifact_url(f"/api/v1/artifacts/overlays/{overlay_id}/download", overlay_id, "overlay"),
+        overlay_preview_url=build_artifact_url(f"/api/v1/artifacts/overlays/{overlay_id}/preview", overlay_id, "overlay", exercise_id=exercise_id),
+        overlay_download_url=build_artifact_url(f"/api/v1/artifacts/overlays/{overlay_id}/download", overlay_id, "overlay", exercise_id=exercise_id),
     )

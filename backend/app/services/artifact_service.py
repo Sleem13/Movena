@@ -5,6 +5,7 @@ from __future__ import annotations
 import time
 import hashlib
 import hmac
+import re
 from pathlib import Path
 from uuid import UUID, uuid4
 
@@ -21,8 +22,27 @@ def _artifact_signature(artifact_id: str, kind: str, expires: int) -> str:
     return hmac.new(get_settings().secret_key.encode(), payload, hashlib.sha256).hexdigest()
 
 
-def build_artifact_url(path: str, artifact_id: str, kind: str) -> str:
+def artifact_slug(exercise_id: str | None) -> str:
+    normalized = re.sub(r"[^a-z0-9]+", "-", (exercise_id or "movement").strip().lower()).strip("-")
+    return normalized or "movement"
+
+
+def artifact_download_filename(exercise_id: str | None, kind: str) -> str:
+    suffix = ARTIFACT_SUFFIXES[kind]
+    return f"physiovision-{artifact_slug(exercise_id)}-{kind}{suffix}"
+
+
+def build_artifact_url(
+    path: str,
+    artifact_id: str,
+    kind: str,
+    *,
+    exercise_id: str | None = None,
+) -> str:
     """Return a short-lived signed URL when analysis artifacts are protected."""
+    if exercise_id:
+        separator = "&" if "?" in path else "?"
+        path = f"{path}{separator}exercise={artifact_slug(exercise_id)}"
     settings = get_settings()
     if not settings.require_auth_for_analysis:
         return path

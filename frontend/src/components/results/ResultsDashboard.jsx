@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Activity, AlertTriangle, BrainCircuit, CheckCircle2, Download, FileJson, FileText, Gauge, HeartPulse, Info, RotateCcw, ShieldAlert, Sparkles, Video, VideoOff } from "lucide-react";
 import { artifactUrl } from "../../services/api.js";
+import { artifactFilename } from "../../utils/artifactFilenames.js";
 import { Alert, Badge, Button, Card, EmptyState } from "../common/UI.jsx";
 import { AngleTrendChart, ChartCard, IssueBreakdownChart, MovementRadarChart, MovementScoreGauge, RepQualityChart } from "../charts/MovementCharts.jsx";
 import CameraGuide from "../upload/CameraGuide.jsx";
@@ -170,7 +171,8 @@ export function ExportActions({ report }) {
     link.click();
     URL.revokeObjectURL(url);
   }
-  return <div className="flex flex-wrap gap-2">{reportUrl && <Button as="a" href={reportUrl} download><FileText size={16} aria-hidden="true" />{t("results.downloadPdf")}</Button>}{overlayUrl && <Button as="a" variant="secondary" href={overlayUrl} download><Download size={16} aria-hidden="true" />{t("results.downloadOverlay")}</Button>}<Button variant="secondary" type="button" onClick={exportJson}><FileJson size={16} aria-hidden="true" />{t("results.exportJson")}</Button></div>;
+  const exerciseId = report.exercise_id || report.exercise;
+  return <div className="flex flex-wrap gap-2">{reportUrl && <Button as="a" href={reportUrl} download={artifactFilename(exerciseId, "report")}><FileText size={16} aria-hidden="true" />{t("results.downloadPdf")}</Button>}{overlayUrl && <Button as="a" variant="secondary" href={overlayUrl} download={artifactFilename(exerciseId, "overlay")}><Download size={16} aria-hidden="true" />{t("results.downloadOverlay")}</Button>}<Button variant="secondary" type="button" onClick={exportJson}><FileJson size={16} aria-hidden="true" />{t("results.exportJson")}</Button></div>;
 }
 
 export function RejectedAnalysisCard({ report, onAnalyzeAnother }) {

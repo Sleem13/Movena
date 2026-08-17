@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 from statistics import mean
 
 from app.core.exercise_thresholds import (
@@ -36,6 +37,7 @@ def validate_squat_attempt(
     valid_reps: int,
     pose_quality: PoseQuality,
     frame_indexes: list[int] | None = None,
+    sample_stride: int = 1,
 ) -> InputValidity:
     knee_range = _range(knee_angles)
     hip_range = _range(hip_angles)
@@ -45,7 +47,8 @@ def validate_squat_attempt(
     active_detection_rate = pose_quality.pose_detection_rate
     if frame_indexes and len(frame_indexes) > 1:
         active_span = max(frame_indexes) - min(frame_indexes) + 1
-        active_detection_rate = min(1.0, len(frame_indexes) / max(1, active_span))
+        expected_analyzed_frames = math.ceil(active_span / max(1, sample_stride))
+        active_detection_rate = min(1.0, len(frame_indexes) / max(1, expected_analyzed_frames))
 
     if pose_quality.pose_detected_frames < MIN_POSE_DETECTED_FRAMES:
         blocking_warnings.append(

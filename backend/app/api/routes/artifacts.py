@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, Query, status
 from fastapi.responses import FileResponse, JSONResponse
 
 from app.schemas.analysis_schema import ErrorResponse
-from app.services.artifact_service import resolve_artifact, valid_artifact_signature
+from app.services.artifact_service import artifact_download_filename, resolve_artifact, valid_artifact_signature
 from app.api.dependencies.auth import AuthError, optional_current_user
 from app.core.config import get_settings
 
@@ -19,12 +19,12 @@ def artifact_not_found(kind: str) -> JSONResponse:
 
 
 @router.get("/artifacts/reports/{report_id}")
-def download_report(report_id: str, expires: int | None = Query(None), signature: str | None = Query(None), user=Depends(optional_current_user)):
+def download_report(report_id: str, exercise: str = Query("movement"), expires: int | None = Query(None), signature: str | None = Query(None), user=Depends(optional_current_user)):
     authorize_artifact(report_id, "report", user, expires, signature)
     path = resolve_artifact(report_id, "report")
     if path is None:
         return artifact_not_found("report")
-    return FileResponse(path, media_type="application/pdf", filename="physiovision-squat-report.pdf")
+    return FileResponse(path, media_type="application/pdf", filename=artifact_download_filename(exercise, "report"))
 
 
 def overlay_file_or_404(overlay_id: str):
@@ -42,7 +42,7 @@ def authorize_artifact(artifact_id: str, kind: str, user, expires: int | None, s
 
 
 @router.get("/artifacts/overlays/{overlay_id}/preview")
-def preview_overlay(overlay_id: str, expires: int | None = Query(None), signature: str | None = Query(None), user=Depends(optional_current_user)):
+def preview_overlay(overlay_id: str, exercise: str = Query("movement"), expires: int | None = Query(None), signature: str | None = Query(None), user=Depends(optional_current_user)):
     authorize_artifact(overlay_id, "overlay", user, expires, signature)
     path = overlay_file_or_404(overlay_id)
     if isinstance(path, JSONResponse):
@@ -51,14 +51,14 @@ def preview_overlay(overlay_id: str, expires: int | None = Query(None), signatur
         path,
         media_type="video/mp4",
         headers={
-            "Content-Disposition": f'inline; filename="{path.name}"',
+            "Content-Disposition": f'inline; filename="{artifact_download_filename(exercise, "overlay")}"',
             "Cache-Control": "no-store",
         },
     )
 
 
 @router.get("/artifacts/overlays/{overlay_id}/download")
-def download_overlay(overlay_id: str, expires: int | None = Query(None), signature: str | None = Query(None), user=Depends(optional_current_user)):
+def download_overlay(overlay_id: str, exercise: str = Query("movement"), expires: int | None = Query(None), signature: str | None = Query(None), user=Depends(optional_current_user)):
     authorize_artifact(overlay_id, "overlay", user, expires, signature)
     path = overlay_file_or_404(overlay_id)
     if isinstance(path, JSONResponse):
@@ -66,11 +66,11 @@ def download_overlay(overlay_id: str, expires: int | None = Query(None), signatu
     return FileResponse(
         path,
         media_type="video/mp4",
-        filename="physiovision-squat-overlay.mp4",
+        filename=artifact_download_filename(exercise, "overlay"),
     )
 
 
 @router.get("/artifacts/overlays/{overlay_id}")
-def download_overlay_legacy(overlay_id: str, expires: int | None = Query(None), signature: str | None = Query(None), user=Depends(optional_current_user)):
+def download_overlay_legacy(overlay_id: str, exercise: str = Query("movement"), expires: int | None = Query(None), signature: str | None = Query(None), user=Depends(optional_current_user)):
     """Preserve the original download URL for existing clients."""
-    return download_overlay(overlay_id, expires, signature, user)
+    return download_overlay(overlay_id, exercise, expires, signature, user)

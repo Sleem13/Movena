@@ -66,6 +66,7 @@ class Settings(BaseModel):
     subject_switch_event_limit: int = Field(default=2, ge=1)
     subject_max_tracking_gap_frames: int = Field(default=10, ge=0)
     pose_backend: str = "mediapipe"
+    pose_target_fps: float = Field(default=12.0, gt=0, le=60)
     allowed_video_extensions: set[str] = Field(default_factory=lambda: set(DEFAULT_EXTENSIONS))
     allowed_video_mime_types: set[str] = {
         "video/mp4", "video/quicktime", "video/x-msvideo", "video/x-matroska",
@@ -103,6 +104,7 @@ class Settings(BaseModel):
             artifact_retention_hours=retention, artifact_ttl_seconds=round(retention * 3600),
             allowed_video_extensions={item.lower() for item in extensions},
             pose_backend=os.getenv("POSE_BACKEND", "mediapipe").strip().lower(),
+            pose_target_fps=float(os.getenv("POSE_TARGET_FPS", "12")),
             enable_subject_continuity_guard=_bool("ENABLE_SUBJECT_CONTINUITY_GUARD", True),
             subject_min_visibility=float(os.getenv("SUBJECT_MIN_VISIBILITY", "0.5")),
             subject_max_centroid_jump=float(os.getenv("SUBJECT_MAX_CENTROID_JUMP", "0.16")),

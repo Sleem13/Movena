@@ -62,13 +62,13 @@ async def analyze_knee_extension(
             generated_artifacts.append(report_path)
             generate_session_report(report, report_path)
             report.report_id = report_id
-            report.report_download_url = build_artifact_url(f"/api/v1/artifacts/reports/{report_id}", report_id, "report")
+            report.report_download_url = build_artifact_url(f"/api/v1/artifacts/reports/{report_id}", report_id, "report", exercise_id=report.exercise_id or report.exercise)
         elif generate_report and not settings.enable_report_generation:
             report.limitations.append("PDF report generation is disabled by deployment configuration.")
 
         if include_overlay and settings.enable_overlay_generation and report.status == "success" and report.frame_analysis:
             try:
-                overlay = create_overlay_video(video_path, landmarks, report.frame_analysis)
+                overlay = create_overlay_video(video_path, landmarks, report.frame_analysis, report.exercise_id or report.exercise)
                 generated_artifacts.append(overlay.overlay_path)
                 report.overlay_id = overlay.overlay_id
                 report.overlay_preview_url = overlay.overlay_preview_url
