@@ -96,6 +96,14 @@ describe("RealtimeCoachingSpike", () => {
     expect(screen.getByText(/metadata-only persistence implemented/)).toBeInTheDocument();
   });
 
+  it("keeps recognition upload disabled when optional model runtimes are unavailable", async () => {
+    render(<LocaleProvider><RealtimeCoachingSpike /></LocaleProvider>);
+
+    expect(await screen.findByText("Artifact pending")).toBeInTheDocument();
+    expect(screen.getByLabelText("Choose a movement video")).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Identify exercise" })).toBeDisabled();
+  });
+
   it("loads the built-in local pose extractor when camera capture starts", async () => {
     const originalMediaDevices = navigator.mediaDevices;
     const extractor = { estimate: vi.fn().mockReturnValue({ landmarks: [] }) };

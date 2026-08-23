@@ -3,5 +3,6 @@ export function resolveFeatureFlag(value) {
 }
 
 export const ENABLE_REALTIME_COACHING_SPIKE = resolveFeatureFlag(
-  import.meta.env.VITE_ENABLE_REALTIME_COACHING_SPIKE ?? (import.meta.env.DEV ? "true" : "false"),
+  import.meta.env.VITE_ENABLE_REALTIME_COACHING_SPIKE
+    ?? (import.meta.env.PROD || import.meta.env.DEV ? "true" : "false"),
 );
