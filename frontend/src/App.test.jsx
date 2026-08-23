@@ -110,7 +110,21 @@ describe("Squat Analyzer healthcare dashboard", () => {
     expect(screen.getByText(/MP4, MOV, AVI, MKV, or WEBM/)).toBeInTheDocument();
     expect(screen.getByLabelText(/choose a squat exercise video/i)).toHaveAttribute("accept", ".mp4,.mov,.avi,.mkv,.webm");
     expect(screen.getByText("Analysis options")).toBeInTheDocument();
+    expect(screen.getByLabelText("Annotated video")).not.toBeChecked();
+    expect(screen.getByLabelText("PDF session report")).not.toBeChecked();
+    expect(screen.getByLabelText("Angle trend data")).not.toBeChecked();
+    fireEvent.click(screen.getByRole("button", { name: "Select all" }));
     expect(screen.getByLabelText("Annotated video")).toBeChecked();
+    expect(screen.getByLabelText("PDF session report")).toBeChecked();
+    expect(screen.getByLabelText("Angle trend data")).toBeChecked();
+    expect(screen.getByLabelText("ML second opinion")).toBeChecked();
+    expect(screen.getByLabelText("Save session history")).toBeChecked();
+    fireEvent.click(screen.getByRole("button", { name: "Clear all" }));
+    expect(screen.getByLabelText("Annotated video")).not.toBeChecked();
+    expect(screen.getByLabelText("PDF session report")).not.toBeChecked();
+    expect(screen.getByLabelText("Angle trend data")).not.toBeChecked();
+    expect(screen.getByLabelText("ML second opinion")).not.toBeChecked();
+    expect(screen.getByLabelText("Save session history")).not.toBeChecked();
     expect(screen.getByRole("button", { name: "Analyze squat" })).toBeDisabled();
     expect(screen.getByLabelText("Exercise selector")).toHaveValue("bodyweight_squat");
     expect(screen.getByRole("option", { name: "Sit-to-Stand" })).toBeInTheDocument();
@@ -620,70 +634,7 @@ describe("Squat Analyzer healthcare dashboard", () => {
       expect.objectContaining({ continue_on_subject_warning: true }),
       expect.any(Function),
     );
-  });
-
-  it("auto-routes after a subject-warning retry when the selected class still rejects", async () => {
-    const gaitReport = {
-      ...report,
-      exercise: "walking_gait_screen",
-      exercise_id: "walking_gait_screen",
-      exercise_name: "Walking Gait Screen",
-      movement_score: 84,
-      summary: "A walking gait screen was analyzed.",
-      detected_issues: [],
-      gait_metrics: { step_count: 6, gait_cycles: 3, cadence_steps_per_min: 96 },
-      validation_warnings: ["Subject-continuity warning overridden by user request."],
-    };
-    analyzeExerciseVideo
-      .mockRejectedValueOnce({
-        response: {
-          status: 422,
-          data: { error_code: "SUBJECT_SWITCH_DETECTED", message: "Internal subject tracking message." },
-        },
-      })
-      .mockResolvedValueOnce(rejectedReport)
-      .mockResolvedValueOnce(gaitReport);
-    recognizeExerciseVideo
-      .mockRejectedValueOnce({
-        response: {
-          status: 422,
-          data: { error_code: "SUBJECT_SWITCH_DETECTED", message: "Internal subject tracking message." },
-        },
-      })
-      .mockResolvedValueOnce({
-        status: "success",
-        suggested_exercise_id: "walking_gait_screen",
-        confidence: 0.91,
-        analyzer_available: true,
-        suggestion_actionable: true,
-        top_predictions: [{ exercise_id: "walking_gait_screen", confidence: 0.91 }],
-      });
-
-    openUpload(); selectVideo();
-    fireEvent.click(screen.getByRole("button", { name: "Analyze squat" }));
-
-    await screen.findByText("Walking Gait Screen report");
-    expect(analyzeExerciseVideo).toHaveBeenCalledTimes(3);
-    expect(analyzeExerciseVideo).toHaveBeenNthCalledWith(
-      2,
-      "bodyweight_squat",
-      expect.any(File),
-      expect.objectContaining({ continue_on_subject_warning: true }),
-      expect.any(Function),
-    );
-    expect(analyzeExerciseVideo).toHaveBeenNthCalledWith(
-      3,
-      "walking_gait_screen",
-      expect.any(File),
-      expect.objectContaining({ continue_on_subject_warning: true }),
-      expect.any(Function),
-    );
-    expect(recognizeExerciseVideo).toHaveBeenLastCalledWith(
-      expect.any(File),
-      undefined,
-      expect.objectContaining({ continue_on_subject_warning: true }),
-    );
-    expect(screen.getAllByText(/recognition suggested walking gait screen with 91% confidence/i).length).toBeGreaterThan(0);
+    expect(recognizeExerciseVideo).not.toHaveBeenCalled();
   });
 
   it("shows a connection message for a network or CORS failure", async () => {
@@ -709,46 +660,26 @@ describe("Squat Analyzer healthcare dashboard", () => {
     expect(screen.queryByText("ML second opinion")).not.toBeInTheDocument();
   });
 
-  it("auto-routes to the recognized analyzer when the selected movement class rejects", async () => {
-    const gaitReport = {
-      ...report,
-      exercise: "walking_gait_screen",
-      exercise_id: "walking_gait_screen",
-      exercise_name: "Walking Gait Screen",
-      movement_score: 84,
-      summary: "A walking gait screen was analyzed.",
-      detected_issues: [],
-      gait_metrics: { step_count: 6, gait_cycles: 3, cadence_steps_per_min: 96 },
-    };
-    analyzeExerciseVideo.mockResolvedValueOnce(rejectedReport).mockResolvedValueOnce(gaitReport);
-    recognizeExerciseVideo.mockResolvedValueOnce({
-      status: "success",
-      suggested_exercise_id: "walking_gait_screen",
-      confidence: 0.91,
-      analyzer_available: true,
-      suggestion_actionable: true,
-      top_predictions: [{ exercise_id: "walking_gait_screen", confidence: 0.91 }],
-    });
-
+  it("keeps the manually selected analyzer when its movement validation rejects", async () => {
+    analyzeExerciseVideo.mockResolvedValueOnce(rejectedReport);
     openUpload(); selectVideo();
     fireEvent.click(screen.getByRole("button", { name: "Analyze squat" }));
 
-    await screen.findByText("Walking Gait Screen report");
-    expect(recognizeExerciseVideo).toHaveBeenCalledTimes(1);
-    expect(analyzeExerciseVideo).toHaveBeenNthCalledWith(
-      1,
+    await screen.findByText("Recording rejected");
+    expect(analyzeExerciseVideo).toHaveBeenCalledTimes(1);
+    expect(analyzeExerciseVideo).toHaveBeenCalledWith(
       "bodyweight_squat",
       expect.any(File),
       expect.any(Object),
       expect.any(Function),
     );
-    expect(analyzeExerciseVideo).toHaveBeenNthCalledWith(
-      2,
-      "walking_gait_screen",
-      expect.any(File),
-      expect.any(Object),
-      expect.any(Function),
-    );
-    expect(screen.getAllByText(/recognition suggested walking gait screen with 91% confidence/i).length).toBeGreaterThan(0);
+    expect(recognizeExerciseVideo).not.toHaveBeenCalled();
+  });
+
+  it("does not spend recognition inference on a successful selected analysis", async () => {
+    await analyzeWith(report);
+
+    expect(analyzeExerciseVideo).toHaveBeenCalledTimes(1);
+    expect(recognizeExerciseVideo).not.toHaveBeenCalled();
   });
 });

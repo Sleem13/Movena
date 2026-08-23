@@ -100,7 +100,7 @@ async def analyze_squat(
             generated_artifacts.append(report_path)
             generate_session_report(report, report_path)
             report.report_id = report_id
-            report.report_download_url = build_artifact_url(f"/api/v1/artifacts/reports/{report_id}", report_id, "report")
+            report.report_download_url = build_artifact_url(f"/api/v1/artifacts/reports/{report_id}", report_id, "report", exercise_id=report.exercise_id or report.exercise)
 
         elif generate_report and not settings.enable_report_generation:
             report.limitations.append("PDF report generation is disabled by deployment configuration.")
@@ -108,7 +108,7 @@ async def analyze_squat(
         if include_overlay and settings.enable_overlay_generation and report.status == "success":
             try:
                 overlay = create_overlay_video(
-                    video_path, landmarks, create_frame_analysis(landmarks)
+                    video_path, landmarks, create_frame_analysis(landmarks), report.exercise_id or report.exercise
                 )
                 if not overlay.overlay_path.is_file() or overlay.overlay_path.stat().st_size <= 0:
                     raise RuntimeError("Overlay service returned a missing or empty artifact.")

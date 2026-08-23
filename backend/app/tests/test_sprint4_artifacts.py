@@ -8,7 +8,7 @@ from fastapi.testclient import TestClient
 from app.core.config import get_settings
 from app.main import app
 from app.schemas.analysis_schema import AnalysisResponse, FrameAnalysis
-from app.services.artifact_service import cleanup_expired_artifacts, create_artifact, resolve_artifact
+from app.services.artifact_service import artifact_download_filename, cleanup_expired_artifacts, create_artifact, resolve_artifact
 from app.services.overlay_service import generate_skeleton_overlay
 from app.services.report_service import generate_session_report
 from app.services.squat_analysis_service import create_frame_analysis
@@ -48,6 +48,11 @@ def test_artifact_resolution_and_expiry(monkeypatch, tmp_path):
     os.utime(path, (old_time, old_time))
     assert cleanup_expired_artifacts() == 1
     assert resolve_artifact(artifact_id, "report") is None
+
+
+def test_artifact_download_filename_uses_safe_exercise_slug():
+    assert artifact_download_filename("walking_gait_screen", "report") == "physiovision-walking-gait-screen-report.pdf"
+    assert artifact_download_filename("../../Unsafe Name", "overlay") == "physiovision-unsafe-name-overlay.mp4"
 
 
 def test_invalid_artifact_ids_return_404_without_path_access(monkeypatch, tmp_path):

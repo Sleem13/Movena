@@ -124,6 +124,7 @@ def analyze_squat_landmarks(
     trunk_angles = [float(item["trunk_angle"]) for item in metrics]
     timestamps = [float(frame.get("timestamp_sec", 0.0)) for frame in frames]
     frame_indexes = [int(frame.get("frame_index", index)) for index, frame in enumerate(frames)]
+    sample_stride = max(int(frame.get("source_sample_stride", 1)) for frame in frames)
     pose_quality = assess_pose_quality(frames)
     rep_result = count_squat_reps(
         raw_knee_angles,
@@ -145,7 +146,7 @@ def analyze_squat_landmarks(
             "Rep count confidence is low. Review camera setup and consider trimming the video to only the squat set."
         )
     input_validity = validate_squat_attempt(
-        knee_angles, hip_angles, total_reps, pose_quality, frame_indexes
+        knee_angles, hip_angles, total_reps, pose_quality, frame_indexes, sample_stride
     )
 
     limitations = [

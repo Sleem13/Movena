@@ -1,5 +1,5 @@
-import { BrainCircuit, ChartNoAxesCombined, Database, FileText, ScanSearch } from "lucide-react";
-import { Badge, Card } from "../common/UI.jsx";
+import { BrainCircuit, ChartNoAxesCombined, CheckCheck, Database, FileText, ScanSearch } from "lucide-react";
+import { Badge, Button, Card } from "../common/UI.jsx";
 import { useLocale } from "../../i18n/LocaleContext.jsx";
 
 const optionDefinitions = [
@@ -12,11 +12,34 @@ const optionDefinitions = [
 
 export default function AnalysisOptions({ exercise = "bodyweight_squat", value, onChange, disabled }) {
   const { t, exerciseText } = useLocale();
+  const allSelected = optionDefinitions.every(({ key }) => Boolean(value[key]));
+
+  function toggleAll() {
+    const nextSelected = !allSelected;
+    onChange({
+      ...value,
+      ...Object.fromEntries(optionDefinitions.map(({ key }) => [key, nextSelected])),
+    });
+  }
+
   return (
     <Card className="p-5">
-      <div className="mb-4">
-        <h2 className="text-base font-bold text-clinical-ink">{t("options.title")}</h2>
-        <p className="mt-1 text-xs leading-5 text-slate-500">{t("options.description")}</p>
+      <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h2 className="text-base font-bold text-clinical-ink">{t("options.title")}</h2>
+          <p className="mt-1 text-xs leading-5 text-slate-500">{t("options.description")}</p>
+        </div>
+        <Button
+          type="button"
+          variant="secondary"
+          className="min-h-9 shrink-0 px-3 text-xs"
+          aria-pressed={allSelected}
+          disabled={disabled}
+          onClick={toggleAll}
+        >
+          <CheckCheck size={16} aria-hidden="true" />
+          {t(allSelected ? "options.clearAll" : "options.selectAll")}
+        </Button>
       </div>
       <div className="grid gap-2 sm:grid-cols-2">
         {optionDefinitions.map(({ key, titleKey, descriptionKey, icon: Icon, experimental }) => {

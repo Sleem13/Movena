@@ -107,7 +107,7 @@ def test_overlay_preview_and_download_routes_return_mp4(monkeypatch, tmp_path):
     overlay.write_bytes(b"mp4-test")
 
     preview = client.get(f"/api/v1/artifacts/overlays/{overlay_id}/preview")
-    download = client.get(f"/api/v1/artifacts/overlays/{overlay_id}/download")
+    download = client.get(f"/api/v1/artifacts/overlays/{overlay_id}/download?exercise=walking_gait_screen")
     suffix_preview = client.get(f"/api/v1/artifacts/overlays/{overlay_id}.mp4/preview")
     missing = client.get("/api/v1/artifacts/overlays/not-a-uuid")
 
@@ -118,6 +118,7 @@ def test_overlay_preview_and_download_routes_return_mp4(monkeypatch, tmp_path):
     assert download.status_code == 200
     assert download.headers["content-type"].startswith("video/mp4")
     assert download.headers["content-disposition"].startswith("attachment")
+    assert "physiovision-walking-gait-screen-overlay.mp4" in download.headers["content-disposition"]
     assert suffix_preview.status_code == 200
     assert missing.status_code == 404
     assert missing.json() == {

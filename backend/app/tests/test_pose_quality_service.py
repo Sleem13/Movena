@@ -1,7 +1,7 @@
 from app.services.pose_quality_service import CRITICAL_LANDMARKS, assess_pose_quality
 
 
-def frames(visibility=0.95, detected=10, total=10):
+def frames(visibility=0.95, detected=10, total=10, analyzed=None):
     landmarks = {
         name: {"x": 0.3 if "left" in name else 0.7, "y": 0.5, "visibility": visibility}
         for name in CRITICAL_LANDMARKS
@@ -10,6 +10,7 @@ def frames(visibility=0.95, detected=10, total=10):
         {
             "frame_index": index,
             "source_total_frames": total,
+            "source_analyzed_frames": analyzed or total,
             "landmarks": landmarks,
             "low_confidence": visibility < 0.45,
         }
@@ -30,3 +31,10 @@ def test_low_visibility_and_missing_frames_reduce_confidence():
     assert result.pose_detection_rate == 0.4
     assert result.low_confidence_frames == 4
     assert result.warnings
+
+
+def test_intentionally_skipped_frames_do_not_reduce_pose_detection_rate():
+    result = assess_pose_quality(frames(detected=10, total=30, analyzed=10))
+    assert result.total_frames == 30
+    assert result.pose_detected_frames == 10
+    assert result.pose_detection_rate == 1

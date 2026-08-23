@@ -41,3 +41,22 @@ def test_visible_complete_squat_attempt_is_valid():
     assert result.is_valid is True
     assert result.valid_reps == 3
     assert result.warnings == []
+
+
+def test_sampled_video_is_not_mistaken_for_inconsistent_pose_detection():
+    knees = [170, 155, 135, 105, 135, 165] * 10
+    hips = [175, 160, 135, 100, 135, 170] * 10
+    sampled_source_indexes = list(range(0, 180, 3))
+
+    result = validate_squat_attempt(
+        knees,
+        hips,
+        3,
+        quality(frames=60),
+        sampled_source_indexes,
+        sample_stride=3,
+    )
+
+    assert result.is_valid is True
+    assert result.pose_detection_rate == 1
+    assert not any("not detected consistently" in warning.lower() for warning in result.warnings)

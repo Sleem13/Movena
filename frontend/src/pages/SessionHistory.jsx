@@ -4,6 +4,7 @@ import { getArtifactBlob, getSavedSession, listSavedSessions } from "../services
 import { Alert, Badge, Button, Card, EmptyState, LoadingSpinner } from "../components/common/UI.jsx";
 import { PageHeader } from "../components/layout/AppShell.jsx";
 import { useLocale } from "../i18n/LocaleContext.jsx";
+import { artifactFilename } from "../utils/artifactFilenames.js";
 
 export default function SessionHistory() {
   const { t, exerciseText, pretty } = useLocale();
@@ -13,7 +14,7 @@ export default function SessionHistory() {
   const [sessions, setSessions] = useState([]);
   const [selected, setSelected] = useState(null);
   const [detailLoadingId, setDetailLoadingId] = useState(null);
-  const [artifact, setArtifact] = useState({ status: "idle", kind: null, url: null, error: "" });
+  const [artifact, setArtifact] = useState({ status: "idle", kind: null, exerciseId: null, url: null, error: "" });
   const artifactUrlRef = useRef(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -63,23 +64,23 @@ export default function SessionHistory() {
   function closeArtifact() {
     if (artifactUrlRef.current) URL.revokeObjectURL(artifactUrlRef.current);
     artifactUrlRef.current = null;
-    setArtifact({ status: "idle", kind: null, url: null, error: "" });
+    setArtifact({ status: "idle", kind: null, exerciseId: null, url: null, error: "" });
   }
 
   useEffect(() => closeArtifact, []);
 
-  async function openArtifact(kind, path) {
+  async function openArtifact(kind, path, exerciseId) {
     closeArtifact();
-    setArtifact({ status: "loading", kind, url: null, error: "" });
+    setArtifact({ status: "loading", kind, exerciseId, url: null, error: "" });
     try {
       const blob = await getArtifactBlob(path);
       const url = URL.createObjectURL(blob);
       artifactUrlRef.current = url;
-      setArtifact({ status: "ready", kind, url, error: "" });
+      setArtifact({ status: "ready", kind, exerciseId, url, error: "" });
     } catch (requestError) {
       const code = requestError.response?.data?.error_code;
       setArtifact({
-        status: "error", kind, url: null,
+        status: "error", kind, exerciseId, url: null,
         error: code === "ARTIFACT_NOT_FOUND" || requestError.response?.status === 404
           ? t("history.artifactExpired")
           : t("history.artifactError"),
@@ -132,8 +133,8 @@ export default function SessionHistory() {
                 <Button variant="secondary" onClick={() => openDetail(session.session_id)} disabled={detailLoadingId === session.session_id} aria-expanded={selected?.session_id === session.session_id}>
                   <CalendarClock size={15} />{detailLoadingId === session.session_id ? t("history.loadingDetail") : selected?.session_id === session.session_id ? t("history.hideDetails") : t("history.viewDetails")}
                 </Button>
-                {session.report_download_url && <Button variant="ghost" onClick={() => openArtifact("report", session.report_download_url)}><ExternalLink size={15} />{t("history.report")}</Button>}
-                {session.overlay_preview_url && <Button variant="ghost" onClick={() => openArtifact("overlay", session.overlay_preview_url)}><ExternalLink size={15} />{t("history.overlay")}</Button>}
+                {session.report_download_url && <Button variant="ghost" onClick={() => openArtifact("report", session.report_download_url, session.exercise_id || session.exercise)}><ExternalLink size={15} />{t("history.report")}</Button>}
+                {session.overlay_preview_url && <Button variant="ghost" onClick={() => openArtifact("overlay", session.overlay_preview_url, session.exercise_id || session.exercise)}><ExternalLink size={15} />{t("history.overlay")}</Button>}
               </div>
               {selected?.session_id === session.session_id && (
                 <div className="mt-5 border-t border-slate-100 pt-5" aria-live="polite">
@@ -165,7 +166,7 @@ export default function SessionHistory() {
               {artifact.status === "ready" && artifact.kind === "report" && <iframe title={t("history.reportViewer")} src={artifact.url} className="h-[70vh] w-full rounded-xl bg-white" />}
               {artifact.status === "ready" && artifact.kind === "overlay" && <video controls autoPlay className="max-h-[70vh] w-full rounded-xl bg-slate-950"><source src={artifact.url} type="video/mp4" /></video>}
             </div>
-            {artifact.status === "ready" && <div className="flex justify-end border-t border-slate-100 p-4"><Button as="a" href={artifact.url} download={artifact.kind === "report" ? "physiovision-report.pdf" : "physiovision-overlay.mp4"}><Download size={16} />{t("common.download")}</Button></div>}
+            {artifact.status === "ready" && <div className="flex justify-end border-t border-slate-100 p-4"><Button as="a" href={artifact.url} download={artifactFilename(artifact.exerciseId, artifact.kind)}><Download size={16} />{t("common.download")}</Button></div>}
           </Card>
         </div>
       )}

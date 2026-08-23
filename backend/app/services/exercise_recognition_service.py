@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import hashlib
 import logging
+from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
@@ -162,6 +163,7 @@ def initialize_active_recognition_models(
     """Run startup integrity and inference checks for the two explicitly pinned artifacts."""
 
     configured = settings or get_settings()
+    load_recognition_model.cache_clear()
     model_ids = {
         configured.active_sequence_recognition_model_id,
         configured.active_frame_recognition_model_id,
@@ -175,9 +177,18 @@ def initialize_active_recognition_models(
         if strict:
             raise RuntimeError(message)
         logger.warning(message)
+    for artifact_format in ("torchscript_sequence", "xgboost_json"):
+        bundle = load_recognition_model(required_format=artifact_format)
+        if bundle is not None:
+            logger.info(
+                "Preloaded recognition weights: model_id=%s format=%s",
+                bundle["metadata"].get("model_id"),
+                artifact_format,
+            )
     return health
 
 
+@lru_cache(maxsize=4)
 def load_recognition_model(
     model_id: str | None = None, *, required_format: str | None = None
 ) -> dict[str, Any] | None:
