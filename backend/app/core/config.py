@@ -75,6 +75,7 @@ class Settings(BaseModel):
     enable_session_history: bool = True
     enable_therapist_dashboard: bool = True
     enable_ml_second_opinion: bool = True
+    enable_exercise_recognition: bool = True
     enable_report_generation: bool = True
     enable_overlay_generation: bool = True
     enable_public_demo_mode: bool = False
@@ -115,6 +116,10 @@ class Settings(BaseModel):
             enable_session_history=_bool("ENABLE_SESSION_HISTORY", True),
             enable_therapist_dashboard=_bool("ENABLE_THERAPIST_DASHBOARD", True),
             enable_ml_second_opinion=_bool("ENABLE_ML_SECOND_OPINION", True),
+            enable_exercise_recognition=_bool(
+                "ENABLE_EXERCISE_RECOGNITION",
+                _bool("ENABLE_ML_SECOND_OPINION", True),
+            ),
             enable_report_generation=_bool("ENABLE_REPORT_GENERATION", True),
             enable_overlay_generation=_bool("ENABLE_OVERLAY_GENERATION", True),
             enable_public_demo_mode=_bool("ENABLE_PUBLIC_DEMO_MODE", False),
@@ -138,6 +143,7 @@ class Settings(BaseModel):
             "session_history": self.enable_session_history,
             "therapist_dashboard": self.enable_therapist_dashboard,
             "ml_second_opinion": self.enable_ml_second_opinion,
+            "exercise_recognition": self.enable_exercise_recognition,
             "report_generation": self.enable_report_generation,
             "overlay_generation": self.enable_overlay_generation,
             "subject_continuity_guard": self.enable_subject_continuity_guard,

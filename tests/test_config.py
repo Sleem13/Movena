@@ -29,6 +29,23 @@ def test_config_pins_recognition_models_from_environment(monkeypatch):
     assert settings.active_frame_recognition_model_id == "frame_v2"
 
 
+def test_exercise_recognition_defaults_to_ml_runtime_setting(monkeypatch):
+    monkeypatch.delenv("ENABLE_EXERCISE_RECOGNITION", raising=False)
+    monkeypatch.setenv("ENABLE_ML_SECOND_OPINION", "false")
+
+    settings = Settings.from_environment()
+
+    assert settings.enable_exercise_recognition is False
+    assert settings.enabled_features["exercise_recognition"] is False
+
+
+def test_exercise_recognition_has_an_explicit_override(monkeypatch):
+    monkeypatch.setenv("ENABLE_ML_SECOND_OPINION", "false")
+    monkeypatch.setenv("ENABLE_EXERCISE_RECOGNITION", "true")
+
+    assert Settings.from_environment().enable_exercise_recognition is True
+
+
 def test_config_parses_origins_and_blocks_production_wildcard(monkeypatch):
     monkeypatch.setenv("APP_ENV", "production")
     monkeypatch.setenv("CORS_ALLOWED_ORIGINS", "*,https://app.example.com")

@@ -36,10 +36,11 @@ settings = get_settings()
 settings.validate_deployment_safety()
 ensure_artifact_directories()
 init_db()
-initialize_active_recognition_models(
-    settings,
-    strict=settings.app_env in {"staging", "production"},
-)
+if settings.enable_exercise_recognition:
+    initialize_active_recognition_models(
+        settings,
+        strict=settings.app_env in {"staging", "production"},
+    )
 if os.getenv("SEED_ADMIN_ON_START", "").strip().lower() in {"1", "true", "yes", "on"}:
     from app.services.admin_seed_service import seed_admin_from_environment
 
@@ -98,7 +99,8 @@ app.include_router(gait_router)
 app.include_router(balance_router)
 app.include_router(upper_body_router)
 app.include_router(artifacts_router)
-app.include_router(exercise_recognition_router)
+if settings.enable_exercise_recognition:
+    app.include_router(exercise_recognition_router)
 app.include_router(exercises_router)
 app.include_router(realtime_coaching_router)
 app.include_router(auth_router)

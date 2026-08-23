@@ -22,3 +22,5 @@ services:
         value: "false"
       - key: ENABLE_ML_SECOND_OPINION
         value: "false"
+      - key: ENABLE_EXERCISE_RECOGNITION
+        value: "false"
