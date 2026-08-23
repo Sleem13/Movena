@@ -1,3 +1,5 @@
+import math
+
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import sessionmaker
 
@@ -29,7 +31,16 @@ def joint_pose(exercise_id: str, state: str) -> list[dict]:
     if exercise_id == "bodyweight_squat":
         points[24] = {"x": 0.5, "y": 0.25, "visibility": 0.95}
         points[26] = {"x": 0.5, "y": 0.55, "visibility": 0.95}
-        points[28] = {"x": 0.5, "y": 0.85, "visibility": 0.95} if state == "start" else {"x": 0.75, "y": 0.42, "visibility": 0.95}
+        if state == "start":
+            points[28] = {"x": 0.5, "y": 0.85, "visibility": 0.95}
+        elif state == "moderate":
+            angle = math.radians(30)
+            points[28] = {"x": 0.5 + 0.3 * math.cos(angle), "y": 0.55 + 0.3 * math.sin(angle), "visibility": 0.95}
+        elif state == "shallow":
+            angle = math.radians(55)
+            points[28] = {"x": 0.5 + 0.3 * math.cos(angle), "y": 0.55 + 0.3 * math.sin(angle), "visibility": 0.95}
+        else:
+            points[28] = {"x": 0.75, "y": 0.42, "visibility": 0.95}
     elif exercise_id == "shoulder_press":
         points[12] = {"x": 0.5, "y": 0.5, "visibility": 0.95}
         points[14] = {"x": 0.7, "y": 0.5, "visibility": 0.95}
@@ -67,6 +78,24 @@ def test_realtime_state_counts_new_live_exercises():
         rep = next(event for event in events if event["type"] == "rep_event")
         assert rep["rep_number"] == 1
         assert rep["exercise_id"] == exercise_id
+
+
+def test_realtime_squat_counts_a_moderate_depth_and_recovers_from_a_partial_attempt():
+    session = RealtimeExerciseSession(user_id="user", exercise_id="bodyweight_squat")
+    events = []
+    timestamp = 0
+    states = ["start"] * 2 + ["shallow"] * 2 + ["start"] * 2 + ["moderate"] * 3 + ["start"] * 3
+    for state in states:
+        timestamp += 200
+        events.extend(session.process_frame({
+            "timestamp_ms": timestamp,
+            "pose_landmarks": joint_pose("bodyweight_squat", state),
+        }))
+    reps = [event for event in events if event["type"] == "rep_event"]
+    assert len(reps) == 1
+    assert reps[0]["rep_number"] == 1
+    assert reps[0]["minimum_angle"] <= 125
+    assert session.phase == "ready"
 
 
 def test_coaching_websocket_requires_auth_and_persists_summary(tmp_path, monkeypatch):

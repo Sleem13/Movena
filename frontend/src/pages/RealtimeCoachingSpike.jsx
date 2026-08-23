@@ -38,6 +38,20 @@ const CAMERA_ERROR_KEYS = {
   ConstraintNotSatisfiedError: "coach.cameraConstraintsError",
 };
 
+const PHASE_CUE_KEYS = {
+  seeking_start: "coach.cue.seekingStart",
+  ready: "coach.cue.ready",
+  working: "coach.cue.working",
+  returning: "coach.cue.returning",
+};
+
+export function coachingCueKey(status, phase) {
+  if (status === "connecting") return "coach.cue.connecting";
+  if (status === "active") return PHASE_CUE_KEYS[phase] || "coach.cue.tracking";
+  if (status === "saved") return "coach.cue.saved";
+  return "coach.cue.idle";
+}
+
 export function cameraErrorMessageKey(error) {
   return CAMERA_ERROR_KEYS[error?.name] || "coach.permissionError";
 }
@@ -132,7 +146,7 @@ export default function RealtimeCoachingSpike({ onConfirmSuggestion }) {
   const [recognition, setRecognition] = useState({ status: "checking", models: [] });
   const [readiness, setReadiness] = useState({ status: "checking", capabilities: {} });
   const [exerciseId, setExerciseId] = useState("bicep_curl");
-  const [coaching, setCoaching] = useState({ status: "idle", reps: 0, phase: "—", grip: "—", jointAngle: null, sessionId: null });
+  const [coaching, setCoaching] = useState({ status: "idle", reps: 0, phase: "—", grip: "—", jointAngle: null, sessionId: null, lastRep: null });
 
   useEffect(() => {
     let cancelled = false;
@@ -156,7 +170,7 @@ export default function RealtimeCoachingSpike({ onConfirmSuggestion }) {
     } else if (message.type === "frame_feedback") {
       setCoaching((current) => ({ ...current, reps: message.reps, phase: message.phase, grip: message.grip, jointAngle: message.joint_angle }));
     } else if (message.type === "rep_event") {
-      setCoaching((current) => ({ ...current, reps: message.rep_number, grip: message.grip }));
+      setCoaching((current) => ({ ...current, reps: message.rep_number, grip: message.grip, lastRep: message }));
     } else if (message.type === "session_summary") {
       setCoaching((current) => ({ ...current, status: "saved", reps: message.total_reps }));
     } else if (message.type === "error") {
@@ -170,7 +184,7 @@ export default function RealtimeCoachingSpike({ onConfirmSuggestion }) {
         onMessage: handleCoachingMessage,
         onError: () => setCoaching((current) => ({ ...current, status: "error" })),
       });
-      setCoaching({ status: "connecting", reps: 0, phase: "—", grip: "—", jointAngle: null, sessionId: null });
+      setCoaching({ status: "connecting", reps: 0, phase: "—", grip: "—", jointAngle: null, sessionId: null, lastRep: null });
     } catch {
       setCoaching((current) => ({ ...current, status: "auth_required" }));
     }
@@ -280,6 +294,7 @@ export default function RealtimeCoachingSpike({ onConfirmSuggestion }) {
     note: t(`coach.exercise.${exerciseId}.note`),
   };
   const gripExercise = exerciseId === "bicep_curl" || exerciseId === "hammer_curl";
+  const coachingCue = t(coachingCueKey(coaching.status, coaching.phase));
   const latency = samples.length ? Math.round(samples.reduce((sum, item) => sum + item.elapsedMs, 0) / samples.length) : null;
   const capabilityReady = readiness.status === "ready" && Object.values(readiness.capabilities || {}).every(Boolean);
   const readinessSteps = [
@@ -345,6 +360,19 @@ export default function RealtimeCoachingSpike({ onConfirmSuggestion }) {
             <div><p className="text-xs text-slate-500">{t("coach.liveReps")}</p><p className="mt-1 font-bold">{coaching.reps}</p></div>
             <div><p className="text-xs text-slate-500">{t("coach.livePhase")}</p><p className="mt-1 font-bold capitalize">{coaching.phase}</p></div>
             <div><p className="text-xs text-slate-500">{gripExercise ? t("coach.liveGrip") : t("coach.liveAngle")}</p><p className="mt-1 font-bold capitalize">{gripExercise ? coaching.grip.replace("_", " ") : coaching.jointAngle == null ? "—" : `${coaching.jointAngle}°`}</p></div>
+          </div>
+          <div className="mx-5 mb-5 rounded-2xl border border-blue-100 bg-blue-50/70 p-4" aria-live="polite">
+            <p className="text-xs font-bold uppercase tracking-wider text-clinical-blue">{t("coach.liveCue")}</p>
+            <p className="mt-1 text-sm font-semibold text-clinical-ink">{coachingCue}</p>
+            {coaching.lastRep && (
+              <p className="mt-2 text-xs text-slate-600">
+                {t("coach.lastRepAnalysis", {
+                  rep: coaching.lastRep.rep_number,
+                  duration: coaching.lastRep.duration_sec,
+                  range: Math.round(coaching.lastRep.maximum_angle - coaching.lastRep.minimum_angle),
+                })}
+              </p>
+            )}
           </div>
           <div className="mx-5 mb-5 border-l-2 border-clinical-blue pl-4">
             <div className="flex items-center gap-2 text-sm font-bold text-clinical-ink"><Info size={16} aria-hidden="true" />{selectedExercise.label}</div>

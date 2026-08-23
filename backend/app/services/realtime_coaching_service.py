@@ -26,6 +26,8 @@ MAX_SESSION_SECONDS = 15 * 60
 MIN_FRAME_INTERVAL_MS = 90
 MIN_VISIBILITY = 0.5
 MIN_PHASE_FRAMES = 2
+SQUAT_START_ANGLE = 155.0
+SQUAT_BOTTOM_ANGLE = 125.0
 NEUTRAL_GRIP_RATIO_MAX = 0.48
 PALM_GRIP_RATIO_MIN = 0.68
 
@@ -115,7 +117,7 @@ class RealtimeExerciseSession:
 
     def _configuration(self, pose: list[dict]) -> tuple[tuple[str, float, dict] | None, float, float, str]:
         if self.exercise_id == "bodyweight_squat":
-            return _knee_measurement(pose), 155.0, 105.0, "knee"
+            return _knee_measurement(pose), SQUAT_START_ANGLE, SQUAT_BOTTOM_ANGLE, "knee"
         if self.exercise_id == "shoulder_abduction":
             return _shoulder_measurement(pose), 30.0, 75.0, "shoulder"
         if self.exercise_id == "shoulder_press":
@@ -165,6 +167,10 @@ class RealtimeExerciseSession:
             self.phase_run = self.phase_run + 1 if at_peak else 0
             if self.phase_run >= MIN_PHASE_FRAMES:
                 self.phase, self.phase_run = "returning", 0
+            elif at_start:
+                # A partial attempt must not leave the session stuck in "working".
+                # Reset so the next complete movement can be counted normally.
+                self.phase, self.phase_run, self.rep_started_ms = "ready", 0, None
         elif self.phase == "returning":
             self.minimum_angle = min(self.minimum_angle, angle)
             self.maximum_angle = max(self.maximum_angle, angle)

@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 
 import { LocaleProvider } from "../i18n/LocaleContext.jsx";
-import RealtimeCoachingSpike, { cameraErrorMessageKey, drawPoseOverlay, readOptionalLandmarkSummary, summarizeFrame } from "./RealtimeCoachingSpike.jsx";
+import RealtimeCoachingSpike, { cameraErrorMessageKey, coachingCueKey, drawPoseOverlay, readOptionalLandmarkSummary, summarizeFrame } from "./RealtimeCoachingSpike.jsx";
 import { getLocalPoseLandmarkExtractor } from "../services/poseLandmarkExtractor.js";
 
 vi.mock("../services/api.js", () => ({
@@ -32,6 +32,13 @@ describe("RealtimeCoachingSpike", () => {
     expect(screen.getByRole("option", { name: "Shoulder press" })).toBeInTheDocument();
     expect(screen.getByRole("option", { name: "Lateral raise" })).toBeInTheDocument();
     expect(screen.getByText(/Keep the upper arm steady/)).toBeInTheDocument();
+    expect(screen.getByText("Start the camera to begin live rep tracking.")).toBeInTheDocument();
+  });
+
+  it("maps live counter phases to actionable coaching cues", () => {
+    expect(coachingCueKey("active", "seeking_start")).toBe("coach.cue.seekingStart");
+    expect(coachingCueKey("active", "working")).toBe("coach.cue.working");
+    expect(coachingCueKey("active", "returning")).toBe("coach.cue.returning");
   });
 
   it("draws a live pose skeleton with highlighted working joints", () => {
