@@ -142,6 +142,16 @@ describe("Squat Analyzer healthcare dashboard", () => {
     expect(screen.getByText(/keep coaches, spotters, and bystanders outside the frame/i)).toBeInTheDocument();
   });
 
+  it("renders the authenticated clinical workspace with role-aware navigation", async () => {
+    window.history.replaceState({}, "", "/workspace");
+    render(<App />);
+    expect(await screen.findByRole("heading", { name: /Welcome back, admin/i })).toBeInTheDocument();
+    expect(screen.getAllByRole("button", { name: "Analyze movement" })).toHaveLength(2);
+    expect(screen.getByRole("button", { name: "Patients" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "User administration" })).not.toBeInTheDocument();
+    expect(screen.getByText("Workspace status")).toBeInTheDocument();
+  });
+
   it("renders the exercise library with supported and unavailable planned exercises", async () => {
     render(<App />);
     fireEvent.click(screen.getByRole("button", { name: "Exercises" }));
@@ -435,14 +445,14 @@ describe("Squat Analyzer healthcare dashboard", () => {
   });
 
   it("shows the session history empty state", async () => {
+    window.history.replaceState({}, "", "/history");
     render(<App />);
-    fireEvent.click(screen.getByRole("button", { name: "History" }));
     expect(await screen.findByText(/No saved sessions yet/i)).toBeInTheDocument();
   });
 
   it("filters session history by exercise and status", async () => {
+    window.history.replaceState({}, "", "/history");
     render(<App />);
-    fireEvent.click(screen.getByRole("button", { name: "History" }));
     await screen.findByText(/No saved sessions yet/i);
     fireEvent.change(screen.getByLabelText("Exercise"), { target: { value: "hip_abduction" } });
     fireEvent.change(screen.getByLabelText("Status"), { target: { value: "rejected" } });
@@ -458,8 +468,8 @@ describe("Squat Analyzer healthcare dashboard", () => {
     };
     listSavedSessions.mockResolvedValue({ items: [saved], total: 1, limit: 50, offset: 0 });
     getSavedSession.mockResolvedValue({ ...saved, summary: "Three repetitions analyzed.", feedback: ["Move steadily."] });
+    window.history.replaceState({}, "", "/history");
     render(<App />);
-    fireEvent.click(screen.getByRole("button", { name: "History" }));
     expect(await screen.findByText("Sit-to-Stand")).toBeInTheDocument();
     expect(screen.getByText("Poor Control")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "View details" }));
@@ -477,8 +487,8 @@ describe("Squat Analyzer healthcare dashboard", () => {
     listSavedSessions.mockResolvedValue({ items: [saved], total: 1, limit: 50, offset: 0 });
     getArtifactBlob.mockResolvedValue(new Blob(["pdf"], { type: "application/pdf" }));
     const createObjectUrl = vi.spyOn(URL, "createObjectURL").mockReturnValue("blob:report-1");
+    window.history.replaceState({}, "", "/history");
     render(<App />);
-    fireEvent.click(screen.getByRole("button", { name: "History" }));
     await screen.findByText("Bodyweight Squat");
     fireEvent.click(screen.getByRole("button", { name: "Report" }));
     expect(await screen.findByRole("dialog", { name: "Session report" })).toBeInTheDocument();
@@ -494,16 +504,16 @@ describe("Squat Analyzer healthcare dashboard", () => {
     };
     listSavedSessions.mockResolvedValue({ items: [saved], total: 1, limit: 50, offset: 0 });
     getArtifactBlob.mockRejectedValue({ response: { status: 404, data: { error_code: "ARTIFACT_NOT_FOUND" } } });
+    window.history.replaceState({}, "", "/history");
     render(<App />);
-    fireEvent.click(screen.getByRole("button", { name: "History" }));
     await screen.findByText("Bodyweight Squat");
     fireEvent.click(screen.getByRole("button", { name: "Overlay" }));
     expect(await screen.findByText(/temporary artifact has expired/i)).toBeInTheDocument();
   });
 
   it("renders therapist dashboard summary, empty profiles, and privacy warning", async () => {
+    window.history.replaceState({}, "", "/therapist");
     render(<App />);
-    fireEvent.click(screen.getByRole("button", { name: "Therapist" }));
     expect(await screen.findByText("Total patients")).toBeInTheDocument();
     expect(screen.getByText(/prototype dashboard for development use only/i)).toBeInTheDocument();
     expect(screen.getByText(/do not enter real patient-identifiable information/i)).toBeInTheDocument();
@@ -517,8 +527,8 @@ describe("Squat Analyzer healthcare dashboard", () => {
     getPatientProfile.mockResolvedValue({ ...patient, notes: null });
     listPatientSessions.mockResolvedValue([{ session_id: "session-1", exercise_display_name: "Bodyweight Squat", total_reps: 3, movement_score: 88 }]);
     getPatientProgress.mockResolvedValue({ total_sessions: 1, average_movement_score: 88, average_analysis_confidence: 0.8, low_confidence_session_count: 0, detected_issue_counts: [{ issue_code: "poor_depth", count: 1 }] });
+    window.history.replaceState({}, "", "/therapist");
     render(<App />);
-    fireEvent.click(screen.getByRole("button", { name: "Therapist" }));
     await screen.findByText("Total patients");
     fireEvent.click(screen.getByRole("button", { name: "Patient profiles" }));
     expect(screen.getByText("Demo Profile A")).toBeInTheDocument();

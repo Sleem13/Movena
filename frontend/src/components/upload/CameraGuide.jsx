@@ -1,4 +1,4 @@
-import { Camera, CheckCircle2, Lightbulb, ScanLine } from "lucide-react";
+import { Camera, CheckCircle2, ChevronDown, Lightbulb, ScanLine } from "lucide-react";
 import { Card } from "../common/UI.jsx";
 import { useLocale } from "../../i18n/LocaleContext.jsx";
 
@@ -101,7 +101,7 @@ const tipsByExercise = {
   ],
 };
 
-export default function CameraGuide({ exercise = "bodyweight_squat", metadata }) {
+export default function CameraGuide({ exercise = "bodyweight_squat", metadata, compact = false }) {
   const { t } = useLocale();
   const tips = [
     ["camera.tip.singleSubject", "camera.tip.singleSubjectText"],
@@ -109,8 +109,7 @@ export default function CameraGuide({ exercise = "bodyweight_squat", metadata })
   ];
   const landmarks = metadata?.required_landmarks?.join(", ");
 
-  return (
-    <Card className="overflow-hidden">
+  const content = <>
       <div className="bg-gradient-to-br from-clinical-navy to-clinical-blue p-6 text-white">
         <div className="flex items-center gap-3">
           <span className="grid h-11 w-11 place-items-center rounded-xl bg-white/15">
@@ -148,6 +147,16 @@ export default function CameraGuide({ exercise = "bodyweight_squat", metadata })
           </li>
         ))}
       </ul>
-    </Card>
-  );
+  </>;
+
+  if (compact) return <details className="group overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+    <summary className="flex min-h-16 cursor-pointer list-none items-center gap-3 px-4 font-bold text-clinical-ink marker:hidden">
+      <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-blue-50 text-clinical-blue"><Camera size={20} aria-hidden="true" /></span>
+      <span className="flex-1">{t("camera.title")}</span>
+      <ChevronDown size={19} className="text-slate-400 transition group-open:rotate-180" aria-hidden="true" />
+    </summary>
+    <div className="border-t border-slate-200">{content}</div>
+  </details>;
+
+  return <Card className="overflow-hidden">{content}</Card>;
 }

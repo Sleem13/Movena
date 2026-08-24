@@ -89,9 +89,8 @@ export default function SessionHistory() {
   }
 
   return (
-    <main className="mx-auto w-full max-w-7xl px-6 py-12">
+    <main className="mx-auto w-full max-w-7xl px-5 py-8 sm:px-8 lg:px-10 lg:py-10">
       <PageHeader
-        eyebrow={t("history.eyebrow")}
         title={t("history.title")}
         description={t("history.description")}
         actions={<Button variant="secondary" onClick={load}><RefreshCw size={16} />{t("common.refresh")}</Button>}
@@ -113,9 +112,9 @@ export default function SessionHistory() {
       ) : sessions.length === 0 ? (
         <EmptyState title={t("history.emptyTitle")} description={t("history.emptyDescription")} icon={History} />
       ) : (
-        <div className="grid gap-4 lg:grid-cols-2">
+        <div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
           {visibleSessions.map((session) => (
-            <Card key={session.session_id} className="p-5">
+            <Card key={session.session_id} className="rounded-none border-0 border-b border-slate-200 p-5 shadow-none ring-0 last:border-b-0 hover:bg-slate-50/70">
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <p className="text-xs text-slate-500">{new Date(session.created_at).toLocaleString()}</p>

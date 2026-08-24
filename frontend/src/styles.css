@@ -25,16 +25,6 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-body::before {
-  position: fixed;
-  inset: 0 0 auto;
-  z-index: 50;
-  height: 2px;
-  content: "";
-  background: linear-gradient(90deg, #2563eb 0 55%, #0f8f83 55% 100%);
-  pointer-events: none;
-}
-
 * {
   scrollbar-color: #b8c8d8 transparent;
   scrollbar-width: thin;
@@ -89,6 +79,41 @@ button, a, input, select, textarea, label {
 .surface-card:hover {
   border-color: rgba(191, 219, 254, 0.8);
   box-shadow: 0 14px 36px rgba(31, 62, 89, 0.09);
+}
+
+.workspace {
+  background: #fff;
+  transition: padding 200ms ease;
+}
+
+.workspace .surface-card:hover {
+  border-color: rgb(226 232 240);
+  box-shadow: none;
+}
+
+@media (min-width: 1024px) {
+  [dir="rtl"] .workspace {
+    padding-right: 272px !important;
+    padding-left: 0 !important;
+  }
+
+  [dir="rtl"] .workspace.lg\:pl-\[84px\] {
+    padding-right: 84px !important;
+  }
+
+  [dir="rtl"] .workspace-sidebar {
+    right: 0;
+    left: auto;
+    border-right: 0;
+    border-left: 1px solid rgb(226 232 240);
+  }
+}
+
+[dir="rtl"] .workspace-mobile-sidebar {
+  right: 0;
+  left: auto;
+  border-right: 0;
+  border-left: 1px solid rgb(226 232 240);
 }
 
 .nav-item::after {

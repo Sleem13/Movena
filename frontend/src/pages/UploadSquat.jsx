@@ -29,6 +29,7 @@ export default function UploadSquat(props) {
   const { t, exerciseText } = useLocale();
   const [showRecognition, setShowRecognition] = useState(false);
   const [recognitionModels, setRecognitionModels] = useState(null);
+  const [desktopLayout, setDesktopLayout] = useState(() => typeof window !== "undefined" && window.innerWidth >= 1024);
   const exercises = props.exercises || [];
   const selected = translatedExercise(exerciseById(props.exercise, exercises), exerciseText);
   const supported = exercises.filter((item) => item.supported_in_app);
@@ -44,15 +45,23 @@ export default function UploadSquat(props) {
     return () => { cancelled = true; };
   }, [showRecognition, recognitionModels]);
 
+  useEffect(() => {
+    const media = window.matchMedia?.("(min-width: 1024px)");
+    if (!media) return undefined;
+    const updateLayout = () => setDesktopLayout(media.matches);
+    updateLayout();
+    media.addEventListener?.("change", updateLayout);
+    return () => media.removeEventListener?.("change", updateLayout);
+  }, []);
+
   function confirmRecognition(exerciseId, recognizedFile) {
     props.onRecognitionConfirm?.(exerciseId, recognizedFile);
     setShowRecognition(false);
   }
 
   return (
-    <main className="mx-auto w-full max-w-7xl px-6 py-12">
+    <main className="mx-auto w-full max-w-7xl px-5 py-8 sm:px-8 lg:px-10 lg:py-10">
       <PageHeader
-        eyebrow={t("upload.eyebrow")}
         title={t("upload.title")}
         description={t("upload.description", { exercise: selectedName.short })}
       />
@@ -124,10 +133,11 @@ export default function UploadSquat(props) {
               )}
             </div>
           ) : null}
+          {!desktopLayout ? <CameraGuide exercise={props.exercise} metadata={selected} compact /> : null}
           <UploadCard {...props} />
           <AnalysisOptions exercise={props.exercise} value={props.options} onChange={props.onOptionsChange} disabled={props.isLoading} />
         </div>
-        <CameraGuide exercise={props.exercise} metadata={selected} />
+        {desktopLayout ? <CameraGuide exercise={props.exercise} metadata={selected} /> : null}
       </div>
     </main>
   );

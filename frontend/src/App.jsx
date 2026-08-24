@@ -1,30 +1,32 @@
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import AppShell from "./components/layout/AppShell.jsx";
 import About from "./pages/About.jsx";
 import Home from "./pages/Home.jsx";
 import Results from "./pages/Results.jsx";
 import UploadSquat from "./pages/UploadSquat.jsx";
 import SessionHistory from "./pages/SessionHistory.jsx";
-import TherapistDashboard from "./pages/TherapistDashboard.jsx";
 import Login from "./pages/Login.jsx";
 import Register from "./pages/Register.jsx";
 import Profile from "./pages/Profile.jsx";
 import ExerciseLibrary from "./pages/ExerciseLibrary.jsx";
-import RealtimeCoachingSpike from "./pages/RealtimeCoachingSpike.jsx";
-import SuperAdminDashboard from "./pages/SuperAdminDashboard.jsx";
 import ForgotPassword from "./pages/ForgotPassword.jsx";
 import ResetPassword from "./pages/ResetPassword.jsx";
 import VerifyEmail from "./pages/VerifyEmail.jsx";
+import WorkspaceOverview from "./pages/WorkspaceOverview.jsx";
 import { EXERCISES } from "./data/exercises.js";
 import { AuthProvider, useAuth } from "./context/AuthContext.jsx";
 import { LocaleProvider, useLocale } from "./i18n/LocaleContext.jsx";
 import { ENABLE_REALTIME_COACHING_SPIKE } from "./config/featureFlags.js";
 import { analyzeExerciseVideo, getExercises } from "./services/api.js";
 
+const TherapistDashboard = lazy(() => import("./pages/TherapistDashboard.jsx"));
+const RealtimeCoachingSpike = lazy(() => import("./pages/RealtimeCoachingSpike.jsx"));
+const SuperAdminDashboard = lazy(() => import("./pages/SuperAdminDashboard.jsx"));
+
 // Keep the default request on the low-latency path. Video encoding, PDF
 // generation, and chart payloads remain available as explicit opt-ins.
 const DEFAULT_OPTIONS = { include_overlay: false, generate_report: false, include_ml: false, include_frame_data: false, save_session: false };
-const PAGE_PATHS = { home: "/", exercises: "/exercises", analyze: "/analyze", results: "/results", history: "/history", therapist: "/therapist", admin: "/admin/users", coach: "/coach", about: "/about", login: "/login", register: "/register", forgotPassword: "/forgot-password", resetPassword: "/reset-password", verifyEmail: "/verify-email", profile: "/profile" };
+const PAGE_PATHS = { home: "/", workspace: "/workspace", exercises: "/exercises", analyze: "/analyze", results: "/results", history: "/history", therapist: "/therapist", admin: "/admin/users", coach: "/coach", about: "/about", login: "/login", register: "/register", forgotPassword: "/forgot-password", resetPassword: "/reset-password", verifyEmail: "/verify-email", profile: "/profile" };
 function analysisErrorMessage(requestError, t) {
   const status = requestError.response?.status;
   const apiError = requestError.response?.data;
@@ -42,6 +44,10 @@ function analysisErrorMessage(requestError, t) {
 
 function isSubjectSwitchError(requestError) {
   return requestError.response?.status === 422 && requestError.response?.data?.error_code === "SUBJECT_SWITCH_DETECTED";
+}
+
+function LazyPage({ children }) {
+  return <Suspense fallback={<div className="grid min-h-[50vh] place-items-center text-sm font-semibold text-slate-500">Loading workspace…</div>}>{children}</Suspense>;
 }
 
 function initialPage() {
@@ -73,6 +79,12 @@ function AppContent() {
   }, []);
 
   useEffect(() => {
+    function handlePopState() { setPage(initialPage()); }
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
+
+  useEffect(() => {
     if (!file || typeof URL.createObjectURL !== "function") { setOriginalVideoUrl(null); return undefined; }
     const url = URL.createObjectURL(file);
     setOriginalVideoUrl(url);
@@ -90,7 +102,7 @@ function AppContent() {
 
   async function analyzeSelectedExercise(selectedExercise, continueOnSubjectWarning) {
     const data = await analyzeExerciseVideo(selectedExercise, file, { ...options, continue_on_subject_warning: continueOnSubjectWarning }, setProgress);
-    setReport(data); setCanContinueAfterWarning(false); setPage("results");
+    setReport(data); setCanContinueAfterWarning(false); navigate("results");
   }
 
   async function handleSubmit(event, overrides = {}) {
@@ -121,24 +133,25 @@ function AppContent() {
     } finally { setIsLoading(false); }
   }
 
-  function handleAnalyzeAnother() { setFile(null); setFileSource(null); setReport(null); setError(""); setCanContinueAfterWarning(false); setProgress(0); setPage("analyze"); }
+  function handleAnalyzeAnother() { setFile(null); setFileSource(null); setReport(null); setError(""); setCanContinueAfterWarning(false); setProgress(0); navigate("analyze"); }
 
   return <AppShell currentPage={page} hasReport={Boolean(report)} onNavigate={navigate} user={user}>
     {page === "home" && <Home onStart={() => navigate("analyze")} />}
+    {page === "workspace" && (user ? <WorkspaceOverview onNavigate={navigate} /> : <Login onSuccess={() => navigate("workspace")} onRegister={() => navigate("register")} onForgotPassword={() => navigate("forgotPassword")} onVerifyEmail={() => navigate("verifyEmail")} />)}
     {page === "exercises" && <ExerciseLibrary exercises={exercises} onAnalyze={(value) => { setExercise(value); setFile(null); setFileSource(null); navigate("analyze"); }} />}
     {page === "analyze" && <UploadSquat exercises={exercises} exercise={exercise} onExerciseChange={(value) => { setExercise(value); setFile(null); setFileSource(null); setError(""); setCanContinueAfterWarning(false); }} file={file} fileSource={fileSource} error={error} canContinueAfterWarning={canContinueAfterWarning} isLoading={isLoading} progress={progress} options={options} onOptionsChange={setOptions} onFileChange={handleFileChange} onFileSelect={selectFile} onRecognitionConfirm={(exerciseId, recognizedFile) => { setExercise(exerciseId); selectFile(recognizedFile, "recognition"); }} onSubmit={handleSubmit} />}
-    {page === "results" && <Results report={report} originalVideoUrl={originalVideoUrl} onAnalyzeAnother={handleAnalyzeAnother} onGoAnalyze={() => setPage("analyze")} onViewHistory={() => setPage("history")} />}
+    {page === "results" && <Results report={report} originalVideoUrl={originalVideoUrl} onAnalyzeAnother={handleAnalyzeAnother} onGoAnalyze={() => navigate("analyze")} onViewHistory={() => navigate("history")} />}
     {page === "history" && <SessionHistory />}
-    {page === "therapist" && <TherapistDashboard />}
-    {page === "admin" && (user?.role === "super_admin" ? <SuperAdminDashboard /> : <Home onStart={() => navigate("analyze")} />)}
-    {page === "coach" && ENABLE_REALTIME_COACHING_SPIKE && <RealtimeCoachingSpike onConfirmSuggestion={(exerciseId, recognizedFile) => { setExercise(exerciseId); selectFile(recognizedFile, "recognition"); navigate("analyze"); }} />}
+    {page === "therapist" && <LazyPage><TherapistDashboard /></LazyPage>}
+    {page === "admin" && (user?.role === "super_admin" ? <LazyPage><SuperAdminDashboard /></LazyPage> : <WorkspaceOverview onNavigate={navigate} />)}
+    {page === "coach" && ENABLE_REALTIME_COACHING_SPIKE && <LazyPage><RealtimeCoachingSpike onConfirmSuggestion={(exerciseId, recognizedFile) => { setExercise(exerciseId); selectFile(recognizedFile, "recognition"); navigate("analyze"); }} /></LazyPage>}
     {page === "about" && <About onStart={() => navigate("analyze")} />}
-    {page === "login" && <Login onSuccess={() => navigate("profile")} onRegister={() => navigate("register")} onForgotPassword={() => navigate("forgotPassword")} onVerifyEmail={() => navigate("verifyEmail")} />}
+    {page === "login" && <Login onSuccess={() => navigate("workspace")} onRegister={() => navigate("register")} onForgotPassword={() => navigate("forgotPassword")} onVerifyEmail={() => navigate("verifyEmail")} />}
     {page === "register" && <Register onLogin={() => navigate("login")} />}
     {page === "forgotPassword" && <ForgotPassword onLogin={() => navigate("login")} />}
     {page === "resetPassword" && <ResetPassword onLogin={() => navigate("login")} />}
     {page === "verifyEmail" && <VerifyEmail onLogin={() => navigate("login")} />}
-    {page === "profile" && (user ? <Profile onLogout={() => navigate("home")} /> : <Login onSuccess={() => navigate("profile")} onRegister={() => navigate("register")} onForgotPassword={() => navigate("forgotPassword")} onVerifyEmail={() => navigate("verifyEmail")} />)}
+    {page === "profile" && (user ? <Profile onLogout={() => navigate("home")} /> : <Login onSuccess={() => navigate("workspace")} onRegister={() => navigate("register")} onForgotPassword={() => navigate("forgotPassword")} onVerifyEmail={() => navigate("verifyEmail")} />)}
   </AppShell>;
 }
 

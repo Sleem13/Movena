@@ -5,14 +5,14 @@ export default {
     extend: {
       colors: {
         clinical: {
-          ink: "#10243e",
-          navy: "#173b63",
-          blue: "#2563eb",
+          ink: "#071b4a",
+          navy: "#071b4a",
+          blue: "#0b5ed7",
           sky: "#eaf3ff",
           teal: "#0f8f83",
           mint: "#e8f8f4",
-          line: "#dce6ee",
-          panel: "#f7fafc",
+          line: "#dce3ee",
+          panel: "#f8fafc",
         },
       },
       borderRadius: {
