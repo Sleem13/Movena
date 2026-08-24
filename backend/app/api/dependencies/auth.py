@@ -34,6 +34,8 @@ def optional_current_user(
     user = db.scalar(select(User).where(User.user_id == payload["sub"]))
     if user is None:
         raise AuthError(401, "INVALID_TOKEN", "The access token is invalid.")
+    if payload.get("ver", 0) != user.token_version:
+        raise AuthError(401, "TOKEN_REVOKED", "This session is no longer valid. Please log in again.")
     if not user.is_active:
         raise AuthError(403, "USER_INACTIVE", "This user account is inactive.")
     return user
@@ -51,7 +53,7 @@ def require_active_user(user: User = Depends(get_current_user)) -> User:
 def require_any_role(roles: set[str | UserRole]) -> Callable:
     allowed = {role.value if isinstance(role, UserRole) else role for role in roles}
     def dependency(user: User = Depends(get_current_user)) -> User:
-        if user.role not in allowed:
+        if user.role != UserRole.super_admin.value and user.role not in allowed:
             raise AuthError(403, "INSUFFICIENT_ROLE", "You do not have permission to view this resource.")
         return user
     return dependency
@@ -62,6 +64,7 @@ def require_role(role: str | UserRole) -> Callable:
 
 
 require_admin = require_role(UserRole.admin)
+require_super_admin = require_role(UserRole.super_admin)
 require_therapist = require_any_role({UserRole.therapist, UserRole.admin})
 require_patient_or_therapist = require_any_role({UserRole.patient, UserRole.therapist, UserRole.admin})
 

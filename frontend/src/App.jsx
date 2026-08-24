@@ -11,6 +11,7 @@ import Register from "./pages/Register.jsx";
 import Profile from "./pages/Profile.jsx";
 import ExerciseLibrary from "./pages/ExerciseLibrary.jsx";
 import RealtimeCoachingSpike from "./pages/RealtimeCoachingSpike.jsx";
+import SuperAdminDashboard from "./pages/SuperAdminDashboard.jsx";
 import { EXERCISES } from "./data/exercises.js";
 import { AuthProvider, useAuth } from "./context/AuthContext.jsx";
 import { LocaleProvider, useLocale } from "./i18n/LocaleContext.jsx";
@@ -20,7 +21,7 @@ import { analyzeExerciseVideo, getExercises } from "./services/api.js";
 // Keep the default request on the low-latency path. Video encoding, PDF
 // generation, and chart payloads remain available as explicit opt-ins.
 const DEFAULT_OPTIONS = { include_overlay: false, generate_report: false, include_ml: false, include_frame_data: false, save_session: false };
-const PAGE_PATHS = { home: "/", exercises: "/exercises", analyze: "/analyze", results: "/results", history: "/history", therapist: "/therapist", coach: "/coach", about: "/about", login: "/login", register: "/register", profile: "/profile" };
+const PAGE_PATHS = { home: "/", exercises: "/exercises", analyze: "/analyze", results: "/results", history: "/history", therapist: "/therapist", admin: "/admin/users", coach: "/coach", about: "/about", login: "/login", register: "/register", profile: "/profile" };
 function analysisErrorMessage(requestError, t) {
   const status = requestError.response?.status;
   const apiError = requestError.response?.data;
@@ -43,6 +44,7 @@ function isSubjectSwitchError(requestError) {
 function initialPage() {
   const path = window.location.pathname;
   if (path.startsWith("/therapist")) return "therapist";
+  if (path.startsWith("/admin")) return "admin";
   if (path.startsWith("/coach")) return ENABLE_REALTIME_COACHING_SPIKE ? "coach" : "home";
   return Object.entries(PAGE_PATHS).find(([, value]) => value === path)?.[0] || "home";
 }
@@ -125,6 +127,7 @@ function AppContent() {
     {page === "results" && <Results report={report} originalVideoUrl={originalVideoUrl} onAnalyzeAnother={handleAnalyzeAnother} onGoAnalyze={() => setPage("analyze")} onViewHistory={() => setPage("history")} />}
     {page === "history" && <SessionHistory />}
     {page === "therapist" && <TherapistDashboard />}
+    {page === "admin" && (user?.role === "super_admin" ? <SuperAdminDashboard /> : <Home onStart={() => navigate("analyze")} />)}
     {page === "coach" && ENABLE_REALTIME_COACHING_SPIKE && <RealtimeCoachingSpike onConfirmSuggestion={(exerciseId, recognizedFile) => { setExercise(exerciseId); selectFile(recognizedFile, "recognition"); navigate("analyze"); }} />}
     {page === "about" && <About onStart={() => navigate("analyze")} />}
     {page === "login" && <Login onSuccess={() => navigate("profile")} onRegister={() => navigate("register")} />}

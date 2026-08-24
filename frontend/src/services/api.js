@@ -176,4 +176,19 @@ export async function loginUser(payload) { return (await api.post("/api/v1/auth/
 export async function getCurrentUser() { return (await api.get("/api/v1/auth/me")).data; }
 export async function logoutUser() { return (await api.post("/api/v1/auth/logout")).data; }
 
+export async function listManagedUsers(params = {}) { return (await api.get("/api/v1/admin/users", { params })).data; }
+export async function getManagedUser(userId) { return (await api.get(`/api/v1/admin/users/${userId}`)).data; }
+export async function updateManagedUserStatus(userId, status, reason) {
+  return (await api.patch(`/api/v1/admin/users/${userId}/status`, { status, reason })).data;
+}
+export async function updateManagedUserRole(userId, role, reason) {
+  return (await api.patch(`/api/v1/admin/users/${userId}/role`, { role, reason })).data;
+}
+export async function resetManagedUserPassword(userId, newPassword, reason) {
+  return (await api.post(`/api/v1/admin/users/${userId}/password`, { new_password: newPassword, reason })).data;
+}
+export async function deleteManagedUser(userId, reason) {
+  return (await api.delete(`/api/v1/admin/users/${userId}`, { params: { reason } })).data;
+}
+
 export default api;

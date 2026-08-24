@@ -57,6 +57,17 @@ def init_db(bind: Engine | None = None) -> None:
     from app.db import models  # noqa: F401 - registers model metadata
     target = bind or engine
     Base.metadata.create_all(target)
+    if "users" in inspect(target).get_table_names():
+        user_columns = {column["name"] for column in inspect(target).get_columns("users")}
+        user_additions = {
+            "account_status": "VARCHAR(32) NOT NULL DEFAULT 'active'",
+            "is_protected": "BOOLEAN NOT NULL DEFAULT false",
+            "token_version": "INTEGER NOT NULL DEFAULT 0",
+        }
+        for column, definition in user_additions.items():
+            if column not in user_columns:
+                with target.begin() as connection:
+                    connection.execute(text(f"ALTER TABLE users ADD COLUMN {column} {definition}"))
     # Development-only compatibility migration until versioned Alembic migrations are introduced.
     if target.dialect.name == "sqlite" and "analysis_sessions" in inspect(target).get_table_names():
         columns = {column["name"] for column in inspect(target).get_columns("analysis_sessions")}

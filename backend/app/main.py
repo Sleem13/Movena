@@ -22,6 +22,7 @@ from app.api.routes.exercises import router as exercises_router
 from app.api.routes.realtime_coaching import router as realtime_coaching_router
 from app.api.v1.therapist import router as therapist_router
 from app.api.v1.auth import router as auth_router
+from app.api.v1.admin import router as admin_router
 from app.api.dependencies.auth import AuthError
 from app.core.config import get_settings
 from app.core.cors import cors_middleware_options
@@ -45,6 +46,10 @@ if os.getenv("SEED_ADMIN_ON_START", "").strip().lower() in {"1", "true", "yes", 
     from app.services.admin_seed_service import seed_admin_from_environment
 
     seed_admin_from_environment(reset=True)
+if os.getenv("SEED_SUPER_ADMIN_ON_START", "").strip().lower() in {"1", "true", "yes", "on"}:
+    from app.services.admin_seed_service import seed_super_admin_from_environment
+
+    seed_super_admin_from_environment(reset=False)
 
 app = FastAPI(
     title=settings.project_name,
@@ -104,6 +109,7 @@ if settings.enable_exercise_recognition:
 app.include_router(exercises_router)
 app.include_router(realtime_coaching_router)
 app.include_router(auth_router)
+app.include_router(admin_router)
 if settings.enable_session_history:
     app.include_router(sessions_router)
 if settings.enable_therapist_dashboard:

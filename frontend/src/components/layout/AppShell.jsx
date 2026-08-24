@@ -10,6 +10,7 @@ import {
   Stethoscope,
   UploadCloud,
   User,
+  ShieldCheck,
 } from "lucide-react";
 import { ENABLE_REALTIME_COACHING_SPIKE } from "../../config/featureFlags.js";
 import LanguageSelector from "../../i18n/LanguageSelector.jsx";
@@ -25,8 +26,9 @@ const items = [
     id: "therapist",
     labelKey: "nav.therapist",
     icon: Stethoscope,
-    roles: ["therapist", "admin"],
+    roles: ["therapist", "admin", "super_admin"],
   },
+  { id: "admin", labelKey: "nav.admin", icon: ShieldCheck, roles: ["super_admin"] },
   {
     id: "coach",
     labelKey: "nav.coach",

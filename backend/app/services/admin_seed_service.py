@@ -35,6 +35,8 @@ def seed_admin(
         if existing and not reset:
             return existing, False
         if existing:
+            if existing.is_protected or existing.role == "super_admin":
+                raise ValueError("The configured admin email belongs to a protected super-administrator account.")
             existing.password_hash = get_password_hash(password)
             existing.full_name = full_name
             existing.role = "admin"
@@ -60,6 +62,44 @@ def seed_admin(
             session.close()
 
 
+def seed_super_admin(
+    email: str,
+    password: str,
+    full_name: str | None,
+    *,
+    reset: bool = False,
+    db: Session | None = None,
+) -> tuple[User, bool]:
+    """Provision the protected root account outside the public/admin APIs."""
+    validate_admin_password(password)
+    owns_session = db is None
+    session = db or SessionLocal()
+    try:
+        normalized_email = email.lower().strip()
+        existing = session.scalar(select(User).where(User.email == normalized_email))
+        if existing and not reset:
+            if existing.role != "super_admin" or not existing.is_protected:
+                raise ValueError("The configured super-admin email belongs to an unprotected account; use --reset to promote it explicitly.")
+            return existing, False
+        user = existing or User(user_id=str(uuid4()), email=normalized_email, password_hash="")
+        user.password_hash = get_password_hash(password)
+        user.full_name = full_name
+        user.role = "super_admin"
+        user.is_active = True
+        user.is_verified = True
+        user.account_status = "active"
+        user.is_protected = True
+        user.token_version = (user.token_version or 0) + (1 if existing else 0)
+        if existing is None:
+            session.add(user)
+        session.commit()
+        session.refresh(user)
+        return user, True
+    finally:
+        if owns_session:
+            session.close()
+
+
 def seed_admin_from_environment(
     *,
     reset: bool = False,
@@ -76,3 +116,21 @@ def seed_admin_from_environment(
     if not email or not password:
         raise ValueError("ADMIN_EMAIL and ADMIN_PASSWORD are required when SEED_ADMIN_ON_START is enabled.")
     return seed_admin(email, password, name, reset=reset, db=db)
+
+
+def seed_super_admin_from_environment(
+    *,
+    reset: bool = False,
+    db: Session | None = None,
+    environ: Mapping[str, str] | None = None,
+) -> tuple[User, bool] | None:
+    values = environ if environ is not None else os.environ
+    enabled = values.get("SEED_SUPER_ADMIN_ON_START", "").strip().lower() in {"1", "true", "yes", "on"}
+    if not enabled:
+        return None
+    email = values.get("SUPER_ADMIN_EMAIL", "").strip()
+    password = values.get("SUPER_ADMIN_PASSWORD", "")
+    name = values.get("SUPER_ADMIN_FULL_NAME", "Super Administrator")
+    if not email or not password:
+        raise ValueError("SUPER_ADMIN_EMAIL and SUPER_ADMIN_PASSWORD are required when SEED_SUPER_ADMIN_ON_START is enabled.")
+    return seed_super_admin(email, password, name, reset=reset, db=db)

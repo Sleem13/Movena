@@ -20,13 +20,17 @@ def verify_password(password: str, password_hash: str) -> bool:
         return False
 
 
-def create_access_token(user_id: str, role: str, expires_minutes: int | None = None) -> str:
+def create_access_token(user_id: str, role: str, expires_minutes: int | None = None, token_version: int = 0) -> str:
     settings = get_settings()
     if settings.secret_key == "change-me-in-production":
         logger.warning("Default development SECRET_KEY is active; do not use it in production.")
     now = datetime.now(timezone.utc)
     expiry = now + timedelta(minutes=expires_minutes or settings.access_token_expire_minutes)
-    return jwt.encode({"sub": user_id, "role": role, "iat": now, "exp": expiry}, settings.secret_key, algorithm=settings.jwt_algorithm)
+    return jwt.encode(
+        {"sub": user_id, "role": role, "ver": token_version, "iat": now, "exp": expiry},
+        settings.secret_key,
+        algorithm=settings.jwt_algorithm,
+    )
 
 
 def decode_access_token(token: str) -> dict:

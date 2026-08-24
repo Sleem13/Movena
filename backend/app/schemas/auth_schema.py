@@ -5,6 +5,7 @@ from pydantic import BaseModel, Field, field_validator
 
 
 class UserRole(str, Enum):
+    super_admin = "super_admin"
     admin = "admin"
     therapist = "therapist"
     patient = "patient"
@@ -38,6 +39,8 @@ class UserSummary(BaseModel):
     role: UserRole
     is_active: bool
     is_verified: bool
+    account_status: str = "active"
+    is_protected: bool = False
 
     model_config = {"from_attributes": True}
 

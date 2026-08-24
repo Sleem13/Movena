@@ -227,6 +227,19 @@ Never place server secrets in `VITE_*` or `EXPO_PUBLIC_*`. Those values are incl
 
 Backend configuration includes database, authentication, CORS, upload-size, artifact, report, overlay, history, and analysis-authentication controls. Use `.env.example` and `.env.staging.example` as the source templates.
 
+### Protected super administrator
+
+Provision the root account from server-only environment variables. Never expose these values through `VITE_*` or commit them:
+
+```powershell
+$env:SUPER_ADMIN_EMAIL="owner@example.com"
+$env:SUPER_ADMIN_PASSWORD="use-a-unique-long-password"
+$env:SUPER_ADMIN_FULL_NAME="Application Owner"
+.\.venv\Scripts\python.exe scripts\seed_super_admin.py
+```
+
+Use `--reset` only for an intentional credential reset or promotion. Once signed in, the account-management console is available at `/admin/users`. The protected account cannot be changed, paused, demoted, password-reset, or deleted through the application API. Account actions against other users revoke affected sessions and create audit-log records.
+
 ## Dataset and model notes
 
 - Split video data by participant, not by frame, to reduce leakage.
