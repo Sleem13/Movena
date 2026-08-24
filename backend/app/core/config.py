@@ -85,6 +85,17 @@ class Settings(BaseModel):
     secret_key: str = "change-me-in-production"
     access_token_expire_minutes: int = 60
     jwt_algorithm: str = "HS256"
+    frontend_url: str = "http://localhost:5173"
+    email_delivery_mode: str = "console"
+    email_from: str = "no-reply@physiovision.local"
+    smtp_host: str = ""
+    smtp_port: int = 587
+    smtp_username: str = ""
+    smtp_password: str = ""
+    smtp_use_tls: bool = True
+    email_verification_expire_minutes: int = 24 * 60
+    password_reset_expire_minutes: int = 30
+    auth_email_resend_cooldown_seconds: int = 60
 
     @classmethod
     def from_environment(cls) -> "Settings":
@@ -135,6 +146,17 @@ class Settings(BaseModel):
             secret_key=os.getenv("SECRET_KEY", "change-me-in-production"),
             access_token_expire_minutes=int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "60")),
             jwt_algorithm=os.getenv("JWT_ALGORITHM", "HS256"),
+            frontend_url=os.getenv("FRONTEND_URL", "http://localhost:5173").rstrip("/"),
+            email_delivery_mode=os.getenv("EMAIL_DELIVERY_MODE", "console").strip().lower(),
+            email_from=os.getenv("EMAIL_FROM", "no-reply@physiovision.local").strip(),
+            smtp_host=os.getenv("SMTP_HOST", "").strip(),
+            smtp_port=int(os.getenv("SMTP_PORT", "587")),
+            smtp_username=os.getenv("SMTP_USERNAME", "").strip(),
+            smtp_password=os.getenv("SMTP_PASSWORD", ""),
+            smtp_use_tls=_bool("SMTP_USE_TLS", True),
+            email_verification_expire_minutes=int(os.getenv("EMAIL_VERIFICATION_EXPIRE_MINUTES", str(24 * 60))),
+            password_reset_expire_minutes=int(os.getenv("PASSWORD_RESET_EXPIRE_MINUTES", "30")),
+            auth_email_resend_cooldown_seconds=int(os.getenv("AUTH_EMAIL_RESEND_COOLDOWN_SECONDS", "60")),
         )
 
     @property
@@ -175,6 +197,10 @@ class Settings(BaseModel):
             issues.append("ENABLE_PUBLIC_DEMO_MODE must be false")
         if not self.enable_subject_continuity_guard:
             issues.append("ENABLE_SUBJECT_CONTINUITY_GUARD must be true")
+        if self.email_delivery_mode != "smtp" or not self.smtp_host or "@" not in self.email_from:
+            issues.append("production email verification requires EMAIL_DELIVERY_MODE=smtp, SMTP_HOST, and a valid EMAIL_FROM")
+        if not self.frontend_url.startswith("https://"):
+            issues.append("FRONTEND_URL must use HTTPS for verification and password-reset links")
         if issues:
             raise RuntimeError("Unsafe deployment configuration: " + "; ".join(issues))
 

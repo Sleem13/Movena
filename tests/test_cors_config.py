@@ -42,6 +42,10 @@ def test_vercel_staging_origin_passes_authenticated_upload_preflight():
         cors_allowed_origins=[RENDER_ORIGIN, VERCEL_ORIGIN],
         require_auth_for_analysis=True,
         enable_public_demo_mode=False,
+        email_delivery_mode="smtp",
+        smtp_host="smtp.example.com",
+        email_from="no-reply@example.com",
+        frontend_url="https://app.example.com",
     )
     settings.validate_deployment_safety()
 

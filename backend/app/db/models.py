@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 
+import json
+
 from sqlalchemy import Boolean, DateTime, Float, ForeignKey, Integer, String, Text, text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -70,8 +72,24 @@ class User(Base):
     account_status: Mapped[str] = mapped_column(String(32), default="active", server_default="active", nullable=False)
     is_protected: Mapped[bool] = mapped_column(Boolean, default=False, server_default=text("false"), nullable=False)
     token_version: Mapped[int] = mapped_column(Integer, default=0, server_default="0", nullable=False)
+    permissions_json: Mapped[str] = mapped_column(Text, default="[]", server_default="[]", nullable=False)
+    email_verified_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    verification_token_hash: Mapped[str | None] = mapped_column(String(64), unique=True, index=True)
+    verification_token_expires: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    verification_sent_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    reset_password_token_hash: Mapped[str | None] = mapped_column(String(64), unique=True, index=True)
+    reset_password_expires: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    reset_password_sent_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now, nullable=False)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now, onupdate=utc_now, nullable=False)
+
+    @property
+    def permissions(self) -> list[str]:
+        try:
+            value = json.loads(self.permissions_json)
+            return value if isinstance(value, list) else []
+        except (TypeError, json.JSONDecodeError):
+            return []
 
 
 class UserConsent(Base):

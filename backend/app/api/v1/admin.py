@@ -11,6 +11,7 @@ from sqlalchemy.orm import Session
 
 from app.api.dependencies.auth import require_super_admin
 from app.core.security import get_password_hash
+from app.core.authorization import permissions_json_for_role
 from app.db.crud import to_summary
 from app.db.database import get_db
 from app.db.models import AnalysisSession, AuditLog, User, UserConsent
@@ -139,6 +140,7 @@ def update_role(user_id: str, data: AccountRoleUpdate, actor: User = Depends(req
         return error("ROLE_NOT_ALLOWED", "Additional super administrators must be provisioned through the protected seed process.", 403)
     previous = target.role
     target.role = data.role.value
+    target.permissions_json = permissions_json_for_role(target.role)
     if previous != target.role:
         target.token_version += 1
     audit(db, actor, "user.role_changed", target, {"from": previous, "to": target.role, "reason": data.reason})

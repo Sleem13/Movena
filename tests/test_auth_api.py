@@ -17,6 +17,7 @@ def test_register_login_me_and_admin_registration_blocked(tmp_path):
         assert denied.status_code==403
         created=client.post("/api/v1/auth/register",json={"email":"person@example.com","password":"StrongPassword123"})
         assert created.status_code==201 and "password_hash" not in created.json()
+        db=factory();person=db.query(User).filter(User.email=="person@example.com").one();person.is_verified=True;db.commit();db.close()
         logged=client.post("/api/v1/auth/login",json={"email":"person@example.com","password":"StrongPassword123"})
         assert logged.status_code==200 and logged.json()["access_token"]
         assert client.get("/api/v1/auth/me").json()["error_code"]=="AUTH_REQUIRED"

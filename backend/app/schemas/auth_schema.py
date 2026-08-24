@@ -41,6 +41,7 @@ class UserSummary(BaseModel):
     is_verified: bool
     account_status: str = "active"
     is_protected: bool = False
+    permissions: list[str] = Field(default_factory=list)
 
     model_config = {"from_attributes": True}
 
@@ -61,3 +62,28 @@ class ConsentStatus(BaseModel):
     accepted: bool
     version: str
     notes: str | None = None
+
+
+class EmailRequest(BaseModel):
+    email: str
+
+    @field_validator("email")
+    @classmethod
+    def normalize_email(cls, value: str) -> str:
+        value = value.strip().lower()
+        if "@" not in value or value.startswith("@") or value.endswith("@"):
+            raise ValueError("A valid email address is required.")
+        return value
+
+
+class TokenRequest(BaseModel):
+    token: str = Field(min_length=32, max_length=512)
+
+
+class PasswordResetRequest(TokenRequest):
+    new_password: str = Field(min_length=12, max_length=128)
+
+
+class AuthMessageResponse(BaseModel):
+    status: str = "success"
+    message: str

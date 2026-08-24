@@ -104,7 +104,7 @@ def test_coaching_websocket_requires_auth_and_persists_summary(tmp_path, monkeyp
     factory = sessionmaker(bind=engine, expire_on_commit=False)
     monkeypatch.setattr("app.api.routes.realtime_coaching.SessionLocal", factory)
     db = factory()
-    db.add(User(user_id="coach-user", email="coach@example.com", password_hash=get_password_hash("StrongPassword123"), role="patient"))
+    db.add(User(user_id="coach-user", email="coach@example.com", password_hash=get_password_hash("StrongPassword123"), role="patient", is_verified=True))
     db.commit()
     db.close()
 

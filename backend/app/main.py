@@ -45,7 +45,8 @@ if settings.enable_exercise_recognition:
 if os.getenv("SEED_ADMIN_ON_START", "").strip().lower() in {"1", "true", "yes", "on"}:
     from app.services.admin_seed_service import seed_admin_from_environment
 
-    seed_admin_from_environment(reset=True)
+    # Startup seeding is intentionally non-destructive: deployments never rewrite an existing role.
+    seed_admin_from_environment(reset=False)
 if os.getenv("SEED_SUPER_ADMIN_ON_START", "").strip().lower() in {"1", "true", "yes", "on"}:
     from app.services.admin_seed_service import seed_super_admin_from_environment
 

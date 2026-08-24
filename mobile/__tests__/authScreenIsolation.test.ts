@@ -16,8 +16,8 @@ describe("auth and upload warning isolation", () => {
   it("shows account-specific display name, email, and password validation", () => {
     expect(validateRegistrationInput("", "person@example.com", "password")).toMatch(/display name/i);
     expect(validateRegistrationInput("Demo", "not-an-email", "password")).toMatch(/valid email/i);
-    expect(validateRegistrationInput("Demo", "person@example.com", "short")).toMatch(/at least 8 characters/i);
-    expect(validateRegistrationInput("Demo", "person@example.com", "password")).toBeNull();
+    expect(validateRegistrationInput("Demo", "person@example.com", "short")).toMatch(/at least 12 characters/i);
+    expect(validateRegistrationInput("Demo", "person@example.com", "StrongPassword123")).toBeNull();
   });
 
   it("keeps the missing-video warning on the Upload screen", () => {

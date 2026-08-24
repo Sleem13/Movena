@@ -1,10 +1,11 @@
-import { ArrowRight, LockKeyhole, Mail, ShieldAlert, Sparkles } from "lucide-react";
+import { ArrowRight, Mail, ShieldAlert, Sparkles } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext.jsx";
 import { Alert, Button, Card } from "../components/common/UI.jsx";
 import { useLocale } from "../i18n/LocaleContext.jsx";
+import PasswordInput from "../components/auth/PasswordInput.jsx";
 
-export default function Login({ onSuccess, onRegister }) {
+export default function Login({ onSuccess, onRegister, onForgotPassword, onVerifyEmail }) {
   const { login } = useAuth();
   const { t } = useLocale();
   const [error, setError] = useState("");
@@ -58,13 +59,11 @@ export default function Login({ onSuccess, onRegister }) {
               <input name="email" type="text" autoComplete="username" required className="w-full rounded-xl border border-slate-200 bg-slate-50 py-3 pl-11 pr-3 text-sm text-clinical-ink placeholder:text-slate-400" placeholder="Username or email" />
             </span>
           </label>
-          <label className="grid gap-2 text-sm font-semibold text-slate-700">
-            {t("common.password")}
-            <span className="relative">
-              <LockKeyhole className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-              <input name="password" type="password" autoComplete="current-password" required className="w-full rounded-xl border border-slate-200 bg-slate-50 py-3 pl-11 pr-3 text-sm text-clinical-ink" />
-            </span>
-          </label>
+          <PasswordInput label={t("common.password")} name="password" autoComplete="current-password" />
+          <div className="-mt-2 flex justify-between gap-3 text-xs font-semibold">
+            <button type="button" onClick={onVerifyEmail} className="text-slate-500 hover:text-clinical-blue">{t("auth.resendVerification")}</button>
+            <button type="button" onClick={onForgotPassword} className="text-clinical-blue hover:text-blue-700">{t("auth.forgotPassword")}</button>
+          </div>
           <Button className="mt-1 w-full" disabled={submitting}>
             {submitting ? t("auth.loggingIn") : t("auth.login")}
             {!submitting && <ArrowRight size={17} />}

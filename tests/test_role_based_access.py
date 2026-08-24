@@ -7,7 +7,7 @@ from app.main import app
 
 def test_therapist_endpoint_rejects_patient_role(tmp_path):
     engine=create_database_engine(f"sqlite:///{(tmp_path/'roles.db').as_posix()}");Base.metadata.create_all(engine);factory=sessionmaker(bind=engine,expire_on_commit=False)
-    db=factory();db.add(User(user_id="patient-1",email="p@example.com",password_hash=get_password_hash("StrongPassword123"),role="patient"));db.commit();db.close()
+    db=factory();db.add(User(user_id="patient-1",email="p@example.com",password_hash=get_password_hash("StrongPassword123"),role="patient",is_verified=True));db.commit();db.close()
     def override():
         s=factory()
         try:yield s

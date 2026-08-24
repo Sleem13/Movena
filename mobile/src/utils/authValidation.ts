@@ -1,6 +1,6 @@
 export type AuthRequestError = { code?: string; message?: string };
 
-export const MIN_AUTH_PASSWORD_LENGTH = 8;
+export const MIN_AUTH_PASSWORD_LENGTH = 12;
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -35,6 +35,8 @@ export function authRequestErrorMessage(error: AuthRequestError, action: "create
       return "An account with this email already exists.";
     case "INVALID_CREDENTIALS":
       return "The username/email or password is incorrect.";
+    case "EMAIL_NOT_VERIFIED":
+      return "Verify your email before logging in. You can request a new verification link below.";
     default:
       return action === "create" ? "Account creation failed. Please try again." : "Login failed. Check your account details and try again.";
   }

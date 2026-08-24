@@ -11,6 +11,7 @@ import {
   updateManagedUserRole,
   updateManagedUserStatus,
 } from "../services/api.js";
+import PasswordInput from "../components/auth/PasswordInput.jsx";
 
 const ROLES = ["admin", "therapist", "patient", "researcher_demo"];
 const STATUS_TONES = { active: "teal", paused: "amber", suspended: "red" };
@@ -66,11 +67,8 @@ function UserDetail({ user, reason, onReasonChange, busy, onAction }) {
             </div>
           </div>
           <div className="rounded-2xl border border-slate-200 p-4">
-            <p className="text-sm font-semibold text-slate-700">Set a new password</p>
-            <div className="mt-2 flex flex-col gap-2 sm:flex-row">
-              <input type="password" autoComplete="new-password" value={password} onChange={(event) => setPassword(event.target.value)} minLength={12} className="min-h-11 flex-1 rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm" placeholder="At least 12 characters" />
-              <Button disabled={busy || password.length < 12 || reason.trim().length < 3} onClick={async () => { await onAction("password", password); setPassword(""); }}><KeyRound size={16} />Change password</Button>
-            </div>
+            <PasswordInput label="Set a new password" name="managed-password" autoComplete="new-password" value={password} onChange={(event) => setPassword(event.target.value)} minLength={12} placeholder="At least 12 characters" />
+            <Button className="mt-3" disabled={busy || password.length < 12 || reason.trim().length < 3} onClick={async () => { await onAction("password", password); setPassword(""); }}><KeyRound size={16} />Change password</Button>
           </div>
           <Button variant="ghost" className="text-red-700 hover:bg-red-50 hover:text-red-800" disabled={busy || reason.trim().length < 3} onClick={() => onAction("delete")}><Trash2 size={16} />Delete account</Button>
         </>

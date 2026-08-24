@@ -10,6 +10,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.core.security import get_password_hash
+from app.core.authorization import permissions_json_for_role
 from app.db.database import SessionLocal
 from app.db.models import User
 
@@ -40,6 +41,7 @@ def seed_admin(
             existing.password_hash = get_password_hash(password)
             existing.full_name = full_name
             existing.role = "admin"
+            existing.permissions_json = permissions_json_for_role("admin")
             existing.is_active = True
             existing.is_verified = True
             user = existing
@@ -50,6 +52,7 @@ def seed_admin(
                 password_hash=get_password_hash(password),
                 full_name=full_name,
                 role="admin",
+                permissions_json=permissions_json_for_role("admin"),
                 is_active=True,
                 is_verified=True,
             )
@@ -85,6 +88,7 @@ def seed_super_admin(
         user.password_hash = get_password_hash(password)
         user.full_name = full_name
         user.role = "super_admin"
+        user.permissions_json = permissions_json_for_role("super_admin")
         user.is_active = True
         user.is_verified = True
         user.account_status = "active"

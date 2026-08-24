@@ -63,11 +63,29 @@ def init_db(bind: Engine | None = None) -> None:
             "account_status": "VARCHAR(32) NOT NULL DEFAULT 'active'",
             "is_protected": "BOOLEAN NOT NULL DEFAULT false",
             "token_version": "INTEGER NOT NULL DEFAULT 0",
+            "permissions_json": "TEXT NOT NULL DEFAULT '[]'",
+            "email_verified_at": "TIMESTAMP NULL",
+            "verification_token_hash": "VARCHAR(64) NULL",
+            "verification_token_expires": "TIMESTAMP NULL",
+            "verification_sent_at": "TIMESTAMP NULL",
+            "reset_password_token_hash": "VARCHAR(64) NULL",
+            "reset_password_expires": "TIMESTAMP NULL",
+            "reset_password_sent_at": "TIMESTAMP NULL",
         }
         for column, definition in user_additions.items():
             if column not in user_columns:
                 with target.begin() as connection:
                     connection.execute(text(f"ALTER TABLE users ADD COLUMN {column} {definition}"))
+        # Backfill only missing permission snapshots. Existing role assignments are never changed.
+        from app.core.authorization import ROLE_PERMISSIONS, permissions_json_for_role
+        with target.begin() as connection:
+            for role in ROLE_PERMISSIONS:
+                connection.execute(
+                    text("UPDATE users SET permissions_json = :permissions WHERE role = :role AND (permissions_json IS NULL OR permissions_json = '[]')"),
+                    {"permissions": permissions_json_for_role(role), "role": role},
+                )
+            connection.execute(text("CREATE UNIQUE INDEX IF NOT EXISTS ix_users_verification_token_hash ON users (verification_token_hash)"))
+            connection.execute(text("CREATE UNIQUE INDEX IF NOT EXISTS ix_users_reset_password_token_hash ON users (reset_password_token_hash)"))
     # Development-only compatibility migration until versioned Alembic migrations are introduced.
     if target.dialect.name == "sqlite" and "analysis_sessions" in inspect(target).get_table_names():
         columns = {column["name"] for column in inspect(target).get_columns("analysis_sessions")}

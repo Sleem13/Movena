@@ -240,6 +240,21 @@ $env:SUPER_ADMIN_FULL_NAME="Application Owner"
 
 Use `--reset` only for an intentional credential reset or promotion. Once signed in, the account-management console is available at `/admin/users`. The protected account cannot be changed, paused, demoted, password-reset, or deleted through the application API. Account actions against other users revoke affected sessions and create audit-log records.
 
+### Email verification and password recovery
+
+New public accounts persist their selected non-privileged role and a stable permission snapshot in the `users` table. Startup seeding and compatibility migrations do not replace existing roles. New accounts must verify their email before login or protected API/WebSocket access.
+
+Development defaults to `EMAIL_DELIVERY_MODE=console`, which writes verification/reset links to backend logs. Staging and production fail closed unless SMTP is configured. Set `FRONTEND_URL`, `EMAIL_FROM`, `SMTP_HOST`, `SMTP_PORT`, `SMTP_USERNAME`, `SMTP_PASSWORD`, and `SMTP_USE_TLS` using server-only environment variables or a secret manager. The expiry and resend controls are `EMAIL_VERIFICATION_EXPIRE_MINUTES`, `PASSWORD_RESET_EXPIRE_MINUTES`, and `AUTH_EMAIL_RESEND_COOLDOWN_SECONDS`.
+
+Authentication action endpoints:
+
+- `POST /api/v1/auth/verify-email`
+- `POST /api/v1/auth/resend-verification`
+- `POST /api/v1/auth/forgot-password`
+- `POST /api/v1/auth/reset-password`
+
+Only SHA-256 token hashes are stored. Tokens expire, are invalidated after use, and password recovery revokes existing access tokens.
+
 ## Dataset and model notes
 
 - Split video data by participant, not by frame, to reduce leakage.

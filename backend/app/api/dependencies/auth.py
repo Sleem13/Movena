@@ -38,6 +38,8 @@ def optional_current_user(
         raise AuthError(401, "TOKEN_REVOKED", "This session is no longer valid. Please log in again.")
     if not user.is_active:
         raise AuthError(403, "USER_INACTIVE", "This user account is inactive.")
+    if not user.is_verified:
+        raise AuthError(403, "EMAIL_NOT_VERIFIED", "Verify your email before accessing this resource.")
     return user
 
 def get_current_user(user: User | None = Depends(optional_current_user)) -> User:

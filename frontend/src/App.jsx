@@ -12,6 +12,9 @@ import Profile from "./pages/Profile.jsx";
 import ExerciseLibrary from "./pages/ExerciseLibrary.jsx";
 import RealtimeCoachingSpike from "./pages/RealtimeCoachingSpike.jsx";
 import SuperAdminDashboard from "./pages/SuperAdminDashboard.jsx";
+import ForgotPassword from "./pages/ForgotPassword.jsx";
+import ResetPassword from "./pages/ResetPassword.jsx";
+import VerifyEmail from "./pages/VerifyEmail.jsx";
 import { EXERCISES } from "./data/exercises.js";
 import { AuthProvider, useAuth } from "./context/AuthContext.jsx";
 import { LocaleProvider, useLocale } from "./i18n/LocaleContext.jsx";
@@ -21,7 +24,7 @@ import { analyzeExerciseVideo, getExercises } from "./services/api.js";
 // Keep the default request on the low-latency path. Video encoding, PDF
 // generation, and chart payloads remain available as explicit opt-ins.
 const DEFAULT_OPTIONS = { include_overlay: false, generate_report: false, include_ml: false, include_frame_data: false, save_session: false };
-const PAGE_PATHS = { home: "/", exercises: "/exercises", analyze: "/analyze", results: "/results", history: "/history", therapist: "/therapist", admin: "/admin/users", coach: "/coach", about: "/about", login: "/login", register: "/register", profile: "/profile" };
+const PAGE_PATHS = { home: "/", exercises: "/exercises", analyze: "/analyze", results: "/results", history: "/history", therapist: "/therapist", admin: "/admin/users", coach: "/coach", about: "/about", login: "/login", register: "/register", forgotPassword: "/forgot-password", resetPassword: "/reset-password", verifyEmail: "/verify-email", profile: "/profile" };
 function analysisErrorMessage(requestError, t) {
   const status = requestError.response?.status;
   const apiError = requestError.response?.data;
@@ -130,9 +133,12 @@ function AppContent() {
     {page === "admin" && (user?.role === "super_admin" ? <SuperAdminDashboard /> : <Home onStart={() => navigate("analyze")} />)}
     {page === "coach" && ENABLE_REALTIME_COACHING_SPIKE && <RealtimeCoachingSpike onConfirmSuggestion={(exerciseId, recognizedFile) => { setExercise(exerciseId); selectFile(recognizedFile, "recognition"); navigate("analyze"); }} />}
     {page === "about" && <About onStart={() => navigate("analyze")} />}
-    {page === "login" && <Login onSuccess={() => navigate("profile")} onRegister={() => navigate("register")} />}
+    {page === "login" && <Login onSuccess={() => navigate("profile")} onRegister={() => navigate("register")} onForgotPassword={() => navigate("forgotPassword")} onVerifyEmail={() => navigate("verifyEmail")} />}
     {page === "register" && <Register onLogin={() => navigate("login")} />}
-    {page === "profile" && (user ? <Profile onLogout={() => navigate("home")} /> : <Login onSuccess={() => navigate("profile")} onRegister={() => navigate("register")} />)}
+    {page === "forgotPassword" && <ForgotPassword onLogin={() => navigate("login")} />}
+    {page === "resetPassword" && <ResetPassword onLogin={() => navigate("login")} />}
+    {page === "verifyEmail" && <VerifyEmail onLogin={() => navigate("login")} />}
+    {page === "profile" && (user ? <Profile onLogout={() => navigate("home")} /> : <Login onSuccess={() => navigate("profile")} onRegister={() => navigate("register")} onForgotPassword={() => navigate("forgotPassword")} onVerifyEmail={() => navigate("verifyEmail")} />)}
   </AppShell>;
 }
 

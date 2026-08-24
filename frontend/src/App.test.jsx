@@ -33,6 +33,16 @@ vi.mock("./services/api.js", () => ({
   getPatientProfile: vi.fn(),
   listPatientSessions: vi.fn(),
   getPatientProgress: vi.fn(),
+  verifyEmailToken: vi.fn(),
+  resendVerificationEmail: vi.fn(),
+  requestPasswordReset: vi.fn(),
+  submitPasswordReset: vi.fn(),
+  listManagedUsers: vi.fn(),
+  getManagedUser: vi.fn(),
+  updateManagedUserStatus: vi.fn(),
+  updateManagedUserRole: vi.fn(),
+  resetManagedUserPassword: vi.fn(),
+  deleteManagedUser: vi.fn(),
   artifactUrl: (path) => path ? `http://127.0.0.1:8000${path}` : null,
 }));
 

@@ -18,6 +18,10 @@ def safe_staging_settings(**overrides):
         "cors_allowed_origins": ["https://staging.example.com"],
         "require_auth_for_analysis": True,
         "enable_public_demo_mode": False,
+        "email_delivery_mode": "smtp",
+        "smtp_host": "smtp.example.com",
+        "email_from": "no-reply@example.com",
+        "frontend_url": "https://staging.example.com",
     }
     values.update(overrides)
     return Settings(**values)

@@ -175,6 +175,10 @@ export async function registerUser(payload) { return (await api.post("/api/v1/au
 export async function loginUser(payload) { return (await api.post("/api/v1/auth/login", payload)).data; }
 export async function getCurrentUser() { return (await api.get("/api/v1/auth/me")).data; }
 export async function logoutUser() { return (await api.post("/api/v1/auth/logout")).data; }
+export async function verifyEmailToken(token) { return (await api.post("/api/v1/auth/verify-email", { token })).data; }
+export async function resendVerificationEmail(email) { return (await api.post("/api/v1/auth/resend-verification", { email })).data; }
+export async function requestPasswordReset(email) { return (await api.post("/api/v1/auth/forgot-password", { email })).data; }
+export async function submitPasswordReset(token, newPassword) { return (await api.post("/api/v1/auth/reset-password", { token, new_password: newPassword })).data; }
 
 export async function listManagedUsers(params = {}) { return (await api.get("/api/v1/admin/users", { params })).data; }
 export async function getManagedUser(userId) { return (await api.get(`/api/v1/admin/users/${userId}`)).data; }

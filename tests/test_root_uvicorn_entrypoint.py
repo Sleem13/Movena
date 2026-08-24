@@ -41,7 +41,11 @@ def test_render_staging_starts_without_optional_ml_runtimes(tmp_path):
             "ENABLE_PUBLIC_DEMO_MODE": "false",
             "ENABLE_SUBJECT_CONTINUITY_GUARD": "true",
             "ENABLE_ML_SECOND_OPINION": "false",
-            "ENABLE_EXERCISE_RECOGNITION": "false",
+                "ENABLE_EXERCISE_RECOGNITION": "false",
+                "EMAIL_DELIVERY_MODE": "smtp",
+                "EMAIL_FROM": "no-reply@example.com",
+                "SMTP_HOST": "smtp.example.com",
+                "FRONTEND_URL": "https://app.example.com",
         }
     )
     script = """

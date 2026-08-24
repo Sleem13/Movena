@@ -71,7 +71,7 @@ async def realtime_coaching_stream(websocket: WebSocket) -> None:
             await websocket.close(code=4401)
             return
         user = db.scalar(select(User).where(User.user_id == payload["sub"]))
-        if user is None or not user.is_active:
+        if user is None or not user.is_active or not user.is_verified or payload.get("ver", 0) != user.token_version:
             await websocket.send_json({"type": "error", "code": "INVALID_TOKEN", "message": "The user is unavailable."})
             await websocket.close(code=4403)
             return

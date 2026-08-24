@@ -23,6 +23,10 @@ import {
   listSavedSessions,
   recognizeExerciseVideo,
   confirmRecognitionSuggestion,
+  verifyEmailToken,
+  resendVerificationEmail,
+  requestPasswordReset,
+  submitPasswordReset,
 } from "./api.js";
 
 describe("deployment API configuration", () => {
@@ -96,5 +100,17 @@ describe("deployment API configuration", () => {
     expect(mocks.post).toHaveBeenCalledWith("/api/v1/recognition/confirm", {
       event_id: "event-id", confirmed_exercise_id: "push_up",
     });
+  });
+
+  it("uses the auth action endpoints without placing tokens in URLs", async () => {
+    mocks.post.mockResolvedValue({ data: { status: "success" } });
+    await verifyEmailToken("verification-token");
+    await resendVerificationEmail("person@example.com");
+    await requestPasswordReset("person@example.com");
+    await submitPasswordReset("reset-token", "ReplacementPassword123");
+    expect(mocks.post).toHaveBeenNthCalledWith(1, "/api/v1/auth/verify-email", { token: "verification-token" });
+    expect(mocks.post).toHaveBeenNthCalledWith(2, "/api/v1/auth/resend-verification", { email: "person@example.com" });
+    expect(mocks.post).toHaveBeenNthCalledWith(3, "/api/v1/auth/forgot-password", { email: "person@example.com" });
+    expect(mocks.post).toHaveBeenNthCalledWith(4, "/api/v1/auth/reset-password", { token: "reset-token", new_password: "ReplacementPassword123" });
   });
 });
