@@ -16,8 +16,8 @@ from app.db.models import User
 
 
 def validate_admin_password(password: str) -> None:
-    if len(password) < 8:
-        raise ValueError("ADMIN_PASSWORD must be at least 8 characters.")
+    if len(password) < 12:
+        raise ValueError("Administrator passwords must be at least 12 characters.")
 
 
 def seed_admin(

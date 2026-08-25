@@ -22,6 +22,22 @@ def test_missing_video_returns_clean_error():
     assert_error(client.post("/api/v1/analyze/squat"), 422, "MISSING_FILE")
 
 
+def test_non_video_validation_error_is_not_reported_as_missing_video():
+    response = client.post(
+        "/api/v1/auth/register",
+        json={
+            "email": "reviewer@example.com",
+            "password": "too-short",
+            "full_name": "Reviewer",
+            "role": "researcher_demo",
+        },
+    )
+
+    assert_error(response, 422, "VALIDATION_ERROR")
+    assert response.json()["message"] == "Password must be at least 12 characters."
+    assert "video" not in response.json()["message"].lower()
+
+
 def test_unsupported_extension_returns_clean_error():
     response = client.post(
         "/api/v1/analyze/squat",

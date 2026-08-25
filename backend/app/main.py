@@ -61,12 +61,41 @@ app = FastAPI(
 
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(_request, exc: RequestValidationError) -> JSONResponse:
-    details = [error.get("msg", "Invalid request.") for error in exc.errors()]
-    payload = ErrorResponse(
-        error_code="MISSING_FILE",
-        message="A video file is required.",
-        details=details,
+    errors = exc.errors()
+    missing_video = any(
+        error.get("type") == "missing"
+        and tuple(error.get("loc", ()))[:1] == ("body",)
+        and tuple(error.get("loc", ()))[-1:] == ("video",)
+        for error in errors
     )
+    details = []
+    for error in errors:
+        field = ".".join(str(part) for part in error.get("loc", ()) if part not in {"body", "query", "path"})
+        label = field.replace("_", " ").capitalize()
+        error_type = error.get("type")
+        context = error.get("ctx", {})
+        if field and error_type == "missing":
+            detail = f"{label} is required."
+        elif field and error_type == "string_too_short":
+            detail = f"{label} must be at least {context.get('min_length')} characters."
+        elif field and error_type == "string_too_long":
+            detail = f"{label} must be at most {context.get('max_length')} characters."
+        else:
+            message = error.get("msg", "Invalid value.").removeprefix("Value error, ")
+            detail = f"{label}: {message}" if field else message
+        details.append(detail)
+    if missing_video:
+        payload = ErrorResponse(
+            error_code="MISSING_FILE",
+            message="A video file is required.",
+            details=details,
+        )
+    else:
+        payload = ErrorResponse(
+            error_code="VALIDATION_ERROR",
+            message=details[0] if details else "The submitted information is invalid.",
+            details=details,
+        )
     return JSONResponse(
         status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
         content=payload.model_dump(),

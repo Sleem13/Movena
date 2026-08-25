@@ -10,6 +10,18 @@ from app.services.admin_seed_service import seed_admin, seed_super_admin
 import pytest
 
 
+def test_super_admin_seed_requires_twelve_character_password(tmp_path):
+    engine = create_database_engine(f"sqlite:///{(tmp_path / 'short-password.db').as_posix()}")
+    factory = sessionmaker(bind=engine, expire_on_commit=False)
+    Base.metadata.create_all(engine)
+    db = factory()
+
+    with pytest.raises(ValueError, match="at least 12 characters"):
+        seed_super_admin("owner@example.com", "too-short", "Owner", db=db)
+
+    db.close()
+
+
 def test_super_admin_manages_accounts_and_protected_account_is_immutable(tmp_path):
     engine = create_database_engine(f"sqlite:///{(tmp_path / 'super-admin.db').as_posix()}")
     Base.metadata.create_all(engine)
