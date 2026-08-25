@@ -31,6 +31,34 @@ def test_safe_staging_config_validates():
     safe_staging_settings().validate_deployment_safety()
 
 
+def test_staging_console_email_mode_does_not_require_smtp():
+    settings = safe_staging_settings(
+        email_delivery_mode="console",
+        smtp_host="",
+        frontend_url="http://localhost:5173",
+    )
+
+    settings.validate_deployment_safety()
+
+
+def test_staging_smtp_requires_delivery_settings_and_https_frontend():
+    settings = safe_staging_settings(
+        smtp_host="",
+        email_from="invalid",
+        frontend_url="http://localhost:5173",
+    )
+
+    with pytest.raises(RuntimeError, match="SMTP delivery requires"):
+        settings.validate_deployment_safety()
+
+
+def test_production_rejects_console_email_mode():
+    settings = safe_staging_settings(app_env="production", email_delivery_mode="console")
+
+    with pytest.raises(RuntimeError, match="production email verification requires"):
+        settings.validate_deployment_safety()
+
+
 def test_unsafe_staging_config_rejects_default_secret_and_http_cors():
     settings = safe_staging_settings(
         secret_key="change-me-in-production",

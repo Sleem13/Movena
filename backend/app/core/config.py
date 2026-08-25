@@ -197,10 +197,15 @@ class Settings(BaseModel):
             issues.append("ENABLE_PUBLIC_DEMO_MODE must be false")
         if not self.enable_subject_continuity_guard:
             issues.append("ENABLE_SUBJECT_CONTINUITY_GUARD must be true")
-        if self.email_delivery_mode != "smtp" or not self.smtp_host or "@" not in self.email_from:
-            issues.append("production email verification requires EMAIL_DELIVERY_MODE=smtp, SMTP_HOST, and a valid EMAIL_FROM")
-        if not self.frontend_url.startswith("https://"):
-            issues.append("FRONTEND_URL must use HTTPS for verification and password-reset links")
+        if self.app_env == "production" and self.email_delivery_mode != "smtp":
+            issues.append("production email verification requires EMAIL_DELIVERY_MODE=smtp")
+        if self.email_delivery_mode not in {"console", "smtp"}:
+            issues.append("EMAIL_DELIVERY_MODE must be 'console' or 'smtp'")
+        if self.email_delivery_mode == "smtp":
+            if not self.smtp_host or "@" not in self.email_from:
+                issues.append("SMTP delivery requires SMTP_HOST and a valid EMAIL_FROM")
+            if not self.frontend_url.startswith("https://"):
+                issues.append("FRONTEND_URL must use HTTPS for verification and password-reset links")
         if issues:
             raise RuntimeError("Unsafe deployment configuration: " + "; ".join(issues))
 

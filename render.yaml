@@ -24,19 +24,5 @@ services:
         value: "false"
       - key: ENABLE_EXERCISE_RECOGNITION
         value: "false"
-      - key: FRONTEND_URL
-        sync: false
       - key: EMAIL_DELIVERY_MODE
-        value: smtp
-      - key: EMAIL_FROM
-        sync: false
-      - key: SMTP_HOST
-        sync: false
-      - key: SMTP_PORT
-        value: "587"
-      - key: SMTP_USERNAME
-        sync: false
-      - key: SMTP_PASSWORD
-        sync: false
-      - key: SMTP_USE_TLS
-        value: "true"
+        value: console

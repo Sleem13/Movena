@@ -11,6 +11,8 @@
 7. Initialize schema and seed the internal admin through a one-off shell with secrets injected.
 8. Schedule `python scripts/cleanup_artifacts.py --retention-hours 24` and monitor disk usage.
 
+The Blueprint defaults staging to `EMAIL_DELIVERY_MODE=console` so missing SMTP credentials cannot prevent the API from starting. Verification and password-reset links are written to backend logs in that mode. Before testing those flows with users, configure `FRONTEND_URL`, `EMAIL_FROM`, `SMTP_HOST`, and any provider credentials in Render, then set `EMAIL_DELIVERY_MODE=smtp`. Production still refuses to start without SMTP and an HTTPS frontend URL.
+
 The alternative private-VM rehearsal file `docker-compose.staging.yml` requires PostgreSQL, secret, and exact CORS values and binds the backend to loopback for a private reverse proxy.
 
 After deploy, validate `/health`, `/ready`, login, exercises, auth enforcement, upload validation, all five analyzers with non-identifying samples, rejected input, session ownership, signed artifact access/expiry, and cleanup. Provider deployment is currently blocked because no Render token/account configuration or Neon database URL is available.

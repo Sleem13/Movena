@@ -244,7 +244,7 @@ Use `--reset` only for an intentional credential reset or promotion. Once signed
 
 New public accounts persist their selected non-privileged role and a stable permission snapshot in the `users` table. Startup seeding and compatibility migrations do not replace existing roles. New accounts must verify their email before login or protected API/WebSocket access.
 
-Development defaults to `EMAIL_DELIVERY_MODE=console`, which writes verification/reset links to backend logs. Staging and production fail closed unless SMTP is configured. Set `FRONTEND_URL`, `EMAIL_FROM`, `SMTP_HOST`, `SMTP_PORT`, `SMTP_USERNAME`, `SMTP_PASSWORD`, and `SMTP_USE_TLS` using server-only environment variables or a secret manager. The expiry and resend controls are `EMAIL_VERIFICATION_EXPIRE_MINUTES`, `PASSWORD_RESET_EXPIRE_MINUTES`, and `AUTH_EMAIL_RESEND_COOLDOWN_SECONDS`.
+Development and the default Render staging blueprint use `EMAIL_DELIVERY_MODE=console`, which writes verification/reset links to backend logs. Staging validates SMTP settings when `EMAIL_DELIVERY_MODE=smtp`; production always requires SMTP. Before testing email flows in staging, set `FRONTEND_URL`, `EMAIL_FROM`, `SMTP_HOST`, `SMTP_PORT`, `SMTP_USERNAME`, `SMTP_PASSWORD`, and `SMTP_USE_TLS` using server-only environment variables or a secret manager, then switch the delivery mode to `smtp`. The expiry and resend controls are `EMAIL_VERIFICATION_EXPIRE_MINUTES`, `PASSWORD_RESET_EXPIRE_MINUTES`, and `AUTH_EMAIL_RESEND_COOLDOWN_SECONDS`.
 
 Authentication action endpoints:
 
