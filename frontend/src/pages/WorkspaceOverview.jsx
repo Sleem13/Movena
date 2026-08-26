@@ -23,7 +23,7 @@ export default function WorkspaceOverview({ onNavigate }) {
   const [sessions, setSessions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const rawDisplayName = user?.email?.split("@")[0] || user?.full_name || "there";
+  const rawDisplayName = user?.full_name || user?.username || user?.email?.split("@")[0] || "there";
   const displayName = rawDisplayName.charAt(0).toUpperCase() + rawDisplayName.slice(1).split(" ")[0];
 
   async function load() {

@@ -51,7 +51,10 @@ class AdminUserCreate(BaseModel):
     @field_validator("full_name")
     @classmethod
     def normalize_full_name(cls, value: str) -> str:
-        return value.strip()
+        normalized = value.strip()
+        if not normalized:
+            raise ValueError("Full name is required.")
+        return normalized
 
 
 class AccountStatusUpdate(BaseModel):

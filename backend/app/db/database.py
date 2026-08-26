@@ -52,6 +52,23 @@ def get_db() -> Generator[Session, None, None]:
         db.close()
 
 
+def _legacy_username(email: str, existing: set[str]) -> str:
+    local_part = email.partition("@")[0].strip().lower()
+    base = "".join(character if character.isalnum() or character in "._-" else "_" for character in local_part)
+    base = base.strip("._-") or "user"
+    if len(base) < 3:
+        base = f"user_{base}"
+    base = base[:64]
+    candidate = base
+    suffix = 2
+    while candidate.lower() in existing:
+        marker = f"-{suffix}"
+        candidate = f"{base[:64 - len(marker)]}{marker}"
+        suffix += 1
+    existing.add(candidate.lower())
+    return candidate
+
+
 def init_db(bind: Engine | None = None) -> None:
     from app.db import models  # noqa: F401 - registers model metadata
     target = bind or engine
@@ -83,6 +100,21 @@ def init_db(bind: Engine | None = None) -> None:
                 connection.execute(
                     text("UPDATE users SET permissions_json = :permissions WHERE role = :role AND (permissions_json IS NULL OR permissions_json = '[]')"),
                     {"permissions": permissions_json_for_role(role), "role": role},
+                )
+            existing_usernames = {
+                str(row.username).lower()
+                for row in connection.execute(text("SELECT username FROM users WHERE username IS NOT NULL AND username <> ''"))
+            }
+            legacy_users = connection.execute(
+                text("SELECT user_id, email FROM users WHERE username IS NULL OR username = '' ORDER BY user_id")
+            ).mappings()
+            for legacy_user in legacy_users:
+                connection.execute(
+                    text("UPDATE users SET username = :username WHERE user_id = :user_id"),
+                    {
+                        "username": _legacy_username(str(legacy_user["email"]), existing_usernames),
+                        "user_id": legacy_user["user_id"],
+                    },
                 )
             connection.execute(text("CREATE UNIQUE INDEX IF NOT EXISTS ix_users_verification_token_hash ON users (verification_token_hash)"))
             connection.execute(text("CREATE UNIQUE INDEX IF NOT EXISTS ix_users_reset_password_token_hash ON users (reset_password_token_hash)"))

@@ -13,10 +13,10 @@ class UserRole(str, Enum):
 
 
 class UserRegisterRequest(BaseModel):
-    username: str | None = Field(default=None, min_length=3, max_length=64)
+    username: str = Field(min_length=3, max_length=64)
     email: str
     password: str = Field(min_length=8, max_length=128)
-    full_name: str | None = Field(default=None, max_length=120)
+    full_name: str = Field(min_length=1, max_length=120)
     role: UserRole = UserRole.researcher_demo
 
     @field_validator("email")
@@ -29,12 +29,18 @@ class UserRegisterRequest(BaseModel):
 
     @field_validator("username")
     @classmethod
-    def valid_username(cls, value: str | None) -> str | None:
-        if value is None or not value.strip():
-            return None
+    def valid_username(cls, value: str) -> str:
         normalized = value.strip().lower()
-        if not all(character.isalnum() or character in "._-" for character in normalized):
+        if not normalized or not all(character.isalnum() or character in "._-" for character in normalized):
             raise ValueError("Username may contain only letters, numbers, dots, hyphens, and underscores.")
+        return normalized
+
+    @field_validator("full_name")
+    @classmethod
+    def valid_full_name(cls, value: str) -> str:
+        normalized = value.strip()
+        if not normalized:
+            raise ValueError("Full name is required.")
         return normalized
 
 

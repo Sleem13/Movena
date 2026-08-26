@@ -38,7 +38,7 @@ def test_registration_persists_role_permissions_and_requires_verification(tmp_pa
     monkeypatch.setattr(auth_routes, "send_verification_email", lambda email, token: messages.append((email, token)))
     try:
         created = client.post("/api/v1/auth/register", json={
-            "email": "new@example.com", "password": "StrongPassword123", "full_name": "New User", "role": "patient"
+            "username": "new.user", "email": "new@example.com", "password": "StrongPassword123", "full_name": "New User", "role": "patient"
         })
         assert created.status_code == 201
         assert created.json()["role"] == "patient"
@@ -61,9 +61,13 @@ def test_registration_persists_role_permissions_and_requires_verification(tmp_pa
         assert client.post("/api/v1/auth/login", json={"email": "new@example.com", "password": "StrongPassword123"}).status_code == 200
 
         duplicate = client.post("/api/v1/auth/register", json={
-            "email": "new@example.com", "password": "DifferentPassword123", "role": "researcher_demo"
+            "username": "different.user", "email": "new@example.com", "password": "DifferentPassword123", "full_name": "Different User", "role": "researcher_demo"
         })
         assert duplicate.status_code == 409
+        duplicate_username = client.post("/api/v1/auth/register", json={
+            "username": "NEW.USER", "email": "other@example.com", "password": "DifferentPassword123", "full_name": "Other User", "role": "researcher_demo"
+        })
+        assert duplicate_username.status_code == 409
         db = factory(); retained = db.scalar(select(User).where(User.email == "new@example.com")); db.close()
         assert retained.role == "patient" and retained.permissions == permissions_for_role("patient")
     finally:
@@ -161,3 +165,21 @@ def test_compatibility_migration_never_overwrites_existing_role(tmp_path):
     db = factory(); user = db.scalar(select(User).where(User.user_id == "role-1")); db.close()
     assert user.role == "therapist"
     assert user.permissions == permissions_for_role("therapist")
+    assert user.username == "role"
+
+
+def test_compatibility_migration_assigns_unique_legacy_usernames(tmp_path):
+    engine = create_database_engine(f"sqlite:///{(tmp_path / 'legacy-usernames.db').as_posix()}")
+    Base.metadata.create_all(engine)
+    factory = sessionmaker(bind=engine, expire_on_commit=False)
+    db = factory()
+    db.add_all([
+        User(user_id="existing", username="person", email="existing@example.com", password_hash="not-used", role="patient"),
+        User(user_id="legacy", email="person@example.com", password_hash="not-used", role="patient"),
+    ])
+    db.commit(); db.close()
+
+    init_db(engine)
+
+    db = factory(); legacy = db.scalar(select(User).where(User.user_id == "legacy")); db.close()
+    assert legacy.username == "person-2"

@@ -36,13 +36,13 @@ def register(data: UserRegisterRequest, db: Session = Depends(get_db)):
     email = data.email.lower().strip()
     if db.scalar(select(User).where(User.email == email)):
         return auth_error("EMAIL_ALREADY_REGISTERED", "An account with this email already exists.", 409)
-    if data.username and db.scalar(select(User).where(User.username == data.username)):
+    if db.scalar(select(User).where(func.lower(User.username) == data.username)):
         return auth_error("USERNAME_ALREADY_REGISTERED", "An account with this username already exists.", 409)
     settings = get_settings()
     assigned_role = data.role.value
     user = User(
         user_id=str(uuid4()), username=data.username, email=email, password_hash=get_password_hash(data.password),
-        full_name=data.full_name.strip() if data.full_name else None, role=assigned_role,
+        full_name=data.full_name, role=assigned_role,
         permissions_json=permissions_json_for_role(assigned_role),
         is_verified=not settings.require_email_verification,
         email_verified_at=utc_now() if not settings.require_email_verification else None,

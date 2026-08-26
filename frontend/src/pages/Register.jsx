@@ -1,4 +1,4 @@
-import { ArrowLeft, Mail, ShieldCheck, UserRound } from "lucide-react";
+import { ArrowLeft, AtSign, Mail, ShieldCheck, UserRound } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext.jsx";
 import { Alert, Badge, Button, Card } from "../components/common/UI.jsx";
@@ -20,6 +20,7 @@ export default function Register({ onLogin }) {
     const data = new FormData(event.currentTarget);
     try {
       await register({
+        username: data.get("username"),
         email: data.get("email"),
         password: data.get("password"),
         full_name: data.get("full_name"),
@@ -54,8 +55,16 @@ export default function Register({ onLogin }) {
               {t("common.displayName")}
               <span className="relative">
                 <UserRound className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-                <input name="full_name" autoComplete="name" className="w-full rounded-xl border border-slate-200 bg-slate-50 py-3 pl-11 pr-3 text-sm text-clinical-ink" placeholder={t("auth.displayPlaceholder")} />
+                <input name="full_name" autoComplete="name" required maxLength={120} className="w-full rounded-xl border border-slate-200 bg-slate-50 py-3 pl-11 pr-3 text-sm text-clinical-ink" placeholder={t("auth.displayPlaceholder")} />
               </span>
+            </label>
+            <label className="grid gap-2 text-sm font-semibold text-slate-700">
+              {t("common.username")}
+              <span className="relative">
+                <AtSign className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                <input name="username" autoComplete="username" required minLength={3} maxLength={64} pattern="[A-Za-z0-9._-]+" className="w-full rounded-xl border border-slate-200 bg-slate-50 py-3 pl-11 pr-3 text-sm text-clinical-ink" placeholder={t("auth.usernamePlaceholder")} />
+              </span>
+              <span className="text-xs font-normal text-slate-500">{t("auth.usernameHelp")}</span>
             </label>
             <label className="grid gap-2 text-sm font-semibold text-slate-700">
               {t("common.email")}
