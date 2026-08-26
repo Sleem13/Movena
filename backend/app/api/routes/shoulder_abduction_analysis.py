@@ -11,6 +11,7 @@ from app.db.models import User
 from app.exercises.shoulder_abduction.analyzer import shoulder_abduction_analyzer
 from app.schemas.analysis_schema import AnalysisResponse, ErrorResponse
 from app.services.artifact_service import build_artifact_url, create_artifact
+from app.services.assisted_analysis_service import apply_assisted_exercise_fallback
 from app.services.ml_second_opinion_service import apply_ml_second_opinion
 from app.services.overlay_video_service import create_overlay_video
 from app.services.pose_estimation_service import PoseEstimationError, extract_pose_landmarks
@@ -34,6 +35,7 @@ async def analyze_shoulder_abduction(video: UploadFile = File(...), include_over
     try:
         landmarks = extract_pose_landmarks(video_path, continue_on_subject_warning=True) if continue_on_subject_warning else extract_pose_landmarks(video_path)
         report = shoulder_abduction_analyzer.analyze_landmarks(landmarks, include_frame_data=include_frame_data or include_overlay)
+        report = apply_assisted_exercise_fallback("shoulder_abduction", report, landmarks, include_frame_data=include_frame_data or include_overlay)
         apply_subject_continuity_warning(report, landmarks)
         apply_ml_second_opinion(report, landmarks, include_ml, settings.enable_ml_second_opinion)
         if generate_report and settings.enable_report_generation and report.status == "success":

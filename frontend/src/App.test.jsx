@@ -818,4 +818,26 @@ describe("Squat Analyzer healthcare dashboard", () => {
     expect(analyzeExerciseVideo).toHaveBeenCalledTimes(1);
     expect(recognizeExerciseVideo).not.toHaveBeenCalled();
   });
+
+  it("explains when a different exercise was recognized and assessed", async () => {
+    const autoRouted = {
+      ...report,
+      exercise: "push_up",
+      exercise_id: "push_up",
+      exercise_name: "Push-Up",
+      selected_exercise_id: "bodyweight_squat",
+      recognized_exercise_id: "push_up",
+      recognition_confidence: 0.86,
+      recognition_status: "auto_routed",
+      recognition_message: "Push-Up was recognized with 86% confidence and assessed automatically.",
+      auto_routed: true,
+    };
+
+    await analyzeWith(autoRouted);
+
+    expect(screen.getByText("Exercise recognized and assessed")).toBeInTheDocument();
+    expect(screen.getByText(/recognition suggested Push-Up with 86% confidence/i)).toBeInTheDocument();
+    expect(screen.getByText("Push-Up report")).toBeInTheDocument();
+    expect(analyzeExerciseVideo).toHaveBeenCalledTimes(1);
+  });
 });

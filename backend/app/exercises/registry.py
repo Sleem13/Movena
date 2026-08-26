@@ -35,11 +35,17 @@ class SquatAnalyzerAdapter(ExerciseAnalyzer):
 
     exercise_id = "bodyweight_squat"
 
+    def analyze_landmarks(
+        self, frames: list[dict[str, Any]], include_frame_data: bool = False
+    ) -> Any:
+        from app.services.squat_analysis_service import analyze_squat_landmarks
+
+        return analyze_squat_landmarks(frames, include_frame_data=include_frame_data)
+
     def analyze(self, video_path: Path, options: dict[str, Any] | None = None) -> Any:
         from app.services.pose_estimation_service import extract_pose_landmarks
-        from app.services.squat_analysis_service import analyze_squat_landmarks
         options = options or {}
-        return analyze_squat_landmarks(
+        return self.analyze_landmarks(
             extract_pose_landmarks(video_path),
             include_frame_data=bool(options.get("include_frame_data")),
         )

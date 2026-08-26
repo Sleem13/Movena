@@ -19,7 +19,7 @@ export function Badge({ tone = "blue", children, className = "" }) {
 }
 
 export function Alert({ title, children, tone = "error", className = "" }) {
-  const tones = tone === "warning" ? "border-amber-200 bg-amber-50 text-amber-950" : tone === "info" ? "border-blue-200 bg-blue-50 text-blue-950" : "border-red-200 bg-red-50 text-red-800";
+  const tones = tone === "warning" ? "border-amber-200 bg-amber-50 text-amber-950" : tone === "info" ? "border-blue-200 bg-blue-50 text-blue-950" : tone === "success" ? "border-teal-200 bg-teal-50 text-teal-950" : "border-red-200 bg-red-50 text-red-800";
   return <div role={tone === "error" ? "alert" : undefined} className={`flex gap-3 rounded-xl border px-4 py-3 text-sm leading-6 ${tones} ${className}`}><AlertCircle className="mt-0.5 shrink-0" size={18} aria-hidden="true" /><div>{title && <p className="font-semibold">{title}</p>}<div className={title ? "mt-1" : ""}>{children}</div></div></div>;
 }
 

@@ -150,6 +150,12 @@ class AnalysisResponse(BaseModel):
     status: str = "success"
     error_code: str | None = None
     message: str | None = None
+    selected_exercise_id: str | None = None
+    recognized_exercise_id: str | None = None
+    recognition_confidence: float | None = Field(default=None, ge=0, le=1)
+    recognition_status: str | None = None
+    recognition_message: str | None = None
+    auto_routed: bool = False
     total_reps: int = 0
     valid_reps: int | None = None
     average_knee_angle: float = 0

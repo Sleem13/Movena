@@ -7,7 +7,7 @@ not match the selected exercise.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from pathlib import Path
 from statistics import mean, pstdev
 from typing import Any
@@ -72,6 +72,7 @@ class UpperBodyExerciseConfig:
     min_geometry_ratio: float
     posture_issue: str
     success_geometry_label: str
+    starts_extended: bool = False
 
 
 PUSH_UP_CONFIG = UpperBodyExerciseConfig(
@@ -79,13 +80,14 @@ PUSH_UP_CONFIG = UpperBodyExerciseConfig(
     display_name="Push-Up",
     error_code="INVALID_PUSH_UP_VIDEO",
     camera_view="A stable side view with the full body visible is preferred for push-up review.",
-    flexed_angle_max=115.0,
-    extended_angle_min=155.0,
-    min_angle_range=45.0,
+    flexed_angle_max=125.0,
+    extended_angle_min=145.0,
+    min_angle_range=30.0,
     geometry_issue="upright_or_incompatible_push_up_position",
-    min_geometry_ratio=0.55,
+    min_geometry_ratio=0.35,
     posture_issue="possible_hip_sag_or_pike",
     success_geometry_label="horizontal support position",
+    starts_extended=True,
 )
 
 
@@ -124,9 +126,77 @@ def count_elbow_extension_cycles(
     *,
     config: UpperBodyExerciseConfig,
 ) -> ElbowCycleResult:
-    """Count flexed -> extended -> flexed cycles with hysteresis and gap resets."""
+    """Count complete elbow cycles with hysteresis and bounded gap resets.
+
+    Presses and curls normally begin flexed, while a push-up normally begins
+    extended.  The original implementation applied the flexed-first order to
+    push-ups as well, which rejected otherwise valid extended-flexed-extended
+    recordings.  Mirror the signal for extended-first exercises so both orders
+    use the same well-tested state machine.
+    """
     if not angles:
         return ElbowCycleResult()
+    if config.starts_extended:
+        # Videos may begin at either endpoint (top support or bottom position).
+        # Evaluate both complete-cycle directions and retain the clearer result.
+        flexed_first = count_elbow_extension_cycles(
+            angles,
+            timestamps,
+            frame_indexes,
+            low_confidence_mask,
+            pose_quality_score,
+            pose_detection_rate,
+            config=replace(config, starts_extended=False),
+        )
+        mirrored_config = replace(
+            config,
+            flexed_angle_max=180.0 - config.extended_angle_min,
+            extended_angle_min=180.0 - config.flexed_angle_max,
+            starts_extended=False,
+        )
+        mirrored = count_elbow_extension_cycles(
+            [180.0 - angle for angle in angles],
+            timestamps,
+            frame_indexes,
+            low_confidence_mask,
+            pose_quality_score,
+            pose_detection_rate,
+            config=mirrored_config,
+        )
+        phase_names = {
+            "flexed": "extended",
+            "extending": "flexing",
+            "extended": "flexed",
+            "flexing": "extending",
+        }
+        mirrored.rep_events = [
+            ElbowCycleEvent(
+                event.start_frame,
+                event.extended_frame,
+                event.end_frame,
+                event.duration_sec,
+                round(180.0 - event.maximum_angle, 2),
+                round(180.0 - event.minimum_angle, 2),
+            )
+            for event in mirrored.rep_events
+        ]
+        mirrored.phases = [phase_names.get(phase, phase) for phase in mirrored.phases]
+        mirrored.phase_transitions = [
+            "->".join(
+                phase_names.get(part.split("@", 1)[0], part.split("@", 1)[0])
+                + ("@" + part.split("@", 1)[1] if "@" in part else "")
+                for part in transition.split("->")
+            )
+            for transition in mirrored.phase_transitions
+        ]
+        mirrored.smoothed_angles = [round(180.0 - angle, 2) for angle in mirrored.smoothed_angles]
+        candidates = (flexed_first, mirrored)
+        if not any(result.total_reps for result in candidates):
+            return max(candidates, key=lambda result: result.ignored_partial_reps)
+        return max(
+            candidates,
+            key=lambda result: (result.total_reps, result.confidence, -result.ignored_partial_reps),
+        )
     indexes = frame_indexes or list(range(len(angles)))
     processed = smooth_squat_angles(angles, low_confidence_mask)
     smoothed = _filled(processed, angles)
@@ -215,6 +285,10 @@ def count_elbow_extension_cycles(
         previous = angle
     if state in {"extending", "extended", "flexing"}:
         ignored += 1
+    if not events and ignored == 0 and max(smoothed) - min(smoothed) >= config.min_angle_range / 2:
+        # Preserve evidence of a visible but incomplete attempt even when the
+        # signal never held the next phase long enough to leave its endpoint.
+        ignored = 1
     durations = [event.duration_sec for event in events if event.duration_sec is not None]
     if events:
         completion = len(events) / (len(events) + ignored)
@@ -248,7 +322,9 @@ def _metrics(frame: dict[str, Any], side: str, exercise_id: str) -> tuple[float,
     if exercise_id == "push_up":
         horizontal_span = abs(float(shoulder["x"]) - float(ankle["x"]))
         vertical_span = abs(float(shoulder["y"]) - float(ankle["y"]))
-        geometry_ok = horizontal_span >= 0.18 and vertical_span / max(horizontal_span, 0.001) <= 0.85
+        # Allow a moderate diagonal camera angle while still excluding upright
+        # movements that belong to a press or curl analyzer.
+        geometry_ok = horizontal_span >= 0.12 and vertical_span / max(horizontal_span, 0.001) <= 1.15
         posture_ok = calculate_angle(shoulder, hip, ankle) >= 155.0
     else:
         geometry_ok = float(wrist["y"]) < float(shoulder["y"]) - 0.03 and elbow_angle >= 145.0

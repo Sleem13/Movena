@@ -16,6 +16,7 @@ from app.exercises.bicep_curl import bicep_curl_analyzer, hammer_curl_analyzer
 from app.exercises.shoulder_flexion.analyzer import shoulder_flexion_analyzer
 from app.schemas.analysis_schema import AnalysisResponse, ErrorResponse
 from app.services.artifact_service import build_artifact_url, create_artifact
+from app.services.assisted_analysis_service import apply_assisted_exercise_fallback
 from app.services.overlay_video_service import create_overlay_video
 from app.services.ml_second_opinion_service import apply_ml_second_opinion
 from app.services.pose_estimation_service import PoseEstimationError, extract_pose_landmarks
@@ -49,6 +50,12 @@ async def _analyze_upper_body(
     try:
         landmarks = extract_pose_landmarks(video_path, continue_on_subject_warning=True) if continue_on_subject_warning else extract_pose_landmarks(video_path)
         report = analyzer.analyze_landmarks(landmarks, include_frame_data=include_frame_data or include_overlay)
+        report = apply_assisted_exercise_fallback(
+            analyzer.exercise_id,
+            report,
+            landmarks,
+            include_frame_data=include_frame_data or include_overlay,
+        )
         apply_subject_continuity_warning(report, landmarks)
         apply_ml_second_opinion(report, landmarks, include_ml, settings.enable_ml_second_opinion)
         if generate_report and settings.enable_report_generation and report.status == "success":

@@ -1,5 +1,5 @@
 import { ArrowLeft } from "lucide-react";
-import { Badge, Button, Card, EmptyState } from "../components/common/UI.jsx";
+import { Alert, Badge, Button, Card, EmptyState } from "../components/common/UI.jsx";
 import { PageHeader } from "../components/layout/AppShell.jsx";
 import ResultsDashboard, { ExportActions } from "../components/results/ResultsDashboard.jsx";
 import SpeechFeedbackControls from "../components/results/SpeechFeedbackControls.jsx";
@@ -18,6 +18,13 @@ export default function Results({ report, originalVideoUrl, onAnalyzeAnother, on
 
   const rejected = report.status === "rejected";
   const displayName = exerciseText(report.exercise).name;
+  const recognitionNotice = report.auto_routed
+    ? t("upload.autoRerouteNotice", {
+      selected: exerciseText(report.selected_exercise_id).name,
+      suggested: displayName,
+      confidence: `${Math.round((report.recognition_confidence || 0) * 100)}%`,
+    })
+    : report.recognition_message;
   const actions = <div className="flex flex-wrap items-start gap-2">
     <SpeechFeedbackControls report={report} />
     {!rejected && <ExportActions report={report} />}
@@ -32,6 +39,11 @@ export default function Results({ report, originalVideoUrl, onAnalyzeAnother, on
         : t("results.completeDescription")}
       actions={actions}
     />
+    {recognitionNotice && <Alert
+      className="mb-5"
+      tone={report.auto_routed ? "success" : "warning"}
+      title={t(report.auto_routed ? "results.autoRoutedTitle" : "results.recognitionReviewTitle")}
+    >{recognitionNotice}</Alert>}
     {report.session_id && <Card className="mb-5 flex flex-wrap items-center justify-between gap-3 border-teal-200 p-4">
       <div>
         <Badge tone="teal">{t("results.savedSession")}</Badge>

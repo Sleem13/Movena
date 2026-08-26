@@ -7,6 +7,7 @@ from app.schemas.analysis_schema import AnalysisResponse, ErrorResponse
 from app.core.config import get_settings
 from app.services.pose_estimation_service import PoseEstimationError, extract_pose_landmarks, subject_continuity_warning
 from app.services.artifact_service import build_artifact_url, create_artifact
+from app.services.assisted_analysis_service import apply_assisted_exercise_fallback
 from app.services.overlay_video_service import create_overlay_video
 from app.services.ml_second_opinion_service import apply_ml_second_opinion
 from app.services.report_service import generate_session_report
@@ -91,7 +92,13 @@ async def analyze_squat(
         landmarks = extract_pose_landmarks(video_path, continue_on_subject_warning=True) if continue_on_subject_warning else extract_pose_landmarks(video_path)
         logger.info("Landmarks detected in %s frames", len(landmarks))
         report = analyze_squat_landmarks(
-            landmarks, include_frame_data=include_frame_data
+            landmarks, include_frame_data=include_frame_data or include_overlay
+        )
+        report = apply_assisted_exercise_fallback(
+            "bodyweight_squat",
+            report,
+            landmarks,
+            include_frame_data=include_frame_data or include_overlay,
         )
         apply_subject_continuity_warning(report, landmarks)
         apply_ml_second_opinion(report, landmarks, include_ml, settings.enable_ml_second_opinion)
@@ -108,7 +115,10 @@ async def analyze_squat(
         if include_overlay and settings.enable_overlay_generation and report.status == "success":
             try:
                 overlay = create_overlay_video(
-                    video_path, landmarks, create_frame_analysis(landmarks), report.exercise_id or report.exercise
+                    video_path,
+                    landmarks,
+                    report.frame_analysis or create_frame_analysis(landmarks),
+                    report.exercise_id or report.exercise,
                 )
                 if not overlay.overlay_path.is_file() or overlay.overlay_path.stat().st_size <= 0:
                     raise RuntimeError("Overlay service returned a missing or empty artifact.")
@@ -123,6 +133,8 @@ async def analyze_squat(
                 )
         elif include_overlay and not settings.enable_overlay_generation:
             report.limitations.append("Annotated overlays are disabled by deployment configuration.")
+        if not include_frame_data:
+            report.frame_analysis = None
         can_save = current_user is not None or settings.enable_public_demo_mode
         if save_session and settings.enable_session_history and can_save:
             try:

@@ -103,6 +103,7 @@ function AppContent() {
 
   async function analyzeSelectedExercise(selectedExercise, continueOnSubjectWarning) {
     const data = await analyzeExerciseVideo(selectedExercise, file, { ...options, continue_on_subject_warning: continueOnSubjectWarning }, setProgress);
+    if (data.auto_routed && data.exercise) setExercise(data.exercise);
     setReport(data); setCanContinueAfterWarning(false); navigate("results");
   }
 
