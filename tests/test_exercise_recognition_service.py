@@ -116,6 +116,8 @@ def test_artifact_integrity_rejects_tampered_bytes(tmp_path, monkeypatch):
 
 
 def test_installed_active_artifacts_pass_contract_and_smoke_inference():
+    pytest.importorskip("torch", reason="Torch is optional when experimental recognition is disabled")
+    pytest.importorskip("xgboost", reason="XGBoost is optional when experimental recognition is disabled")
     health = service.initialize_active_recognition_models()
     assert health
     assert all(result["valid"] for result in health.values())

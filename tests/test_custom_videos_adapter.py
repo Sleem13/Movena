@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from app.datasets.adapters.custom_videos_adapter import CustomVideosAdapter
 
 
@@ -10,8 +12,7 @@ def test_custom_video_reviewed_and_unknown_folders(tmp_path):
     unknown.write_bytes(b"video")
 
     rows = CustomVideosAdapter(tmp_path).export_unified_metadata()
-    by_name = {row["file_path"].split("\\")[-1]: row for row in rows}
+    by_name = {Path(row["file_path"]).name: row for row in rows}
     assert by_name["a.mp4"]["processing_status"] == "ready"
     assert by_name["a.mp4"]["exercise_id"] == "bodyweight_squat"
     assert by_name["b.mp4"]["requires_manual_review"] is True
-
