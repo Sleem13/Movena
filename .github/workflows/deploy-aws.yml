@@ -13,6 +13,7 @@ on:
       - "Dockerfile"
       - ".dockerignore"
       - "requirements.txt"
+      - "requirements-dev.txt"
 
 permissions:
   contents: read
@@ -40,7 +41,7 @@ jobs:
           python-version: "3.12"
           cache: pip
       - name: Install backend dependencies
-        run: pip install -r requirements.txt pytest==9.1.1
+        run: pip install -r requirements-dev.txt
       - name: Run backend tests
         run: python -m pytest tests backend/app/tests -q
       - uses: actions/setup-node@v5
