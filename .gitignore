@@ -254,6 +254,9 @@ override.tf.json
 *_override.tf
 *_override.tf.json
 
+# Codex/AWS interactive login artifacts (may contain short-lived authorization data)
+.codex-*.txt
+
 # Imported third-party comparison prototype. Keep outside PhysioVision commits;
 # it contains unreviewed code, model artifacts, and exposed credentials.
 /Powered-Physiotherapy-System-master/

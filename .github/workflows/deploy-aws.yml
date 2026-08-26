@@ -1,0 +1,150 @@
+name: Deploy PhysioVision to AWS
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/deploy-aws.yml"
+      - "backend/**"
+      - "frontend/**"
+      - "infra/aws/**"
+      - "tests/**"
+      - "Dockerfile"
+      - ".dockerignore"
+      - "requirements.txt"
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: physiovision-staging-deploy
+  cancel-in-progress: false
+
+env:
+  AWS_REGION: eu-central-1
+  TF_IN_AUTOMATION: "true"
+  TF_INPUT: "false"
+  ENVIRONMENT: staging
+
+jobs:
+  verify:
+    name: Verify application
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install backend dependencies
+        run: pip install -r requirements.txt
+      - name: Run backend tests
+        run: python -m pytest tests backend/app/tests -q
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+      - name: Run frontend tests
+        working-directory: frontend
+        run: npm test -- --run
+
+  deploy:
+    name: Deploy staging
+    needs: verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+          role-session-name: physiovision-${{ github.run_id }}
+          role-duration-seconds: 7200
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.14.8"
+      - name: Initialize Terraform state
+        run: >-
+          terraform -chdir=infra/aws init -reconfigure
+          -backend-config="bucket=${{ vars.TF_STATE_BUCKET }}"
+          -backend-config="key=physiovision/staging/terraform.tfstate"
+          -backend-config="region=${{ env.AWS_REGION }}"
+          -backend-config="encrypt=true"
+          -backend-config="use_lockfile=true"
+      - name: Create the private container registry
+        run: >-
+          terraform -chdir=infra/aws apply -auto-approve
+          -target=aws_ecr_repository.backend
+          -var="aws_region=${{ env.AWS_REGION }}"
+          -var="environment=${{ env.ENVIRONMENT }}"
+          -var="app_version=${{ github.sha }}"
+          -var="app_secret_arn=${{ vars.APP_SECRET_ARN }}"
+      - id: ecr
+        name: Read ECR repository
+        run: echo "repository=$(terraform -chdir=infra/aws output -raw ecr_repository_url)" >> "$GITHUB_OUTPUT"
+      - uses: aws-actions/amazon-ecr-login@v2
+      - name: Build and push immutable backend image
+        env:
+          IMAGE: ${{ steps.ecr.outputs.repository }}:${{ github.sha }}
+        run: |
+          docker build --pull --tag "$IMAGE" .
+          docker push "$IMAGE"
+      - name: Plan infrastructure
+        env:
+          IMAGE: ${{ steps.ecr.outputs.repository }}:${{ github.sha }}
+        run: >-
+          terraform -chdir=infra/aws plan -out=physiovision.tfplan
+          -var="aws_region=${{ env.AWS_REGION }}"
+          -var="environment=${{ env.ENVIRONMENT }}"
+          -var="app_version=${{ github.sha }}"
+          -var="app_secret_arn=${{ vars.APP_SECRET_ARN }}"
+          -var="backend_image=$IMAGE"
+      - name: Apply infrastructure
+        run: terraform -chdir=infra/aws apply -auto-approve physiovision.tfplan
+      - id: infra
+        name: Read deployment outputs
+        shell: bash
+        run: |
+          echo "url=$(terraform -chdir=infra/aws output -raw application_url)" >> "$GITHUB_OUTPUT"
+          echo "bucket=$(terraform -chdir=infra/aws output -raw frontend_bucket)" >> "$GITHUB_OUTPUT"
+          echo "distribution=$(terraform -chdir=infra/aws output -raw cloudfront_distribution_id)" >> "$GITHUB_OUTPUT"
+          echo "cluster=$(terraform -chdir=infra/aws output -raw ecs_cluster_name)" >> "$GITHUB_OUTPUT"
+          echo "service=$(terraform -chdir=infra/aws output -raw ecs_service_name)" >> "$GITHUB_OUTPUT"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Build frontend for CloudFront
+        working-directory: frontend
+        env:
+          VITE_API_BASE_URL: ${{ steps.infra.outputs.url }}
+        run: |
+          npm ci
+          npm run build
+      - name: Publish frontend
+        run: |
+          aws s3 sync frontend/dist "s3://${{ steps.infra.outputs.bucket }}" --delete --cache-control "public,max-age=31536000,immutable" --exclude "index.html"
+          aws s3 cp frontend/dist/index.html "s3://${{ steps.infra.outputs.bucket }}/index.html" --cache-control "no-cache,no-store,must-revalidate" --content-type "text/html"
+          aws cloudfront create-invalidation --distribution-id "${{ steps.infra.outputs.distribution }}" --paths "/*"
+      - name: Wait for backend and verify readiness
+        shell: bash
+        run: |
+          aws ecs wait services-stable --cluster "${{ steps.infra.outputs.cluster }}" --services "${{ steps.infra.outputs.service }}"
+          for attempt in {1..30}; do
+            if curl --fail --silent --show-error --max-time 20 "${{ steps.infra.outputs.url }}/ready" | tee /tmp/ready.json | grep -q '"status":"ready"'; then
+              echo "PhysioVision is ready at ${{ steps.infra.outputs.url }}"
+              exit 0
+            fi
+            sleep 15
+          done
+          echo "Readiness check failed" >&2
+          exit 1

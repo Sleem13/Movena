@@ -3,6 +3,7 @@ param(
     [string]$Region = "eu-central-1",
     [ValidateSet("staging", "production")][string]$Environment = "staging",
     [string]$AppVersion = (Get-Date -Format "yyyyMMddHHmmss"),
+    [string]$StateBucket = "",
     [switch]$Apply
 )
 
@@ -35,6 +36,9 @@ Require-Command npm
 $Identity = aws sts get-caller-identity --region $Region --output json | ConvertFrom-Json
 Write-Host "AWS account: $($Identity.Account) | principal: $($Identity.Arn) | region: $Region" -ForegroundColor Cyan
 Write-Warning "This stack creates billable ECS Fargate, Application Load Balancer, RDS PostgreSQL, EFS, CloudFront, S3, ECR, CloudWatch, and Secrets Manager resources."
+if ([string]::IsNullOrWhiteSpace($StateBucket)) {
+    $StateBucket = "physiovision-terraform-state-$($Identity.Account)-$Region"
+}
 
 $SecretArn = aws secretsmanager describe-secret --secret-id $SecretName --region $Region --query ARN --output text 2>$null
 if ($LASTEXITCODE -ne 0) {
@@ -63,7 +67,12 @@ if ($LASTEXITCODE -ne 0) {
     }
 }
 
-terraform -chdir=$TerraformDir init
+terraform -chdir=$TerraformDir init -reconfigure `
+    -backend-config "bucket=$StateBucket" `
+    -backend-config "key=physiovision/$Environment/terraform.tfstate" `
+    -backend-config "region=$Region" `
+    -backend-config "encrypt=true" `
+    -backend-config "use_lockfile=true"
 if ($LASTEXITCODE -ne 0) { throw "terraform init failed." }
 
 if (-not $Apply) {

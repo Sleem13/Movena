@@ -1,6 +1,0 @@
-
-aws: [ERROR]: An error occurred (InvalidGrantException) when calling the CreateToken operation:
-
-Additional error details:
-error: invalid_grant
-error_description: Invalid device code provided

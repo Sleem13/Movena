@@ -42,7 +42,25 @@ The apply flow creates a missing secret interactively, bootstraps ECR, builds an
 .\infra\aws\deploy.ps1 -Region eu-central-1 -Environment staging -Apply
 ```
 
-The script never writes the administrator password or JWT key into the repository or Terraform variables. Terraform state still contains infrastructure metadata and must be protected. Before team use, move state to a versioned encrypted S3 backend with DynamoDB/S3 state locking and tightly restricted IAM access.
+The script never writes the administrator password or JWT key into the repository or Terraform variables. Terraform state is stored in a private, versioned, encrypted S3 backend with native state locking.
+
+## GitHub Actions deployment
+
+The preferred deployment path is `.github/workflows/deploy-aws.yml`. It runs backend and frontend tests, assumes an AWS role through GitHub OIDC, builds an immutable ECR image, applies the reviewed Terraform stack, publishes the frontend, and verifies `/ready`.
+
+Bootstrap the state bucket and repository-scoped OIDC role once from a short-lived AWS administrator session:
+
+```powershell
+.\infra\aws\bootstrap-github-oidc.ps1
+```
+
+Configure these GitHub Actions repository variables with the script output and the existing runtime secret ARN:
+
+- `AWS_DEPLOY_ROLE_ARN`
+- `TF_STATE_BUCKET`
+- `APP_SECRET_ARN`
+
+The OIDC trust is restricted to this repository's `main` branch. No AWS access key is stored in GitHub.
 
 ## Production promotion gates
 
