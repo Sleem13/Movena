@@ -114,6 +114,38 @@ def test_resend_and_single_use_password_recovery(tmp_path, monkeypatch):
         app.dependency_overrides.clear()
 
 
+def test_unverified_legacy_user_has_full_access_when_verification_is_disabled(tmp_path, monkeypatch):
+    monkeypatch.setenv("REQUIRE_EMAIL_VERIFICATION", "false")
+    get_settings.cache_clear()
+    client, factory = auth_client(tmp_path)
+    reset_tokens = []
+    monkeypatch.setattr(auth_routes, "send_password_reset_email", lambda email, token: reset_tokens.append(token))
+    try:
+        db = factory()
+        db.add(User(
+            user_id="legacy-unverified", email="legacy@example.com",
+            password_hash=get_password_hash("StrongPassword123"), role="therapist",
+            permissions_json='["analysis:create"]', is_verified=False,
+        ))
+        db.commit(); db.close()
+
+        login = client.post("/api/v1/auth/login", json={
+            "email": "legacy@example.com", "password": "StrongPassword123",
+        })
+        assert login.status_code == 200
+        headers = {"Authorization": f"Bearer {login.json()['access_token']}"}
+        current_user = client.get("/api/v1/auth/me", headers=headers)
+        assert current_user.status_code == 200
+        assert current_user.json()["email"] == "legacy@example.com"
+
+        recovery = client.post("/api/v1/auth/forgot-password", json={"email": "legacy@example.com"})
+        assert recovery.status_code == 200
+        assert len(reset_tokens) == 1
+    finally:
+        app.dependency_overrides.clear()
+        get_settings.cache_clear()
+
+
 def test_compatibility_migration_never_overwrites_existing_role(tmp_path):
     engine = create_database_engine(f"sqlite:///{(tmp_path / 'roles-retained.db').as_posix()}")
     Base.metadata.create_all(engine)

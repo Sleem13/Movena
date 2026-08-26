@@ -122,7 +122,13 @@ def resend_verification(data: EmailRequest, db: Session = Depends(get_db)):
 def forgot_password(data: EmailRequest, db: Session = Depends(get_db)):
     generic = AuthMessageResponse(message="If an eligible account exists, a password reset email has been sent.")
     user = db.scalar(select(User).where(User.email == data.email))
-    if user is None or not user.is_verified or not user.is_active or cooldown_active(user.reset_password_sent_at):
+    verification_required = get_settings().require_email_verification
+    if (
+        user is None
+        or (verification_required and not user.is_verified)
+        or not user.is_active
+        or cooldown_active(user.reset_password_sent_at)
+    ):
         return generic
     reset_token = issue_password_reset_token(user)
     db.commit()

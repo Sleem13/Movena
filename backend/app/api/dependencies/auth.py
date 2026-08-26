@@ -6,6 +6,7 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from app.core.config import get_settings
 from app.core.security import decode_access_token
 from app.db.database import get_db
 from app.db.models import User
@@ -38,7 +39,7 @@ def optional_current_user(
         raise AuthError(401, "TOKEN_REVOKED", "This session is no longer valid. Please log in again.")
     if not user.is_active:
         raise AuthError(403, "USER_INACTIVE", "This user account is inactive.")
-    if not user.is_verified:
+    if get_settings().require_email_verification and not user.is_verified:
         raise AuthError(403, "EMAIL_NOT_VERIFIED", "Verify your email before accessing this resource.")
     return user
 
@@ -72,7 +73,6 @@ require_patient_or_therapist = require_any_role({UserRole.patient, UserRole.ther
 
 
 def analysis_current_user(user: User | None = Depends(optional_current_user)) -> User | None:
-    from app.core.config import get_settings
     if get_settings().require_auth_for_analysis and user is None:
         raise AuthError(401, "AUTH_REQUIRED", "Please log in to analyze a video.")
     return user
