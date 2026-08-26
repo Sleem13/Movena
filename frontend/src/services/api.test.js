@@ -57,21 +57,24 @@ describe("deployment API configuration", () => {
   });
 
   it.each([
-    ["push_up", "push-up"],
-    ["shoulder_press", "shoulder-press"],
-    ["bicep_curl", "bicep-curl"],
-    ["hammer_curl", "hammer-curl"],
-    ["shoulder_flexion", "shoulder-flexion"],
-    ["walking_gait_screen", "gait"],
-    ["balance", "balance"],
-  ])("routes %s to its dedicated analysis endpoint", async (exerciseId, endpoint) => {
-    mocks.post.mockResolvedValue({ data: { exercise_id: exerciseId } });
+    "push_up",
+    "shoulder_press",
+    "bicep_curl",
+    "hammer_curl",
+    "shoulder_flexion",
+    "walking_gait_screen",
+    "balance",
+  ])("routes %s through its durable analysis job", async (exerciseId) => {
+    mocks.post.mockResolvedValue({ data: { job_id: "job-1", status: "queued", progress: 5 } });
+    mocks.get.mockResolvedValue({ data: { job_id: "job-1", status: "completed", progress: 100, result: { exercise_id: exerciseId } } });
     await analyzeExerciseVideo(exerciseId, new File(["video"], "movement.mp4", { type: "video/mp4" }));
-    expect(mocks.post.mock.calls[0][0]).toContain(`/api/v1/analyze/${endpoint}?`);
+    expect(mocks.post.mock.calls[0][0]).toContain(`/api/v1/analysis-jobs/${exerciseId}?`);
+    expect(mocks.get).toHaveBeenCalledWith("/api/v1/analysis-jobs/job-1", { signal: undefined });
   });
 
   it("sends the subject-warning override only when requested", async () => {
-    mocks.post.mockResolvedValue({ data: { exercise_id: "walking_gait_screen" } });
+    mocks.post.mockResolvedValue({ data: { job_id: "job-1", status: "queued", progress: 5 } });
+    mocks.get.mockResolvedValue({ data: { status: "completed", progress: 100, result: { exercise_id: "walking_gait_screen" } } });
     await analyzeExerciseVideo("walking_gait_screen", new File(["video"], "gait.mp4", { type: "video/mp4" }), {
       continue_on_subject_warning: true,
     });
@@ -79,12 +82,34 @@ describe("deployment API configuration", () => {
   });
 
   it("forwards an abort signal to the analysis upload", async () => {
-    mocks.post.mockResolvedValue({ data: { exercise_id: "push_up" } });
+    mocks.post.mockResolvedValue({ data: { job_id: "job-1", status: "queued", progress: 5 } });
+    mocks.get.mockResolvedValue({ data: { status: "completed", progress: 100, result: { exercise_id: "push_up" } } });
     const controller = new AbortController();
     await analyzeExerciseVideo("push_up", new File(["video"], "push-up.mp4", { type: "video/mp4" }), {
       signal: controller.signal,
     });
     expect(mocks.post.mock.calls[0][2]).toEqual(expect.objectContaining({ signal: controller.signal }));
+  });
+
+  it("reports worker progress while polling", async () => {
+    mocks.post.mockResolvedValue({ data: { job_id: "job-1", status: "queued", progress: 5 } });
+    mocks.get.mockResolvedValue({ data: { status: "completed", progress: 100, result: { exercise_id: "push_up" } } });
+    const onProgress = vi.fn();
+    await analyzeExerciseVideo("push_up", new File(["video"], "push-up.mp4", { type: "video/mp4" }), {}, onProgress);
+    expect(onProgress).toHaveBeenCalledWith(100);
+  });
+
+  it("cancels the durable backend job when the client aborts", async () => {
+    const controller = new AbortController();
+    mocks.post.mockResolvedValue({ data: { job_id: "job-cancel", status: "queued", progress: 5 } });
+    mocks.get.mockRejectedValue({ name: "CanceledError", code: "ERR_CANCELED" });
+    controller.abort();
+    await expect(analyzeExerciseVideo(
+      "push_up",
+      new File(["video"], "push-up.mp4", { type: "video/mp4" }),
+      { signal: controller.signal },
+    )).rejects.toEqual(expect.objectContaining({ code: "ERR_CANCELED" }));
+    expect(mocks.post).toHaveBeenLastCalledWith("/api/v1/analysis-jobs/job-cancel/cancel");
   });
 
   it("uploads a video to the temporal recognition endpoint", async () => {

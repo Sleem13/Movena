@@ -23,6 +23,7 @@ locals {
   frontend_url = "https://${aws_cloudfront_distribution.app.domain_name}"
   selected_azs = slice(data.aws_availability_zones.available.names, 0, 2)
   common_environment = [
+    { name = "ANALYSIS_JOB_MAX_CONCURRENCY", value = "1" },
     { name = "APP_ENV", value = var.environment },
     { name = "APP_VERSION", value = var.app_version },
     { name = "API_HOST", value = "0.0.0.0" },

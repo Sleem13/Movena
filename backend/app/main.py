@@ -1,4 +1,5 @@
 import os
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, status
 from fastapi.exceptions import RequestValidationError
@@ -20,6 +21,7 @@ from app.api.routes.sessions import router as sessions_router
 from app.api.routes.exercise_recognition import router as exercise_recognition_router
 from app.api.routes.exercises import router as exercises_router
 from app.api.routes.realtime_coaching import router as realtime_coaching_router
+from app.api.routes.analysis_jobs import router as analysis_jobs_router
 from app.api.v1.therapist import router as therapist_router
 from app.api.v1.auth import router as auth_router
 from app.api.v1.admin import router as admin_router
@@ -52,10 +54,20 @@ if os.getenv("SEED_SUPER_ADMIN_ON_START", "").strip().lower() in {"1", "true", "
 
     seed_super_admin_from_environment(reset=False)
 
+
+@asynccontextmanager
+async def lifespan(_app: FastAPI):
+    if os.getenv("ANALYSIS_JOB_WORKER") != "1":
+        from app.services.analysis_job_service import recover_analysis_jobs
+
+        recover_analysis_jobs()
+    yield
+
 app = FastAPI(
     title=settings.project_name,
     version=settings.version,
     description="Movement-analysis API for the PhysioVision AI educational MVP.",
+    lifespan=lifespan,
 )
 
 
@@ -138,6 +150,7 @@ if settings.enable_exercise_recognition:
     app.include_router(exercise_recognition_router)
 app.include_router(exercises_router)
 app.include_router(realtime_coaching_router)
+app.include_router(analysis_jobs_router)
 app.include_router(auth_router)
 app.include_router(admin_router)
 if settings.enable_session_history:

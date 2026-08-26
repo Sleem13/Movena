@@ -59,6 +59,35 @@ class AnalysisSession(Base):
     patient: Mapped["PatientProfile | None"] = relationship(back_populates="sessions")
 
 
+class AnalysisJob(Base):
+    """Durable ownership and lifecycle record for background video analysis."""
+
+    __tablename__ = "analysis_jobs"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    job_id: Mapped[str] = mapped_column(String(36), unique=True, index=True, nullable=False)
+    owner_user_id: Mapped[str] = mapped_column(String(36), index=True, nullable=False)
+    exercise_id: Mapped[str] = mapped_column(String(64), index=True, nullable=False)
+    status: Mapped[str] = mapped_column(String(24), index=True, nullable=False, default="queued")
+    stage: Mapped[str] = mapped_column(String(64), nullable=False, default="queued")
+    progress: Mapped[int] = mapped_column(Integer, nullable=False, default=5)
+    source_path: Mapped[str] = mapped_column(Text, nullable=False)
+    source_filename: Mapped[str] = mapped_column(String(255), nullable=False)
+    content_type: Mapped[str | None] = mapped_column(String(128))
+    options_json: Mapped[str] = mapped_column(Text, default="{}", nullable=False)
+    result_json: Mapped[str | None] = mapped_column(Text)
+    error_code: Mapped[str | None] = mapped_column(String(128))
+    message: Mapped[str | None] = mapped_column(Text)
+    http_status: Mapped[int | None] = mapped_column(Integer)
+    cancel_requested: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    attempts: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    max_attempts: Mapped[int] = mapped_column(Integer, default=2, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now, nullable=False)
+    started_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now, onupdate=utc_now, nullable=False)
+
+
 class User(Base):
     __tablename__ = "users"
     id: Mapped[int] = mapped_column(Integer, primary_key=True)

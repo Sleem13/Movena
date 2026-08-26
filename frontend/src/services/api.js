@@ -26,32 +26,76 @@ export async function analyzeExerciseVideo(exerciseId, videoFile, options = {}, 
     save_session: String(Boolean(options.save_session)),
   });
 
-  const endpoint = {
-    bodyweight_squat: "squat",
-    sit_to_stand: "sit-to-stand",
-    knee_extension: "knee-extension",
-    shoulder_abduction: "shoulder-abduction",
-    shoulder_flexion: "shoulder-flexion",
-    hip_abduction: "hip-abduction",
-    push_up: "push-up",
-    shoulder_press: "shoulder-press",
-    bicep_curl: "bicep-curl",
-    hammer_curl: "hammer-curl",
-    walking_gait_screen: "gait",
-    balance: "balance",
-  }[exerciseId];
-  if (!endpoint) throw new Error(`Unsupported exercise: ${exerciseId}`);
-  const response = await api.post(`/api/v1/analyze/${endpoint}?${query}`, formData, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-    onUploadProgress: (event) => {
-      if (onProgress && event.total) onProgress(Math.round((event.loaded * 100) / event.total));
-    },
-    signal: options.signal,
-  });
+  if (options.patient_id) query.set("patient_id", options.patient_id);
 
-  return response.data;
+  const delay = (milliseconds) => new Promise((resolve, reject) => {
+    const finish = () => {
+      options.signal?.removeEventListener("abort", abort);
+      resolve();
+    };
+    const timeout = setTimeout(finish, milliseconds);
+    const abort = () => {
+      clearTimeout(timeout);
+      options.signal?.removeEventListener("abort", abort);
+      const error = new Error("Analysis cancelled.");
+      error.name = "CanceledError";
+      error.code = "ERR_CANCELED";
+      reject(error);
+    };
+    if (options.signal?.aborted) abort();
+    else options.signal?.addEventListener("abort", abort, { once: true });
+  });
+  let jobId;
+  try {
+    const submitted = await api.post(`/api/v1/analysis-jobs/${encodeURIComponent(exerciseId)}?${query}`, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+      onUploadProgress: (event) => {
+        if (onProgress && event.total) onProgress(Math.round((event.loaded * 20) / event.total));
+      },
+      signal: options.signal,
+    });
+    jobId = submitted.data.job_id;
+    onProgress?.(Math.max(20, submitted.data.progress || 0));
+
+    let pollFailures = 0;
+    for (let attempt = 0; attempt < 1200; attempt += 1) {
+      let job;
+      try {
+        ({ data: job } = await api.get(`/api/v1/analysis-jobs/${jobId}`, { signal: options.signal }));
+        pollFailures = 0;
+      } catch (error) {
+        if (options.signal?.aborted || error?.code === "ERR_CANCELED") throw error;
+        const transient = !error?.response || error.response.status >= 500;
+        if (!transient || pollFailures >= 4) throw error;
+        pollFailures += 1;
+        await delay(750 * pollFailures);
+        continue;
+      }
+      onProgress?.(Math.max(20, Math.min(100, 20 + Math.round((job.progress || 0) * 0.8))));
+      if (job.status === "completed") return job.result;
+      if (job.status === "failed") {
+        const error = new Error(job.message || "Analysis failed.");
+        error.response = {
+          status: job.http_status || 500,
+          data: job.result || { error_code: job.error_code, message: job.message },
+        };
+        throw error;
+      }
+      if (job.status === "cancelled") {
+        const error = new Error("Analysis cancelled.");
+        error.name = "CanceledError";
+        error.code = "ERR_CANCELED";
+        throw error;
+      }
+      await delay(750);
+    }
+    throw new Error("Analysis is taking longer than expected. You can safely return to this page later.");
+  } catch (error) {
+    if (jobId && (options.signal?.aborted || error?.code === "ERR_CANCELED")) {
+      await api.post(`/api/v1/analysis-jobs/${jobId}/cancel`).catch(() => undefined);
+    }
+    throw error;
+  }
 }
 
 export function analyzeSquatVideo(videoFile, options = {}, onProgress) {
