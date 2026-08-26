@@ -26,6 +26,7 @@ def test_non_video_validation_error_is_not_reported_as_missing_video():
     response = client.post(
         "/api/v1/auth/register",
         json={
+            "username": "reviewer",
             "email": "reviewer@example.com",
             "password": "short7",
             "full_name": "Reviewer",
