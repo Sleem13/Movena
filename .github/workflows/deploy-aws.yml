@@ -96,6 +96,14 @@ jobs:
         env:
           IMAGE: ${{ steps.ecr.outputs.repository }}:${{ github.sha }}
         run: |
+          REPOSITORY="${IMAGE%:*}"
+          REPOSITORY_NAME="${REPOSITORY##*/}"
+          if aws ecr describe-images \
+            --repository-name "$REPOSITORY_NAME" \
+            --image-ids "imageTag=${{ github.sha }}" >/dev/null 2>&1; then
+            echo "Reusing existing immutable image $IMAGE"
+            exit 0
+          fi
           docker build --pull --tag "$IMAGE" .
           docker push "$IMAGE"
       - name: Plan infrastructure
