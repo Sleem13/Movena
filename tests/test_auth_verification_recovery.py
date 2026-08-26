@@ -6,6 +6,7 @@ from sqlalchemy.orm import sessionmaker
 
 from app.api.v1 import auth as auth_routes
 from app.core.authorization import permissions_for_role
+from app.core.config import get_settings
 from app.core.security import create_access_token, get_password_hash
 from app.services.auth_token_service import token_hash
 from app.db.database import Base, create_database_engine, get_db, init_db
@@ -30,6 +31,8 @@ def auth_client(tmp_path):
 
 
 def test_registration_persists_role_permissions_and_requires_verification(tmp_path, monkeypatch):
+    monkeypatch.setenv("REQUIRE_EMAIL_VERIFICATION", "true")
+    get_settings.cache_clear()
     client, factory = auth_client(tmp_path)
     messages = []
     monkeypatch.setattr(auth_routes, "send_verification_email", lambda email, token: messages.append((email, token)))
@@ -65,6 +68,7 @@ def test_registration_persists_role_permissions_and_requires_verification(tmp_pa
         assert retained.role == "patient" and retained.permissions == permissions_for_role("patient")
     finally:
         app.dependency_overrides.clear()
+        get_settings.cache_clear()
 
 
 def test_resend_and_single_use_password_recovery(tmp_path, monkeypatch):

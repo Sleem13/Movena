@@ -5,7 +5,7 @@ import { Alert, Button, Card } from "../components/common/UI.jsx";
 import { useLocale } from "../i18n/LocaleContext.jsx";
 import PasswordInput from "../components/auth/PasswordInput.jsx";
 
-export default function Login({ onSuccess, onRegister, onForgotPassword, onVerifyEmail }) {
+export default function Login({ onSuccess, onRegister }) {
   const { login } = useAuth();
   const { t } = useLocale();
   const [error, setError] = useState("");
@@ -60,10 +60,7 @@ export default function Login({ onSuccess, onRegister, onForgotPassword, onVerif
             </span>
           </label>
           <PasswordInput label={t("common.password")} name="password" autoComplete="current-password" />
-          <div className="-mt-2 flex justify-between gap-3 text-xs font-semibold">
-            <button type="button" onClick={onVerifyEmail} className="text-slate-500 hover:text-clinical-blue">{t("auth.resendVerification")}</button>
-            <button type="button" onClick={onForgotPassword} className="text-clinical-blue hover:text-blue-700">{t("auth.forgotPassword")}</button>
-          </div>
+          <p className="-mt-2 text-xs leading-5 text-slate-500">{t("auth.managedAccessHelp")}</p>
           <Button className="mt-1 w-full" disabled={submitting}>
             {submitting ? t("auth.loggingIn") : t("auth.login")}
             {!submitting && <ArrowRight size={17} />}

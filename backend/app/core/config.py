@@ -104,6 +104,7 @@ class Settings(BaseModel):
     jwt_algorithm: str = "HS256"
     frontend_url: str = "http://localhost:5173"
     email_delivery_mode: str = "console"
+    require_email_verification: bool = False
     email_from: str = "no-reply@physiovision.local"
     smtp_host: str = ""
     smtp_port: int = 587
@@ -165,6 +166,7 @@ class Settings(BaseModel):
             jwt_algorithm=os.getenv("JWT_ALGORITHM", "HS256"),
             frontend_url=os.getenv("FRONTEND_URL", "http://localhost:5173").rstrip("/"),
             email_delivery_mode=os.getenv("EMAIL_DELIVERY_MODE", "console").strip().lower(),
+            require_email_verification=_bool("REQUIRE_EMAIL_VERIFICATION", False),
             email_from=os.getenv("EMAIL_FROM", "no-reply@physiovision.local").strip(),
             smtp_host=os.getenv("SMTP_HOST", "").strip(),
             smtp_port=int(os.getenv("SMTP_PORT", "587")),
@@ -188,6 +190,7 @@ class Settings(BaseModel):
             "subject_continuity_guard": self.enable_subject_continuity_guard,
             "public_demo_mode": self.enable_public_demo_mode,
             "auth_required_for_analysis": self.require_auth_for_analysis,
+            "email_verification": self.require_email_verification,
         }
 
     @property
@@ -216,7 +219,7 @@ class Settings(BaseModel):
             issues.append("production DATABASE_URL must use PostgreSQL")
         if not self.enable_subject_continuity_guard:
             issues.append("ENABLE_SUBJECT_CONTINUITY_GUARD must be true")
-        if self.app_env == "production" and self.email_delivery_mode != "smtp":
+        if self.app_env == "production" and self.require_email_verification and self.email_delivery_mode != "smtp":
             issues.append("production email verification requires EMAIL_DELIVERY_MODE=smtp")
         if self.email_delivery_mode not in {"console", "smtp"}:
             issues.append("EMAIL_DELIVERY_MODE must be 'console' or 'smtp'")

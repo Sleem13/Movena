@@ -13,6 +13,7 @@ class UserRole(str, Enum):
 
 
 class UserRegisterRequest(BaseModel):
+    username: str | None = Field(default=None, min_length=3, max_length=64)
     email: str
     password: str = Field(min_length=8, max_length=128)
     full_name: str | None = Field(default=None, max_length=120)
@@ -26,6 +27,16 @@ class UserRegisterRequest(BaseModel):
             raise ValueError("A valid email address is required.")
         return value
 
+    @field_validator("username")
+    @classmethod
+    def valid_username(cls, value: str | None) -> str | None:
+        if value is None or not value.strip():
+            return None
+        normalized = value.strip().lower()
+        if not all(character.isalnum() or character in "._-" for character in normalized):
+            raise ValueError("Username may contain only letters, numbers, dots, hyphens, and underscores.")
+        return normalized
+
 
 class UserLoginRequest(BaseModel):
     email: str
@@ -34,6 +45,7 @@ class UserLoginRequest(BaseModel):
 
 class UserSummary(BaseModel):
     user_id: str
+    username: str | None = None
     email: str
     full_name: str | None = None
     role: UserRole

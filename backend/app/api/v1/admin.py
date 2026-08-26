@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from uuid import uuid4
 
 from fastapi import APIRouter, Depends, Query, status
 from fastapi.responses import JSONResponse
@@ -14,12 +15,13 @@ from app.core.security import get_password_hash
 from app.core.authorization import permissions_json_for_role
 from app.db.crud import to_summary
 from app.db.database import get_db
-from app.db.models import AnalysisSession, AuditLog, User, UserConsent
+from app.db.models import AnalysisSession, AuditLog, User, UserConsent, utc_now
 from app.schemas.admin_schema import (
     AccountActionResponse,
     AccountRoleUpdate,
     AccountStatusUpdate,
     AdminPasswordReset,
+    AdminUserCreate,
     ManagedUserDetail,
     ManagedUserSummary,
 )
@@ -83,12 +85,40 @@ def list_users(
     statement = select(User).order_by(User.created_at.desc())
     if search:
         term = f"%{search.strip().lower()}%"
-        statement = statement.where(or_(func.lower(User.email).like(term), func.lower(User.full_name).like(term)))
+        statement = statement.where(or_(func.lower(User.email).like(term), func.lower(User.username).like(term), func.lower(User.full_name).like(term)))
     if role:
         statement = statement.where(User.role == role.value)
     if account_status:
         statement = statement.where(User.account_status == account_status)
     return [managed_summary(db, user) for user in db.scalars(statement).all()]
+
+
+@router.post("", response_model=ManagedUserSummary, status_code=status.HTTP_201_CREATED)
+def create_user(data: AdminUserCreate, actor: User = Depends(require_super_admin), db: Session = Depends(get_db)):
+    if data.role == UserRole.super_admin:
+        return error("ROLE_NOT_ALLOWED", "Additional super administrators must use protected provisioning.", 403)
+    if db.scalar(select(User).where(func.lower(User.email) == data.email)):
+        return error("EMAIL_ALREADY_REGISTERED", "An account with this email already exists.", 409)
+    if db.scalar(select(User).where(func.lower(User.username) == data.username)):
+        return error("USERNAME_ALREADY_REGISTERED", "An account with this username already exists.", 409)
+    target = User(
+        user_id=str(uuid4()),
+        username=data.username,
+        email=data.email,
+        full_name=data.full_name,
+        password_hash=get_password_hash(data.password),
+        role=data.role.value,
+        permissions_json=permissions_json_for_role(data.role.value),
+        is_active=True,
+        is_verified=True,
+        email_verified_at=utc_now(),
+        account_status="active",
+    )
+    db.add(target)
+    audit(db, actor, "user.created", target, {"username": target.username, "email": target.email, "role": target.role})
+    db.commit()
+    db.refresh(target)
+    return managed_summary(db, target)
 
 
 @router.get("/{user_id}", response_model=ManagedUserDetail)

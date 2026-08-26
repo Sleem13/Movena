@@ -65,6 +65,41 @@ def test_super_admin_manages_accounts_and_protected_account_is_immutable(tmp_pat
             "owner@example.com", "admin@example.com", "patient@example.com"
         }
 
+        created = client.post(
+            "/api/v1/admin/users",
+            headers=root_headers,
+            json={
+                "username": "therapist.one",
+                "email": "therapist@example.com",
+                "full_name": "Therapist One",
+                "password": "AssignedPassword123",
+                "role": "therapist",
+            },
+        )
+        assert created.status_code == 201
+        assert created.json()["username"] == "therapist.one"
+        assert created.json()["role"] == "therapist"
+        assert created.json()["is_verified"] is True
+        logged = client.post(
+            "/api/v1/auth/login",
+            json={"email": "therapist.one", "password": "AssignedPassword123"},
+        )
+        assert logged.status_code == 200
+        assert logged.json()["user"]["email"] == "therapist@example.com"
+
+        duplicate = client.post(
+            "/api/v1/admin/users",
+            headers=root_headers,
+            json={
+                "username": "therapist.one",
+                "email": "another@example.com",
+                "full_name": "Another Therapist",
+                "password": "AssignedPassword123",
+                "role": "therapist",
+            },
+        )
+        assert duplicate.status_code == 409
+
         paused = client.patch(
             "/api/v1/admin/users/patient-1/status",
             headers=root_headers,
@@ -97,7 +132,7 @@ def test_super_admin_manages_accounts_and_protected_account_is_immutable(tmp_pat
         session = factory()
         actions = set(session.scalars(select(AuditLog.action)).all())
         session.close()
-        assert {"user.status_changed", "user.password_reset"}.issubset(actions)
+        assert {"user.created", "user.status_changed", "user.password_reset"}.issubset(actions)
     finally:
         app.dependency_overrides.clear()
 

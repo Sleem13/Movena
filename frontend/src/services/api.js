@@ -193,6 +193,7 @@ export async function requestPasswordReset(email) { return (await api.post("/api
 export async function submitPasswordReset(token, newPassword) { return (await api.post("/api/v1/auth/reset-password", { token, new_password: newPassword })).data; }
 
 export async function listManagedUsers(params = {}) { return (await api.get("/api/v1/admin/users", { params })).data; }
+export async function createManagedUser(payload) { return (await api.post("/api/v1/admin/users", payload)).data; }
 export async function getManagedUser(userId) { return (await api.get(`/api/v1/admin/users/${userId}`)).data; }
 export async function updateManagedUserStatus(userId, status, reason) {
   return (await api.patch(`/api/v1/admin/users/${userId}/status`, { status, reason })).data;

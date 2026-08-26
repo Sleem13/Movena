@@ -59,6 +59,7 @@ def init_db(bind: Engine | None = None) -> None:
     if "users" in inspect(target).get_table_names():
         user_columns = {column["name"] for column in inspect(target).get_columns("users")}
         user_additions = {
+            "username": "VARCHAR(64) NULL",
             "account_status": "VARCHAR(32) NOT NULL DEFAULT 'active'",
             "is_protected": "BOOLEAN NOT NULL DEFAULT false",
             "token_version": "INTEGER NOT NULL DEFAULT 0",
@@ -85,6 +86,7 @@ def init_db(bind: Engine | None = None) -> None:
                 )
             connection.execute(text("CREATE UNIQUE INDEX IF NOT EXISTS ix_users_verification_token_hash ON users (verification_token_hash)"))
             connection.execute(text("CREATE UNIQUE INDEX IF NOT EXISTS ix_users_reset_password_token_hash ON users (reset_password_token_hash)"))
+            connection.execute(text("CREATE UNIQUE INDEX IF NOT EXISTS ix_users_username ON users (username)"))
     # Development-only compatibility migration until versioned Alembic migrations are introduced.
     if target.dialect.name == "sqlite" and "analysis_sessions" in inspect(target).get_table_names():
         columns = {column["name"] for column in inspect(target).get_columns("analysis_sessions")}

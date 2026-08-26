@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Ban, CheckCircle2, ChevronRight, KeyRound, PauseCircle, Search, ShieldCheck, Trash2, UserCog, Users } from "lucide-react";
+import { Ban, CheckCircle2, ChevronRight, KeyRound, PauseCircle, Plus, Search, ShieldCheck, Trash2, UserCog, UserPlus, Users, X } from "lucide-react";
 
 import PasswordInput from "../components/auth/PasswordInput.jsx";
 import Select from "../components/common/Select.jsx";
@@ -7,6 +7,7 @@ import { PageHeader } from "../components/layout/AppShell.jsx";
 import { Alert, Badge, Button, EmptyState, LoadingSpinner } from "../components/common/UI.jsx";
 import {
   deleteManagedUser,
+  createManagedUser,
   getManagedUser,
   listManagedUsers,
   resetManagedUserPassword,
@@ -50,6 +51,7 @@ function UserDetail({ user, reason, onReasonChange, busy, onAction }) {
 
     <div className="divide-y divide-slate-100 px-5 sm:px-6">
       <DetailRow label="Role" value={user.role} />
+      <DetailRow label="Username" value={user.username || "Not assigned"} />
       <DetailRow label="Account created" value={readableDate(user.created_at)} />
       <DetailRow label="Last session" value={readableDate(user.last_session_at)} />
       <DetailRow label="Saved sessions" value={user.session_count} />
@@ -96,6 +98,9 @@ export default function SuperAdminDashboard() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
+  const [createOpen, setCreateOpen] = useState(false);
+  const [createRole, setCreateRole] = useState("patient");
+  const [creating, setCreating] = useState(false);
 
   async function loadUsers(query = search) {
     setLoading(true); setError("");
@@ -138,14 +143,46 @@ export default function SuperAdminDashboard() {
     finally { setBusy(false); }
   }
 
+  async function createAccount(event) {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const data = new FormData(form);
+    setCreating(true); setError(""); setNotice("");
+    try {
+      const created = await createManagedUser({
+        full_name: data.get("full_name"),
+        username: data.get("username"),
+        email: data.get("email"),
+        password: data.get("password"),
+        role: createRole,
+      });
+      setNotice(`Account created for ${created.full_name || created.username}. It is active and ready to log in.`);
+      setCreateOpen(false); setCreateRole("patient"); form.reset();
+      await loadUsers("");
+      setSelected(await getManagedUser(created.user_id));
+    } catch (requestError) { setError(requestError.response?.data?.message || "The account could not be created."); }
+    finally { setCreating(false); }
+  }
+
   return <main>
-    <PageHeader eyebrow="Protected administration" title="User access control" description="Review account identity, access, and application data. All role, status, password, and deletion changes are enforced by the server and written to the audit log." />
+    <PageHeader eyebrow="Protected administration" title="User access control" description="Create user profiles and manage identity, roles, passwords, status, and application access. Every administrative change is written to the audit log." actions={<Button type="button" onClick={() => setCreateOpen((value) => !value)}>{createOpen ? <X size={17} /> : <Plus size={17} />}{createOpen ? "Cancel" : "Create user"}</Button>} />
     {error ? <Alert className="mb-5">{error}</Alert> : null}
     {notice ? <Alert tone="info" className="mb-5">{notice}</Alert> : null}
+    {createOpen ? <section className="mb-5 rounded-[14px] border border-blue-200 bg-white p-5 shadow-panel" aria-labelledby="create-user-heading">
+      <div className="flex items-start gap-3"><span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-blue-50 text-blue-700"><UserPlus size={19} /></span><div><h2 id="create-user-heading" className="text-lg font-bold text-clinical-ink">Create a platform user</h2><p className="mt-1 text-sm text-slate-500">The account is activated immediately; no email verification is required while managed access is enabled.</p></div></div>
+      <form className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-5" onSubmit={createAccount}>
+        <label className="grid gap-2 text-sm font-semibold text-slate-700">Full name<input name="full_name" required maxLength={120} className="min-h-11 rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm text-clinical-ink" placeholder="Dr Jane Smith" /></label>
+        <label className="grid gap-2 text-sm font-semibold text-slate-700">Username<input name="username" required minLength={3} maxLength={64} pattern="[A-Za-z0-9._-]+" className="min-h-11 rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm text-clinical-ink" placeholder="jane.smith" /></label>
+        <label className="grid gap-2 text-sm font-semibold text-slate-700">Email<input name="email" type="email" required maxLength={320} className="min-h-11 rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm text-clinical-ink" placeholder="jane@example.com" /></label>
+        <label className="grid gap-2 text-sm font-semibold text-slate-700">Role<Select ariaLabel="New user role" value={createRole} onChange={setCreateRole} options={ROLES.map((role) => ({ value: role, label: role.replaceAll("_", " ") }))} /></label>
+        <div className="grid gap-2 text-sm font-semibold text-slate-700"><PasswordInput label="Temporary password" name="password" autoComplete="new-password" minLength={8} /></div>
+        <div className="flex items-end gap-2 md:col-span-2 xl:col-span-5"><Button disabled={creating}>{creating ? "Creating account…" : "Create active account"}</Button><Button type="button" variant="ghost" onClick={() => setCreateOpen(false)}>Cancel</Button></div>
+      </form>
+    </section> : null}
     <div className="grid items-start gap-5 xl:grid-cols-[minmax(0,1.25fr)_minmax(420px,0.85fr)]">
       <section className="overflow-hidden rounded-[14px] border border-clinical-line bg-white shadow-panel" aria-label="User accounts">
         <form className="flex gap-2 border-b border-slate-200 p-4" onSubmit={(event) => { event.preventDefault(); loadUsers(); }}>
-          <label className="relative flex-1"><span className="sr-only">Search users</span><Search className="absolute left-3 top-3 text-slate-400" size={18} /><input value={search} onChange={(event) => setSearch(event.target.value)} className="min-h-11 w-full border bg-white pl-10 pr-3 text-sm" placeholder="Search users by name or email" /></label>
+          <label className="relative flex-1"><span className="sr-only">Search users</span><Search className="absolute left-3 top-3 text-slate-400" size={18} /><input value={search} onChange={(event) => setSearch(event.target.value)} className="min-h-11 w-full border bg-white pl-10 pr-3 text-sm" placeholder="Search by name, username, or email" /></label>
           <Button type="submit" variant="secondary">Search</Button>
         </form>
         <div className="hidden grid-cols-[minmax(0,1.4fr)_minmax(120px,.65fr)_minmax(100px,.55fr)_72px] gap-4 border-b border-slate-200 bg-slate-50/70 px-4 py-2.5 text-[11px] font-bold uppercase tracking-wider text-slate-500 sm:grid"><span>User</span><span>Role</span><span>Status</span><span>Sessions</span></div>
@@ -153,7 +190,7 @@ export default function SuperAdminDashboard() {
           {loading ? <div className="p-10 text-center"><LoadingSpinner label="Loading accounts" /></div> : users.length ? users.map((user) => {
             const active = selected?.user_id === user.user_id;
             return <button key={user.user_id} onClick={() => selectUser(user.user_id)} aria-current={active ? "true" : undefined} className={`grid w-full gap-2 border-b border-slate-100 px-4 py-3.5 text-left transition last:border-b-0 sm:grid-cols-[minmax(0,1.4fr)_minmax(120px,.65fr)_minmax(100px,.55fr)_72px] sm:items-center sm:gap-4 ${active ? "bg-blue-50 shadow-[inset_3px_0_0_#2563eb]" : "hover:bg-slate-50"}`}><span className="flex min-w-0 items-center gap-3"><span className={`grid h-9 w-9 shrink-0 place-items-center rounded-full text-xs font-bold ${active ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-600"}`}>{initials(user)}</span><span className="min-w-0"><span className="flex items-center gap-1.5"><span className="block truncate text-sm font-semibold text-clinical-ink">{user.full_name || user.email}</span>{user.is_protected ? <ShieldCheck size={13} className="shrink-0 text-blue-600" /> : null}</span><span className="mt-0.5 block truncate text-xs text-slate-500">{user.email}</span></span></span><span className="text-xs font-medium text-slate-600">{user.role}</span><span><Badge tone={STATUS_TONES[user.account_status] || "slate"}>{user.account_status}</Badge></span><span className="text-xs text-slate-500"><Users className="me-1 inline" size={13} />{user.session_count}</span></button>;
-          }) : <div className="p-6"><EmptyState title="No accounts found" description="Try a different name or email." icon={Users} compact /></div>}
+          }) : <div className="p-6"><EmptyState title="No accounts found" description="Try a different name, username, or email." icon={Users} compact /></div>}
         </div>
       </section>
       <aside className="overflow-hidden rounded-[14px] border border-clinical-line bg-white shadow-panel xl:sticky xl:top-[88px]"><UserDetail user={selected} reason={reason} onReasonChange={setReason} busy={busy} onAction={performAction} /></aside>

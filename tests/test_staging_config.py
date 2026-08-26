@@ -53,10 +53,26 @@ def test_staging_smtp_requires_delivery_settings_and_https_frontend():
 
 
 def test_production_rejects_console_email_mode():
-    settings = safe_staging_settings(app_env="production", email_delivery_mode="console")
+    settings = safe_staging_settings(
+        app_env="production",
+        database_url="postgresql://user:password@db.example.com/physiovision",
+        email_delivery_mode="console",
+        require_email_verification=True,
+    )
 
     with pytest.raises(RuntimeError, match="production email verification requires"):
         settings.validate_deployment_safety()
+
+
+def test_production_allows_console_mode_when_email_verification_is_suspended():
+    settings = safe_staging_settings(
+        app_env="production",
+        database_url="postgresql://user:password@db.example.com/physiovision",
+        email_delivery_mode="console",
+        require_email_verification=False,
+    )
+
+    settings.validate_deployment_safety()
 
 
 def test_production_rejects_local_or_missing_database():

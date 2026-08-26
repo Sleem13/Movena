@@ -43,6 +43,7 @@ locals {
     { name = "ENABLE_SUBJECT_CONTINUITY_GUARD", value = "true" },
     { name = "SEED_SUPER_ADMIN_ON_START", value = tostring(var.seed_super_admin) },
     { name = "EMAIL_DELIVERY_MODE", value = var.email_delivery_mode },
+    { name = "REQUIRE_EMAIL_VERIFICATION", value = "false" },
     { name = "EMAIL_FROM", value = var.email_from },
     { name = "SMTP_HOST", value = var.smtp_host },
     { name = "SMTP_PORT", value = tostring(var.smtp_port) },
