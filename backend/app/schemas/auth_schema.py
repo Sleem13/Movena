@@ -14,7 +14,7 @@ class UserRole(str, Enum):
 
 class UserRegisterRequest(BaseModel):
     email: str
-    password: str = Field(min_length=12, max_length=128)
+    password: str = Field(min_length=8, max_length=128)
     full_name: str | None = Field(default=None, max_length=120)
     role: UserRole = UserRole.researcher_demo
 
@@ -81,7 +81,7 @@ class TokenRequest(BaseModel):
 
 
 class PasswordResetRequest(TokenRequest):
-    new_password: str = Field(min_length=12, max_length=128)
+    new_password: str = Field(min_length=8, max_length=128)
 
 
 class AuthMessageResponse(BaseModel):

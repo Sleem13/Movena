@@ -6,7 +6,7 @@ from fastapi.testclient import TestClient
 
 from app.api.dependencies.auth import AuthError
 from app.api.routes.artifacts import authorize_artifact
-from app.core.config import Settings, get_settings, normalize_database_url
+from app.core.config import Settings, database_url_from_environment, get_settings, normalize_database_url
 from app.services.artifact_service import build_artifact_url
 from app.main import app
 
@@ -56,6 +56,13 @@ def test_production_rejects_console_email_mode():
     settings = safe_staging_settings(app_env="production", email_delivery_mode="console")
 
     with pytest.raises(RuntimeError, match="production email verification requires"):
+        settings.validate_deployment_safety()
+
+
+def test_production_rejects_local_or_missing_database():
+    settings = safe_staging_settings(app_env="production", database_url="sqlite:///local.db")
+
+    with pytest.raises(RuntimeError, match="production DATABASE_URL must use PostgreSQL"):
         settings.validate_deployment_safety()
 
 
@@ -116,6 +123,17 @@ def test_postgres_provider_urls_use_psycopg3():
     assert normalize_database_url("postgresql://user:pass@host/db") == "postgresql+psycopg://user:pass@host/db"
     assert normalize_database_url("postgres://user:pass@host/db") == "postgresql+psycopg://user:pass@host/db"
     assert normalize_database_url("sqlite:///local.db") == "sqlite:///local.db"
+
+
+def test_database_url_can_be_built_from_secret_injected_fields(monkeypatch):
+    monkeypatch.delenv("DATABASE_URL", raising=False)
+    monkeypatch.setenv("DATABASE_HOST", "db.internal")
+    monkeypatch.setenv("DATABASE_PORT", "5432")
+    monkeypatch.setenv("DATABASE_NAME", "physiovision")
+    monkeypatch.setenv("DATABASE_USER", "app_user")
+    monkeypatch.setenv("DATABASE_PASSWORD", "p@ss:/word")
+
+    assert database_url_from_environment() == "postgresql+psycopg://app_user:p%40ss%3A%2Fword@db.internal:5432/physiovision"
 
 
 def test_protected_artifact_url_is_signed_and_rejects_unsigned_access(monkeypatch):

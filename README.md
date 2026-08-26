@@ -225,7 +225,7 @@ Important public client variables:
 
 Never place server secrets in `VITE_*` or `EXPO_PUBLIC_*`. Those values are included in client builds.
 
-Backend configuration includes database, authentication, CORS, upload-size, artifact, report, overlay, history, and analysis-authentication controls. Use `.env.example` and `.env.staging.example` as the source templates.
+Backend configuration includes database, authentication, CORS, upload-size, artifact, report, overlay, history, and analysis-authentication controls. Use `.env.example`, `.env.staging.example`, and `.env.production.example` as the source templates. Production starts fail closed when authentication, HTTPS origins, SMTP delivery, database configuration, or secrets are unsafe.
 
 ### Protected super administrator
 

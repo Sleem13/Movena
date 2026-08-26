@@ -28,6 +28,7 @@ describe("RealtimeCoachingSpike", () => {
     expect(screen.getByText("Exercise coaching lab")).toBeInTheDocument();
     expect(screen.getByText(/No video or audio is uploaded/)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Start camera" })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("combobox", { name: "Live exercise" }));
     expect(screen.getByRole("option", { name: "Bodyweight squat" })).toBeInTheDocument();
     expect(screen.getByRole("option", { name: "Shoulder press" })).toBeInTheDocument();
     expect(screen.getByRole("option", { name: "Lateral raise" })).toBeInTheDocument();
@@ -53,7 +54,8 @@ describe("RealtimeCoachingSpike", () => {
 
   it("updates instructions when a different live exercise is selected", () => {
     render(<LocaleProvider><RealtimeCoachingSpike /></LocaleProvider>);
-    fireEvent.change(screen.getByLabelText("Live exercise"), { target: { value: "bodyweight_squat" } });
+    fireEvent.click(screen.getByLabelText("Live exercise"));
+    fireEvent.click(screen.getByRole("option", { name: "Bodyweight squat" }));
     expect(screen.getByText(/Lower with control until the knees visibly bend/)).toBeInTheDocument();
   });
 

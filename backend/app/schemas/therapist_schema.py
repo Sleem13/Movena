@@ -1,4 +1,4 @@
-"""Therapist dashboard development-prototype contracts."""
+"""Therapist dashboard contracts."""
 
 from pydantic import BaseModel, Field
 
@@ -7,8 +7,8 @@ from app.schemas.session_schema import SessionSummary
 
 
 PROTOTYPE_WARNING = (
-    "Therapist dashboard is a prototype. Do not use with real patient data without "
-    "authentication, consent, and privacy review."
+    "Privacy notice: only process patient information with appropriate authorization "
+    "and consent, and follow applicable privacy and retention policies."
 )
 
 

@@ -37,7 +37,7 @@ def overlay_file_or_404(overlay_id: str):
 def authorize_artifact(artifact_id: str, kind: str, user, expires: int | None, signature: str | None) -> None:
     if not get_settings().require_auth_for_analysis or user is not None:
         return
-    if not valid_artifact_signature(artifact_id.removesuffix(".mp4").removesuffix(".pdf"), kind, expires, signature):
+    if not valid_artifact_signature(artifact_id.removesuffix(".webm").removesuffix(".mp4").removesuffix(".pdf"), kind, expires, signature):
         raise AuthError(401, "AUTH_REQUIRED", "A valid login or unexpired artifact link is required.")
 
 
@@ -49,7 +49,7 @@ def preview_overlay(overlay_id: str, exercise: str = Query("movement"), expires:
         return path
     return FileResponse(
         path,
-        media_type="video/mp4",
+        media_type="video/webm",
         headers={
             "Content-Disposition": f'inline; filename="{artifact_download_filename(exercise, "overlay")}"',
             "Cache-Control": "no-store",
@@ -65,7 +65,7 @@ def download_overlay(overlay_id: str, exercise: str = Query("movement"), expires
         return path
     return FileResponse(
         path,
-        media_type="video/mp4",
+        media_type="video/webm",
         filename=artifact_download_filename(exercise, "overlay"),
     )
 

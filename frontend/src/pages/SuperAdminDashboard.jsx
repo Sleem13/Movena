@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
-import { Ban, KeyRound, PauseCircle, RefreshCw, Search, ShieldCheck, Trash2, UserCog, Users } from "lucide-react";
+import { Ban, CheckCircle2, ChevronRight, KeyRound, PauseCircle, Search, ShieldCheck, Trash2, UserCog, Users } from "lucide-react";
 
+import PasswordInput from "../components/auth/PasswordInput.jsx";
+import Select from "../components/common/Select.jsx";
 import { PageHeader } from "../components/layout/AppShell.jsx";
-import { Alert, Badge, Button, Card, EmptyState, LoadingSpinner } from "../components/common/UI.jsx";
+import { Alert, Badge, Button, EmptyState, LoadingSpinner } from "../components/common/UI.jsx";
 import {
   deleteManagedUser,
   getManagedUser,
@@ -11,7 +13,6 @@ import {
   updateManagedUserRole,
   updateManagedUserStatus,
 } from "../services/api.js";
-import PasswordInput from "../components/auth/PasswordInput.jsx";
 
 const ROLES = ["admin", "therapist", "patient", "researcher_demo"];
 const STATUS_TONES = { active: "teal", paused: "amber", suspended: "red" };
@@ -20,70 +21,70 @@ function readableDate(value) {
   return value ? new Date(value).toLocaleString() : "Never";
 }
 
+function initials(user) {
+  const source = user?.full_name || user?.email || "User";
+  return source.split(/\s+/).map((part) => part[0]).join("").slice(0, 2).toUpperCase();
+}
+
+function DetailRow({ label, value }) {
+  return <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)] gap-4 py-3 text-sm"><span className="text-slate-500">{label}</span><span className="text-right font-medium text-clinical-ink rtl:text-left">{value}</span></div>;
+}
+
 function UserDetail({ user, reason, onReasonChange, busy, onAction }) {
   const [password, setPassword] = useState("");
-  if (!user) return <EmptyState title="Select an account" description="Choose a user to review account data and management options." icon={UserCog} />;
+  if (!user) return <div className="grid min-h-[34rem] place-items-center p-6"><EmptyState title="Select an account" description="Choose a user to review identity, access, and account activity." icon={UserCog} compact /></div>;
   const protectedAccount = user.is_protected || user.role === "super_admin";
-  return (
-    <div className="space-y-5">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <div className="flex items-center gap-2">
-            <h2 className="text-xl font-extrabold text-clinical-ink">{user.full_name || "Unnamed user"}</h2>
-            {protectedAccount ? <Badge tone="blue"><ShieldCheck size={12} className="mr-1" />Protected</Badge> : null}
-          </div>
-          <p className="mt-1 text-sm text-slate-500">{user.email}</p>
-          <p className="mt-2 text-xs text-slate-400">Created {readableDate(user.created_at)} · Last session {readableDate(user.last_session_at)}</p>
+  const actionDisabled = busy || reason.trim().length < 3;
+
+  return <div>
+    <div className="flex flex-wrap items-start justify-between gap-4 border-b border-slate-200 p-5 sm:p-6">
+      <div className="flex min-w-0 items-center gap-3.5">
+        <span className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-clinical-ink text-sm font-bold text-white">{initials(user)}</span>
+        <div className="min-w-0">
+          <div className="flex flex-wrap items-center gap-2"><h2 className="truncate text-lg font-bold text-clinical-ink">{user.full_name || "Unnamed user"}</h2>{protectedAccount ? <Badge tone="blue"><ShieldCheck size={12} className="me-1" />Protected</Badge> : null}</div>
+          <p className="mt-1 truncate text-sm text-slate-500">{user.email}</p>
         </div>
-        <Badge tone={STATUS_TONES[user.account_status] || "slate"}>{user.account_status}</Badge>
       </div>
+      <Badge tone={STATUS_TONES[user.account_status] || "slate"}>{user.account_status}</Badge>
+    </div>
 
-      <div className="grid gap-3 sm:grid-cols-3">
-        <div className="rounded-2xl bg-slate-50 p-4"><p className="text-xs font-bold uppercase tracking-wider text-slate-400">Role</p><p className="mt-1 font-semibold text-slate-700">{user.role}</p></div>
-        <div className="rounded-2xl bg-slate-50 p-4"><p className="text-xs font-bold uppercase tracking-wider text-slate-400">Sessions</p><p className="mt-1 font-semibold text-slate-700">{user.session_count}</p></div>
-        <div className="rounded-2xl bg-slate-50 p-4"><p className="text-xs font-bold uppercase tracking-wider text-slate-400">Verified</p><p className="mt-1 font-semibold text-slate-700">{user.is_verified ? "Yes" : "No"}</p></div>
-      </div>
+    <div className="divide-y divide-slate-100 px-5 sm:px-6">
+      <DetailRow label="Role" value={user.role} />
+      <DetailRow label="Account created" value={readableDate(user.created_at)} />
+      <DetailRow label="Last session" value={readableDate(user.last_session_at)} />
+      <DetailRow label="Saved sessions" value={user.session_count} />
+      <DetailRow label="Email verified" value={user.is_verified ? "Yes" : "No"} />
+    </div>
 
-      {protectedAccount ? (
-        <Alert tone="info">This root account is immutable in the management API. Provisioning credentials are required to change it.</Alert>
-      ) : (
-        <>
-          <label className="block text-sm font-semibold text-slate-700">
-            Reason for change
-            <textarea value={reason} onChange={(event) => onReasonChange(event.target.value)} rows={2} className="mt-2 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm" placeholder="Required for the audit log" />
-          </label>
-          <div className="grid gap-3 sm:grid-cols-2">
-            <label className="text-sm font-semibold text-slate-700">Role
-              <select value={user.role} disabled={busy || reason.trim().length < 3} onChange={(event) => onAction("role", event.target.value)} className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm">
-                {ROLES.map((role) => <option key={role} value={role}>{role}</option>)}
-              </select>
-            </label>
-            <div className="text-sm font-semibold text-slate-700">Account status
-              <div className="mt-2 flex flex-wrap gap-2">
-                <Button variant="secondary" disabled={busy || reason.trim().length < 3 || user.account_status === "active"} onClick={() => onAction("status", "active")}><RefreshCw size={15} />Activate</Button>
-                <Button variant="secondary" disabled={busy || reason.trim().length < 3 || user.account_status === "paused"} onClick={() => onAction("status", "paused")}><PauseCircle size={15} />Pause</Button>
-                <Button variant="secondary" disabled={busy || reason.trim().length < 3 || user.account_status === "suspended"} onClick={() => onAction("status", "suspended")}><Ban size={15} />Suspend</Button>
-              </div>
+    <div className="border-t border-slate-200 p-5 sm:p-6">
+      {protectedAccount ? <Alert tone="info" title="Protected root account">This account is immutable in the management API. Provisioning credentials are required to change it.</Alert> : <div className="space-y-5">
+        <label className="block text-sm font-semibold text-slate-700">Reason for change
+          <textarea value={reason} onChange={(event) => onReasonChange(event.target.value)} rows={2} className="mt-2 w-full border bg-white px-3 py-2 text-sm" placeholder="Required for the audit log" />
+          <span className="mt-1.5 block text-xs font-normal text-slate-500">Explain why this access change is needed.</span>
+        </label>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="text-sm font-semibold text-slate-700"><span>Role</span><Select className="mt-2" ariaLabel="Role" value={user.role} disabled={actionDisabled} onChange={(role) => onAction("role", role)} options={ROLES.map((role) => ({ value: role, label: role }))} /></div>
+          <div className="text-sm font-semibold text-slate-700"><span>Account status</span>
+            <div className="mt-2 grid grid-cols-3 gap-1 rounded-xl bg-slate-100 p-1">
+              <button className={`min-h-9 rounded-lg text-xs font-semibold transition ${user.account_status === "active" ? "bg-white text-teal-700 shadow-sm" : "text-slate-600 hover:bg-white/70"}`} disabled={actionDisabled || user.account_status === "active"} onClick={() => onAction("status", "active")}><CheckCircle2 className="me-1 inline" size={14} />Active</button>
+              <button className={`min-h-9 rounded-lg text-xs font-semibold transition ${user.account_status === "paused" ? "bg-white text-amber-700 shadow-sm" : "text-slate-600 hover:bg-white/70"}`} disabled={actionDisabled || user.account_status === "paused"} onClick={() => onAction("status", "paused")}><PauseCircle className="me-1 inline" size={14} />Paused</button>
+              <button className={`min-h-9 rounded-lg text-xs font-semibold transition ${user.account_status === "suspended" ? "bg-white text-red-700 shadow-sm" : "text-slate-600 hover:bg-white/70"}`} disabled={actionDisabled || user.account_status === "suspended"} onClick={() => onAction("status", "suspended")}><Ban className="me-1 inline" size={14} />Suspended</button>
             </div>
           </div>
-          <div className="rounded-2xl border border-slate-200 p-4">
-            <PasswordInput label="Set a new password" name="managed-password" autoComplete="new-password" value={password} onChange={(event) => setPassword(event.target.value)} minLength={12} placeholder="At least 12 characters" />
-            <Button className="mt-3" disabled={busy || password.length < 12 || reason.trim().length < 3} onClick={async () => { await onAction("password", password); setPassword(""); }}><KeyRound size={16} />Change password</Button>
-          </div>
-          <Button variant="ghost" className="text-red-700 hover:bg-red-50 hover:text-red-800" disabled={busy || reason.trim().length < 3} onClick={() => onAction("delete")}><Trash2 size={16} />Delete account</Button>
-        </>
-      )}
-
-      <div>
-        <h3 className="font-bold text-clinical-ink">Recent analysis data</h3>
-        {user.sessions?.length ? <div className="mt-3 space-y-2">{user.sessions.map((session) => <div key={session.session_id} className="rounded-xl border border-slate-100 bg-slate-50 px-4 py-3 text-sm"><span className="font-semibold text-slate-700">{session.exercise_display_name}</span><span className="ml-2 text-slate-400">{readableDate(session.created_at)}</span></div>)}</div> : <p className="mt-2 text-sm text-slate-500">No analysis sessions belong to this account.</p>}
-      </div>
-      <div>
-        <h3 className="font-bold text-clinical-ink">Consents</h3>
-        <p className="mt-2 text-sm text-slate-500">{user.consents?.length ? `${user.consents.length} consent record(s)` : "No consent records."}</p>
-      </div>
+        </div>
+        <div className="border-t border-slate-200 pt-5">
+          <PasswordInput label="Set a new password" name="managed-password" autoComplete="new-password" value={password} onChange={(event) => setPassword(event.target.value)} minLength={8} placeholder="At least 8 characters" />
+          <Button className="mt-3" disabled={actionDisabled || password.length < 8} onClick={async () => { await onAction("password", password); setPassword(""); }}><KeyRound size={16} />Change password</Button>
+        </div>
+        <div className="border-t border-red-100 pt-5"><p className="text-sm font-semibold text-clinical-ink">Danger zone</p><p className="mt-1 text-xs leading-5 text-slate-500">Permanently remove this account and its access. Existing confirmation remains required.</p><Button variant="ghost" className="mt-3 border border-red-200 text-red-700 hover:bg-red-50 hover:text-red-800" disabled={actionDisabled} onClick={() => onAction("delete")}><Trash2 size={16} />Delete account</Button></div>
+      </div>}
     </div>
-  );
+
+    <div className="border-t border-slate-200 px-5 sm:px-6">
+      <details className="group border-b border-slate-200 py-4"><summary className="flex cursor-pointer list-none items-center justify-between text-sm font-semibold text-clinical-ink">Recent analysis data <ChevronRight size={17} className="text-slate-400 transition group-open:rotate-90 rtl:rotate-180" /></summary>{user.sessions?.length ? <div className="mt-3 space-y-2">{user.sessions.map((session) => <div key={session.session_id} className="rounded-xl bg-slate-50 px-3 py-2.5 text-sm"><span className="font-semibold text-slate-700">{session.exercise_display_name}</span><span className="ms-2 text-slate-400">{readableDate(session.created_at)}</span></div>)}</div> : <p className="mt-2 text-sm text-slate-500">No analysis sessions belong to this account.</p>}</details>
+      <details className="group py-4"><summary className="flex cursor-pointer list-none items-center justify-between text-sm font-semibold text-clinical-ink">Consents <ChevronRight size={17} className="text-slate-400 transition group-open:rotate-90 rtl:rotate-180" /></summary><p className="mt-2 text-sm text-slate-500">{user.consents?.length ? `${user.consents.length} consent record(s)` : "No consent records."}</p></details>
+    </div>
+  </div>;
 }
 
 export default function SuperAdminDashboard() {
@@ -98,7 +99,15 @@ export default function SuperAdminDashboard() {
 
   async function loadUsers(query = search) {
     setLoading(true); setError("");
-    try { setUsers(await listManagedUsers(query ? { search: query } : {})); }
+    try {
+      const items = await listManagedUsers(query ? { search: query } : {});
+      setUsers(items);
+      if (!items.length) setSelected(null);
+      else if (!selected || !items.some((item) => item.user_id === selected.user_id)) {
+        setSelected(await getManagedUser(items[0].user_id));
+        setReason("");
+      }
+    }
     catch (requestError) { setError(requestError.response?.data?.message || "User accounts could not be loaded."); }
     finally { setLoading(false); }
   }
@@ -129,21 +138,25 @@ export default function SuperAdminDashboard() {
     finally { setBusy(false); }
   }
 
-  return <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
-    <PageHeader eyebrow="Protected administration" title="User access control" description="Review every account and its application data. Role, status, password, and deletion changes are enforced by the server and written to the audit log." />
+  return <main>
+    <PageHeader eyebrow="Protected administration" title="User access control" description="Review account identity, access, and application data. All role, status, password, and deletion changes are enforced by the server and written to the audit log." />
     {error ? <Alert className="mb-5">{error}</Alert> : null}
     {notice ? <Alert tone="info" className="mb-5">{notice}</Alert> : null}
-    <div className="grid gap-6 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
-      <Card className="overflow-hidden">
-        <form className="flex gap-2 border-b border-slate-100 p-4" onSubmit={(event) => { event.preventDefault(); loadUsers(); }}>
-          <label className="relative flex-1"><span className="sr-only">Search users</span><Search className="absolute left-3 top-3 text-slate-400" size={18} /><input value={search} onChange={(event) => setSearch(event.target.value)} className="min-h-11 w-full rounded-xl border border-slate-200 bg-slate-50 pl-10 pr-3 text-sm" placeholder="Name or email" /></label>
+    <div className="grid items-start gap-5 xl:grid-cols-[minmax(0,1.25fr)_minmax(420px,0.85fr)]">
+      <section className="overflow-hidden rounded-[14px] border border-clinical-line bg-white shadow-panel" aria-label="User accounts">
+        <form className="flex gap-2 border-b border-slate-200 p-4" onSubmit={(event) => { event.preventDefault(); loadUsers(); }}>
+          <label className="relative flex-1"><span className="sr-only">Search users</span><Search className="absolute left-3 top-3 text-slate-400" size={18} /><input value={search} onChange={(event) => setSearch(event.target.value)} className="min-h-11 w-full border bg-white pl-10 pr-3 text-sm" placeholder="Search users by name or email" /></label>
           <Button type="submit" variant="secondary">Search</Button>
         </form>
-        <div className="max-h-[44rem] overflow-y-auto p-3 [content-visibility:auto]">
-          {loading ? <div className="p-6 text-center"><LoadingSpinner label="Loading accounts" /></div> : users.length ? users.map((user) => <button key={user.user_id} onClick={() => selectUser(user.user_id)} className={`mb-2 w-full rounded-2xl border p-4 text-left transition ${selected?.user_id === user.user_id ? "border-blue-200 bg-blue-50" : "border-slate-100 hover:border-slate-200 hover:bg-slate-50"}`}><div className="flex items-start justify-between gap-3"><div className="min-w-0"><p className="truncate font-bold text-clinical-ink">{user.full_name || user.email}</p><p className="mt-1 truncate text-xs text-slate-500">{user.email}</p></div><Badge tone={STATUS_TONES[user.account_status] || "slate"}>{user.account_status}</Badge></div><div className="mt-3 flex items-center gap-3 text-xs text-slate-400"><span>{user.role}</span><span><Users className="mr-1 inline" size={12} />{user.session_count} sessions</span>{user.is_protected ? <ShieldCheck size={14} className="text-blue-600" /> : null}</div></button>) : <EmptyState title="No accounts found" description="Try a different name or email." icon={Users} />}
+        <div className="hidden grid-cols-[minmax(0,1.4fr)_minmax(120px,.65fr)_minmax(100px,.55fr)_72px] gap-4 border-b border-slate-200 bg-slate-50/70 px-4 py-2.5 text-[11px] font-bold uppercase tracking-wider text-slate-500 sm:grid"><span>User</span><span>Role</span><span>Status</span><span>Sessions</span></div>
+        <div className="max-h-[44rem] overflow-y-auto [content-visibility:auto]">
+          {loading ? <div className="p-10 text-center"><LoadingSpinner label="Loading accounts" /></div> : users.length ? users.map((user) => {
+            const active = selected?.user_id === user.user_id;
+            return <button key={user.user_id} onClick={() => selectUser(user.user_id)} aria-current={active ? "true" : undefined} className={`grid w-full gap-2 border-b border-slate-100 px-4 py-3.5 text-left transition last:border-b-0 sm:grid-cols-[minmax(0,1.4fr)_minmax(120px,.65fr)_minmax(100px,.55fr)_72px] sm:items-center sm:gap-4 ${active ? "bg-blue-50 shadow-[inset_3px_0_0_#2563eb]" : "hover:bg-slate-50"}`}><span className="flex min-w-0 items-center gap-3"><span className={`grid h-9 w-9 shrink-0 place-items-center rounded-full text-xs font-bold ${active ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-600"}`}>{initials(user)}</span><span className="min-w-0"><span className="flex items-center gap-1.5"><span className="block truncate text-sm font-semibold text-clinical-ink">{user.full_name || user.email}</span>{user.is_protected ? <ShieldCheck size={13} className="shrink-0 text-blue-600" /> : null}</span><span className="mt-0.5 block truncate text-xs text-slate-500">{user.email}</span></span></span><span className="text-xs font-medium text-slate-600">{user.role}</span><span><Badge tone={STATUS_TONES[user.account_status] || "slate"}>{user.account_status}</Badge></span><span className="text-xs text-slate-500"><Users className="me-1 inline" size={13} />{user.session_count}</span></button>;
+          }) : <div className="p-6"><EmptyState title="No accounts found" description="Try a different name or email." icon={Users} compact /></div>}
         </div>
-      </Card>
-      <Card className="p-5 sm:p-7"><UserDetail user={selected} reason={reason} onReasonChange={setReason} busy={busy} onAction={performAction} /></Card>
+      </section>
+      <aside className="overflow-hidden rounded-[14px] border border-clinical-line bg-white shadow-panel xl:sticky xl:top-[88px]"><UserDetail user={selected} reason={reason} onReasonChange={setReason} busy={busy} onAction={performAction} /></aside>
     </div>
   </main>;
 }

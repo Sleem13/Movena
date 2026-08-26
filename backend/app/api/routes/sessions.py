@@ -1,4 +1,4 @@
-"""Local development session-history API."""
+"""Protected session-history API."""
 
 from fastapi import APIRouter, Depends, Query, status
 from fastapi.responses import JSONResponse

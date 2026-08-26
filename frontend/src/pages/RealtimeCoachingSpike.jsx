@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { BrainCircuit, Camera, CheckCircle2, Info, ShieldCheck, Square } from "lucide-react";
 
 import { Card, Alert, Button, Badge } from "../components/common/UI.jsx";
+import Select from "../components/common/Select.jsx";
 import { PageHeader } from "../components/layout/AppShell.jsx";
 import RecognitionUploadCard from "../components/recognition/RecognitionUploadCard.jsx";
 import { useLocale } from "../i18n/LocaleContext.jsx";
@@ -305,7 +306,7 @@ export default function RealtimeCoachingSpike({ onConfirmSuggestion }) {
   ];
 
   return (
-    <main className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
+    <main>
       <PageHeader
         eyebrow={t("coach.eyebrow")}
         title={t("coach.title")}
@@ -340,12 +341,10 @@ export default function RealtimeCoachingSpike({ onConfirmSuggestion }) {
             <canvas ref={canvasRef} width={SAMPLE_WIDTH} height={SAMPLE_HEIGHT} className="hidden" aria-hidden="true" />
           </div>
           <div className="flex flex-wrap gap-3 p-5">
-            <label className="min-w-44 text-xs font-semibold text-slate-600">
-              {t("coach.exerciseMode")}
-              <select value={exerciseId} onChange={(event) => setExerciseId(event.target.value)} disabled={status === "active" || status === "requesting"} className="mt-1 block h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-clinical-ink">
-                {EXERCISES.map((id) => <option key={id} value={id}>{t(`coach.exercise.${id}`)}</option>)}
-              </select>
-            </label>
+            <div className="min-w-44 text-xs font-semibold text-slate-600">
+              <span>{t("coach.exerciseMode")}</span>
+              <Select className="mt-1" ariaLabel={t("coach.exerciseMode")} value={exerciseId} onChange={setExerciseId} disabled={status === "active" || status === "requesting"} options={EXERCISES.map((id) => ({ value: id, label: t(`coach.exercise.${id}`) }))} />
+            </div>
             <Button type="button" onClick={startCamera} disabled={status === "requesting" || status === "active"}>
               <Camera size={16} aria-hidden="true" />
               {t("coach.start")}

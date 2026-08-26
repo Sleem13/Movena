@@ -3,6 +3,7 @@ import { Check, FileVideo2, UploadCloud, X } from "lucide-react";
 import { Alert, Button, Card, LoadingSpinner } from "../common/UI.jsx";
 import UploadProgress from "./UploadProgress.jsx";
 import { useLocale } from "../../i18n/LocaleContext.jsx";
+import VideoQualityCheck from "./VideoQualityCheck.jsx";
 
 export default function UploadCard({
   exercise = "bodyweight_squat",
@@ -18,6 +19,7 @@ export default function UploadCard({
 }) {
   const { locale, t, exerciseText } = useLocale();
   const [dragging, setDragging] = useState(false);
+  const [qualityBlocked, setQualityBlocked] = useState(false);
   const names = exerciseText(exercise);
   const uploadName = exercise === "bodyweight_squat" && locale === "en" ? "Squat" : names.short;
 
@@ -89,6 +91,7 @@ export default function UploadCard({
             disabled={isLoading}
           />
         </label>
+        <VideoQualityCheck file={file} onBlockingChange={setQualityBlocked} />
         {error && (
           <div className="mt-4">
             <Alert title={canContinueAfterWarning ? t("upload.warningTitle") : t("upload.errorTitle")}>
@@ -110,7 +113,7 @@ export default function UploadCard({
             <X size={14} className="shrink-0" aria-hidden="true" />
             {t("upload.temporary")}
           </p>
-          <Button type="submit" onClick={onSubmit} disabled={!file || isLoading}>
+          <Button type="submit" onClick={onSubmit} disabled={!file || isLoading || qualityBlocked}>
             {isLoading ? (
               <LoadingSpinner label={t("common.analyzing")} />
             ) : (

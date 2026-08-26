@@ -23,7 +23,7 @@ SUPPORTED_TRACKS = [
     "sensor_timeseries_recognition", "tabular_feature_recognition",
 ]
 LIMITATIONS = [
-    "Exercise recognition is a development candidate.",
+    "Exercise recognition provides an assisted suggestion that must be confirmed before analysis.",
     "Manual exercise selection remains primary.",
     "A suggestion does not provide clinical feedback or activate an unsupported analyzer.",
 ]

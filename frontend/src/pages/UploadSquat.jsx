@@ -5,6 +5,7 @@ import CameraGuide from "../components/upload/CameraGuide.jsx";
 import UploadCard from "../components/upload/UploadCard.jsx";
 import RecognitionUploadCard from "../components/recognition/RecognitionUploadCard.jsx";
 import { Button, Card, LoadingSpinner } from "../components/common/UI.jsx";
+import Select from "../components/common/Select.jsx";
 import { PageHeader } from "../components/layout/AppShell.jsx";
 import { exerciseById } from "../data/exercises.js";
 import { useLocale } from "../i18n/LocaleContext.jsx";
@@ -60,7 +61,7 @@ export default function UploadSquat(props) {
   }
 
   return (
-    <main className="mx-auto w-full max-w-7xl px-5 py-8 sm:px-8 lg:px-10 lg:py-10">
+    <main>
       <PageHeader
         title={t("upload.title")}
         description={t("upload.description", { exercise: selectedName.short })}
@@ -80,29 +81,19 @@ export default function UploadSquat(props) {
                 {showRecognition ? t("upload.closeIdentification") : t("upload.identifyInstead")}
               </Button>
             </div>
-            <select
+            <Select
               id="exercise-selector"
-              aria-label="Exercise selector"
-              className="mt-3 w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-sm font-semibold text-slate-800"
+              ariaLabel="Exercise selector"
+              className="mt-3"
+              buttonClassName="min-h-12 font-semibold"
               value={props.exercise}
               disabled={props.isLoading}
-              onChange={(event) => props.onExerciseChange(event.target.value)}
-            >
-              <optgroup label={t("upload.supportedGroup")}>
-                {supported.map((item) => (
-                  <option key={item.exercise_id} value={item.exercise_id}>
-                    {exerciseText(item.exercise_id).name}
-                  </option>
-                ))}
-              </optgroup>
-              <optgroup label={t("upload.plannedGroup")}>
-                {planned.map((item) => (
-                  <option key={item.exercise_id} value={item.exercise_id} disabled>
-                    {exerciseText(item.exercise_id).name} - {t("status.planned")}
-                  </option>
-                ))}
-              </optgroup>
-            </select>
+              onChange={props.onExerciseChange}
+              options={[
+                { label: t("upload.supportedGroup"), options: supported.map((item) => ({ value: item.exercise_id, label: exerciseText(item.exercise_id).name })) },
+                { label: t("upload.plannedGroup"), options: planned.map((item) => ({ value: item.exercise_id, label: `${exerciseText(item.exercise_id).name} - ${t("status.planned")}`, disabled: true })) },
+              ]}
+            />
             <div className="mt-4 grid gap-3 rounded-xl bg-blue-50 p-4 text-sm sm:grid-cols-2">
               <div>
                 <p className="text-xs font-bold uppercase text-clinical-blue">{t("upload.recommendedView")}</p>

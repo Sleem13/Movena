@@ -5,6 +5,7 @@ from __future__ import annotations
 import os
 from functools import lru_cache
 from pathlib import Path
+from urllib.parse import quote_plus
 
 from pydantic import BaseModel, Field
 
@@ -13,6 +14,7 @@ from app.core.artifact_config import ARTIFACTS_DIR, BACKEND_ROOT
 
 DEFAULT_CORS_ORIGINS = [
     "http://localhost:5173", "http://127.0.0.1:5173",
+    "http://localhost:4178", "http://127.0.0.1:4178",
     "http://localhost:3000", "http://127.0.0.1:3000",
     "http://localhost:8081", "http://127.0.0.1:8081",
 ]
@@ -30,6 +32,21 @@ def normalize_database_url(value: str) -> str:
     if value.startswith("postgresql://"):
         return "postgresql+psycopg://" + value[len("postgresql://"):]
     return value
+
+
+def database_url_from_environment(default: str = "sqlite:///./physiovision_dev.db") -> str:
+    """Build a PostgreSQL URL from secret-injected fields without exposing it in task definitions."""
+    configured = os.getenv("DATABASE_URL", "").strip()
+    if configured:
+        return normalize_database_url(configured)
+    host = os.getenv("DATABASE_HOST", "").strip()
+    if not host:
+        return default
+    user = quote_plus(os.getenv("DATABASE_USER", ""))
+    password = quote_plus(os.getenv("DATABASE_PASSWORD", ""))
+    name = quote_plus(os.getenv("DATABASE_NAME", "physiovision"))
+    port = int(os.getenv("DATABASE_PORT", "5432"))
+    return f"postgresql+psycopg://{user}:{password}@{host}:{port}/{name}"
 
 
 def _csv(value: str | None, default: list[str]) -> list[str]:
@@ -110,7 +127,7 @@ class Settings(BaseModel):
             app_env=os.getenv("APP_ENV", "development").strip().lower(),
             api_host=os.getenv("API_HOST", "127.0.0.1"),
             api_port=int(os.getenv("API_PORT", "8000")),
-            database_url=normalize_database_url(os.getenv("DATABASE_URL", "sqlite:///./physiovision_dev.db")),
+            database_url=database_url_from_environment(),
             cors_allowed_origins=_csv(os.getenv("CORS_ALLOWED_ORIGINS"), DEFAULT_CORS_ORIGINS),
             max_upload_size_mb=max_mb, max_upload_size_bytes=max_mb * 1024 * 1024,
             artifact_retention_hours=retention, artifact_ttl_seconds=round(retention * 3600),
@@ -195,6 +212,8 @@ class Settings(BaseModel):
             issues.append("REQUIRE_AUTH_FOR_ANALYSIS must be true")
         if self.enable_public_demo_mode:
             issues.append("ENABLE_PUBLIC_DEMO_MODE must be false")
+        if self.app_env == "production" and not self.database_url.startswith(("postgresql://", "postgresql+psycopg://", "postgres://")):
+            issues.append("production DATABASE_URL must use PostgreSQL")
         if not self.enable_subject_continuity_guard:
             issues.append("ENABLE_SUBJECT_CONTINUITY_GUARD must be true")
         if self.app_env == "production" and self.email_delivery_mode != "smtp":

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Activity, AlertCircle, CheckCircle2, ChevronRight, Download, MailCheck, Play, RefreshCw, ShieldCheck, UploadCloud, UserRound, Video } from "lucide-react";
+import { Activity, AlertCircle, CheckCircle2, ChevronRight, Download, MailCheck, Play, RefreshCw, ScanSearch, ShieldCheck, UploadCloud, UserRound, Video } from "lucide-react";
 
 import { Button, LoadingSpinner } from "../components/common/UI.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
@@ -34,8 +34,10 @@ export default function WorkspaceOverview({ onNavigate }) {
   }
   useEffect(() => { load(); }, []);
 
-  return <main className="mx-auto w-full max-w-[1280px] px-5 py-9 sm:px-8 lg:px-10 lg:py-10">
-    <div><h1 className="text-4xl font-extrabold tracking-[-0.035em] text-[#071b4a] sm:text-5xl">{t("workspace.greeting", { name: displayName })}</h1><p className="mt-3 text-base text-slate-600 sm:text-lg">{t("workspace.subtitle")}</p><div className="mt-6 flex flex-wrap gap-3"><Button onClick={() => onNavigate("analyze")} className="min-h-12 px-5"><Play size={18} />{t("nav.analyzeMovement")}</Button><Button onClick={() => onNavigate("history")} variant="secondary" className="min-h-12 px-5"><Video size={18} />{t("workspace.viewSessions")}</Button></div></div>
+  const workflow = [[UploadCloud,t("workspace.stepUpload"),t("workspace.stepUploadHelp")],[Activity,t("workspace.stepAnalyze"),t("workspace.stepAnalyzeHelp")],[ScanSearch,t("workspace.stepReview"),t("workspace.stepReviewHelp")],[Download,t("workspace.stepSave"),t("workspace.stepSaveHelp")],[UserRound,t("workspace.stepPatient"),t("workspace.stepPatientHelp")]];
+
+  return <main>
+    <div><h1 className="text-3xl font-bold tracking-[-0.03em] text-[#071b4a] sm:text-4xl">{t("workspace.greeting", { name: displayName })}</h1><p className="mt-2.5 text-[15px] text-slate-600 sm:text-base">{t("workspace.subtitle")}</p><div className="mt-5 flex flex-wrap gap-3"><Button onClick={() => onNavigate("analyze")} className="min-h-11 px-5"><Play size={18} />{t("nav.analyzeMovement")}</Button><Button onClick={() => onNavigate("history")} variant="secondary" className="min-h-11 px-5"><Video size={18} />{t("workspace.viewSessions")}</Button></div></div>
 
     {error ? <div className="mt-7 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-800">{error}<button onClick={load} className="ms-3 font-bold underline">{t("common.refresh")}</button></div> : null}
     <div className="mt-8 grid gap-5 xl:grid-cols-[minmax(0,1fr)_355px]">
@@ -48,6 +50,6 @@ export default function WorkspaceOverview({ onNavigate }) {
       <aside className="rounded-xl border border-[#dce3ee] bg-white p-6" aria-labelledby="workspace-status-heading"><h2 id="workspace-status-heading" className="text-xl font-extrabold tracking-[-0.02em] text-[#071b4a]">{t("workspace.status")}</h2><div className="mt-4 divide-y divide-slate-200">{[[MailCheck, t("workspace.emailVerified")],[ShieldCheck, user?.role === "super_admin" ? t("workspace.protectedAdmin") : t("workspace.role", { role: pretty(user?.role) })],[Activity, t("workspace.analysisReady")]].map(([Icon, label]) => <div key={label} className="flex min-h-[76px] items-center gap-4"><span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-emerald-50 text-emerald-700"><Icon size={21} /></span><span className="text-sm font-semibold text-slate-700">{label}</span></div>)}</div><button onClick={() => onNavigate("profile")} className="mt-4 inline-flex min-h-10 items-center gap-2 text-sm font-bold text-blue-700 hover:text-blue-800">{t("workspace.viewSecurity")}<ChevronRight size={16} className="rtl:rotate-180" /></button></aside>
     </div>
 
-    {!loading && sessions.length === 0 ? <section className="mt-5 rounded-xl border border-[#dce3ee] bg-white p-5 sm:p-6" aria-labelledby="workflow-heading"><h2 id="workflow-heading" className="text-xl font-extrabold tracking-[-0.02em] text-[#071b4a]">{t("workspace.continueWorkflow")}</h2><div className="mt-6 grid gap-6 md:grid-cols-3">{[[UploadCloud,t("workspace.stepUpload"),t("workspace.stepUploadHelp")],[Activity,t("workspace.stepReview"),t("workspace.stepReviewHelp")],[Download,t("workspace.stepSave"),t("workspace.stepSaveHelp")]].map(([Icon,title,description],index)=><div key={title} className="relative flex gap-4"><span className="grid h-14 w-14 shrink-0 place-items-center rounded-full bg-blue-50 text-blue-700"><Icon size={24} /></span><div><p className="text-sm font-extrabold text-[#071b4a]"><span className="me-2 inline-grid h-6 w-6 place-items-center rounded-full bg-blue-600 text-xs text-white">{index+1}</span>{title}</p><p className="mt-2 text-sm leading-6 text-slate-500">{description}</p></div></div>)}</div></section> : null}
+    <section className="mt-5 rounded-xl border border-[#dce3ee] bg-white px-5 py-5 sm:px-6" aria-labelledby="workflow-heading"><h2 id="workflow-heading" className="text-lg font-bold tracking-[-0.02em] text-[#071b4a]">{t("workspace.continueWorkflow")}</h2><div className="mt-5 grid gap-5 sm:grid-cols-2 xl:grid-cols-5">{workflow.map(([Icon,title,description],index)=><div key={title} className="relative flex gap-3 xl:block"><span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-blue-50 text-blue-700"><Icon size={19} /></span><div className="xl:mt-3"><p className="text-sm font-semibold text-[#071b4a]"><span className="me-1.5 text-xs text-blue-600">{index+1}.</span>{title}</p><p className="mt-1.5 text-xs leading-5 text-slate-500">{description}</p></div></div>)}</div></section>
   </main>;
 }

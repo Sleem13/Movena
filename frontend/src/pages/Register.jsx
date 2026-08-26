@@ -65,7 +65,7 @@ export default function Register({ onLogin }) {
               </span>
             </label>
             <div>
-              <PasswordInput label={t("common.password")} name="password" autoComplete="new-password" minLength={12} />
+              <PasswordInput label={t("common.password")} name="password" autoComplete="new-password" minLength={8} />
               <span className="text-xs font-normal text-slate-500">{t("auth.passwordHelp")}</span>
             </div>
             <Button className="mt-1 w-full" disabled={submitting}>{submitting ? t("auth.creating") : t("auth.createAccount")}</Button>

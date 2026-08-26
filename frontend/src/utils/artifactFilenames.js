@@ -7,6 +7,6 @@ export function exerciseArtifactSlug(exerciseId) {
 }
 
 export function artifactFilename(exerciseId, kind) {
-  const extension = kind === "report" ? "pdf" : "mp4";
+  const extension = kind === "report" ? "pdf" : "webm";
   return `physiovision-${exerciseArtifactSlug(exerciseId)}-${kind}.${extension}`;
 }

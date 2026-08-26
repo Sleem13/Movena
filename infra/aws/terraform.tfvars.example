@@ -1,0 +1,11 @@
+aws_region          = "eu-central-1"
+environment         = "staging"
+app_version         = "1.0.0"
+app_secret_arn      = "arn:aws:secretsmanager:eu-central-1:123456789012:secret:physiovision/staging/app-example"
+email_delivery_mode = "console"
+protect_data        = true
+
+# Production requires verified SMTP/SES settings in the app secret:
+# email_delivery_mode = "smtp"
+# email_from           = "no-reply@your-domain.example"
+# smtp_host            = "email-smtp.eu-central-1.amazonaws.com"

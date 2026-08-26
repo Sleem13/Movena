@@ -1,5 +1,6 @@
 import { ArrowRight, Clock3, Search, ShieldCheck, SlidersHorizontal, Video, X } from "lucide-react";
 import { Badge, Button, Card, EmptyState } from "../components/common/UI.jsx";
+import Select from "../components/common/Select.jsx";
 import ExercisePoseGraph from "../components/exercises/ExercisePoseGraph.jsx";
 import { useMemo, useState } from "react";
 import { PageHeader } from "../components/layout/AppShell.jsx";
@@ -24,8 +25,8 @@ function ExerciseCard({ exercise, onAnalyze }) {
   const supported = exercise.supported_in_app;
   const recognitionCandidate = exercise.recognition_status === "experimental_candidate_data_available";
   return (
-    <Card className={`group flex h-full flex-col overflow-hidden p-0 transition duration-200 ${supported ? "hover:-translate-y-1 hover:shadow-lift" : "bg-slate-50/70 opacity-90"}`}>
-      <div className={`relative aspect-[16/9] overflow-hidden border-b p-3 ${supported ? "border-blue-100 bg-gradient-to-br from-white via-blue-50 to-teal-50" : "border-slate-200 bg-slate-100"}`}>
+    <Card className={`group flex h-full flex-col overflow-hidden p-0 transition duration-200 ${supported ? "hover:border-blue-200" : "bg-slate-50/70 opacity-90"}`}>
+      <div className={`relative aspect-[16/8] overflow-hidden border-b p-3 ${supported ? "border-blue-100 bg-gradient-to-br from-white via-blue-50 to-teal-50" : "border-slate-200 bg-slate-100"}`}>
         <ExercisePoseGraph exerciseId={exercise.exercise_id} label={`${exercise.display_name} ${t("exercises.posePreview")}`} supported={supported} />
         <div className="absolute right-3 top-3">
           <Badge tone={supported ? "teal" : recognitionCandidate ? "blue" : "slate"}>
@@ -37,8 +38,8 @@ function ExerciseCard({ exercise, onAnalyze }) {
       <h2 className="text-lg font-bold text-clinical-ink">{exercise.display_name}</h2>
       <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-clinical-teal">{exercise.body_region} · {exercise.exercise_family}</p>
       <p className="mt-3 flex items-start gap-2 text-sm text-slate-600"><Video className="mt-0.5 shrink-0" size={16} />{exercise.recommended_camera_view}</p>
-      <p className="mt-3 text-sm leading-6 text-slate-600">{exercise.movement_description}</p>
-      <p className="mt-3 flex items-start gap-2 text-xs leading-5 text-slate-500"><ShieldCheck className="mt-0.5 shrink-0" size={15} />{exercise.safety_notes}</p>
+      <p className="line-clamp-2 mt-3 text-sm leading-6 text-slate-600">{exercise.movement_description}</p>
+      <p className="line-clamp-2 mt-3 flex items-start gap-2 text-xs leading-5 text-slate-500"><ShieldCheck className="mt-0.5 shrink-0" size={15} />{exercise.safety_notes}</p>
       <div className="mt-auto pt-5">
         {supported ? (
           <Button className="w-full" onClick={() => onAnalyze(exercise.exercise_id)}>
@@ -90,7 +91,7 @@ export default function ExerciseLibrary({ exercises, onAnalyze }) {
   const matchVerb = filteredExercises.length === 1 ? t("exercises.matchVerbSingular") : t("exercises.matchVerbPlural");
 
   return (
-    <main className="mx-auto w-full max-w-7xl px-6 py-12">
+    <main>
       <PageHeader eyebrow={t("exercises.eyebrow")} title={t("exercises.title")} description={t("exercises.description")} />
       <section className="mb-8 grid gap-4 rounded-3xl border border-blue-100 bg-gradient-to-r from-blue-50 to-teal-50 p-5 shadow-soft md:grid-cols-[minmax(0,1fr)_auto] md:items-center" aria-label={t("exercises.researchTitle")}>
         <div>
@@ -106,22 +107,8 @@ export default function ExerciseLibrary({ exercises, onAnalyze }) {
             <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} aria-hidden="true" />
             <input value={query} onChange={(event) => setQuery(event.target.value)} className="h-11 w-full rounded-xl border border-slate-200 bg-slate-50 pl-10 pr-3 text-sm text-clinical-ink placeholder:text-slate-400 focus:border-clinical-blue focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-100" placeholder={t("exercises.searchPlaceholder")} />
           </label>
-          <label className="relative block">
-            <span className="sr-only">{t("exercises.availability")}</span>
-            <SlidersHorizontal className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} aria-hidden="true" />
-            <select aria-label={t("exercises.availability")} value={availability} onChange={(event) => setAvailability(event.target.value)} className="h-11 w-full appearance-none rounded-xl border border-slate-200 bg-slate-50 pl-10 pr-8 text-sm font-semibold text-clinical-ink focus:border-clinical-blue focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-100">
-              <option value="all">{t("exercises.allAvailability")}</option>
-              <option value="supported">{t("exercises.supportedOnly")}</option>
-              <option value="planned">{t("exercises.plannedOnly")}</option>
-            </select>
-          </label>
-          <label className="block">
-            <span className="sr-only">{t("exercises.bodyRegion")}</span>
-            <select aria-label={t("exercises.bodyRegion")} value={bodyRegion} onChange={(event) => setBodyRegion(event.target.value)} className="h-11 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm font-semibold text-clinical-ink focus:border-clinical-blue focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-100">
-              <option value="all">{t("exercises.allRegions")}</option>
-              {bodyRegions.map((region) => <option key={region} value={region}>{region}</option>)}
-            </select>
-          </label>
+          <Select ariaLabel={t("exercises.availability")} icon={SlidersHorizontal} value={availability} onChange={setAvailability} options={[{ value: "all", label: t("exercises.allAvailability") }, { value: "supported", label: t("exercises.supportedOnly") }, { value: "planned", label: t("exercises.plannedOnly") }]} />
+          <Select ariaLabel={t("exercises.bodyRegion")} value={bodyRegion} onChange={setBodyRegion} options={[{ value: "all", label: t("exercises.allRegions") }, ...bodyRegions.map((region) => ({ value: region, label: region }))]} />
           <Button type="button" variant="secondary" onClick={resetFilters} disabled={!hasActiveFilters} aria-label="Clear exercise filters"><X size={16} />{t("common.clear")}</Button>
         </div>
         <p className="mt-3 text-sm text-slate-500">{t("exercises.matchCount", { count: filteredExercises.length, label: matchLabel, verb: matchVerb })}</p>

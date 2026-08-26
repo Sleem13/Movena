@@ -52,7 +52,7 @@ def test_artifact_resolution_and_expiry(monkeypatch, tmp_path):
 
 def test_artifact_download_filename_uses_safe_exercise_slug():
     assert artifact_download_filename("walking_gait_screen", "report") == "physiovision-walking-gait-screen-report.pdf"
-    assert artifact_download_filename("../../Unsafe Name", "overlay") == "physiovision-unsafe-name-overlay.mp4"
+    assert artifact_download_filename("../../Unsafe Name", "overlay") == "physiovision-unsafe-name-overlay.webm"
 
 
 def test_invalid_artifact_ids_return_404_without_path_access(monkeypatch, tmp_path):
@@ -110,7 +110,7 @@ def test_overlay_service_writes_annotated_video(tmp_path):
             detected_issue="possible_knee_valgus" if index == 1 else None,
         ) for index in range(3)
     ]
-    output = generate_skeleton_overlay(source, tmp_path / "overlay.mp4", frames, details)
+    output = generate_skeleton_overlay(source, tmp_path / "overlay.webm", frames, details)
     assert output.stat().st_size > source.stat().st_size
     capture = cv2.VideoCapture(str(output))
     assert capture.isOpened()

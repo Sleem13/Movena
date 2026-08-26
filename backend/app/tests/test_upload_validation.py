@@ -27,14 +27,14 @@ def test_non_video_validation_error_is_not_reported_as_missing_video():
         "/api/v1/auth/register",
         json={
             "email": "reviewer@example.com",
-            "password": "too-short",
+            "password": "short7",
             "full_name": "Reviewer",
             "role": "researcher_demo",
         },
     )
 
     assert_error(response, 422, "VALIDATION_ERROR")
-    assert response.json()["message"] == "Password must be at least 12 characters."
+    assert response.json()["message"] == "Password must be at least 8 characters."
     assert "video" not in response.json()["message"].lower()
 
 

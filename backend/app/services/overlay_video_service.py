@@ -64,7 +64,10 @@ def generate_skeleton_overlay(
         raise OverlayGenerationError("Video dimensions are invalid.")
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    codec = "mp4v"
+    # OpenCV's mp4v output is MPEG-4 Part 2, which Chromium-based browsers do
+    # not reliably decode despite the .mp4 container. VP8 in WebM is supported
+    # by modern browsers and by the FFmpeg backend bundled with opencv-python.
+    codec = "VP80"
     writer = cv2.VideoWriter(
         str(output_path), cv2.VideoWriter_fourcc(*codec), fps, (width, height)
     )

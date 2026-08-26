@@ -150,7 +150,7 @@ def analyze_squat_landmarks(
     )
 
     limitations = [
-        "Rule-based prototype; results depend on camera angle, lighting, and full-body visibility.",
+        "Rule-based analysis; results depend on camera angle, lighting, and full-body visibility.",
         "2D pose landmarks cannot fully assess joint loading or pain.",
         "Clinical decisions should be made with a licensed physiotherapist.",
     ]

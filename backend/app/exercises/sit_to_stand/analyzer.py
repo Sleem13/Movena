@@ -123,7 +123,7 @@ class SitToStandAnalyzer(ExerciseAnalyzer):
             validation_warnings=validity.warnings, ml_prediction=unavailable_ml_prediction(),
         )
         limitations = [
-            "Rule-based engineering prototype; results depend on side or oblique camera placement and joint visibility.",
+            "Rule-based analysis; results depend on side or oblique camera placement and joint visibility.",
             "Chair visibility is requested but is not directly detected by the current pose model.",
             "2D pose landmarks do not measure strength, balance, pain, fall risk, or clinical status.",
             "This analysis does not replace assessment by a licensed physiotherapist.",

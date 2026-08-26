@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { Activity, AlertTriangle, BrainCircuit, CheckCircle2, Download, FileJson, FileText, Gauge, HeartPulse, Info, RotateCcw, ShieldAlert, Sparkles, Video, VideoOff } from "lucide-react";
-import { artifactUrl } from "../../services/api.js";
+import { artifactUrl, getArtifactBlob } from "../../services/api.js";
 import { artifactFilename } from "../../utils/artifactFilenames.js";
-import { Alert, Badge, Button, Card, EmptyState } from "../common/UI.jsx";
+import { Alert, Badge, Button, Card, EmptyState, LoadingSpinner } from "../common/UI.jsx";
 import { AngleTrendChart, ChartCard, IssueBreakdownChart, MovementRadarChart, MovementScoreGauge, RepQualityChart } from "../charts/MovementCharts.jsx";
 import CameraGuide from "../upload/CameraGuide.jsx";
 import { useLocale } from "../../i18n/LocaleContext.jsx";
@@ -85,10 +85,35 @@ export function ScoreGaugeCard({ report }) {
 
 export function AnnotatedVideoPreview({ url, exercise = "bodyweight_squat" }) {
   const { t, exerciseText } = useLocale();
-  const [failed, setFailed] = useState(false);
-  useEffect(() => setFailed(false), [url]);
-  if (!url || failed) return <EmptyState title={failed ? t("results.annotatedLoadFailed") : t("results.annotatedNotGenerated")} description={failed ? t("results.artifactExpired") : t("results.enableOverlay")} icon={VideoOff} />;
-  return <div><video aria-label={`Annotated ${exerciseText(exercise).short} movement preview`} className="aspect-video w-full rounded-xl bg-slate-950 object-contain" controls preload="metadata" onError={() => setFailed(true)}><source src={url} type="video/mp4" />{t("results.videoUnsupported")}</video><p className="mt-2 text-xs leading-5 text-slate-500">{t("results.overlayHelp")}</p></div>;
+  const [attempt, setAttempt] = useState(0);
+  const [preview, setPreview] = useState({ status: url ? "loading" : "missing", objectUrl: null });
+
+  useEffect(() => {
+    if (!url) {
+      setPreview({ status: "missing", objectUrl: null });
+      return undefined;
+    }
+    let active = true;
+    let objectUrl = null;
+    setPreview({ status: "loading", objectUrl: null });
+    getArtifactBlob(url).then((blob) => {
+      if (!active) return;
+      if (!blob?.type?.startsWith("video/")) throw new Error("Overlay response is not video media.");
+      objectUrl = URL.createObjectURL(blob);
+      setPreview({ status: "ready", objectUrl });
+    }).catch(() => {
+      if (active) setPreview({ status: "error", objectUrl: null });
+    });
+    return () => {
+      active = false;
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
+    };
+  }, [attempt, url]);
+
+  if (preview.status === "missing") return <EmptyState title={t("results.annotatedNotGenerated")} description={t("results.enableOverlay")} icon={VideoOff} />;
+  if (preview.status === "loading") return <div className="grid aspect-video place-items-center rounded-xl border border-slate-200 bg-slate-50 text-sm font-semibold text-slate-500"><LoadingSpinner label={t("results.loadingAnnotated")} /></div>;
+  if (preview.status === "error") return <EmptyState title={t("results.annotatedLoadFailed")} description={t("results.artifactExpired")} icon={VideoOff} actions={<Button type="button" variant="secondary" onClick={() => setAttempt((value) => value + 1)}>{t("results.retryPreview")}</Button>} />;
+  return <div><video key={preview.objectUrl} aria-label={`Annotated ${exerciseText(exercise).short} movement preview`} className="aspect-video w-full rounded-xl bg-slate-950 object-contain" controls preload="metadata" src={preview.objectUrl} onError={() => setPreview({ status: "error", objectUrl: null })}>{t("results.videoUnsupported")}</video><p className="mt-2 text-xs leading-5 text-slate-500">{t("results.overlayHelp")}</p></div>;
 }
 
 export function VideoReviewPanel({ report, originalVideoUrl }) {

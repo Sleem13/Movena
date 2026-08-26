@@ -243,6 +243,17 @@ data/samples/metadata.csv
 .cursorignore
 .cursorindexingignore
 
+# Terraform and AWS deployment state
+**/.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+crash.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
 # Imported third-party comparison prototype. Keep outside PhysioVision commits;
 # it contains unreviewed code, model artifacts, and exposed credentials.
 /Powered-Physiotherapy-System-master/

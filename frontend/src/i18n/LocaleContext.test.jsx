@@ -18,7 +18,8 @@ afterEach(() => {
 describe("LocaleProvider", () => {
   it("switches to Arabic, persists the choice, and updates document direction", () => {
     render(<LocaleProvider><Probe /></LocaleProvider>);
-    fireEvent.change(screen.getByRole("combobox"), { target: { value: "ar" } });
+    fireEvent.click(screen.getByRole("combobox"));
+    fireEvent.click(screen.getByRole("option", { name: "العربية" }));
     expect(screen.getByText("الرئيسية")).toBeInTheDocument();
     expect(screen.getByText("rtl")).toBeInTheDocument();
     expect(localStorage.getItem(LOCALE_STORAGE_KEY)).toBe("ar");

@@ -1,23 +1,28 @@
-"""Unauthenticated therapist-dashboard development prototype API."""
+"""Role-protected therapist dashboard API."""
 
 from fastapi import APIRouter, Depends, status
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 
 from app.db.crud import (
-    assign_session_to_patient, create_patient_profile, delete_patient_profile,
+    assign_session_to_patient, create_exercise_plan, create_patient_profile, delete_patient_profile,
     get_patient_profile, get_patient_progress_summary, get_therapist_dashboard_summary,
-    list_patient_profiles, list_patient_sessions, to_summary, update_patient_profile,
+    list_exercise_plans, list_patient_profiles, list_patient_sessions, to_exercise_plan_detail,
+    to_summary, update_exercise_plan_status, update_patient_profile,
 )
+from app.db.models import User
 from app.db.database import get_db
 from app.schemas.analysis_schema import ErrorResponse
-from app.schemas.patient_schema import PatientCreate, PatientDetail, PatientSummary, PatientUpdate
+from app.schemas.patient_schema import (
+    ExercisePlanCreate, ExercisePlanDetail, ExercisePlanStatusUpdate,
+    PatientCreate, PatientDetail, PatientSummary, PatientUpdate,
+)
 from app.schemas.session_schema import SessionDeleteResponse, SessionSummary
 from app.schemas.therapist_schema import PROTOTYPE_WARNING, TherapistDashboardSummary
 from app.api.dependencies.auth import require_therapist
 
 
-router = APIRouter(prefix="/api/v1/therapist", tags=["therapist-prototype"], dependencies=[Depends(require_therapist)])
+router = APIRouter(prefix="/api/v1/therapist", tags=["therapist"], dependencies=[Depends(require_therapist)])
 
 
 def error(code: str, message: str, status_code: int = status.HTTP_404_NOT_FOUND) -> JSONResponse:
@@ -57,7 +62,7 @@ def create_patient(data: PatientCreate, db: Session = Depends(get_db)):
 def patient_detail(patient_id: str, db: Session = Depends(get_db)):
     row = get_patient_profile(db, patient_id)
     if row is None:
-        return error("PATIENT_NOT_FOUND", "Development patient profile was not found.")
+        return error("PATIENT_NOT_FOUND", "Patient profile was not found.")
     summary = patient_summary(db, row)
     return PatientDetail(**summary.model_dump(), notes=row.notes,
                          progress=get_patient_progress_summary(db, patient_id),
@@ -68,7 +73,7 @@ def patient_detail(patient_id: str, db: Session = Depends(get_db)):
 def patch_patient(patient_id: str, data: PatientUpdate, db: Session = Depends(get_db)):
     row = update_patient_profile(db, patient_id, data)
     if row is None:
-        return error("PATIENT_NOT_FOUND", "Development patient profile was not found.")
+        return error("PATIENT_NOT_FOUND", "Patient profile was not found.")
     summary = patient_summary(db, row)
     return PatientDetail(**summary.model_dump(), notes=row.notes,
                          progress=get_patient_progress_summary(db, patient_id),
@@ -78,21 +83,21 @@ def patch_patient(patient_id: str, data: PatientUpdate, db: Session = Depends(ge
 @router.delete("/patients/{patient_id}", response_model=SessionDeleteResponse)
 def remove_patient(patient_id: str, db: Session = Depends(get_db)):
     if not delete_patient_profile(db, patient_id):
-        return error("PATIENT_NOT_FOUND", "Development patient profile was not found.")
+        return error("PATIENT_NOT_FOUND", "Patient profile was not found.")
     return SessionDeleteResponse(session_id=patient_id)
 
 
 @router.get("/patients/{patient_id}/sessions", response_model=list[SessionSummary])
 def patient_sessions(patient_id: str, db: Session = Depends(get_db)):
     if get_patient_profile(db, patient_id) is None:
-        return error("PATIENT_NOT_FOUND", "Development patient profile was not found.")
+        return error("PATIENT_NOT_FOUND", "Patient profile was not found.")
     return [to_summary(row) for row in list_patient_sessions(db, patient_id)]
 
 
 @router.post("/patients/{patient_id}/sessions/{session_id}", response_model=SessionSummary)
 def assign_session(patient_id: str, session_id: str, db: Session = Depends(get_db)):
     if get_patient_profile(db, patient_id) is None:
-        return error("PATIENT_NOT_FOUND", "Development patient profile was not found.")
+        return error("PATIENT_NOT_FOUND", "Patient profile was not found.")
     from app.db.crud import get_session
     if get_session(db, session_id) is None:
         return error("SESSION_NOT_FOUND", "Saved session was not found.")
@@ -102,5 +107,46 @@ def assign_session(patient_id: str, session_id: str, db: Session = Depends(get_d
 @router.get("/patients/{patient_id}/progress")
 def patient_progress(patient_id: str, db: Session = Depends(get_db)):
     if get_patient_profile(db, patient_id) is None:
-        return error("PATIENT_NOT_FOUND", "Development patient profile was not found.")
+        return error("PATIENT_NOT_FOUND", "Patient profile was not found.")
     return get_patient_progress_summary(db, patient_id)
+
+
+@router.get("/patients/{patient_id}/exercise-plans", response_model=list[ExercisePlanDetail])
+def patient_exercise_plans(patient_id: str, db: Session = Depends(get_db)):
+    if get_patient_profile(db, patient_id) is None:
+        return error("PATIENT_NOT_FOUND", "Patient profile was not found.")
+    return [to_exercise_plan_detail(row) for row in list_exercise_plans(db, patient_id)]
+
+
+@router.post(
+    "/patients/{patient_id}/exercise-plans",
+    response_model=ExercisePlanDetail,
+    status_code=status.HTTP_201_CREATED,
+)
+def add_patient_exercise_plan(
+    patient_id: str,
+    data: ExercisePlanCreate,
+    db: Session = Depends(get_db),
+    actor: User = Depends(require_therapist),
+):
+    if get_patient_profile(db, patient_id) is None:
+        return error("PATIENT_NOT_FOUND", "Patient profile was not found.")
+    row = create_exercise_plan(db, patient_id, data, actor.user_id)
+    return to_exercise_plan_detail(row)
+
+
+@router.patch(
+    "/patients/{patient_id}/exercise-plans/{plan_id}", response_model=ExercisePlanDetail
+)
+def patch_patient_exercise_plan(
+    patient_id: str,
+    plan_id: str,
+    data: ExercisePlanStatusUpdate,
+    db: Session = Depends(get_db),
+):
+    if get_patient_profile(db, patient_id) is None:
+        return error("PATIENT_NOT_FOUND", "Patient profile was not found.")
+    row = update_exercise_plan_status(db, patient_id, plan_id, data.status)
+    if row is None:
+        return error("EXERCISE_PLAN_NOT_FOUND", "Exercise plan was not found.")
+    return to_exercise_plan_detail(row)

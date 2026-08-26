@@ -4,14 +4,18 @@ from __future__ import annotations
 
 import json
 from collections import Counter
+from datetime import datetime, timezone
 from statistics import mean
 from uuid import uuid4
 
 from sqlalchemy import func, select, update
 from sqlalchemy.orm import Session, selectinload
 
-from app.db.models import AnalysisSession, DetectedIssue, PatientProfile
-from app.schemas.patient_schema import DetectedIssueTrend, PatientCreate, PatientProgressSummary, PatientUpdate
+from app.db.models import AnalysisSession, DetectedIssue, ExercisePlan, ExercisePlanItem, PatientProfile
+from app.schemas.patient_schema import (
+    DetectedIssueTrend, ExerciseBaselineComparison, ExercisePlanCreate, ExercisePlanDetail, ExercisePlanItemDetail,
+    PatientCreate, PatientProgressSummary, PatientUpdate,
+)
 from app.schemas.therapist_schema import TherapistDashboardSummary
 from app.schemas.session_schema import (
     DetectedIssueSchema, SessionDetail, SessionMetricSchema, SessionSummary,
@@ -23,6 +27,13 @@ def _json(value: str, fallback):
         return json.loads(value)
     except (TypeError, json.JSONDecodeError):
         return fallback
+
+
+def _timestamp(value: datetime | None) -> float:
+    if value is None:
+        return float("-inf")
+    normalized = value if value.tzinfo else value.replace(tzinfo=timezone.utc)
+    return normalized.timestamp()
 
 
 def to_summary(row: AnalysisSession) -> SessionSummary:
@@ -151,6 +162,71 @@ def list_patient_sessions(db: Session, patient_id: str) -> list[AnalysisSession]
     ).all())
 
 
+def to_exercise_plan_detail(row: ExercisePlan) -> ExercisePlanDetail:
+    return ExercisePlanDetail(
+        plan_id=row.plan_id,
+        patient_id=row.patient_id,
+        created_by_user_id=row.created_by_user_id,
+        title=row.title,
+        notes=row.notes,
+        status=row.status,
+        start_date=row.start_date,
+        end_date=row.end_date,
+        created_at=row.created_at,
+        updated_at=row.updated_at,
+        items=[ExercisePlanItemDetail(
+            item_id=item.item_id,
+            exercise_id=item.exercise_id,
+            sets=item.sets,
+            reps=item.reps,
+            days_per_week=item.days_per_week,
+            instructions=item.instructions,
+            sort_order=item.sort_order,
+        ) for item in row.items],
+    )
+
+
+def create_exercise_plan(
+    db: Session, patient_id: str, data: ExercisePlanCreate, created_by_user_id: str | None
+) -> ExercisePlan:
+    plan = ExercisePlan(
+        plan_id=str(uuid4()), patient_id=patient_id, created_by_user_id=created_by_user_id,
+        title=data.title, notes=data.notes, start_date=data.start_date, end_date=data.end_date,
+    )
+    plan.items = [ExercisePlanItem(
+        item_id=str(uuid4()), exercise_id=item.exercise_id, sets=item.sets, reps=item.reps,
+        days_per_week=item.days_per_week, instructions=item.instructions, sort_order=index,
+    ) for index, item in enumerate(data.items)]
+    db.add(plan)
+    db.commit()
+    db.refresh(plan)
+    return plan
+
+
+def list_exercise_plans(db: Session, patient_id: str) -> list[ExercisePlan]:
+    return list(db.scalars(
+        select(ExercisePlan).where(ExercisePlan.patient_id == patient_id)
+        .options(selectinload(ExercisePlan.items))
+        .order_by(ExercisePlan.created_at.desc())
+    ).all())
+
+
+def update_exercise_plan_status(
+    db: Session, patient_id: str, plan_id: str, plan_status: str
+) -> ExercisePlan | None:
+    row = db.scalar(
+        select(ExercisePlan).where(
+            ExercisePlan.patient_id == patient_id, ExercisePlan.plan_id == plan_id
+        ).options(selectinload(ExercisePlan.items))
+    )
+    if row is None:
+        return None
+    row.status = plan_status
+    db.commit()
+    db.refresh(row)
+    return row
+
+
 def get_patient_detected_issue_summary(db: Session, patient_id: str) -> list[DetectedIssueTrend]:
     counts = Counter(db.scalars(
         select(DetectedIssue.issue_code).join(
@@ -165,6 +241,38 @@ def get_patient_progress_summary(db: Session, patient_id: str) -> PatientProgres
     scores = [float(row.movement_score) for row in sessions if row.movement_score is not None]
     confidences = [float(row.analysis_confidence_score) for row in sessions if row.analysis_confidence_score is not None]
     issue_counts = get_patient_detected_issue_summary(db, patient_id)
+    sessions_by_exercise: dict[str, list[AnalysisSession]] = {}
+    for row in sessions:
+        sessions_by_exercise.setdefault(row.exercise_id, []).append(row)
+    exercise_comparisons = []
+    for exercise_id, exercise_sessions in sessions_by_exercise.items():
+        chronological = sorted(exercise_sessions, key=lambda row: (_timestamp(row.created_at), row.id))
+        scored = [row for row in chronological if row.movement_score is not None]
+        baseline = scored[0] if scored else None
+        latest = scored[-1] if scored else None
+        has_comparison = len(scored) >= 2
+        exercise_comparisons.append(ExerciseBaselineComparison(
+            exercise_id=exercise_id,
+            session_count=len(chronological),
+            scored_session_count=len(scored),
+            baseline_session_id=baseline.session_id if baseline else None,
+            baseline_date=baseline.created_at if baseline else None,
+            baseline_movement_score=float(baseline.movement_score) if baseline else None,
+            baseline_total_reps=baseline.total_reps if baseline else None,
+            latest_session_id=latest.session_id if latest else None,
+            latest_date=latest.created_at if latest else None,
+            latest_movement_score=float(latest.movement_score) if latest else None,
+            latest_total_reps=latest.total_reps if latest else None,
+            score_delta=round(float(latest.movement_score) - float(baseline.movement_score), 2)
+            if has_comparison else None,
+            reps_delta=(latest.total_reps - baseline.total_reps)
+            if has_comparison and latest.total_reps is not None and baseline.total_reps is not None else None,
+            has_comparison=has_comparison,
+        ))
+    exercise_comparisons.sort(
+        key=lambda item: (item.has_comparison, _timestamp(item.latest_date or item.baseline_date)),
+        reverse=True,
+    )
     provenance = [
         "total_sessions: analysis_sessions rows assigned to this patient_id",
         "sessions_by_exercise: analysis_sessions.exercise_id counts",
@@ -173,6 +281,7 @@ def get_patient_progress_summary(db: Session, patient_id: str) -> PatientProgres
         "latest_session_date: latest analysis_sessions.created_at value",
         "detected_issue_counts: detected_issues rows joined by session_id",
         "low_confidence_session_count: analysis_sessions.analysis_confidence_level == 'low'",
+        "exercise_comparisons: first and latest scored analysis_sessions per exercise_id; deltas are descriptive observations, not recovery percentages",
     ]
     return PatientProgressSummary(
         patient_id=patient_id, total_sessions=len(sessions),
@@ -181,9 +290,10 @@ def get_patient_progress_summary(db: Session, patient_id: str) -> PatientProgres
         average_analysis_confidence=round(mean(confidences), 3) if confidences else None,
         movement_score_observation_count=len(scores),
         analysis_confidence_observation_count=len(confidences),
-        latest_session_date=max((row.created_at for row in sessions), default=None),
+        latest_session_date=max(sessions, key=lambda row: _timestamp(row.created_at)).created_at if sessions else None,
         detected_issue_counts=issue_counts,
         low_confidence_session_count=sum(row.analysis_confidence_level == "low" for row in sessions),
+        exercise_comparisons=exercise_comparisons,
         metric_provenance=provenance if sessions else [],
     )
 

@@ -16,6 +16,7 @@ import WorkspaceOverview from "./pages/WorkspaceOverview.jsx";
 import { EXERCISES } from "./data/exercises.js";
 import { AuthProvider, useAuth } from "./context/AuthContext.jsx";
 import { LocaleProvider, useLocale } from "./i18n/LocaleContext.jsx";
+import { ThemeProvider } from "./theme/ThemeContext.jsx";
 import { ENABLE_REALTIME_COACHING_SPIKE } from "./config/featureFlags.js";
 import { analyzeExerciseVideo, getExercises } from "./services/api.js";
 
@@ -136,12 +137,12 @@ function AppContent() {
   function handleAnalyzeAnother() { setFile(null); setFileSource(null); setReport(null); setError(""); setCanContinueAfterWarning(false); setProgress(0); navigate("analyze"); }
 
   return <AppShell currentPage={page} hasReport={Boolean(report)} onNavigate={navigate} user={user}>
-    {page === "home" && <Home onStart={() => navigate("analyze")} />}
+    {page === "home" && <Home authenticated={Boolean(user)} onStart={() => navigate(user ? "analyze" : "register")} />}
     {page === "workspace" && (user ? <WorkspaceOverview onNavigate={navigate} /> : <Login onSuccess={() => navigate("workspace")} onRegister={() => navigate("register")} onForgotPassword={() => navigate("forgotPassword")} onVerifyEmail={() => navigate("verifyEmail")} />)}
     {page === "exercises" && <ExerciseLibrary exercises={exercises} onAnalyze={(value) => { setExercise(value); setFile(null); setFileSource(null); navigate("analyze"); }} />}
     {page === "analyze" && <UploadSquat exercises={exercises} exercise={exercise} onExerciseChange={(value) => { setExercise(value); setFile(null); setFileSource(null); setError(""); setCanContinueAfterWarning(false); }} file={file} fileSource={fileSource} error={error} canContinueAfterWarning={canContinueAfterWarning} isLoading={isLoading} progress={progress} options={options} onOptionsChange={setOptions} onFileChange={handleFileChange} onFileSelect={selectFile} onRecognitionConfirm={(exerciseId, recognizedFile) => { setExercise(exerciseId); selectFile(recognizedFile, "recognition"); }} onSubmit={handleSubmit} />}
     {page === "results" && <Results report={report} originalVideoUrl={originalVideoUrl} onAnalyzeAnother={handleAnalyzeAnother} onGoAnalyze={() => navigate("analyze")} onViewHistory={() => navigate("history")} />}
-    {page === "history" && <SessionHistory />}
+    {page === "history" && <SessionHistory onAnalyze={() => navigate("analyze")} onCoach={ENABLE_REALTIME_COACHING_SPIKE ? () => navigate("coach") : undefined} />}
     {page === "therapist" && <LazyPage><TherapistDashboard /></LazyPage>}
     {page === "admin" && (user?.role === "super_admin" ? <LazyPage><SuperAdminDashboard /></LazyPage> : <WorkspaceOverview onNavigate={navigate} />)}
     {page === "coach" && ENABLE_REALTIME_COACHING_SPIKE && <LazyPage><RealtimeCoachingSpike onConfirmSuggestion={(exerciseId, recognizedFile) => { setExercise(exerciseId); selectFile(recognizedFile, "recognition"); navigate("analyze"); }} /></LazyPage>}
@@ -155,4 +156,4 @@ function AppContent() {
   </AppShell>;
 }
 
-export default function App(){return <LocaleProvider><AuthProvider><AppContent/></AuthProvider></LocaleProvider>;}
+export default function App(){return <ThemeProvider><LocaleProvider><AuthProvider><AppContent/></AuthProvider></LocaleProvider></ThemeProvider>;}

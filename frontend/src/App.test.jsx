@@ -6,7 +6,10 @@ import { analyzeExerciseVideo } from "./services/api.js";
 import { getArtifactBlob, getExercises, getSavedSession, listSavedSessions } from "./services/api.js";
 import { confirmRecognitionSuggestion, getRecognitionModels, recognizeExerciseVideo } from "./services/api.js";
 import { EXERCISES } from "./data/exercises.js";
-import { createPatientProfile, getPatientProfile, getPatientProgress, getTherapistDashboard, listPatientProfiles, listPatientSessions } from "./services/api.js";
+import {
+  createPatientExercisePlan, createPatientProfile, getPatientProfile, getPatientProgress,
+  getTherapistDashboard, listPatientExercisePlans, listPatientProfiles, listPatientSessions,
+} from "./services/api.js";
 
 const authState = vi.hoisted(() => ({
   user: { user_id: "test-admin", email: "admin@example.com", role: "admin" },
@@ -33,6 +36,9 @@ vi.mock("./services/api.js", () => ({
   getPatientProfile: vi.fn(),
   listPatientSessions: vi.fn(),
   getPatientProgress: vi.fn(),
+  listPatientExercisePlans: vi.fn(),
+  createPatientExercisePlan: vi.fn(),
+  updatePatientExercisePlanStatus: vi.fn(),
   verifyEmailToken: vi.fn(),
   resendVerificationEmail: vi.fn(),
   requestPasswordReset: vi.fn(),
@@ -87,12 +93,17 @@ const rejectedReport = {
 
 function openUpload() {
   render(<App />);
-  fireEvent.click(screen.getByRole("button", { name: "Analyze Squat Video" }));
+  fireEvent.click(screen.getAllByRole("button", { name: authState.user ? "Analyze a movement" : "Get started" }).at(-1));
 }
 
 function selectVideo() {
   const file = new File(["video"], "squat.mp4", { type: "video/mp4" });
   fireEvent.change(screen.getByLabelText(/choose a squat exercise video/i), { target: { files: [file] } });
+}
+
+function chooseSelectOption(label, option) {
+  fireEvent.click(screen.getByRole("combobox", { name: label }));
+  fireEvent.click(screen.getByRole("option", { name: option }));
 }
 
 async function analyzeWith(response = report) {
@@ -109,9 +120,11 @@ describe("Squat Analyzer healthcare dashboard", () => {
     authState.user = { user_id: "test-admin", email: "admin@example.com", role: "admin" };
     vi.clearAllMocks();
     getExercises.mockResolvedValue(EXERCISES);
+    getArtifactBlob.mockResolvedValue(new Blob(["webm-video"], { type: "video/webm" }));
     listSavedSessions.mockResolvedValue({ items: [], total: 0, limit: 50, offset: 0 });
     getTherapistDashboard.mockResolvedValue({ total_patients: 0, total_sessions: 0, low_confidence_sessions: 0, recent_sessions: [], common_detected_issues: [], sessions_by_exercise: {}, prototype_warning: "Prototype" });
     listPatientProfiles.mockResolvedValue([]);
+    listPatientExercisePlans.mockResolvedValue([]);
   });
 
   it("renders the upload page and analysis options", () => {
@@ -136,8 +149,11 @@ describe("Squat Analyzer healthcare dashboard", () => {
     expect(screen.getByLabelText("ML second opinion")).not.toBeChecked();
     expect(screen.getByLabelText("Save session history")).not.toBeChecked();
     expect(screen.getByRole("button", { name: "Analyze squat" })).toBeDisabled();
-    expect(screen.getByLabelText("Exercise selector")).toHaveValue("bodyweight_squat");
+    const exerciseSelector = screen.getByRole("combobox", { name: "Exercise selector" });
+    expect(exerciseSelector).toHaveTextContent("Bodyweight Squat");
+    fireEvent.click(exerciseSelector);
     expect(screen.getByRole("option", { name: "Sit-to-Stand" })).toBeInTheDocument();
+    fireEvent.click(exerciseSelector);
     expect(screen.getByText("One person only")).toBeInTheDocument();
     expect(screen.getByText(/keep coaches, spotters, and bystanders outside the frame/i)).toBeInTheDocument();
   });
@@ -154,6 +170,7 @@ describe("Squat Analyzer healthcare dashboard", () => {
 
   it("renders the exercise library with supported and unavailable planned exercises", async () => {
     render(<App />);
+    fireEvent.click(screen.getByRole("button", { name: "Analyze a movement" }));
     fireEvent.click(screen.getByRole("button", { name: "Exercises" }));
     expect(await screen.findByText("Supported exercises")).toBeInTheDocument();
     expect(screen.getByText("Bodyweight Squat")).toBeInTheDocument();
@@ -166,10 +183,11 @@ describe("Squat Analyzer healthcare dashboard", () => {
 
   it("filters the exercise library by search text and availability", async () => {
     render(<App />);
+    fireEvent.click(screen.getByRole("button", { name: "Analyze a movement" }));
     fireEvent.click(screen.getByRole("button", { name: "Exercises" }));
     expect(await screen.findByText("Supported exercises")).toBeInTheDocument();
     fireEvent.change(screen.getByLabelText("Search exercises"), { target: { value: "shoulder" } });
-    fireEvent.change(screen.getByLabelText("Availability"), { target: { value: "supported" } });
+    chooseSelectOption("Availability", "Supported only");
     expect(screen.getByText("3 exercises match your filters.")).toBeInTheDocument();
     expect(screen.getByText("Shoulder Abduction")).toBeInTheDocument();
     expect(screen.getByText("Shoulder Flexion")).toBeInTheDocument();
@@ -181,10 +199,11 @@ describe("Squat Analyzer healthcare dashboard", () => {
 
   it("opens Analyze from an exercise card with exercise-specific guidance", async () => {
     render(<App />);
+    fireEvent.click(screen.getByRole("button", { name: "Analyze a movement" }));
     fireEvent.click(screen.getByRole("button", { name: "Exercises" }));
     const cards = await screen.findAllByRole("button", { name: /Analyze this exercise/i });
     fireEvent.click(cards[3]);
-    expect(screen.getByLabelText("Exercise selector")).toHaveValue("shoulder_abduction");
+    expect(screen.getByLabelText("Exercise selector")).toHaveTextContent("Shoulder Abduction");
     expect(screen.getByText("Front view preferred.")).toBeInTheDocument();
     expect(screen.getByText(/raise the arm outward through a comfortable range/i)).toBeInTheDocument();
     expect(screen.getByText("Recording tips")).toBeInTheDocument();
@@ -205,7 +224,7 @@ describe("Squat Analyzer healthcare dashboard", () => {
     });
 
     render(<App />);
-    fireEvent.click(screen.getByRole("button", { name: "Analyze Squat Video" }));
+    fireEvent.click(screen.getByRole("button", { name: "Analyze a movement" }));
     fireEvent.click(screen.getByRole("button", { name: "Identify from video" }));
 
     expect(window.location.pathname).toBe("/analyze");
@@ -218,7 +237,7 @@ describe("Squat Analyzer healthcare dashboard", () => {
     fireEvent.click(screen.getByRole("button", { name: "Confirm push-up and continue" }));
 
     expect(await screen.findByText("Suggestion confirmed — video ready")).toBeInTheDocument();
-    expect(screen.getByLabelText("Exercise selector")).toHaveValue("push_up");
+    expect(screen.getByLabelText("Exercise selector")).toHaveTextContent("Push-Up");
     expect(screen.getByText("push-up.mp4")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Analyze push-up" })).toBeEnabled();
     expect(window.location.pathname).toBe("/analyze");
@@ -238,7 +257,7 @@ describe("Squat Analyzer healthcare dashboard", () => {
     };
     analyzeExerciseVideo.mockResolvedValue(sitReport);
     openUpload();
-    fireEvent.change(screen.getByLabelText("Exercise selector"), { target: { value: "sit_to_stand" } });
+    chooseSelectOption("Exercise selector", "Sit-to-Stand");
     expect(screen.getByText("Use a stable chair")).toBeInTheDocument();
     expect(screen.getByLabelText("ML second opinion")).toBeEnabled();
     const file = new File(["video"], "chair.mp4", { type: "video/mp4" });
@@ -263,7 +282,7 @@ describe("Squat Analyzer healthcare dashboard", () => {
     };
     analyzeExerciseVideo.mockResolvedValue(kneeReport);
     openUpload();
-    fireEvent.change(screen.getByLabelText("Exercise selector"), { target: { value: "knee_extension" } });
+    chooseSelectOption("Exercise selector", "Knee Extension");
     expect(screen.getByText("Seated position visible")).toBeInTheDocument();
     expect(screen.getByLabelText("ML second opinion")).toBeEnabled();
     const file = new File(["video"], "extension.mp4", { type: "video/mp4" });
@@ -289,7 +308,7 @@ describe("Squat Analyzer healthcare dashboard", () => {
     };
     analyzeExerciseVideo.mockResolvedValue(shoulderReport);
     openUpload();
-    fireEvent.change(screen.getByLabelText("Exercise selector"), { target: { value: "shoulder_abduction" } });
+    chooseSelectOption("Exercise selector", "Shoulder Abduction");
     expect(screen.getByText("Upper body visible")).toBeInTheDocument();
     expect(screen.getByLabelText("ML second opinion")).toBeEnabled();
     const file = new File(["video"], "shoulder.mp4", { type: "video/mp4" });
@@ -316,7 +335,7 @@ describe("Squat Analyzer healthcare dashboard", () => {
     };
     analyzeExerciseVideo.mockResolvedValue(flexionReport);
     openUpload();
-    fireEvent.change(screen.getByLabelText("Exercise selector"), { target: { value: "shoulder_flexion" } });
+    chooseSelectOption("Exercise selector", "Shoulder Flexion");
     expect(screen.getByText("Raise the arm forward through a comfortable visible range and return to the side.")).toBeInTheDocument();
     expect(screen.getByLabelText("ML second opinion")).toBeEnabled();
     const file = new File(["video"], "flexion.mp4", { type: "video/mp4" });
@@ -343,7 +362,7 @@ describe("Squat Analyzer healthcare dashboard", () => {
     };
     analyzeExerciseVideo.mockResolvedValue(hipReport);
     openUpload();
-    fireEvent.change(screen.getByLabelText("Exercise selector"), { target: { value: "hip_abduction" } });
+    chooseSelectOption("Exercise selector", "Hip Abduction");
     expect(screen.getByText("Full lower body visible")).toBeInTheDocument();
     expect(screen.getByLabelText("ML second opinion")).toBeEnabled();
     const file = new File(["video"], "hip.mp4", { type: "video/mp4" });
@@ -371,7 +390,7 @@ describe("Squat Analyzer healthcare dashboard", () => {
     };
     analyzeExerciseVideo.mockResolvedValue(hammerReport);
     openUpload();
-    fireEvent.change(screen.getByLabelText("Exercise selector"), { target: { value: "hammer_curl" } });
+    chooseSelectOption("Exercise selector", "Hammer Curl");
     expect(screen.getByText(/body pose cannot confirm neutral grip/i)).toBeInTheDocument();
     expect(screen.getByLabelText("ML second opinion")).toBeEnabled();
     const file = new File(["video"], "hammer.mp4", { type: "video/mp4" });
@@ -405,7 +424,7 @@ describe("Squat Analyzer healthcare dashboard", () => {
     };
     analyzeExerciseVideo.mockResolvedValue(balanceReport);
     openUpload();
-    fireEvent.change(screen.getByLabelText("Exercise selector"), { target: { value: "balance" } });
+    chooseSelectOption("Exercise selector", "Static Balance Screen");
     expect(screen.getByText("Hold steady")).toBeInTheDocument();
     expect(screen.getByText(/stable counter, rail, or chair nearby/i)).toBeInTheDocument();
     expect(screen.getByLabelText("ML second opinion")).toBeEnabled();
@@ -454,8 +473,8 @@ describe("Squat Analyzer healthcare dashboard", () => {
     window.history.replaceState({}, "", "/history");
     render(<App />);
     await screen.findByText(/No saved sessions yet/i);
-    fireEvent.change(screen.getByLabelText("Exercise"), { target: { value: "hip_abduction" } });
-    fireEvent.change(screen.getByLabelText("Status"), { target: { value: "rejected" } });
+    chooseSelectOption("Exercise", "Hip Abduction");
+    chooseSelectOption("Status", "Rejected");
     await waitFor(() => expect(listSavedSessions).toHaveBeenLastCalledWith({ exercise_id: "hip_abduction", status: "rejected" }));
   });
 
@@ -479,6 +498,30 @@ describe("Squat Analyzer healthcare dashboard", () => {
     expect(screen.queryByText("Three repetitions analyzed.")).not.toBeInTheDocument();
   });
 
+  it("compares two saved sessions of the same exercise", async () => {
+    const earlier = {
+      session_id: "compare1-session", exercise_id: "bodyweight_squat", exercise_display_name: "Bodyweight Squat",
+      status: "success", created_at: "2026-08-01T10:00:00Z", total_reps: 3, movement_score: 80,
+      analysis_confidence_level: "medium", detected_issues: [],
+    };
+    const later = { ...earlier, session_id: "compare2-session", created_at: "2026-08-20T10:00:00Z", total_reps: 5, movement_score: 88 };
+    listSavedSessions.mockResolvedValue({ items: [later, earlier], total: 2, limit: 50, offset: 0 });
+    getSavedSession
+      .mockResolvedValueOnce({ ...later, metrics: [{ metric_name: "average_knee_angle", metric_value_float: 105 }] })
+      .mockResolvedValueOnce({ ...earlier, metrics: [{ metric_name: "average_knee_angle", metric_value_float: 112 }] });
+    window.history.replaceState({}, "", "/history");
+    render(<App />);
+    const compareButtons = await screen.findAllByRole("button", { name: "Compare" });
+    fireEvent.click(compareButtons[0]);
+    expect(screen.getByText(/Select another session/i)).toBeInTheDocument();
+    fireEvent.click(compareButtons[1]);
+    expect(await screen.findByText("+8/100")).toBeInTheDocument();
+    expect(screen.getByText("-7°")).toBeInTheDocument();
+    expect(getSavedSession).toHaveBeenCalledTimes(2);
+    fireEvent.click(screen.getByRole("button", { name: "Clear comparison" }));
+    expect(screen.queryByLabelText("Compare saved sessions")).not.toBeInTheDocument();
+  });
+
   it("opens a saved report in an authenticated in-page viewer", async () => {
     const saved = {
       session_id: "report12-session", exercise_id: "bodyweight_squat", exercise_display_name: "Bodyweight Squat",
@@ -494,6 +537,11 @@ describe("Squat Analyzer healthcare dashboard", () => {
     expect(await screen.findByRole("dialog", { name: "Session report" })).toBeInTheDocument();
     expect(getArtifactBlob).toHaveBeenCalledWith(saved.report_download_url);
     expect(screen.getByTitle("Session report")).toHaveAttribute("src", "blob:report-1");
+    const closeButtons = screen.getAllByRole("button", { name: "Close" });
+    expect(closeButtons).toHaveLength(2);
+    await waitFor(() => expect(closeButtons[1]).toHaveFocus());
+    fireEvent.keyDown(document, { key: "Escape" });
+    expect(screen.queryByRole("dialog", { name: "Session report" })).not.toBeInTheDocument();
     createObjectUrl.mockRestore();
   });
 
@@ -515,18 +563,50 @@ describe("Squat Analyzer healthcare dashboard", () => {
     window.history.replaceState({}, "", "/therapist");
     render(<App />);
     expect(await screen.findByText("Total patients")).toBeInTheDocument();
-    expect(screen.getByText(/prototype dashboard for development use only/i)).toBeInTheDocument();
-    expect(screen.getByText(/do not enter real patient-identifiable information/i)).toBeInTheDocument();
+    expect(screen.getByText(/privacy and clinical-use notice/i)).toBeInTheDocument();
+    expect(screen.getByText(/only process patient information with appropriate authorization and consent/i)).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Patient profiles" }));
-    expect(screen.getByText("No development patient profiles yet")).toBeInTheDocument();
+    expect(screen.getByText("No patient profiles yet")).toBeInTheDocument();
   });
 
-  it("renders a development profile and patient session detail", async () => {
+  it("visualizes real therapist session scores, exercise volume, and issue frequency", async () => {
+    getTherapistDashboard.mockResolvedValue({
+      total_patients: 3,
+      total_sessions: 4,
+      low_confidence_sessions: 1,
+      recent_sessions: [
+        { session_id: "viz-2", exercise_id: "bodyweight_squat", exercise_display_name: "Bodyweight Squat", movement_score: 86, total_reps: 4 },
+        { session_id: "viz-1", exercise_id: "sit_to_stand", exercise_display_name: "Sit-to-Stand", movement_score: 74, total_reps: 3 },
+      ],
+      common_detected_issues: [{ issue_code: "possible_knee_valgus", count: 3 }],
+      sessions_by_exercise: { bodyweight_squat: 3, sit_to_stand: 1 },
+      low_confidence_sessions_by_exercise: { sit_to_stand: 1 },
+    });
+    window.history.replaceState({}, "", "/therapist");
+    render(<App />);
+    expect(await screen.findByRole("img", { name: "Movement score trend" })).toBeInTheDocument();
+    expect(screen.getByRole("img", { name: "Sessions by exercise" })).toBeInTheDocument();
+    expect(screen.getByRole("img", { name: "Common detected issues" })).toBeInTheDocument();
+  });
+
+  it("renders a patient profile and session detail", async () => {
     const patient = { patient_id: "patient-1234", display_name: "Demo Profile A", age_group: "adult", clinical_group: "unknown", session_count: 1 };
     listPatientProfiles.mockResolvedValue([patient]);
     getPatientProfile.mockResolvedValue({ ...patient, notes: null });
     listPatientSessions.mockResolvedValue([{ session_id: "session-1", exercise_display_name: "Bodyweight Squat", total_reps: 3, movement_score: 88 }]);
-    getPatientProgress.mockResolvedValue({ total_sessions: 1, average_movement_score: 88, average_analysis_confidence: 0.8, low_confidence_session_count: 0, detected_issue_counts: [{ issue_code: "poor_depth", count: 1 }] });
+    getPatientProgress.mockResolvedValue({
+      total_sessions: 2,
+      average_movement_score: 84,
+      average_analysis_confidence: 0.8,
+      low_confidence_session_count: 0,
+      detected_issue_counts: [{ issue_code: "poor_depth", count: 1 }],
+      exercise_comparisons: [{
+        exercise_id: "bodyweight_squat", session_count: 2, scored_session_count: 2,
+        baseline_date: "2026-08-01T10:00:00Z", baseline_movement_score: 80, baseline_total_reps: 3,
+        latest_date: "2026-08-20T10:00:00Z", latest_movement_score: 88, latest_total_reps: 5,
+        score_delta: 8, reps_delta: 2, has_comparison: true,
+      }],
+    });
     window.history.replaceState({}, "", "/therapist");
     render(<App />);
     await screen.findByText("Total patients");
@@ -536,6 +616,34 @@ describe("Squat Analyzer healthcare dashboard", () => {
     expect(await screen.findByText("Exercise session history")).toBeInTheDocument();
     expect(screen.getByText(/Bodyweight Squat · 3 reps · score 88/i)).toBeInTheDocument();
     expect(screen.getByText("Poor Depth: 1")).toBeInTheDocument();
+    expect(screen.getByText("Baseline and latest session")).toBeInTheDocument();
+    expect(screen.getByRole("img", { name: "Bodyweight Squat: baseline score 80, latest score 88" })).toBeInTheDocument();
+    expect(screen.getByText("+8")).toBeInTheDocument();
+  });
+
+  it("creates a clinician-authored exercise plan for a patient", async () => {
+    const patient = { patient_id: "patient-plan", display_name: "Patient Plan", age_group: "adult", clinical_group: "unknown", session_count: 0 };
+    listPatientProfiles.mockResolvedValue([patient]);
+    getPatientProfile.mockResolvedValue({ ...patient, notes: null });
+    listPatientSessions.mockResolvedValue([]);
+    getPatientProgress.mockResolvedValue({ total_sessions: 0, detected_issue_counts: [] });
+    createPatientExercisePlan.mockResolvedValue({
+      plan_id: "plan-1", patient_id: patient.patient_id, title: "Home plan", notes: null,
+      status: "active", items: [{ item_id: "item-1", exercise_id: "bodyweight_squat", sets: 3, reps: 8, days_per_week: 3, instructions: null }],
+    });
+    window.history.replaceState({}, "", "/therapist");
+    render(<App />);
+    await screen.findByText("Total patients");
+    fireEvent.click(screen.getByRole("button", { name: "Patient profiles" }));
+    fireEvent.click(await screen.findByRole("button", { name: "View profile" }));
+    await screen.findByText("Create exercise plan");
+    fireEvent.change(screen.getByLabelText("Plan title"), { target: { value: "Home plan" } });
+    fireEvent.click(screen.getByRole("button", { name: "Assign plan" }));
+    await waitFor(() => expect(createPatientExercisePlan).toHaveBeenCalledWith(
+      "patient-plan",
+      expect.objectContaining({ title: "Home plan", items: [expect.objectContaining({ exercise_id: "bodyweight_squat", sets: 3, reps: 8, days_per_week: 3 })] }),
+    ));
+    expect(await screen.findByText("Home plan")).toBeInTheDocument();
   });
 
   it("renders result KPI cards and charts", async () => {
@@ -586,9 +694,10 @@ describe("Squat Analyzer healthcare dashboard", () => {
 
   it("renders the annotated video with a full backend URL", async () => {
     await analyzeWith();
-    const video = screen.getByLabelText("Annotated squat movement preview");
+    const video = await screen.findByLabelText("Annotated squat movement preview");
     expect(video).toHaveAttribute("preload", "metadata");
-    expect(video.querySelector("source")).toHaveAttribute("src", "http://127.0.0.1:8000/api/v1/artifacts/overlays/test-overlay/preview");
+    expect(video).toHaveAttribute("src", "blob:test-artifact");
+    expect(getArtifactBlob).toHaveBeenCalledWith("http://127.0.0.1:8000/api/v1/artifacts/overlays/test-overlay/preview");
     expect(screen.getAllByRole("link", { name: "Download annotated video" })[0]).toHaveAttribute(
       "href", "http://127.0.0.1:8000/api/v1/artifacts/overlays/test-overlay/download"
     );
@@ -596,8 +705,9 @@ describe("Squat Analyzer healthcare dashboard", () => {
 
   it("shows a fallback when annotated video playback fails", async () => {
     await analyzeWith();
-    fireEvent.error(screen.getByLabelText("Annotated squat movement preview"));
+    fireEvent.error(await screen.findByLabelText("Annotated squat movement preview"));
     expect(screen.getByText("Annotated preview could not be loaded")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Retry preview" })).toBeInTheDocument();
   });
 
   it("renders an API error state", async () => {
@@ -614,12 +724,18 @@ describe("Squat Analyzer healthcare dashboard", () => {
     expect(await screen.findByRole("alert")).toHaveTextContent("Please log in before analyzing a video.");
   });
 
-  it("does not start analysis while the user is logged out", async () => {
+  it("routes logged-out users from the primary CTA to account creation", async () => {
     authState.user = null;
-    openUpload(); selectVideo();
-    fireEvent.click(screen.getByRole("button", { name: "Analyze squat" }));
-    expect(await screen.findByRole("alert")).toHaveTextContent("Please log in before analyzing a video.");
+    openUpload();
+    expect(screen.getByRole("heading", { name: "Create your account" })).toBeInTheDocument();
     expect(analyzeExerciseVideo).not.toHaveBeenCalled();
+  });
+
+  it("keeps log in as the distinct path for existing users", () => {
+    authState.user = null;
+    render(<App />);
+    fireEvent.click(screen.getByRole("button", { name: "Log in" }));
+    expect(screen.getByRole("heading", { name: "Log in to PhysioVision" })).toBeInTheDocument();
   });
 
   it("shows the supported formats for an unsupported-file response", async () => {

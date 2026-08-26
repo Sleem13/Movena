@@ -1,4 +1,4 @@
-import { useId } from "react";
+import { useEffect, useId, useRef } from "react";
 
 const SEGMENTS = [
   ["head", "neck"], ["neck", "shoulderL"], ["neck", "shoulderR"],
@@ -16,7 +16,7 @@ const STANDING = {
 const pose = (changes) => ({ ...STANDING, ...changes });
 
 const GRAPHS = {
-  bodyweight_squat: { joints: pose({ hipCenter: [160, 112], hipL: [146, 116], hipR: [174, 116], kneeL: [127, 139], kneeR: [193, 139], ankleL: [143, 166], ankleR: [177, 166], elbowL: [126, 78], elbowR: [194, 78], wristL: [143, 86], wristR: [177, 86] }), ghost: STANDING, motion: "M218 82 C235 102 231 128 213 141" },
+  bodyweight_squat: { joints: pose({ head: [176, 35], neck: [172, 57], shoulderL: [149, 67], shoulderR: [193, 69], elbowL: [132, 88], elbowR: [201, 91], wristL: [149, 97], wristR: [184, 99], hipCenter: [160, 112], hipL: [146, 116], hipR: [174, 116], kneeL: [127, 139], kneeR: [193, 139], ankleL: [143, 166], ankleR: [177, 166] }), ghost: STANDING, motion: "M218 82 C235 102 231 128 213 141" },
   sit_to_stand: { joints: STANDING, ghost: pose({ hipCenter: [160, 112], hipL: [148, 116], hipR: [172, 116], kneeL: [126, 139], kneeR: [194, 139], ankleL: [126, 166], ankleR: [194, 166] }), motion: "M220 137 C239 112 235 82 216 64", props: ["M112 118 H208 V126 H112 Z", "M119 126 V166", "M201 126 V166"] },
   knee_extension: { joints: pose({ hipCenter: [160, 103], hipL: [151, 108], hipR: [169, 108], kneeL: [131, 132], ankleL: [102, 133], kneeR: [190, 132], ankleR: [190, 163] }), ghost: pose({ hipCenter: [160, 103], hipL: [151, 108], hipR: [169, 108], kneeL: [131, 132], ankleL: [131, 163], kneeR: [190, 132], ankleR: [190, 163] }), motion: "M127 157 Q102 151 96 135", props: ["M137 109 H202 V118 H137 Z", "M194 118 V166"] },
   shoulder_abduction: { joints: pose({ elbowL: [105, 57], wristL: [72, 57], elbowR: [215, 57], wristR: [248, 57] }), ghost: STANDING, motion: "M111 104 Q84 88 75 63" },
@@ -45,18 +45,78 @@ function Skeleton({ joints, ghost = false }) {
   );
 }
 
-export default function ExercisePoseGraph({ exerciseId, label, supported = true }) {
-  const markerId = `motion-${useId().replaceAll(":", "")}`;
+function interpolatePose(from, to, progress) {
+  const movement = 0.5 - (Math.cos(progress * Math.PI * 2) / 2);
+  return Object.fromEntries(Object.keys(from).map((name) => [
+    name,
+    [
+      from[name][0] + ((to[name][0] - from[name][0]) * movement),
+      from[name][1] + ((to[name][1] - from[name][1]) * movement),
+    ],
+  ]));
+}
+
+function angleAt(first, center, last) {
+  const a = [first[0] - center[0], first[1] - center[1]];
+  const b = [last[0] - center[0], last[1] - center[1]];
+  const denominator = Math.hypot(...a) * Math.hypot(...b);
+  if (!denominator) return 0;
+  const cosine = Math.max(-1, Math.min(1, ((a[0] * b[0]) + (a[1] * b[1])) / denominator));
+  return Math.round(Math.acos(cosine) * (180 / Math.PI));
+}
+
+export function getPoseMetrics(exerciseId, progress = 0) {
   const graph = GRAPHS[exerciseId] || { joints: STANDING };
+  const joints = graph.ghost ? interpolatePose(graph.ghost, graph.joints, progress) : graph.joints;
+  const knee = Math.round((angleAt(joints.hipL, joints.kneeL, joints.ankleL) + angleAt(joints.hipR, joints.kneeR, joints.ankleR)) / 2);
+  const hip = Math.round((angleAt(joints.neck, joints.hipL, joints.kneeL) + angleAt(joints.neck, joints.hipR, joints.kneeR)) / 2);
+  const trunkVector = [joints.neck[0] - joints.hipCenter[0], joints.neck[1] - joints.hipCenter[1]];
+  const trunk = Math.round(Math.atan2(Math.abs(trunkVector[0]), Math.abs(trunkVector[1])) * (180 / Math.PI));
+  return { hip, joints, knee, trunk };
+}
+
+function AnimatedSkeleton({ from, to }) {
+  const values = (name, axis) => `${from[name][axis]};${to[name][axis]};${from[name][axis]}`;
+  const animation = (attributeName, animationValues) => <animate attributeName={attributeName} values={animationValues} dur="3.2s" keyTimes="0;0.48;1" calcMode="spline" keySplines="0.4 0 0.2 1;0.4 0 0.2 1" repeatCount="indefinite" />;
   return (
-    <svg viewBox="0 0 320 180" role="img" aria-label={label} data-exercise-pose={exerciseId} className={`h-full w-full ${supported ? "text-clinical-blue" : "text-slate-500"}`}>
+    <g stroke="currentColor" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round">
+      {SEGMENTS.map(([start, end]) => <line key={`${start}-${end}`} x1={from[start][0]} y1={from[start][1]} x2={from[end][0]} y2={from[end][1]}>
+        {animation("x1", values(start, 0))}{animation("y1", values(start, 1))}{animation("x2", values(end, 0))}{animation("y2", values(end, 1))}
+      </line>)}
+      {Object.entries(from).map(([name, [x, y]]) => <circle key={name} cx={x} cy={y} r={name === "head" ? 10 : 3.5} fill="white">
+        {animation("cx", values(name, 0))}{animation("cy", values(name, 1))}
+      </circle>)}
+    </g>
+  );
+}
+
+export default function ExercisePoseGraph({ animated = false, animationProgress, exerciseId, label, paused = false, supported = true }) {
+  const markerId = `motion-${useId().replaceAll(":", "")}`;
+  const svgRef = useRef(null);
+  const graph = GRAPHS[exerciseId] || { joints: STANDING };
+  const controlledJoints = animated && graph.ghost && typeof animationProgress === "number"
+    ? interpolatePose(graph.ghost, graph.joints, animationProgress)
+    : null;
+  useEffect(() => {
+    if (!animated || !svgRef.current) return undefined;
+    const reducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)");
+    const syncPlayback = () => {
+      if (paused || reducedMotion?.matches) svgRef.current?.pauseAnimations?.();
+      else svgRef.current?.unpauseAnimations?.();
+    };
+    syncPlayback();
+    reducedMotion?.addEventListener?.("change", syncPlayback);
+    return () => reducedMotion?.removeEventListener?.("change", syncPlayback);
+  }, [animated, paused]);
+  return (
+    <svg ref={svgRef} viewBox="0 0 320 180" role="img" aria-label={label} data-exercise-pose={exerciseId} className={`h-full w-full ${supported ? "text-clinical-blue" : "text-slate-500"}`}>
       <title>{label}</title>
       <defs><marker id={markerId} viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10z" fill="#0f9f95" /></marker></defs>
       <ellipse cx="160" cy="169" rx="113" ry="5" fill={supported ? "#dbeafe" : "#e2e8f0"} opacity="0.75" />
       {graph.props?.map((path) => <path key={path} d={path} fill="none" stroke="#64748b" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />)}
       {graph.ghost ? <Skeleton joints={graph.ghost} ghost /> : null}
-      <Skeleton joints={graph.joints} />
-      {graph.motion ? <path d={graph.motion} fill="none" stroke="#0f9f95" strokeWidth="4" strokeLinecap="round" strokeDasharray="6 6" markerEnd={`url(#${markerId})`} /> : null}
+      {controlledJoints ? <Skeleton joints={controlledJoints} /> : animated && graph.ghost ? <AnimatedSkeleton from={graph.ghost} to={graph.joints} /> : <Skeleton joints={graph.joints} />}
+      {graph.motion ? <path className={animated ? `pose-motion-path${paused ? " is-paused" : ""}` : undefined} d={graph.motion} fill="none" stroke="#0f9f95" strokeWidth="4" strokeLinecap="round" strokeDasharray="6 6" markerEnd={`url(#${markerId})`} /> : null}
     </svg>
   );
 }

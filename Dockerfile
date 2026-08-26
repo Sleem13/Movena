@@ -6,7 +6,8 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     API_HOST=0.0.0.0 \
     API_PORT=8000
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN sed -i 's|http://deb.debian.org|https://deb.debian.org|g' /etc/apt/sources.list.d/debian.sources && \
+    apt-get update && apt-get install -y --no-install-recommends \
     libgl1 libglib2.0-0 && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app

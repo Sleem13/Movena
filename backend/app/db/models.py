@@ -148,6 +148,52 @@ class PatientProfile(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now, nullable=False)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now, onupdate=utc_now, nullable=False)
     sessions: Mapped[list[AnalysisSession]] = relationship(back_populates="patient")
+    exercise_plans: Mapped[list["ExercisePlan"]] = relationship(
+        back_populates="patient", cascade="all, delete-orphan"
+    )
+
+
+class ExercisePlan(Base):
+    __tablename__ = "exercise_plans"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    plan_id: Mapped[str] = mapped_column(String(36), unique=True, index=True, nullable=False)
+    patient_id: Mapped[str] = mapped_column(
+        ForeignKey("patient_profiles.patient_id", ondelete="CASCADE"), index=True, nullable=False
+    )
+    created_by_user_id: Mapped[str | None] = mapped_column(String(36), index=True)
+    title: Mapped[str] = mapped_column(String(120), nullable=False)
+    notes: Mapped[str | None] = mapped_column(Text)
+    status: Mapped[str] = mapped_column(String(24), index=True, nullable=False, default="active")
+    start_date: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    end_date: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now, nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=utc_now, onupdate=utc_now, nullable=False
+    )
+
+    patient: Mapped[PatientProfile] = relationship(back_populates="exercise_plans")
+    items: Mapped[list["ExercisePlanItem"]] = relationship(
+        back_populates="plan", cascade="all, delete-orphan", order_by="ExercisePlanItem.sort_order"
+    )
+
+
+class ExercisePlanItem(Base):
+    __tablename__ = "exercise_plan_items"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    item_id: Mapped[str] = mapped_column(String(36), unique=True, index=True, nullable=False)
+    plan_id: Mapped[str] = mapped_column(
+        ForeignKey("exercise_plans.plan_id", ondelete="CASCADE"), index=True, nullable=False
+    )
+    exercise_id: Mapped[str] = mapped_column(String(64), index=True, nullable=False)
+    sets: Mapped[int] = mapped_column(Integer, nullable=False)
+    reps: Mapped[int] = mapped_column(Integer, nullable=False)
+    days_per_week: Mapped[int] = mapped_column(Integer, nullable=False)
+    instructions: Mapped[str | None] = mapped_column(Text)
+    sort_order: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+
+    plan: Mapped[ExercisePlan] = relationship(back_populates="items")
 
 
 class SessionMetric(Base):

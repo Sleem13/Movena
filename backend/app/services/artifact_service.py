@@ -13,7 +13,7 @@ from app.core import artifact_config
 from app.core.config import get_settings
 
 
-ARTIFACT_SUFFIXES = {"report": ".pdf", "overlay": ".mp4"}
+ARTIFACT_SUFFIXES = {"report": ".pdf", "overlay": ".webm"}
 ARTIFACT_SUBDIRS = {"report": "reports", "overlay": "overlays"}
 
 

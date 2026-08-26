@@ -171,6 +171,18 @@ export async function getPatientProgress(patientId) {
   return (await api.get(`/api/v1/therapist/patients/${patientId}/progress`)).data;
 }
 
+export async function listPatientExercisePlans(patientId) {
+  return (await api.get(`/api/v1/therapist/patients/${patientId}/exercise-plans`)).data;
+}
+
+export async function createPatientExercisePlan(patientId, payload) {
+  return (await api.post(`/api/v1/therapist/patients/${patientId}/exercise-plans`, payload)).data;
+}
+
+export async function updatePatientExercisePlanStatus(patientId, planId, status) {
+  return (await api.patch(`/api/v1/therapist/patients/${patientId}/exercise-plans/${planId}`, { status })).data;
+}
+
 export async function registerUser(payload) { return (await api.post("/api/v1/auth/register", payload)).data; }
 export async function loginUser(payload) { return (await api.post("/api/v1/auth/login", payload)).data; }
 export async function getCurrentUser() { return (await api.get("/api/v1/auth/me")).data; }

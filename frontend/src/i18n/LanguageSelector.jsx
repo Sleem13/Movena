@@ -1,19 +1,18 @@
 import { Languages } from "lucide-react";
+import Select from "../components/common/Select.jsx";
 import { useLocale } from "./LocaleContext.jsx";
 import { SUPPORTED_LOCALES } from "./messages.js";
 
 export default function LanguageSelector() {
   const { locale, setLocale, t } = useLocale();
-  return <label className="relative inline-flex h-10 shrink-0 items-center gap-1.5 rounded-xl bg-slate-100 px-2 text-slate-600">
-    <Languages size={15} aria-hidden="true" />
-    <span className="sr-only">{t("language.label")}</span>
-    <select
-      aria-label={t("language.label")}
-      className="max-w-20 cursor-pointer appearance-none bg-transparent pr-3 text-xs font-semibold outline-none"
-      value={locale}
-      onChange={(event) => setLocale(event.target.value)}
-    >
-      {SUPPORTED_LOCALES.map(({ code, label }) => <option key={code} value={code}>{label}</option>)}
-    </select>
-  </label>;
+  return <Select
+    ariaLabel={t("language.label")}
+    className="shrink-0"
+    buttonClassName="min-h-10 w-auto border-transparent bg-slate-100 px-3 text-xs font-semibold shadow-none hover:border-blue-100 hover:bg-blue-50"
+    icon={Languages}
+    minMenuWidth={168}
+    value={locale}
+    options={SUPPORTED_LOCALES.map(({ code, label }) => ({ value: code, label }))}
+    onChange={setLocale}
+  />;
 }

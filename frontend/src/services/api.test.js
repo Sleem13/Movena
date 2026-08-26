@@ -3,13 +3,15 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const mocks = vi.hoisted(() => {
   const get = vi.fn();
   const post = vi.fn();
+  const patch = vi.fn();
   const del = vi.fn();
   const use = vi.fn();
   return {
     get,
     post,
+    patch,
     use,
-    create: vi.fn(() => ({ get, post, delete: del, interceptors: { request: { use } } })),
+    create: vi.fn(() => ({ get, post, patch, delete: del, interceptors: { request: { use } } })),
   };
 });
 

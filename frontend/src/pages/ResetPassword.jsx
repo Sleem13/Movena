@@ -21,7 +21,7 @@ export default function ResetPassword({ onLogin }) {
     <button onClick={onLogin} className="mb-6 inline-flex items-center gap-2 text-sm font-semibold text-slate-500 hover:text-clinical-blue"><ArrowLeft size={16} />Back to login</button>
     <Card className="p-6 sm:p-8"><p className="text-xs font-bold uppercase tracking-[0.18em] text-clinical-teal">Secure recovery</p><h1 className="mt-3 text-3xl font-extrabold text-clinical-ink">Set a new password</h1><p className="mt-3 text-sm text-slate-600">This link can be used once and expires automatically.</p>
       {message ? <Alert tone="info" className="mt-5">{message}</Alert> : null}{error ? <Alert className="mt-5">{error}</Alert> : null}
-      {!message ? <form onSubmit={submit} className="mt-6 grid gap-5"><PasswordInput label="New password" name="password" autoComplete="new-password" minLength={12} /><p className="-mt-3 text-xs text-slate-500">Use at least 12 characters.</p><Button disabled={submitting || !token}>{submitting ? "Updating…" : "Update password"}</Button></form> : <Button className="mt-6 w-full" onClick={onLogin}>Continue to login</Button>}
+      {!message ? <form onSubmit={submit} className="mt-6 grid gap-5"><PasswordInput label="New password" name="password" autoComplete="new-password" minLength={8} /><p className="-mt-3 text-xs text-slate-500">Use at least 8 characters.</p><Button disabled={submitting || !token}>{submitting ? "Updating…" : "Update password"}</Button></form> : <Button className="mt-6 w-full" onClick={onLogin}>Continue to login</Button>}
     </Card>
   </main>;
 }

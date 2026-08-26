@@ -1,169 +1,193 @@
 import {
   ArrowRight,
-  BarChart3,
-  CheckCircle2,
-  Eye,
+  Check,
   FileText,
-  LockKeyhole,
-  Play,
+  MessageSquareText,
+  PauseCircle,
+  PlayCircle,
   ShieldCheck,
-  Sparkles,
+  TrendingUp,
   UploadCloud,
 } from "lucide-react";
-import { Badge, Button, Card } from "../components/common/UI.jsx";
+import { useEffect, useRef, useState } from "react";
+
+import { Button } from "../components/common/UI.jsx";
+import ExercisePoseGraph, { getPoseMetrics } from "../components/exercises/ExercisePoseGraph.jsx";
 import { useLocale } from "../i18n/LocaleContext.jsx";
 
-export default function Home({ onStart }) {
-  const { t, exerciseText } = useLocale();
-  const squat = exerciseText("bodyweight_squat");
-  const steps = [
-    {
-      icon: UploadCloud,
-      number: "01",
-      title: t("home.stepUploadTitle"),
-      description: t("home.stepUploadDescription"),
-    },
-    {
-      icon: Eye,
-      number: "02",
-      title: t("home.stepReviewTitle"),
-      description: t("home.stepReviewDescription"),
-    },
-    {
-      icon: FileText,
-      number: "03",
-      title: t("home.stepDiscussTitle"),
-      description: t("home.stepDiscussDescription"),
-    },
-  ];
+const TREND_POINTS = [42, 72, 54, 78, 66, 90];
+const DEMO_DURATION_MS = 5200;
 
+function ProductPreview({ t, squatName }) {
+  const [playing, setPlaying] = useState(true);
+  const [progress, setProgress] = useState(0);
+  const elapsedRef = useRef(0);
+
+  useEffect(() => {
+    if (!playing) return undefined;
+    let frameId;
+    let previousTime = performance.now();
+    const advance = (time) => {
+      elapsedRef.current = (elapsedRef.current + (time - previousTime)) % DEMO_DURATION_MS;
+      previousTime = time;
+      setProgress(elapsedRef.current / DEMO_DURATION_MS);
+      frameId = requestAnimationFrame(advance);
+    };
+    frameId = requestAnimationFrame(advance);
+    return () => cancelAnimationFrame(frameId);
+  }, [playing]);
+
+  const metrics = getPoseMetrics("bodyweight_squat", progress);
+  const movement = 0.5 - (Math.cos(progress * Math.PI * 2) / 2);
+  const scanOpacity = Math.min(1, progress * 9, (1 - progress) * 9);
   return (
-    <main>
-      <section className="relative overflow-hidden">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_78%_24%,rgba(37,99,235,0.11),transparent_28%),radial-gradient(circle_at_12%_75%,rgba(15,143,131,0.09),transparent_24%)]" />
-        <div className="relative mx-auto grid min-h-[680px] max-w-7xl items-center gap-14 px-6 py-16 lg:grid-cols-[1.04fr_.96fr] lg:py-20">
-          <div>
-            <Badge tone="teal">
-              <ShieldCheck className="mr-1.5" size={14} aria-hidden="true" />
-              {t("home.badge")}
-            </Badge>
-            <h1 className="mt-7 max-w-3xl text-5xl font-extrabold leading-[1.04] text-clinical-ink sm:text-6xl lg:text-7xl">
-              {t("home.titlePrefix")}{" "}
-              <span className="bg-gradient-to-r from-clinical-blue via-blue-500 to-clinical-teal bg-clip-text text-transparent">
-                {t("home.titleHighlight")}
-              </span>
-            </h1>
-            <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-600">
-              {t("home.description")}
-            </p>
-            <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-              <Button type="button" aria-label="Analyze Squat Video" onClick={onStart} className="min-h-12 px-6">
-                {t("home.start")}
-                <ArrowRight size={18} aria-hidden="true" />
-              </Button>
-              <Button as="a" href="#how-it-works" variant="secondary" className="min-h-12 px-6">
-                <Play size={17} aria-hidden="true" />
-                {t("home.how")}
-              </Button>
+    <div className="landing-preview relative mx-auto min-w-0 w-full max-w-[650px]" aria-label={t("home.exampleSummary")}>
+      <div className="grid min-w-0 overflow-hidden rounded-[22px] border border-slate-200 bg-white shadow-[0_28px_80px_rgba(7,27,74,0.15)] sm:grid-cols-[1.16fr_.84fr]">
+        <div className="border-b border-slate-200 bg-slate-50 p-4 sm:border-b-0 sm:border-r sm:p-5">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <p className="text-sm font-extrabold text-clinical-ink">{squatName}</p>
+              <p className="mt-1 text-xs text-slate-500">{t("home.exampleSummary")}</p>
             </div>
-            <div className="mt-8 flex flex-wrap gap-x-6 gap-y-3 text-xs font-semibold text-slate-500">
-              {[t("home.featureRule"), t("home.featureClaims"), t("home.featureUploads")].map((label, index) => (
-                <span key={label} className="flex items-center gap-2">
-                  {index === 2 ? <LockKeyhole size={15} className="text-clinical-teal" /> : <CheckCircle2 size={15} className="text-clinical-teal" />}
-                  {label}
+            <span className="inline-flex items-center gap-1.5 rounded-lg bg-clinical-mint px-2.5 py-1 text-[11px] font-bold text-clinical-teal">
+              <Check size={13} strokeWidth={2.5} /> {t("home.complete")}
+            </span>
+          </div>
+          <div className="relative mt-4 aspect-[4/3] overflow-hidden rounded-2xl border border-slate-200 bg-white p-3">
+            <ExercisePoseGraph animated animationProgress={progress} exerciseId="bodyweight_squat" label={`${squatName} movement preview`} paused={!playing} supported />
+            <span data-testid="analysis-scanner" className="pointer-events-none absolute inset-x-3 h-px bg-gradient-to-r from-transparent via-teal-400 to-transparent shadow-[0_0_12px_#2dd4bf]" style={{ opacity: scanOpacity, top: `${15 + (movement * 67)}%` }} />
+            <span className="absolute left-3 top-3 rounded-lg border border-blue-100 bg-white/90 px-2 py-1 text-[10px] font-bold text-blue-700 shadow-sm backdrop-blur">{t("home.poseTracking")}</span>
+            <div className="absolute bottom-3 right-3 flex flex-wrap justify-end gap-1.5 pl-3 text-[9px] font-extrabold sm:text-[10px]" aria-label={t("home.liveMeasurements")}>
+              <span className="rounded-lg border border-teal-100 bg-white/92 px-2 py-1 text-clinical-teal shadow-sm backdrop-blur">{t("home.kneeLabel")} {metrics.knee}°</span>
+              <span className="rounded-lg border border-blue-100 bg-white/92 px-2 py-1 text-blue-700 shadow-sm backdrop-blur">{t("home.hipLabel")} {metrics.hip}°</span>
+              <span className="rounded-lg border border-slate-200 bg-white/92 px-2 py-1 text-slate-600 shadow-sm backdrop-blur">{t("home.trunkLabel")} {metrics.trunk}°</span>
+            </div>
+          </div>
+          <div className="mt-3 flex items-center gap-3 rounded-xl bg-clinical-ink px-3 py-2.5 text-white">
+            <button type="button" onClick={() => setPlaying((value) => !value)} className="grid h-7 w-7 shrink-0 place-items-center rounded-full text-teal-300 transition hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-200" aria-label={t(playing ? "home.pauseDemo" : "home.playDemo")}>{playing ? <PauseCircle size={19} /> : <PlayCircle size={19} />}</button>
+            <span className="h-1 flex-1 overflow-hidden rounded-full bg-white/20"><span className="block h-full rounded-full bg-teal-300" style={{ width: `${6 + (progress * 94)}%` }} /></span>
+            <span className="text-[10px] font-semibold text-blue-100">{t("home.liveAnalysis")}</span>
+          </div>
+        </div>
+        <div className="min-w-0 p-4 sm:p-5">
+          <p className="text-sm font-extrabold text-clinical-ink">{t("home.clearFeedback")}</p>
+          <div className="mt-4 space-y-3">
+            {[t("home.featureRule"), t("home.featureClaims")].map((label) => (
+              <div key={label} className="flex gap-2.5 border-b border-slate-100 pb-3 text-xs leading-5 text-slate-600 last:border-0">
+                <span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full border border-teal-200 bg-teal-50 text-clinical-teal"><Check size={12} strokeWidth={2.5} /></span>
+                {label}
+              </div>
+            ))}
+          </div>
+          <div className="mt-5 rounded-xl border border-slate-200 bg-slate-50 p-3.5">
+            <div className="flex items-center justify-between text-[11px] font-bold">
+              <span className="text-clinical-ink">{t("home.kneeTrend")}</span>
+              <TrendingUp size={15} className="text-clinical-teal" />
+            </div>
+            <div className="mt-5 flex h-24 items-end gap-2 border-b border-l border-slate-200 px-1">
+              {TREND_POINTS.map((height, index) => (
+                <span key={index} className="relative flex-1" style={{ height: `${height}%` }}>
+                  <span className="absolute left-1/2 top-0 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-clinical-teal ring-4 ring-teal-50" />
                 </span>
               ))}
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
-          <div className="relative mx-auto w-full max-w-xl">
-            <div className="absolute -inset-8 rounded-[2.5rem] bg-gradient-to-br from-blue-200/50 to-teal-100/60 blur-3xl" />
-            <Card className="relative overflow-hidden p-3 shadow-lift">
-              <div className="rounded-[1.3rem] bg-gradient-to-br from-clinical-navy via-[#164d72] to-[#0e746e] p-6 text-white sm:p-7">
-                <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-blue-200">{t("home.exampleEyebrow")}</p>
-                    <p className="mt-2 text-2xl font-bold">{squat.name}</p>
-                    <p className="mt-1 text-xs text-blue-100">{t("home.exampleSummary")}</p>
-                  </div>
-                  <Badge className="bg-white/15 text-white ring-white/20">{t("home.complete")}</Badge>
-                </div>
-                <div className="mt-8 grid grid-cols-2 gap-3">
-                  <div className="rounded-2xl border border-white/10 bg-white/10 p-4 backdrop-blur">
-                    <p className="text-xs text-blue-100">{t("home.movementScore")}</p>
-                    <p className="mt-2 text-4xl font-extrabold">88<span className="ml-1 text-sm font-medium text-blue-200">/100</span></p>
-                  </div>
-                  <div className="rounded-2xl border border-white/10 bg-white/10 p-4 backdrop-blur">
-                    <p className="text-xs text-blue-100">{t("home.completedReps")}</p>
-                    <p className="mt-2 text-4xl font-extrabold">5</p>
-                  </div>
-                </div>
-                <div className="mt-4 rounded-2xl border border-white/10 bg-white/10 p-4">
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="font-semibold text-blue-100">{t("home.kneeTrend")}</span>
-                    <span className="text-teal-200">{t("home.liveSample")}</span>
-                  </div>
-                  <div className="mt-5 flex h-28 items-end gap-2">
-                    {[38, 58, 46, 82, 65, 91, 72, 88, 60, 78, 54, 84].map((height, index) => (
-                      <span
-                        key={index}
-                        className="flex-1 rounded-t-md bg-gradient-to-t from-teal-300 to-blue-100 opacity-90"
-                        style={{ height: `${height}%` }}
-                      />
-                    ))}
-                  </div>
-                </div>
-              </div>
-              <div className="grid gap-2 p-3 sm:grid-cols-3">
-                {[
-                  [BarChart3, t("home.angleTrends")],
-                  [Sparkles, t("home.clearFeedback")],
-                  [FileText, t("home.pdfExport")],
-                ].map(([Icon, label]) => (
-                  <div key={label} className="flex items-center gap-2 rounded-xl bg-slate-50 p-3 text-xs font-semibold text-slate-700">
-                    <Icon size={16} className="text-clinical-blue" />
-                    {label}
-                  </div>
-                ))}
-              </div>
-            </Card>
+export default function Home({ authenticated = false, onStart }) {
+  const { t, exerciseText } = useLocale();
+  const squat = exerciseText("bodyweight_squat");
+  const steps = [
+    [UploadCloud, t("home.stepUploadTitle"), t("home.stepUploadDescription")],
+    [TrendingUp, t("home.stepReviewTitle"), t("home.stepReviewDescription")],
+    [MessageSquareText, t("home.stepDiscussTitle"), t("home.stepDiscussDescription")],
+  ];
+  const benefits = [
+    [TrendingUp, t("home.angleTrends"), t("home.benefitTrends")],
+    [MessageSquareText, t("home.clearFeedback"), t("home.benefitFeedback")],
+    [FileText, t("home.pdfExport"), t("home.benefitReports")],
+  ];
+
+  return (
+    <main className="overflow-hidden bg-white">
+      <section className="relative border-b border-slate-100">
+        <div className="hero-grid pointer-events-none absolute inset-0 opacity-70" />
+        <div className="relative mx-auto grid min-h-[700px] max-w-[1400px] items-center gap-12 px-5 py-14 sm:px-8 lg:grid-cols-[.86fr_1.14fr] lg:px-12 lg:py-20">
+          <div className="max-w-[610px]">
+            <h1 className="text-balance text-[3.25rem] font-extrabold leading-[.98] tracking-[-0.055em] text-clinical-ink sm:text-[4.4rem] lg:text-[5rem]">
+              {t("home.titlePrefix")} <span className="text-clinical-blue">{t("home.titleHighlight")}</span>
+            </h1>
+            <p className="mt-7 max-w-xl text-base leading-8 text-slate-600 sm:text-lg">{t("home.description")}</p>
+            <div className="mt-9 flex flex-col gap-3 sm:flex-row">
+              <Button type="button" onClick={onStart} className="min-h-[52px] px-6 text-[15px]">
+                {t(authenticated ? "home.openAnalyzer" : "home.getStarted")} <ArrowRight size={18} aria-hidden="true" />
+              </Button>
+              <Button as="a" href="#how-it-works" variant="secondary" className="min-h-[52px] px-6 text-[15px]">
+                <PlayCircle size={18} aria-hidden="true" /> {t("home.how")}
+              </Button>
+            </div>
+            <div className="mt-8 flex flex-wrap gap-x-6 gap-y-3 text-xs font-semibold text-slate-500">
+              {[t("home.featureRule"), t("home.featureClaims"), t("home.featureUploads")].map((label) => (
+                <span key={label} className="flex items-center gap-2"><Check size={15} className="text-clinical-teal" />{label}</span>
+              ))}
+            </div>
           </div>
+          <ProductPreview t={t} squatName={squat.name} />
         </div>
       </section>
 
-      <section id="how-it-works" className="scroll-mt-24 border-y border-slate-200/80 bg-white/70">
-        <div className="mx-auto max-w-7xl px-6 py-16">
-          <div className="max-w-2xl">
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-clinical-teal">{t("home.howEyebrow")}</p>
-            <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-clinical-ink">{t("home.howTitle")}</h2>
-            <p className="mt-3 text-sm leading-7 text-slate-600">{t("home.howDescription")}</p>
+      <section id="how-it-works" className="scroll-mt-24 bg-white">
+        <div className="mx-auto max-w-7xl px-5 py-20 sm:px-8 lg:py-28">
+          <div className="mx-auto max-w-2xl text-center">
+            <h2 className="text-balance text-3xl font-extrabold tracking-[-0.035em] text-clinical-ink sm:text-4xl">{t("home.howTitle")}</h2>
+            <p className="mt-4 text-sm leading-7 text-slate-600 sm:text-base">{t("home.howDescription")}</p>
           </div>
-          <div className="mt-9 grid gap-5 md:grid-cols-3">
-            {steps.map(({ icon: Icon, number, title, description }) => (
-              <Card key={number} className="group relative overflow-hidden p-6 transition duration-200 hover:-translate-y-1 hover:shadow-lift">
-                <span className="absolute right-5 top-4 text-5xl font-black text-slate-100">{number}</span>
-                <span className="relative grid h-12 w-12 place-items-center rounded-2xl bg-blue-50 text-clinical-blue">
-                  <Icon size={21} />
-                </span>
-                <h3 className="relative mt-5 text-lg font-bold text-clinical-ink">{title}</h3>
-                <p className="relative mt-2 text-sm leading-6 text-slate-600">{description}</p>
-              </Card>
+          <div className="relative mt-14 grid gap-10 md:grid-cols-3 md:gap-12">
+            <div className="pointer-events-none absolute left-[16%] right-[16%] top-9 hidden border-t border-dashed border-teal-300 md:block" />
+            {steps.map(([Icon, title, description], index) => (
+              <article key={title} className="relative text-center md:text-left">
+                <span className="relative mx-auto grid h-[74px] w-[74px] place-items-center rounded-[22px] border border-blue-100 bg-clinical-sky text-clinical-teal shadow-soft md:mx-0"><Icon size={28} strokeWidth={1.8} /></span>
+                <p className="mt-7 text-xs font-extrabold tracking-[0.12em] text-clinical-teal">0{index + 1}</p>
+                <h3 className="mt-2 text-lg font-extrabold text-clinical-ink">{title}</h3>
+                <p className="mt-3 text-sm leading-6 text-slate-600">{description}</p>
+              </article>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-6 py-16">
-        <div className="flex flex-col gap-6 rounded-[2rem] bg-clinical-ink p-7 text-white shadow-lift sm:flex-row sm:items-center sm:justify-between sm:p-9">
-          <div className="max-w-2xl">
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-teal-300">{t("home.safetyEyebrow")}</p>
-            <h2 className="mt-3 text-2xl font-bold">{t("home.safetyTitle")}</h2>
-            <p className="mt-3 text-sm leading-6 text-slate-300">{t("home.safetyDescription")}</p>
+      <section id="benefits" className="scroll-mt-24 bg-clinical-panel">
+        <div className="mx-auto grid max-w-7xl items-center gap-12 px-5 py-20 sm:px-8 lg:grid-cols-[.8fr_1.2fr] lg:py-24">
+          <div>
+            <h2 className="max-w-md text-balance text-3xl font-extrabold tracking-[-0.035em] text-clinical-ink sm:text-4xl">{t("home.benefitsTitle")}</h2>
+            <div className="mt-9 space-y-7">
+              {benefits.map(([Icon, title, description]) => (
+                <div key={title} className="flex gap-4">
+                  <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-teal-100 bg-white text-clinical-teal shadow-soft"><Icon size={20} /></span>
+                  <div><h3 className="text-sm font-extrabold text-clinical-ink">{title}</h3><p className="mt-1.5 text-sm leading-6 text-slate-600">{description}</p></div>
+                </div>
+              ))}
+            </div>
           </div>
-          <Button type="button" variant="secondary" onClick={onStart} className="shrink-0">
-            {t("home.analyzeVideo")}
-            <ArrowRight size={17} />
-          </Button>
+          <div className="relative rounded-[24px] border border-blue-100 bg-[#eaf3ff] p-5 sm:p-8">
+            <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_18px_50px_rgba(7,27,74,0.1)] sm:p-7">
+              <div className="flex items-center gap-3"><span className="grid h-9 w-9 place-items-center rounded-[11px] bg-gradient-to-br from-blue-600 to-teal-400 text-white"><TrendingUp size={18} /></span><div><p className="text-sm font-extrabold text-clinical-ink">{t("home.exampleSummary")}</p><p className="text-xs text-slate-500">{squat.name}</p></div></div>
+              <div className="mt-7 grid gap-4 sm:grid-cols-[1fr_150px]"><div className="space-y-3"><span className="block h-3 w-4/5 rounded bg-slate-100" /><span className="block h-3 w-full rounded bg-slate-100" /><span className="block h-3 w-2/3 rounded bg-slate-100" /></div><div className="rounded-xl bg-clinical-sky p-4"><ShieldCheck className="text-clinical-teal" size={24} /><span className="mt-3 block h-2.5 w-full rounded bg-blue-100" /><span className="mt-2 block h-2.5 w-3/4 rounded bg-blue-100" /></div></div>
+              <div className="mt-7 flex h-32 items-end gap-3 border-b border-l border-slate-200 px-3">{TREND_POINTS.map((height, index) => <span key={index} className="flex-1 rounded-t-sm bg-gradient-to-t from-blue-100 to-teal-400" style={{ height: `${height}%` }} />)}</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="safety" className="scroll-mt-24 bg-clinical-ink">
+        <div className="mx-auto grid max-w-7xl gap-8 px-5 py-12 text-white sm:px-8 md:grid-cols-[auto_1.15fr_.85fr] md:items-center lg:py-16">
+          <span className="grid h-16 w-16 place-items-center rounded-2xl border border-teal-300/30 bg-teal-300/10 text-teal-300"><ShieldCheck size={31} strokeWidth={1.7} /></span>
+          <h2 className="max-w-xl text-balance text-2xl font-extrabold tracking-[-0.025em] sm:text-3xl">{t("home.safetyTitle")}</h2>
+          <p className="text-sm leading-7 text-blue-100">{t("home.safetyDescription")}</p>
         </div>
       </section>
     </main>

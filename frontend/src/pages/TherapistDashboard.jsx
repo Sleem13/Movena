@@ -5,11 +5,15 @@ import {
   getPatientProfile,
   getPatientProgress,
   getTherapistDashboard,
+  listPatientExercisePlans,
   listPatientProfiles,
   listPatientSessions,
 } from "../services/api.js";
 import { Alert, Badge, Button, Card, EmptyState, LoadingSpinner } from "../components/common/UI.jsx";
+import { DistributionBars, SessionScoreChart, VisualizationHeading } from "../components/dashboard/TherapistVisualizations.jsx";
 import { PageHeader } from "../components/layout/AppShell.jsx";
+import ExercisePlanManager from "../components/therapist/ExercisePlanManager.jsx";
+import BaselineComparison from "../components/therapist/BaselineComparison.jsx";
 import { useLocale } from "../i18n/LocaleContext.jsx";
 
 export default function TherapistDashboard() {
@@ -20,6 +24,7 @@ export default function TherapistDashboard() {
   const [detail, setDetail] = useState(null);
   const [sessions, setSessions] = useState([]);
   const [progress, setProgress] = useState(null);
+  const [plans, setPlans] = useState([]);
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -79,16 +84,19 @@ export default function TherapistDashboard() {
   async function openPatient(patientId) {
     setLoading(true);
     try {
-      const [profile, patientSessions, patientProgress] = await Promise.all([
+      const [profile, patientSessions, patientProgress, patientPlans] = await Promise.all([
         getPatientProfile(patientId),
         listPatientSessions(patientId),
         getPatientProgress(patientId),
+        listPatientExercisePlans(patientId),
       ]);
       setDetail(profile);
       setSessions(patientSessions);
       setProgress(patientProgress);
+      setPlans(patientPlans);
       setView("detail");
-      window.history.pushState({}, "", `/therapist/patients/${patientId}`);
+      const patientPath = `/therapist/patients/${patientId}`;
+      if (window.location.pathname !== patientPath) window.history.pushState({}, "", patientPath);
     } catch {
       setError(t("therapist.detailError"));
     } finally {
@@ -104,9 +112,10 @@ export default function TherapistDashboard() {
         [t("therapist.commonIssue"), dashboard.common_detected_issues?.[0] ? pretty(dashboard.common_detected_issues[0].issue_code) : t("common.none"), Stethoscope],
       ]
     : [];
+  const issueCounts = Object.fromEntries((dashboard?.common_detected_issues || []).map((item) => [item.issue_code, item.count]));
 
   return (
-    <main className="mx-auto w-full max-w-7xl px-6 py-12">
+    <main>
       <PageHeader eyebrow={t("therapist.eyebrow")} title={t("therapist.title")} description={t("therapist.description")} />
       <Alert tone="warning" title={t("therapist.warningTitle")}>{t("therapist.warning")}</Alert>
       <div className="my-5 flex flex-wrap gap-2">
@@ -127,41 +136,22 @@ export default function TherapistDashboard() {
               </Card>
             ))}
           </section>
-          <div className="grid gap-5 lg:grid-cols-2">
-            <Card className="p-5">
-              <h2 className="font-bold">{t("therapist.recentSessions")}</h2>
-              {dashboard?.recent_sessions?.length ? (
-                <ul className="mt-4 space-y-3">
-                  {dashboard.recent_sessions.map((item) => (
-                    <li key={item.session_id} className="rounded-xl bg-slate-50 p-3 text-sm">
-                      <span className="font-semibold">{sessionExerciseName(item)}</span>{" "}
-                      · {t("therapist.rowReps", { value: item.total_reps ?? "—" })} · {t("therapist.rowScore", { value: item.movement_score ?? "—" })}
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="mt-4 text-sm text-slate-500">{t("therapist.noSavedSessions")}</p>
-              )}
+          <div className="grid gap-5 xl:grid-cols-[minmax(0,1.25fr)_minmax(320px,.75fr)]">
+            <Card className="min-w-0 p-5 sm:p-6">
+              <VisualizationHeading title={t("therapist.scoreTrend")} description={t("therapist.scoreTrendDescription")} />
+              <SessionScoreChart sessions={dashboard?.recent_sessions || []} label={t("therapist.scoreTrend")} emptyLabel={t("therapist.noScoredSessions")} />
+              {dashboard?.recent_sessions?.length ? <div className="mt-5 border-t border-slate-100 pt-4"><h3 className="text-xs font-bold uppercase tracking-wider text-slate-500">{t("therapist.recentSessions")}</h3><ul className="mt-3 grid gap-2 sm:grid-cols-2">{dashboard.recent_sessions.slice(0, 4).map((item) => <li key={item.session_id} className="flex items-center justify-between gap-3 rounded-xl bg-slate-50 px-3 py-2.5 text-xs"><span className="truncate font-semibold text-slate-700">{sessionExerciseName(item)}</span><span className="shrink-0 font-bold text-clinical-blue">{item.movement_score ?? "—"}</span></li>)}</ul></div> : null}
             </Card>
-            <Card className="p-5">
-              <h2 className="font-bold">{t("therapist.commonIssues")}</h2>
-              {dashboard?.common_detected_issues?.length ? (
-                <ul className="mt-4 space-y-2">
-                  {dashboard.common_detected_issues.map((item) => (
-                    <li key={item.issue_code} className="flex justify-between text-sm"><span>{pretty(item.issue_code)}</span><Badge tone="amber">{item.count}</Badge></li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="mt-4 text-sm text-slate-500">{t("therapist.noIssueHistory")}</p>
-              )}
-              <h3 className="mt-6 font-bold">{t("therapist.sessionsByExercise")}</h3>
-              <ul className="mt-3 space-y-2 text-sm">
-                {Object.entries(dashboard?.sessions_by_exercise || {}).map(([key, value]) => <li key={key}>{exerciseText(key).name}: {value}</li>)}
-              </ul>
-              <h3 className="mt-6 font-bold">{t("therapist.lowConfidenceByExercise")}</h3>
-              {Object.keys(dashboard?.low_confidence_sessions_by_exercise || {}).length ? <ul className="mt-3 space-y-2 text-sm">{Object.entries(dashboard.low_confidence_sessions_by_exercise).map(([key, value]) => <li key={key}>{exerciseText(key).name}: {value}</li>)}</ul> : <p className="mt-3 text-sm text-slate-500">{t("therapist.noLowConfidence")}</p>}
+            <Card className="p-5 sm:p-6">
+              <VisualizationHeading icon="bars" title={t("therapist.sessionsByExercise")} description={t("therapist.exerciseDistributionDescription")} />
+              <DistributionBars entries={dashboard?.sessions_by_exercise} label={t("therapist.sessionsByExercise")} labelForKey={(key) => exerciseText(key).name} emptyLabel={t("therapist.noSavedSessions")} />
+              <div className="mt-7 border-t border-slate-100 pt-5"><h3 className="mb-4 text-sm font-bold text-clinical-ink">{t("therapist.lowConfidenceByExercise")}</h3><DistributionBars entries={dashboard?.low_confidence_sessions_by_exercise} label={t("therapist.lowConfidenceByExercise")} labelForKey={(key) => exerciseText(key).name} emptyLabel={t("therapist.noLowConfidence")} tone="amber" /></div>
             </Card>
           </div>
+          <Card className="p-5 sm:p-6">
+            <VisualizationHeading icon="bars" title={t("therapist.commonIssues")} description={t("therapist.issueFrequencyDescription")} />
+            <DistributionBars entries={issueCounts} label={t("therapist.commonIssues")} labelForKey={pretty} emptyLabel={t("therapist.noIssueHistory")} tone="amber" />
+          </Card>
         </div>
       ) : view === "patients" ? (
         <div className="grid gap-5 lg:grid-cols-[340px_1fr]">
@@ -207,6 +197,8 @@ export default function TherapistDashboard() {
             <Card className="p-4"><p className="text-xs text-slate-500">{t("therapist.averageConfidence")}</p><p className="mt-2 text-2xl font-bold">{progress?.average_analysis_confidence == null ? "—" : `${Math.round(progress.average_analysis_confidence * 100)}%`}</p><p className="mt-1 text-[11px] text-slate-500">{t("therapist.observationCount", { count: progress?.analysis_confidence_observation_count || 0 })}</p></Card>
             <Card className="p-4"><p className="text-xs text-slate-500">{t("therapist.lowConfidenceSessions")}</p><p className="mt-2 text-2xl font-bold">{progress?.low_confidence_session_count || 0}</p></Card>
           </section>
+          <ExercisePlanManager patientId={detail.patient_id} plans={plans} onPlansChange={setPlans} />
+          <BaselineComparison comparisons={progress?.exercise_comparisons || []} />
           <Alert tone="info" title={t("therapist.provenanceTitle")}>
             <p>{t("therapist.provenanceSummary", { date: formatDate(progress?.latest_session_date) })}</p>
             {progress?.metric_provenance?.length ? (
