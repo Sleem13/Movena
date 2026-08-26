@@ -9,6 +9,7 @@ from app.core.config import get_settings
 from app.main import app
 from app.schemas.analysis_schema import AnalysisResponse, FrameAnalysis
 from app.services.artifact_service import artifact_download_filename, cleanup_expired_artifacts, create_artifact, resolve_artifact
+from app.services.overlay_video_service import build_stable_pose_frames
 from app.services.overlay_service import generate_skeleton_overlay
 from app.services.report_service import generate_session_report
 from app.services.squat_analysis_service import create_frame_analysis
@@ -116,3 +117,39 @@ def test_overlay_service_writes_annotated_video(tmp_path):
     assert capture.isOpened()
     assert int(capture.get(cv2.CAP_PROP_FRAME_COUNT)) == 3
     capture.release()
+
+
+def test_overlay_interpolates_and_smooths_sampled_pose_frames():
+    def pose(x):
+        return {
+            "left_shoulder": {"x": x, "y": .2, "z": 0, "visibility": .95},
+            "right_shoulder": {"x": x + .2, "y": .2, "z": 0, "visibility": .95},
+        }
+
+    frames = [
+        {"frame_index": 0, "source_sample_stride": 3, "landmarks": pose(.2)},
+        {"frame_index": 3, "source_sample_stride": 3, "landmarks": pose(.5)},
+        {"frame_index": 6, "source_sample_stride": 3, "landmarks": pose(.8)},
+    ]
+
+    stable = build_stable_pose_frames(frames, total_frames=7, fps=30)
+
+    assert set(stable) == set(range(7))
+    positions = [stable[index]["left_shoulder"]["x"] for index in range(7)]
+    assert positions == sorted(positions)
+    assert positions[0] == .2
+    assert positions[-1] < .8  # Exponential smoothing also removes single-frame jumps.
+
+
+def test_overlay_does_not_hold_pose_across_long_detection_gap():
+    point = {"left_shoulder": {"x": .2, "y": .2, "z": 0, "visibility": .95}}
+    frames = [
+        {"frame_index": 0, "source_sample_stride": 2, "landmarks": point},
+        {"frame_index": 30, "source_sample_stride": 2, "landmarks": point},
+    ]
+
+    stable = build_stable_pose_frames(frames, total_frames=31, fps=30)
+
+    assert 1 in stable
+    assert 15 not in stable
+    assert 29 in stable

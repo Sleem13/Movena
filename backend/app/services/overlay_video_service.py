@@ -27,6 +27,9 @@ SKELETON_CONNECTIONS = [
     ("right_knee", "right_ankle"),
 ]
 
+OVERLAY_SMOOTHING_ALPHA = 0.45
+MAX_INTERPOLATION_GAP_SECONDS = 0.4
+
 
 class OverlayGenerationError(RuntimeError):
     pass
@@ -38,6 +41,94 @@ class OverlayArtifact:
     overlay_path: Path
     overlay_preview_url: str
     overlay_download_url: str
+
+
+def _interpolate_landmarks(
+    start: dict,
+    end: dict,
+    progress: float,
+) -> dict:
+    """Blend two sampled poses so the overlay is present on source frames between them."""
+    blended = {}
+    for name in start.keys() & end.keys():
+        start_point = start[name]
+        end_point = end[name]
+        blended[name] = {
+            axis: float(start_point.get(axis, 0.0))
+            + (float(end_point.get(axis, 0.0)) - float(start_point.get(axis, 0.0))) * progress
+            for axis in ("x", "y", "z", "visibility")
+        }
+    return blended
+
+
+def _smooth_landmarks(current: dict, previous: dict | None) -> dict:
+    if not previous:
+        return current
+    smoothed = {}
+    for name, point in current.items():
+        previous_point = previous.get(name)
+        if not previous_point:
+            smoothed[name] = point
+            continue
+        smoothed[name] = {
+            axis: OVERLAY_SMOOTHING_ALPHA * float(point.get(axis, 0.0))
+            + (1.0 - OVERLAY_SMOOTHING_ALPHA) * float(previous_point.get(axis, 0.0))
+            for axis in ("x", "y", "z", "visibility")
+        }
+    return smoothed
+
+
+def build_stable_pose_frames(
+    pose_frames: list[dict],
+    total_frames: int,
+    fps: float,
+) -> dict[int, dict]:
+    """Create a stable per-source-frame pose without carrying stale poses through long gaps."""
+    samples = sorted(
+        (
+            (int(frame["frame_index"]), frame.get("landmarks") or {})
+            for frame in pose_frames
+            if frame.get("landmarks")
+        ),
+        key=lambda item: item[0],
+    )
+    if not samples or total_frames <= 0:
+        return {}
+
+    sample_stride = max(
+        1,
+        int(pose_frames[0].get("source_sample_stride", 1)),
+    )
+    max_gap = max(sample_stride * 2, int(round(fps * MAX_INTERPOLATION_GAP_SECONDS)))
+    stable: dict[int, dict] = {}
+    right_index = 0
+    previous_smoothed = None
+
+    for frame_index in range(total_frames):
+        while right_index < len(samples) and samples[right_index][0] < frame_index:
+            right_index += 1
+
+        left = samples[right_index - 1] if right_index > 0 else None
+        right = samples[right_index] if right_index < len(samples) else None
+        landmarks = None
+
+        if right and right[0] == frame_index:
+            landmarks = right[1]
+        elif left and right and right[0] - left[0] <= max_gap:
+            progress = (frame_index - left[0]) / (right[0] - left[0])
+            landmarks = _interpolate_landmarks(left[1], right[1], progress)
+        elif left and frame_index - left[0] <= sample_stride:
+            landmarks = left[1]
+        elif right and right[0] - frame_index <= sample_stride:
+            landmarks = right[1]
+
+        if landmarks:
+            previous_smoothed = _smooth_landmarks(landmarks, previous_smoothed)
+            stable[frame_index] = previous_smoothed
+        else:
+            previous_smoothed = None
+
+    return stable
 
 
 def generate_skeleton_overlay(
@@ -77,10 +168,14 @@ def generate_skeleton_overlay(
         capture.release()
         raise OverlayGenerationError("Unable to create MP4 annotated video.")
 
-    poses = {int(frame["frame_index"]): frame["landmarks"] for frame in pose_frames}
+    source_frame_count = int(capture.get(cv2.CAP_PROP_FRAME_COUNT) or 0)
+    if source_frame_count <= 0 and pose_frames:
+        source_frame_count = max(int(frame["frame_index"]) for frame in pose_frames) + 1
+    poses = build_stable_pose_frames(pose_frames, source_frame_count, fps)
     metrics = {row.frame_index: row for row in frame_analysis}
     frame_index = 0
     frames_written = 0
+    last_detail = None
     try:
         while True:
             ok, image = capture.read()
@@ -99,6 +194,10 @@ def generate_skeleton_overlay(
                     color = (0, 170, 255) if "knee" in name else (255, 180, 40)
                     cv2.circle(image, point, 6, color, -1)
                 detail = metrics.get(frame_index)
+                if detail is not None:
+                    last_detail = detail
+                else:
+                    detail = last_detail
                 if detail:
                     label = (
                         f"{detail.phase} | hip abduction {detail.hip_abduction_angle:.0f} deg"
