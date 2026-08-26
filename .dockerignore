@@ -1,10 +1,14 @@
 .git
 .github
 .venv
+**/.venv
+**/venv
 frontend
 mobile
 data
-models
+models/*
+!models/recognition
+!models/recognition/**
 docs
 scripts
 tests

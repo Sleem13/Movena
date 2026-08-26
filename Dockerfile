@@ -14,6 +14,7 @@ WORKDIR /app
 COPY backend/requirements.txt /app/backend/requirements.txt
 RUN python -m pip install --no-cache-dir -r /app/backend/requirements.txt
 COPY backend /app/backend
+COPY models/recognition /app/models/recognition
 WORKDIR /app/backend
 RUN mkdir -p artifacts/overlays artifacts/reports tmp/uploads
 

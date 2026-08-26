@@ -40,8 +40,10 @@ def _artifact_name(artifact_format: str) -> str:
 def _configured_model_id(required_format: str | None, settings: Settings | None = None) -> str:
     configured = settings or get_settings()
     if required_format == "xgboost_json":
-        return configured.active_frame_recognition_model_id
-    return configured.active_sequence_recognition_model_id
+        model_id = configured.active_frame_recognition_model_id
+    else:
+        model_id = configured.active_sequence_recognition_model_id
+    return "" if model_id.lower() in {"", "disabled", "none"} else model_id
 
 
 def _not_available(message: str = "No exercise recognition model is available yet.") -> dict[str, object]:
@@ -165,8 +167,8 @@ def initialize_active_recognition_models(
     configured = settings or get_settings()
     load_recognition_model.cache_clear()
     model_ids = {
-        configured.active_sequence_recognition_model_id,
-        configured.active_frame_recognition_model_id,
+        _configured_model_id("torchscript_sequence", configured),
+        _configured_model_id("xgboost_json", configured),
     }
     health = {model_id: verify_recognition_artifact(model_id) for model_id in model_ids if model_id}
     ACTIVE_RECOGNITION_MODEL_HEALTH.clear()
@@ -309,7 +311,7 @@ def predict_exercise_from_sequence(
 
     bundle = load_recognition_model(model_id, required_format="torchscript_sequence")
     if bundle is None:
-        return _not_available()
+        return _predict_sequence_with_frame_model(sequence)
     metadata = bundle["metadata"]
     if metadata.get("artifact_format") != "torchscript_sequence":
         return format_recognition_result({
@@ -369,6 +371,70 @@ def predict_exercise_from_sequence(
         "confidence_threshold": confidence_threshold,
         "message": (
             "Confidence is below the calibrated threshold; choose the exercise manually."
+            if is_uncertain else None
+        ),
+        "model_id": metadata.get("model_id"),
+    })
+
+
+def _predict_sequence_with_frame_model(
+    sequence: list[dict[str, float]],
+) -> dict[str, object]:
+    """Production fallback that averages the lightweight frame classifier.
+
+    The temporal GRU remains available for research environments with PyTorch.
+    Production uses the calibrated high-confidence gate around this XGBoost
+    fallback to avoid shipping the substantially larger PyTorch runtime.
+    """
+
+    bundle = load_recognition_model(required_format="xgboost_json")
+    if bundle is None:
+        return _not_available()
+    if not sequence:
+        return format_recognition_result({
+            "status": "invalid_features",
+            "message": "At least one pose-feature frame is required.",
+        })
+    metadata = bundle["metadata"]
+    columns = list(metadata.get("feature_columns", []))
+    missing = sorted({column for frame in sequence for column in columns if column not in frame})
+    if missing:
+        return format_recognition_result({
+            "status": "invalid_features",
+            "message": f"Required recognition features are missing: {', '.join(missing[:10])}",
+        })
+    try:
+        values = np.asarray(
+            [[float(frame[column]) for column in columns] for frame in sequence], dtype=float
+        )
+        if not np.isfinite(values).all():
+            raise ValueError("Pose features must be finite numbers.")
+        probabilities = np.asarray(bundle["estimator"].predict_proba(values), dtype=float)
+        if probabilities.ndim != 2 or probabilities.shape[0] != len(values):
+            raise ValueError("Frame recognition output did not match the input sequence.")
+        averaged = probabilities.mean(axis=0)
+    except (AttributeError, TypeError, ValueError) as exc:
+        return format_recognition_result({
+            "status": "not_available",
+            "message": f"Frame-sequence recognition inference is unavailable: {exc}",
+        })
+    classes = list(metadata.get("classes", [])) or list(bundle["estimator"].classes_)
+    ranked = sorted(
+        ({"exercise_id": str(label), "confidence": round(float(score), 6)}
+         for label, score in zip(classes, averaged)),
+        key=lambda item: item["confidence"],
+        reverse=True,
+    )
+    confidence_threshold = float(metadata.get("confidence_threshold", 0.70))
+    is_uncertain = ranked[0]["confidence"] < confidence_threshold
+    return format_recognition_result({
+        "status": "uncertain" if is_uncertain else "success",
+        "suggested_exercise_id": ranked[0]["exercise_id"],
+        "confidence": ranked[0]["confidence"],
+        "top_predictions": ranked[:3],
+        "confidence_threshold": confidence_threshold,
+        "message": (
+            "Confidence is below the production threshold; keep the selected analyzer."
             if is_uncertain else None
         ),
         "model_id": metadata.get("model_id"),

@@ -85,6 +85,43 @@ def test_sequence_prediction_abstains_below_calibrated_threshold(monkeypatch):
     assert result["confidence_threshold"] == 0.8
 
 
+def test_sequence_prediction_uses_frame_model_when_torch_runtime_is_absent(monkeypatch):
+    import numpy as np
+
+    class FakeFrameModel:
+        classes_ = ["bodyweight_squat", "push_up"]
+
+        def predict_proba(self, values):
+            assert values.shape == (2, 2)
+            return np.asarray([[0.08, 0.92], [0.12, 0.88]])
+
+    def fake_loader(model_id=None, required_format=None):
+        if required_format == "torchscript_sequence":
+            return None
+        assert required_format == "xgboost_json"
+        return {
+            "estimator": FakeFrameModel(),
+            "metadata": {
+                "artifact_format": "xgboost_json",
+                "feature_columns": ["f1", "f2"],
+                "classes": ["bodyweight_squat", "push_up"],
+                "confidence_threshold": 0.70,
+                "model_id": "production-frame-model",
+            },
+        }
+
+    monkeypatch.setattr(service, "load_recognition_model", fake_loader)
+    result = service.predict_exercise_from_sequence([
+        {"f1": 1.0, "f2": 2.0},
+        {"f1": 2.0, "f2": 3.0},
+    ])
+
+    assert result["status"] == "success"
+    assert result["suggested_exercise_id"] == "push_up"
+    assert result["confidence"] == 0.9
+    assert result["model_id"] == "production-frame-model"
+
+
 def test_unsupported_recognition_is_not_actionable():
     result = service.format_recognition_result({
         "status": "success", "suggested_exercise_id": "hip_flexion", "confidence": 0.9,
