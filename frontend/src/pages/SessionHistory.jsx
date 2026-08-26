@@ -222,7 +222,7 @@ export default function SessionHistory({ onAnalyze, onCoach }) {
               {artifact.status === "loading" && <div className="grid min-h-64 place-items-center"><LoadingSpinner label={t("history.loadingArtifact")} /></div>}
               {artifact.status === "error" && <Alert title={t("history.artifactUnavailable")}>{artifact.error}</Alert>}
               {artifact.status === "ready" && artifact.kind === "report" && <iframe title={t("history.reportViewer")} src={artifact.url} className="h-[min(70vh,720px)] min-h-80 w-full rounded-xl bg-white" />}
-              {artifact.status === "ready" && artifact.kind === "overlay" && <video controls autoPlay className="max-h-[70vh] w-full rounded-xl bg-slate-950"><source src={artifact.url} type="video/webm" /></video>}
+              {artifact.status === "ready" && artifact.kind === "overlay" && <video controls playsInline preload="auto" src={artifact.url} className="max-h-[70vh] w-full rounded-xl bg-slate-950 [backface-visibility:hidden] [transform:translateZ(0)]" />}
             </div>
             {artifact.status === "ready" && <div className="flex shrink-0 justify-end border-t border-slate-100 bg-white p-4"><Button as="a" href={artifact.url} download={artifactFilename(artifact.exerciseId, artifact.kind)}><Download size={16} />{t("common.download")}</Button></div>}
           </Card>

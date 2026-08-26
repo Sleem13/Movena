@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import AppShell from "./components/layout/AppShell.jsx";
 import About from "./pages/About.jsx";
 import Home from "./pages/Home.jsx";
@@ -38,6 +38,7 @@ function analysisErrorMessage(requestError, t) {
   if (status === 422 && apiError?.error_code === "SUBJECT_SWITCH_DETECTED") {
     return t("upload.subjectSwitch");
   }
+  if (status === 502 || status === 504) return t("upload.timeout");
   if (!requestError.response) return t("upload.network");
   if (status >= 500) return t("upload.genericError");
   return apiError?.message || apiError?.detail || t("upload.genericError");
@@ -45,6 +46,10 @@ function analysisErrorMessage(requestError, t) {
 
 function isSubjectSwitchError(requestError) {
   return requestError.response?.status === 422 && requestError.response?.data?.error_code === "SUBJECT_SWITCH_DETECTED";
+}
+
+function isCancelledRequest(requestError) {
+  return requestError?.code === "ERR_CANCELED" || requestError?.name === "CanceledError" || requestError?.name === "AbortError";
 }
 
 function LazyPage({ children }) {
@@ -72,8 +77,9 @@ function AppContent() {
   const [progress, setProgress] = useState(0);
   const [options, setOptions] = useState(DEFAULT_OPTIONS);
   const [originalVideoUrl, setOriginalVideoUrl] = useState(null);
-  const [exercise, setExercise] = useState("bodyweight_squat");
+  const [exercise, setExercise] = useState("");
   const [exercises, setExercises] = useState(EXERCISES);
+  const analysisControllerRef = useRef(null);
 
   useEffect(() => {
     getExercises().then((items) => Array.isArray(items) && items.length && setExercises(items)).catch(() => {});
@@ -84,6 +90,8 @@ function AppContent() {
     window.addEventListener("popstate", handlePopState);
     return () => window.removeEventListener("popstate", handlePopState);
   }, []);
+
+  useEffect(() => () => analysisControllerRef.current?.abort(), []);
 
   useEffect(() => {
     if (!file || typeof URL.createObjectURL !== "function") { setOriginalVideoUrl(null); return undefined; }
@@ -101,8 +109,8 @@ function AppContent() {
   function navigate(nextPage) { setPage(nextPage); window.history.pushState({}, "", PAGE_PATHS[nextPage] || "/"); }
   function handleFileChange(event) { selectFile(event.target.files?.[0]); }
 
-  async function analyzeSelectedExercise(selectedExercise, continueOnSubjectWarning) {
-    const data = await analyzeExerciseVideo(selectedExercise, file, { ...options, continue_on_subject_warning: continueOnSubjectWarning }, setProgress);
+  async function analyzeSelectedExercise(selectedExercise, continueOnSubjectWarning, signal) {
+    const data = await analyzeExerciseVideo(selectedExercise, file, { ...options, continue_on_subject_warning: continueOnSubjectWarning, signal }, setProgress);
     if (data.auto_routed && data.exercise) setExercise(data.exercise);
     setReport(data); setCanContinueAfterWarning(false); navigate("results");
   }
@@ -111,20 +119,33 @@ function AppContent() {
     event?.preventDefault?.();
     if (!file) { setError(t("upload.noFile")); return; }
     if (!user) { setError(t("upload.loginRequired")); return; }
+    if (!exercise) return;
+    const controller = new AbortController();
+    analysisControllerRef.current = controller;
     setIsLoading(true); setProgress(0); setError("");
     const continueOnSubjectWarning = Boolean(overrides.continueOnSubjectWarning);
     setCanContinueAfterWarning(false);
     const selectedExercise = exercise;
     try {
-      await analyzeSelectedExercise(selectedExercise, continueOnSubjectWarning);
+      await analyzeSelectedExercise(selectedExercise, continueOnSubjectWarning, controller.signal);
     } catch (requestError) {
+      if (isCancelledRequest(requestError)) {
+        setError(t("upload.cancelled"));
+        setCanContinueAfterWarning(false);
+        return;
+      }
       if (!continueOnSubjectWarning && isSubjectSwitchError(requestError)) {
         setError(t("upload.subjectSwitch"));
         setCanContinueAfterWarning(true);
         try {
           await new Promise((resolve) => setTimeout(resolve, 0));
-          await analyzeSelectedExercise(selectedExercise, true);
+          await analyzeSelectedExercise(selectedExercise, true, controller.signal);
         } catch (retryError) {
+          if (isCancelledRequest(retryError)) {
+            setError(t("upload.cancelled"));
+            setCanContinueAfterWarning(false);
+            return;
+          }
           setError(analysisErrorMessage(retryError, t));
           setCanContinueAfterWarning(false);
         }
@@ -132,7 +153,21 @@ function AppContent() {
       }
       setError(analysisErrorMessage(requestError, t));
       setCanContinueAfterWarning(false);
-    } finally { setIsLoading(false); }
+    } finally {
+      if (analysisControllerRef.current === controller) {
+        analysisControllerRef.current = null;
+        setIsLoading(false);
+      }
+    }
+  }
+
+  function cancelAnalysis() {
+    analysisControllerRef.current?.abort();
+    analysisControllerRef.current = null;
+    setIsLoading(false);
+    setProgress(0);
+    setCanContinueAfterWarning(false);
+    setError(t("upload.cancelled"));
   }
 
   function handleAnalyzeAnother() { setFile(null); setFileSource(null); setReport(null); setError(""); setCanContinueAfterWarning(false); setProgress(0); navigate("analyze"); }
@@ -141,7 +176,7 @@ function AppContent() {
     {page === "home" && <Home authenticated={Boolean(user)} onStart={() => navigate(user ? "analyze" : "register")} />}
     {page === "workspace" && (user ? <WorkspaceOverview onNavigate={navigate} /> : <Login onSuccess={() => navigate("workspace")} onRegister={() => navigate("register")} onForgotPassword={() => navigate("forgotPassword")} onVerifyEmail={() => navigate("verifyEmail")} />)}
     {page === "exercises" && <ExerciseLibrary exercises={exercises} onAnalyze={(value) => { setExercise(value); setFile(null); setFileSource(null); navigate("analyze"); }} />}
-    {page === "analyze" && <UploadSquat exercises={exercises} exercise={exercise} onExerciseChange={(value) => { setExercise(value); setFile(null); setFileSource(null); setError(""); setCanContinueAfterWarning(false); }} file={file} fileSource={fileSource} error={error} canContinueAfterWarning={canContinueAfterWarning} isLoading={isLoading} progress={progress} options={options} onOptionsChange={setOptions} onFileChange={handleFileChange} onFileSelect={selectFile} onRecognitionConfirm={(exerciseId, recognizedFile) => { setExercise(exerciseId); selectFile(recognizedFile, "recognition"); }} onSubmit={handleSubmit} />}
+    {page === "analyze" && <UploadSquat exercises={exercises} exercise={exercise} onExerciseChange={(value) => { setExercise(value); setError(""); setCanContinueAfterWarning(false); }} file={file} fileSource={fileSource} error={error} canContinueAfterWarning={canContinueAfterWarning} isLoading={isLoading} progress={progress} options={options} onOptionsChange={setOptions} onFileChange={handleFileChange} onFileSelect={selectFile} onRecognitionConfirm={(exerciseId, recognizedFile) => { setExercise(exerciseId); selectFile(recognizedFile, "recognition"); }} onSubmit={handleSubmit} onCancel={cancelAnalysis} />}
     {page === "results" && <Results report={report} originalVideoUrl={originalVideoUrl} onAnalyzeAnother={handleAnalyzeAnother} onGoAnalyze={() => navigate("analyze")} onViewHistory={() => navigate("history")} />}
     {page === "history" && <SessionHistory onAnalyze={() => navigate("analyze")} onCoach={ENABLE_REALTIME_COACHING_SPIKE ? () => navigate("coach") : undefined} />}
     {page === "therapist" && <LazyPage><TherapistDashboard /></LazyPage>}

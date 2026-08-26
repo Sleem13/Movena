@@ -16,6 +16,7 @@ export default function UploadCard({
   onFileChange,
   onFileSelect,
   onSubmit,
+  onCancel,
 }) {
   const { locale, t, exerciseText } = useLocale();
   const [dragging, setDragging] = useState(false);
@@ -113,16 +114,19 @@ export default function UploadCard({
             <X size={14} className="shrink-0" aria-hidden="true" />
             {t("upload.temporary")}
           </p>
-          <Button type="submit" onClick={onSubmit} disabled={!file || isLoading || qualityBlocked}>
-            {isLoading ? (
-              <LoadingSpinner label={t("common.analyzing")} />
-            ) : (
-              <>
-                <UploadCloud size={17} aria-hidden="true" />
-                {t("upload.analyze", { exercise: names.short })}
-              </>
-            )}
-          </Button>
+          <div className="flex flex-wrap items-center gap-2">
+            {isLoading ? <Button type="button" variant="secondary" onClick={onCancel}><X size={17} aria-hidden="true" />{t("upload.cancelAnalysis")}</Button> : null}
+            <Button type="submit" onClick={onSubmit} disabled={!file || isLoading || qualityBlocked}>
+              {isLoading ? (
+                <LoadingSpinner label={t("common.analyzing")} />
+              ) : (
+                <>
+                  <UploadCloud size={17} aria-hidden="true" />
+                  {exercise ? t("upload.analyze", { exercise: names.short }) : t("upload.analyzeMovement")}
+                </>
+              )}
+            </Button>
+          </div>
         </div>
       </div>
     </Card>

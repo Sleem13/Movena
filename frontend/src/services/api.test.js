@@ -78,6 +78,15 @@ describe("deployment API configuration", () => {
     expect(mocks.post.mock.calls[0][0]).toContain("continue_on_subject_warning=true");
   });
 
+  it("forwards an abort signal to the analysis upload", async () => {
+    mocks.post.mockResolvedValue({ data: { exercise_id: "push_up" } });
+    const controller = new AbortController();
+    await analyzeExerciseVideo("push_up", new File(["video"], "push-up.mp4", { type: "video/mp4" }), {
+      signal: controller.signal,
+    });
+    expect(mocks.post.mock.calls[0][2]).toEqual(expect.objectContaining({ signal: controller.signal }));
+  });
+
   it("uploads a video to the temporal recognition endpoint", async () => {
     mocks.post.mockResolvedValue({ data: { suggested_exercise_id: "push_up" } });
     const file = new File(["video"], "movement.mp4", { type: "video/mp4" });

@@ -27,8 +27,11 @@ SKELETON_CONNECTIONS = [
     ("right_knee", "right_ankle"),
 ]
 
-OVERLAY_SMOOTHING_ALPHA = 0.45
-MAX_INTERPOLATION_GAP_SECONDS = 0.4
+OVERLAY_SMOOTHING_ALPHA = 0.32
+MAX_INTERPOLATION_GAP_SECONDS = 0.8
+POSE_EDGE_HOLD_SECONDS = 0.25
+OVERLAY_TARGET_FPS = 15.0
+OVERLAY_MAX_DIMENSION = 720
 
 
 class OverlayGenerationError(RuntimeError):
@@ -100,6 +103,7 @@ def build_stable_pose_frames(
         int(pose_frames[0].get("source_sample_stride", 1)),
     )
     max_gap = max(sample_stride * 2, int(round(fps * MAX_INTERPOLATION_GAP_SECONDS)))
+    edge_hold = max(sample_stride, int(round(fps * POSE_EDGE_HOLD_SECONDS)))
     stable: dict[int, dict] = {}
     right_index = 0
     previous_smoothed = None
@@ -117,9 +121,9 @@ def build_stable_pose_frames(
         elif left and right and right[0] - left[0] <= max_gap:
             progress = (frame_index - left[0]) / (right[0] - left[0])
             landmarks = _interpolate_landmarks(left[1], right[1], progress)
-        elif left and frame_index - left[0] <= sample_stride:
+        elif left and frame_index - left[0] <= edge_hold:
             landmarks = left[1]
-        elif right and right[0] - frame_index <= sample_stride:
+        elif right and right[0] - frame_index <= edge_hold:
             landmarks = right[1]
 
         if landmarks:
@@ -154,13 +158,19 @@ def generate_skeleton_overlay(
         capture.release()
         raise OverlayGenerationError("Video dimensions are invalid.")
 
+    scale = min(1.0, OVERLAY_MAX_DIMENSION / max(width, height))
+    output_width = max(2, int(round(width * scale)) // 2 * 2)
+    output_height = max(2, int(round(height * scale)) // 2 * 2)
+    frame_step = max(1, int(round(fps / OVERLAY_TARGET_FPS)))
+    output_fps = fps / frame_step
+
     output_path.parent.mkdir(parents=True, exist_ok=True)
     # OpenCV's mp4v output is MPEG-4 Part 2, which Chromium-based browsers do
     # not reliably decode despite the .mp4 container. VP8 in WebM is supported
     # by modern browsers and by the FFmpeg backend bundled with opencv-python.
     codec = "VP80"
     writer = cv2.VideoWriter(
-        str(output_path), cv2.VideoWriter_fourcc(*codec), fps, (width, height)
+        str(output_path), cv2.VideoWriter_fourcc(*codec), output_fps, (output_width, output_height)
     )
     writer_opened = writer.isOpened()
     logger.info("Overlay codec=%s video writer opened=%s", codec, writer_opened)
@@ -181,10 +191,15 @@ def generate_skeleton_overlay(
             ok, image = capture.read()
             if not ok:
                 break
+            if frame_index % frame_step:
+                frame_index += 1
+                continue
+            if output_width != width or output_height != height:
+                image = cv2.resize(image, (output_width, output_height), interpolation=cv2.INTER_AREA)
             landmarks = poses.get(frame_index)
             if landmarks:
                 points = {
-                    name: (int(point["x"] * width), int(point["y"] * height))
+                    name: (int(point["x"] * output_width), int(point["y"] * output_height))
                     for name, point in landmarks.items()
                 }
                 for start, end in SKELETON_CONNECTIONS:
@@ -228,8 +243,11 @@ def generate_skeleton_overlay(
     file_exists = output_path.is_file()
     file_size = output_path.stat().st_size if file_exists else 0
     logger.info(
-        "Overlay frames written=%s final file exists=%s final file size bytes=%s",
+        "Overlay frames written=%s output=%sx%s@%.2ffps final file exists=%s final file size bytes=%s",
         frames_written,
+        output_width,
+        output_height,
+        output_fps,
         file_exists,
         file_size,
     )

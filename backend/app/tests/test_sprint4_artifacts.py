@@ -119,6 +119,24 @@ def test_overlay_service_writes_annotated_video(tmp_path):
     capture.release()
 
 
+def test_overlay_preview_caps_resolution_and_frame_rate(tmp_path):
+    source = tmp_path / "large-source.mp4"
+    writer = cv2.VideoWriter(str(source), cv2.VideoWriter_fourcc(*"mp4v"), 30.0, (800, 100))
+    assert writer.isOpened()
+    for _ in range(30):
+        writer.write(np.zeros((100, 800, 3), dtype=np.uint8))
+    writer.release()
+
+    output = generate_skeleton_overlay(source, tmp_path / "preview.webm", [], [])
+    capture = cv2.VideoCapture(str(output))
+
+    assert capture.isOpened()
+    assert int(capture.get(cv2.CAP_PROP_FRAME_WIDTH)) == 720
+    assert int(capture.get(cv2.CAP_PROP_FRAME_COUNT)) == 15
+    assert capture.get(cv2.CAP_PROP_FPS) == 15
+    capture.release()
+
+
 def test_overlay_interpolates_and_smooths_sampled_pose_frames():
     def pose(x):
         return {
@@ -153,3 +171,16 @@ def test_overlay_does_not_hold_pose_across_long_detection_gap():
     assert 1 in stable
     assert 15 not in stable
     assert 29 in stable
+
+
+def test_overlay_bridges_normal_detection_gaps_without_blinking():
+    point = {"left_shoulder": {"x": .2, "y": .2, "z": 0, "visibility": .95}}
+    moved = {"left_shoulder": {"x": .5, "y": .2, "z": 0, "visibility": .95}}
+    frames = [
+        {"frame_index": 0, "source_sample_stride": 2, "landmarks": point},
+        {"frame_index": 20, "source_sample_stride": 2, "landmarks": moved},
+    ]
+
+    stable = build_stable_pose_frames(frames, total_frames=21, fps=30)
+
+    assert set(stable) == set(range(21))

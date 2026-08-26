@@ -54,7 +54,10 @@ export default function Select({
 
   function openMenu(direction = 0) {
     if (disabled) return;
-    setActiveIndex(direction ? enabledIndex(selectedIndex, direction) : selectedIndex);
+    const initialIndex = flatOptions[selectedIndex]?.disabled
+      ? enabledIndex(selectedIndex - 1, 1)
+      : selectedIndex;
+    setActiveIndex(direction ? enabledIndex(selectedIndex, direction) : initialIndex);
     setOpen(true);
   }
 

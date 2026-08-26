@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import App from "./App.jsx";
@@ -91,9 +91,10 @@ const rejectedReport = {
   ml_prediction: { enabled: false, warning: "ML prediction skipped because no valid squat movement was detected." },
 };
 
-function openUpload() {
+function openUpload({ chooseExercise = true } = {}) {
   render(<App />);
   fireEvent.click(screen.getAllByRole("button", { name: authState.user ? "Analyze a movement" : "Get started" }).at(-1));
+  if (authState.user && chooseExercise) chooseSelectOption("Exercise selector", "Bodyweight Squat");
 }
 
 function selectVideo() {
@@ -498,6 +499,42 @@ describe("Squat Analyzer healthcare dashboard", () => {
     expect(screen.queryByText("Three repetitions analyzed.")).not.toBeInTheDocument();
   });
 
+  it("asks for an exercise in a focused picker and keeps the selected video", async () => {
+    openUpload({ chooseExercise: false });
+    const file = new File(["video"], "movement.mp4", { type: "video/mp4" });
+    fireEvent.change(screen.getByLabelText(/choose a movement exercise video/i), { target: { files: [file] } });
+    const analyze = (await screen.findAllByRole("button", { name: "Analyze movement" })).at(-1);
+    await waitFor(() => expect(analyze).toBeEnabled());
+    fireEvent.click(analyze);
+
+    const dialog = screen.getByRole("dialog", { name: "Which exercise is shown?" });
+    expect(dialog).toBeInTheDocument();
+    fireEvent.click(within(dialog).getByRole("button", { name: /Bodyweight Squat/i }));
+
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(screen.getByText("movement.mp4")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Analyze squat" })).toBeEnabled();
+  });
+
+  it("cancels an in-flight analysis and keeps the selected video", async () => {
+    let requestSignal;
+    analyzeExerciseVideo.mockImplementation((_exercise, _file, options) => {
+      requestSignal = options.signal;
+      return new Promise((_resolve, reject) => {
+        requestSignal.addEventListener("abort", () => reject({ code: "ERR_CANCELED" }));
+      });
+    });
+    openUpload();
+    selectVideo();
+    fireEvent.click(screen.getByRole("button", { name: "Analyze squat" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Cancel analysis" }));
+
+    expect(requestSignal.aborted).toBe(true);
+    expect(await screen.findByRole("alert")).toHaveTextContent("Analysis cancelled. Your video remains selected.");
+    expect(screen.getByText("squat.mp4")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Analyze squat" })).toBeEnabled();
+  });
+
   it("compares two saved sessions of the same exercise", async () => {
     const earlier = {
       session_id: "compare1-session", exercise_id: "bodyweight_squat", exercise_display_name: "Bodyweight Squat",
@@ -695,7 +732,8 @@ describe("Squat Analyzer healthcare dashboard", () => {
   it("renders the annotated video with a full backend URL", async () => {
     await analyzeWith();
     const video = await screen.findByLabelText("Annotated squat movement preview");
-    expect(video).toHaveAttribute("preload", "metadata");
+    expect(video).toHaveAttribute("preload", "auto");
+    expect(video).toHaveAttribute("playsinline");
     expect(video).toHaveAttribute("src", "blob:test-artifact");
     expect(getArtifactBlob).toHaveBeenCalledWith("http://127.0.0.1:8000/api/v1/artifacts/overlays/test-overlay/preview");
     expect(screen.getAllByRole("link", { name: "Download annotated video" })[0]).toHaveAttribute(
@@ -817,6 +855,14 @@ describe("Squat Analyzer healthcare dashboard", () => {
 
     expect(analyzeExerciseVideo).toHaveBeenCalledTimes(1);
     expect(recognizeExerciseVideo).not.toHaveBeenCalled();
+  });
+
+  it("explains a cloud gateway timeout without discarding the video", async () => {
+    analyzeExerciseVideo.mockRejectedValue({ response: { status: 504, data: {} } });
+    openUpload(); selectVideo();
+    fireEvent.click(screen.getByRole("button", { name: "Analyze squat" }));
+    expect(await screen.findByRole("alert")).toHaveTextContent("The analysis took longer than the cloud connection allows.");
+    expect(screen.getByText("squat.mp4")).toBeInTheDocument();
   });
 
   it("explains when a different exercise was recognized and assessed", async () => {

@@ -113,7 +113,7 @@ export function AnnotatedVideoPreview({ url, exercise = "bodyweight_squat" }) {
   if (preview.status === "missing") return <EmptyState title={t("results.annotatedNotGenerated")} description={t("results.enableOverlay")} icon={VideoOff} />;
   if (preview.status === "loading") return <div className="grid aspect-video place-items-center rounded-xl border border-slate-200 bg-slate-50 text-sm font-semibold text-slate-500"><LoadingSpinner label={t("results.loadingAnnotated")} /></div>;
   if (preview.status === "error") return <EmptyState title={t("results.annotatedLoadFailed")} description={t("results.artifactExpired")} icon={VideoOff} actions={<Button type="button" variant="secondary" onClick={() => setAttempt((value) => value + 1)}>{t("results.retryPreview")}</Button>} />;
-  return <div><video key={preview.objectUrl} aria-label={`Annotated ${exerciseText(exercise).short} movement preview`} className="aspect-video w-full rounded-xl bg-slate-950 object-contain" controls preload="metadata" src={preview.objectUrl} onError={() => setPreview({ status: "error", objectUrl: null })}>{t("results.videoUnsupported")}</video><p className="mt-2 text-xs leading-5 text-slate-500">{t("results.overlayHelp")}</p></div>;
+  return <div><video aria-label={`Annotated ${exerciseText(exercise).short} movement preview`} className="aspect-video w-full rounded-xl bg-slate-950 object-contain [backface-visibility:hidden] [transform:translateZ(0)]" controls playsInline preload="auto" src={preview.objectUrl} onError={() => setPreview({ status: "error", objectUrl: null })}>{t("results.videoUnsupported")}</video><p className="mt-2 text-xs leading-5 text-slate-500">{t("results.overlayHelp")}</p></div>;
 }
 
 export function VideoReviewPanel({ report, originalVideoUrl }) {

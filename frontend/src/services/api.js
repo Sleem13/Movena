@@ -48,6 +48,7 @@ export async function analyzeExerciseVideo(exerciseId, videoFile, options = {}, 
     onUploadProgress: (event) => {
       if (onProgress && event.total) onProgress(Math.round((event.loaded * 100) / event.total));
     },
+    signal: options.signal,
   });
 
   return response.data;
