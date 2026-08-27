@@ -27,7 +27,7 @@
       "environment": "preview",
       "env": {
         "EXPO_PUBLIC_APP_ENV": "staging",
-        "EXPO_PUBLIC_API_BASE_URL": "https://name-physiovision-api-staging.onrender.com"
+        "EXPO_PUBLIC_API_BASE_URL": "https://d139746brwkxwp.cloudfront.net"
       }
     },
     "production": {
