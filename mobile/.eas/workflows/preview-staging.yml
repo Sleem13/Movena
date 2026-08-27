@@ -1,0 +1,9 @@
+name: PhysioVision Android Preview Staging
+
+jobs:
+  build_android:
+    name: Build Android Preview Staging
+    type: build
+    params:
+      platform: android
+      profile: preview-staging
