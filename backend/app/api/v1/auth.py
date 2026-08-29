@@ -6,32 +6,33 @@ from sqlalchemy import func, or_, select
 from sqlalchemy.orm import Session
 
 from app.api.dependencies.auth import get_current_user
+from app.api.error_responses import api_error_response
 from app.core.config import get_settings
 from app.core.authorization import permissions_json_for_role
 from app.core.security import create_access_token, get_password_hash, verify_password
 from app.db.database import get_db
-from app.db.models import AuditLog, User, utc_now
+from app.db.models import AuditLog, PatientProfile, User, UserConsent, utc_now
 from app.schemas.auth_schema import (
     AuthMessageResponse, CurrentUserResponse, EmailRequest, PasswordResetRequest,
     TokenRequest, TokenResponse, UserLoginRequest, UserRegisterRequest, UserRole, UserSummary,
 )
-from app.schemas.error_schema import ErrorResponse
 from app.services.auth_token_service import (
     consume_password_reset_token, consume_verification_token, cooldown_active,
     is_expired, issue_password_reset_token, issue_verification_token, token_hash,
 )
 from app.services.email_service import EmailDeliveryError, send_password_reset_email, send_verification_email
+from app.services.notification_service import notify_super_admins_of_password_email_failure
 
 router = APIRouter(prefix="/api/v1/auth", tags=["auth"])
 
 
 def auth_error(code: str, message: str, status_code: int = 400) -> JSONResponse:
-    return JSONResponse(status_code=status_code, content=ErrorResponse(error_code=code, message=message).model_dump())
+    return api_error_response(code, message, status_code)
 
 
 @router.post("/register", response_model=UserSummary, status_code=status.HTTP_201_CREATED)
 def register(data: UserRegisterRequest, db: Session = Depends(get_db)):
-    if data.role in {UserRole.super_admin, UserRole.admin, UserRole.therapist}:
+    if data.role in {UserRole.super_admin, UserRole.admin, UserRole.therapist, UserRole.support}:
         return auth_error("ROLE_NOT_ALLOWED", "Public registration cannot create privileged users.", 403)
     email = data.email.lower().strip()
     if db.scalar(select(User).where(User.email == email)):
@@ -40,6 +41,10 @@ def register(data: UserRegisterRequest, db: Session = Depends(get_db)):
         return auth_error("USERNAME_ALREADY_REGISTERED", "An account with this username already exists.", 409)
     settings = get_settings()
     assigned_role = data.role.value
+    if settings.app_env == "production" and assigned_role == UserRole.patient.value and not (
+        data.accepted_terms and data.accepted_privacy
+    ):
+        return auth_error("CONSENT_REQUIRED", "Accept the terms and privacy policy to create a patient account.", 422)
     user = User(
         user_id=str(uuid4()), username=data.username, email=email, password_hash=get_password_hash(data.password),
         full_name=data.full_name, role=assigned_role,
@@ -47,11 +52,28 @@ def register(data: UserRegisterRequest, db: Session = Depends(get_db)):
         is_verified=not settings.require_email_verification,
         email_verified_at=utc_now() if not settings.require_email_verification else None,
     )
+    db.add(user)
+    if assigned_role == UserRole.patient.value:
+        db.add(PatientProfile(
+            patient_id=str(uuid4()), user_id=user.user_id,
+            display_name=user.full_name or user.username or "Patient",
+            preferred_locale="ar", timezone_name="Africa/Cairo",
+        ))
+        if data.accepted_terms:
+            db.add(UserConsent(
+                user_id=user.user_id, consent_type="terms", accepted=True,
+                accepted_at=utc_now(), version="2026-08",
+            ))
+        if data.accepted_privacy:
+            db.add(UserConsent(
+                user_id=user.user_id, consent_type="privacy", accepted=True,
+                accepted_at=utc_now(), version="2026-08",
+            ))
     if not settings.require_email_verification:
-        db.add(user); db.commit(); db.refresh(user)
+        db.commit(); db.refresh(user)
         return UserSummary.model_validate(user)
     verification_token = issue_verification_token(user)
-    db.add(user); db.commit(); db.refresh(user)
+    db.commit(); db.refresh(user)
     try:
         send_verification_email(user.email, verification_token)
     except EmailDeliveryError:
@@ -84,8 +106,10 @@ def me(user: User = Depends(get_current_user)):
 
 
 @router.post("/logout")
-def logout(_user: User = Depends(get_current_user)):
-    return {"status": "success", "message": "Token removed client-side. Server-side revocation is not yet implemented."}
+def logout(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    user.token_version += 1
+    db.commit()
+    return {"status": "success", "message": "All access tokens for this account were revoked."}
 
 
 @router.post("/verify-email", response_model=AuthMessageResponse)
@@ -135,9 +159,13 @@ def forgot_password(data: EmailRequest, db: Session = Depends(get_db)):
     try:
         send_password_reset_email(user.email, reset_token)
     except EmailDeliveryError:
-        user.reset_password_sent_at = None
+        # Invalidate the undisclosed token, but retain the timestamp so the
+        # public endpoint cooldown prevents repeated alerts and email retries.
+        user.reset_password_token_hash = None
+        user.reset_password_expires = None
+        notify_super_admins_of_password_email_failure(db, user)
         db.commit()
-        return auth_error("EMAIL_DELIVERY_FAILED", "The password reset email could not be delivered. Please try again later.", 503)
+        return generic
     return generic
 
 

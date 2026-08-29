@@ -17,6 +17,7 @@ from app.core.config import database_url_from_environment, normalize_database_ur
 DEFAULT_DATABASE_PATH = BACKEND_ROOT / "physiovision_dev.db"
 DEFAULT_DATABASE_URL = f"sqlite:///{DEFAULT_DATABASE_PATH.as_posix()}"
 DATABASE_URL = database_url_from_environment(DEFAULT_DATABASE_URL)
+LATEST_SCHEMA_REVISION = "0004_rehab_phase1"
 
 
 class Base(DeclarativeBase):
@@ -122,10 +123,81 @@ def init_db(bind: Engine | None = None) -> None:
     # Development-only compatibility migration until versioned Alembic migrations are introduced.
     if target.dialect.name == "sqlite" and "analysis_sessions" in inspect(target).get_table_names():
         columns = {column["name"] for column in inspect(target).get_columns("analysis_sessions")}
-        if "patient_id" not in columns:
-            with target.begin() as connection:
-                connection.execute(text("ALTER TABLE analysis_sessions ADD COLUMN patient_id VARCHAR(36)"))
-        for column in ("owner_user_id", "created_by_user_id"):
+        additions = {
+            "patient_id": "VARCHAR(36) NULL",
+            "plan_item_id": "VARCHAR(36) NULL",
+            "owner_user_id": "VARCHAR(36) NULL",
+            "created_by_user_id": "VARCHAR(36) NULL",
+        }
+        for column, definition in additions.items():
             if column not in columns:
                 with target.begin() as connection:
-                    connection.execute(text(f"ALTER TABLE analysis_sessions ADD COLUMN {column} VARCHAR(36)"))
+                    connection.execute(text(f"ALTER TABLE analysis_sessions ADD COLUMN {column} {definition}"))
+        with target.begin() as connection:
+            connection.execute(text(
+                "CREATE INDEX IF NOT EXISTS ix_analysis_sessions_plan_item_id "
+                "ON analysis_sessions (plan_item_id)"
+            ))
+    if target.dialect.name == "sqlite" and "patient_profiles" in inspect(target).get_table_names():
+        columns = {column["name"] for column in inspect(target).get_columns("patient_profiles")}
+        additions = {
+            "user_id": "VARCHAR(36) NULL",
+            "preferred_locale": "VARCHAR(8) NOT NULL DEFAULT 'ar'",
+            "timezone_name": "VARCHAR(64) NOT NULL DEFAULT 'Africa/Cairo'",
+        }
+        for column, definition in additions.items():
+            if column not in columns:
+                with target.begin() as connection:
+                    connection.execute(text(f"ALTER TABLE patient_profiles ADD COLUMN {column} {definition}"))
+        with target.begin() as connection:
+            connection.execute(text("CREATE UNIQUE INDEX IF NOT EXISTS ux_patient_profiles_user_id ON patient_profiles (user_id)"))
+    if target.dialect.name == "sqlite" and "exercise_plan_items" in inspect(target).get_table_names():
+        columns = {column["name"] for column in inspect(target).get_columns("exercise_plan_items")}
+        additions = {
+            "duration_minutes": "INTEGER NULL",
+            "rest_interval_seconds": "INTEGER NULL",
+            "tempo": "VARCHAR(64) NULL",
+            "precautions": "TEXT NULL",
+            "target_rom_degrees": "FLOAT NULL",
+            "target_score": "FLOAT NULL",
+            "schedule_days_json": "TEXT NOT NULL DEFAULT '[]'",
+            "requested_media_upload": "BOOLEAN NOT NULL DEFAULT false",
+            "requires_ai_analysis": "BOOLEAN NOT NULL DEFAULT false",
+            "status": "VARCHAR(24) NOT NULL DEFAULT 'active'",
+        }
+        for column, definition in additions.items():
+            if column not in columns:
+                with target.begin() as connection:
+                    connection.execute(text(f"ALTER TABLE exercise_plan_items ADD COLUMN {column} {definition}"))
+        with target.begin() as connection:
+            connection.execute(text(
+                "CREATE INDEX IF NOT EXISTS ix_exercise_plan_items_status "
+                "ON exercise_plan_items (status)"
+            ))
+    if target.dialect.name == "sqlite" and "adherence_entries" in inspect(target).get_table_names():
+        columns = {column["name"] for column in inspect(target).get_columns("adherence_entries")}
+        additions = {
+            "fatigue": "INTEGER NULL",
+            "analysis_session_id": "VARCHAR(36) NULL",
+        }
+        for column, definition in additions.items():
+            if column not in columns:
+                with target.begin() as connection:
+                    connection.execute(text(f"ALTER TABLE adherence_entries ADD COLUMN {column} {definition}"))
+        with target.begin() as connection:
+            connection.execute(text(
+                "CREATE INDEX IF NOT EXISTS ix_adherence_entries_analysis_session_id "
+                "ON adherence_entries (analysis_session_id)"
+            ))
+
+
+def verify_production_schema(bind: Engine | None = None) -> None:
+    """Production schema changes must be applied by Alembic before startup."""
+    target = bind or engine
+    tables = set(inspect(target).get_table_names())
+    if "alembic_version" not in tables:
+        raise RuntimeError("Production database is not migration-managed. Run 'alembic upgrade head'.")
+    with target.connect() as connection:
+        version = connection.execute(text("SELECT version_num FROM alembic_version")).scalar()
+    if version != LATEST_SCHEMA_REVISION:
+        raise RuntimeError(f"Production database migration is not current (found {version!r}).")

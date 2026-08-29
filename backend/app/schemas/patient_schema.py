@@ -95,11 +95,28 @@ class ExercisePlanItemCreate(BaseModel):
     reps: int = Field(ge=1, le=100)
     days_per_week: int = Field(ge=1, le=7)
     instructions: str | None = Field(default=None, max_length=1000)
+    duration_minutes: int | None = Field(default=None, ge=1, le=240)
+    rest_interval_seconds: int | None = Field(default=None, ge=0, le=3600)
+    tempo: str | None = Field(default=None, max_length=64)
+    precautions: str | None = Field(default=None, max_length=1000)
+    target_rom_degrees: float | None = Field(default=None, ge=0, le=360)
+    target_score: float | None = Field(default=None, ge=0, le=100)
+    schedule_days: list[int] = Field(default_factory=list, max_length=7)
+    requested_media_upload: bool = False
+    requires_ai_analysis: bool = False
+
+    @field_validator("schedule_days")
+    @classmethod
+    def valid_schedule_days(cls, value: list[int]) -> list[int]:
+        if any(day < 0 or day > 6 for day in value):
+            raise ValueError("Schedule days must use Monday=0 through Sunday=6.")
+        return sorted(set(value))
 
 
 class ExercisePlanItemDetail(ExercisePlanItemCreate):
     item_id: str
     sort_order: int
+    status: Literal["active", "replaced", "completed"] = "active"
 
 
 class ExercisePlanCreate(BaseModel):

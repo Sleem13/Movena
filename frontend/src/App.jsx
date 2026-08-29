@@ -18,16 +18,36 @@ import { AuthProvider, useAuth } from "./context/AuthContext.jsx";
 import { LocaleProvider, useLocale } from "./i18n/LocaleContext.jsx";
 import { ThemeProvider } from "./theme/ThemeContext.jsx";
 import { ENABLE_REALTIME_COACHING_SPIKE } from "./config/featureFlags.js";
+import {
+  landingPageForRole,
+  pageForPath,
+  PAGE_PATHS,
+} from "./config/navigation.js";
 import { analyzeExerciseVideo, getExercises } from "./services/api.js";
 
 const TherapistDashboard = lazy(() => import("./pages/TherapistDashboard.jsx"));
-const RealtimeCoachingSpike = lazy(() => import("./pages/RealtimeCoachingSpike.jsx"));
-const SuperAdminDashboard = lazy(() => import("./pages/SuperAdminDashboard.jsx"));
+const PatientCareDashboard = lazy(
+  () => import("./pages/PatientCareDashboard.jsx"),
+);
+const RealtimeCoachingSpike = lazy(
+  () => import("./pages/RealtimeCoachingSpike.jsx"),
+);
+const SuperAdminDashboard = lazy(
+  () => import("./pages/SuperAdminDashboard.jsx"),
+);
+const SuperAdminWorkflowDashboard = lazy(
+  () => import("./pages/SuperAdminWorkflowDashboard.jsx"),
+);
 
 // Keep the default request on the low-latency path. Video encoding, PDF
 // generation, and chart payloads remain available as explicit opt-ins.
-const DEFAULT_OPTIONS = { include_overlay: false, generate_report: false, include_ml: false, include_frame_data: false, save_session: false };
-const PAGE_PATHS = { home: "/", workspace: "/workspace", exercises: "/exercises", analyze: "/analyze", results: "/results", history: "/history", therapist: "/therapist", admin: "/admin/users", coach: "/coach", about: "/about", login: "/login", register: "/register", forgotPassword: "/forgot-password", resetPassword: "/reset-password", verifyEmail: "/verify-email", profile: "/profile" };
+const DEFAULT_OPTIONS = {
+  include_overlay: false,
+  generate_report: false,
+  include_ml: false,
+  include_frame_data: false,
+  save_session: false,
+};
 function analysisErrorMessage(requestError, t) {
   const status = requestError.response?.status;
   const apiError = requestError.response?.data;
@@ -45,23 +65,36 @@ function analysisErrorMessage(requestError, t) {
 }
 
 function isSubjectSwitchError(requestError) {
-  return requestError.response?.status === 422 && requestError.response?.data?.error_code === "SUBJECT_SWITCH_DETECTED";
+  return (
+    requestError.response?.status === 422 &&
+    requestError.response?.data?.error_code === "SUBJECT_SWITCH_DETECTED"
+  );
 }
 
 function isCancelledRequest(requestError) {
-  return requestError?.code === "ERR_CANCELED" || requestError?.name === "CanceledError" || requestError?.name === "AbortError";
+  return (
+    requestError?.code === "ERR_CANCELED" ||
+    requestError?.name === "CanceledError" ||
+    requestError?.name === "AbortError"
+  );
 }
 
 function LazyPage({ children }) {
-  return <Suspense fallback={<div className="grid min-h-[50vh] place-items-center text-sm font-semibold text-slate-500">Loading workspace…</div>}>{children}</Suspense>;
+  return (
+    <Suspense
+      fallback={
+        <div className="grid min-h-[50vh] place-items-center text-sm font-semibold text-slate-500">
+          Loading workspace…
+        </div>
+      }
+    >
+      {children}
+    </Suspense>
+  );
 }
 
 function initialPage() {
-  const path = window.location.pathname;
-  if (path.startsWith("/therapist")) return "therapist";
-  if (path.startsWith("/admin")) return "admin";
-  if (path.startsWith("/coach")) return ENABLE_REALTIME_COACHING_SPIKE ? "coach" : "home";
-  return Object.entries(PAGE_PATHS).find(([, value]) => value === path)?.[0] || "home";
+  return pageForPath(window.location.pathname, ENABLE_REALTIME_COACHING_SPIKE);
 }
 
 function AppContent() {
@@ -78,15 +111,23 @@ function AppContent() {
   const [options, setOptions] = useState(DEFAULT_OPTIONS);
   const [originalVideoUrl, setOriginalVideoUrl] = useState(null);
   const [exercise, setExercise] = useState("");
+  const [rehabContext, setRehabContext] = useState(null);
+  const [pendingRehabAnalysis, setPendingRehabAnalysis] = useState(null);
   const [exercises, setExercises] = useState(EXERCISES);
   const analysisControllerRef = useRef(null);
 
   useEffect(() => {
-    getExercises().then((items) => Array.isArray(items) && items.length && setExercises(items)).catch(() => {});
+    getExercises()
+      .then(
+        (items) => Array.isArray(items) && items.length && setExercises(items),
+      )
+      .catch(() => {});
   }, []);
 
   useEffect(() => {
-    function handlePopState() { setPage(initialPage()); }
+    function handlePopState() {
+      setPage(initialPage());
+    }
     window.addEventListener("popstate", handlePopState);
     return () => window.removeEventListener("popstate", handlePopState);
   }, []);
@@ -94,7 +135,10 @@ function AppContent() {
   useEffect(() => () => analysisControllerRef.current?.abort(), []);
 
   useEffect(() => {
-    if (!file || typeof URL.createObjectURL !== "function") { setOriginalVideoUrl(null); return undefined; }
+    if (!file || typeof URL.createObjectURL !== "function") {
+      setOriginalVideoUrl(null);
+      return undefined;
+    }
     const url = URL.createObjectURL(file);
     setOriginalVideoUrl(url);
     return () => URL.revokeObjectURL(url);
@@ -106,28 +150,68 @@ function AppContent() {
     setFile(selected || null);
     setFileSource(selected ? source : null);
   }
-  function navigate(nextPage) { setPage(nextPage); window.history.pushState({}, "", PAGE_PATHS[nextPage] || "/"); }
-  function handleFileChange(event) { selectFile(event.target.files?.[0]); }
+  function navigate(nextPage, params) {
+    setPage(nextPage);
+    const query = params ? `?${new URLSearchParams(params)}` : "";
+    window.history.pushState({}, "", `${PAGE_PATHS[nextPage] || "/"}${query}`);
+  }
+  function handleFileChange(event) {
+    selectFile(event.target.files?.[0]);
+  }
 
-  async function analyzeSelectedExercise(selectedExercise, continueOnSubjectWarning, signal) {
-    const data = await analyzeExerciseVideo(selectedExercise, file, { ...options, continue_on_subject_warning: continueOnSubjectWarning, signal }, setProgress);
+  async function analyzeSelectedExercise(
+    selectedExercise,
+    continueOnSubjectWarning,
+    signal,
+  ) {
+    const data = await analyzeExerciseVideo(
+      selectedExercise,
+      file,
+      {
+        ...options,
+        continue_on_subject_warning: continueOnSubjectWarning,
+        signal,
+      },
+      setProgress,
+    );
     if (data.auto_routed && data.exercise) setExercise(data.exercise);
-    setReport(data); setCanContinueAfterWarning(false); navigate("results");
+    if (rehabContext && data.session_id)
+      setPendingRehabAnalysis({
+        ...rehabContext,
+        analysis_session_id: data.session_id,
+      });
+    setReport(data);
+    setCanContinueAfterWarning(false);
+    navigate("results");
   }
 
   async function handleSubmit(event, overrides = {}) {
     event?.preventDefault?.();
-    if (!file) { setError(t("upload.noFile")); return; }
-    if (!user) { setError(t("upload.loginRequired")); return; }
+    if (!file) {
+      setError(t("upload.noFile"));
+      return;
+    }
+    if (!user) {
+      setError(t("upload.loginRequired"));
+      return;
+    }
     if (!exercise) return;
     const controller = new AbortController();
     analysisControllerRef.current = controller;
-    setIsLoading(true); setProgress(0); setError("");
-    const continueOnSubjectWarning = Boolean(overrides.continueOnSubjectWarning);
+    setIsLoading(true);
+    setProgress(0);
+    setError("");
+    const continueOnSubjectWarning = Boolean(
+      overrides.continueOnSubjectWarning,
+    );
     setCanContinueAfterWarning(false);
     const selectedExercise = exercise;
     try {
-      await analyzeSelectedExercise(selectedExercise, continueOnSubjectWarning, controller.signal);
+      await analyzeSelectedExercise(
+        selectedExercise,
+        continueOnSubjectWarning,
+        controller.signal,
+      );
     } catch (requestError) {
       if (isCancelledRequest(requestError)) {
         setError(t("upload.cancelled"));
@@ -139,7 +223,11 @@ function AppContent() {
         setCanContinueAfterWarning(true);
         try {
           await new Promise((resolve) => setTimeout(resolve, 0));
-          await analyzeSelectedExercise(selectedExercise, true, controller.signal);
+          await analyzeSelectedExercise(
+            selectedExercise,
+            true,
+            controller.signal,
+          );
         } catch (retryError) {
           if (isCancelledRequest(retryError)) {
             setError(t("upload.cancelled"));
@@ -170,26 +258,226 @@ function AppContent() {
     setError(t("upload.cancelled"));
   }
 
-  function handleAnalyzeAnother() { setFile(null); setFileSource(null); setReport(null); setError(""); setCanContinueAfterWarning(false); setProgress(0); navigate("analyze"); }
+  function handleAnalyzeAnother() {
+    setFile(null);
+    setFileSource(null);
+    setReport(null);
+    setError("");
+    setCanContinueAfterWarning(false);
+    setProgress(0);
+    navigate("analyze");
+  }
+  function startAssignedExercise(item, scheduledDate) {
+    setRehabContext({
+      plan_item_id: item.item_id,
+      scheduled_date: scheduledDate,
+      exercise_id: item.exercise_id,
+    });
+    setPendingRehabAnalysis(null);
+    setExercise(item.exercise_id);
+    selectFile(null);
+    setOptions((current) => ({ ...current, save_session: true }));
+    navigate("analyze");
+  }
+  function completeRehabLink() {
+    setRehabContext(null);
+    setPendingRehabAnalysis(null);
+    setOptions(DEFAULT_OPTIONS);
+  }
 
-  return <AppShell currentPage={page} hasReport={Boolean(report)} onNavigate={navigate} user={user}>
-    {page === "home" && <Home authenticated={Boolean(user)} onStart={() => navigate(user ? "analyze" : "register")} />}
-    {page === "workspace" && (user ? <WorkspaceOverview onNavigate={navigate} /> : <Login onSuccess={() => navigate("workspace")} onRegister={() => navigate("register")} onForgotPassword={() => navigate("forgotPassword")} onVerifyEmail={() => navigate("verifyEmail")} />)}
-    {page === "exercises" && <ExerciseLibrary exercises={exercises} onAnalyze={(value) => { setExercise(value); setFile(null); setFileSource(null); navigate("analyze"); }} />}
-    {page === "analyze" && <UploadSquat exercises={exercises} exercise={exercise} onExerciseChange={(value) => { setExercise(value); setError(""); setCanContinueAfterWarning(false); }} file={file} fileSource={fileSource} error={error} canContinueAfterWarning={canContinueAfterWarning} isLoading={isLoading} progress={progress} options={options} onOptionsChange={setOptions} onFileChange={handleFileChange} onFileSelect={selectFile} onRecognitionConfirm={(exerciseId, recognizedFile) => { setExercise(exerciseId); selectFile(recognizedFile, "recognition"); }} onSubmit={handleSubmit} onCancel={cancelAnalysis} />}
-    {page === "results" && <Results report={report} originalVideoUrl={originalVideoUrl} onAnalyzeAnother={handleAnalyzeAnother} onGoAnalyze={() => navigate("analyze")} onViewHistory={() => navigate("history")} />}
-    {page === "history" && <SessionHistory onAnalyze={() => navigate("analyze")} onCoach={ENABLE_REALTIME_COACHING_SPIKE ? () => navigate("coach") : undefined} />}
-    {page === "therapist" && <LazyPage><TherapistDashboard /></LazyPage>}
-    {page === "admin" && (user?.role === "super_admin" ? <LazyPage><SuperAdminDashboard /></LazyPage> : <WorkspaceOverview onNavigate={navigate} />)}
-    {page === "coach" && ENABLE_REALTIME_COACHING_SPIKE && <LazyPage><RealtimeCoachingSpike onConfirmSuggestion={(exerciseId, recognizedFile) => { setExercise(exerciseId); selectFile(recognizedFile, "recognition"); navigate("analyze"); }} /></LazyPage>}
-    {page === "about" && <About onStart={() => navigate("analyze")} />}
-    {page === "login" && <Login onSuccess={() => navigate("workspace")} onRegister={() => navigate("register")} onForgotPassword={() => navigate("forgotPassword")} onVerifyEmail={() => navigate("verifyEmail")} />}
-    {page === "register" && <Register onLogin={() => navigate("login")} />}
-    {page === "forgotPassword" && <ForgotPassword onLogin={() => navigate("login")} />}
-    {page === "resetPassword" && <ResetPassword onLogin={() => navigate("login")} />}
-    {page === "verifyEmail" && <VerifyEmail onLogin={() => navigate("login")} />}
-    {page === "profile" && (user ? <Profile onLogout={() => navigate("home")} /> : <Login onSuccess={() => navigate("workspace")} onRegister={() => navigate("register")} onForgotPassword={() => navigate("forgotPassword")} onVerifyEmail={() => navigate("verifyEmail")} />)}
-  </AppShell>;
+  return (
+    <AppShell
+      currentPage={page}
+      hasReport={Boolean(report)}
+      onNavigate={navigate}
+      user={user}
+    >
+      {page === "home" && (
+        <Home
+          authenticated={Boolean(user)}
+          onStart={() => navigate(user ? landingPageForRole(user) : "register")}
+        />
+      )}
+      {page === "workspace" &&
+        (user ? (
+          user.role === "patient" ? (
+            <LazyPage>
+              <PatientCareDashboard
+                onAnalyzeAssigned={startAssignedExercise}
+                pendingAnalysis={pendingRehabAnalysis}
+                onAnalysisLinked={completeRehabLink}
+              />
+            </LazyPage>
+          ) : user.role === "therapist" ? (
+            <LazyPage>
+              <TherapistDashboard onNavigate={navigate} />
+            </LazyPage>
+          ) : (
+            <WorkspaceOverview onNavigate={navigate} />
+          )
+        ) : (
+          <Login
+            onSuccess={(authenticatedUser) =>
+              navigate(landingPageForRole(authenticatedUser))
+            }
+            onRegister={() => navigate("register")}
+            onForgotPassword={() => navigate("forgotPassword")}
+            onVerifyEmail={() => navigate("verifyEmail")}
+          />
+        ))}
+      {page === "care" &&
+        (user?.role === "patient" ? (
+          <LazyPage>
+            <PatientCareDashboard
+              onAnalyzeAssigned={startAssignedExercise}
+              pendingAnalysis={pendingRehabAnalysis}
+              onAnalysisLinked={completeRehabLink}
+            />
+          </LazyPage>
+        ) : (
+          <WorkspaceOverview onNavigate={navigate} />
+        ))}
+      {page === "exercises" && (
+        <ExerciseLibrary
+          exercises={exercises}
+          onAnalyze={(value) => {
+            setExercise(value);
+            setFile(null);
+            setFileSource(null);
+            navigate("analyze");
+          }}
+        />
+      )}
+      {page === "analyze" && (
+        <UploadSquat
+          exercises={exercises}
+          exercise={exercise}
+          onExerciseChange={(value) => {
+            setExercise(value);
+            setError("");
+            setCanContinueAfterWarning(false);
+          }}
+          file={file}
+          fileSource={fileSource}
+          error={error}
+          canContinueAfterWarning={canContinueAfterWarning}
+          isLoading={isLoading}
+          progress={progress}
+          options={options}
+          onOptionsChange={setOptions}
+          onFileChange={handleFileChange}
+          onFileSelect={selectFile}
+          onRecognitionConfirm={(exerciseId, recognizedFile) => {
+            setExercise(exerciseId);
+            selectFile(recognizedFile, "recognition");
+          }}
+          onSubmit={handleSubmit}
+          onCancel={cancelAnalysis}
+        />
+      )}
+      {page === "results" && (
+        <Results
+          report={report}
+          originalVideoUrl={originalVideoUrl}
+          onAnalyzeAnother={handleAnalyzeAnother}
+          onGoAnalyze={() => navigate("analyze")}
+          onViewHistory={() => navigate("history")}
+          onContinueCare={
+            pendingRehabAnalysis ? () => navigate("care") : undefined
+          }
+        />
+      )}
+      {page === "history" && (
+        <SessionHistory
+          onAnalyze={() => navigate("analyze")}
+          onCoach={
+            ENABLE_REALTIME_COACHING_SPIKE ? () => navigate("coach") : undefined
+          }
+        />
+      )}
+      {page === "therapist" && (
+        <LazyPage>
+          <TherapistDashboard onNavigate={navigate} />
+        </LazyPage>
+      )}
+      {page === "therapistPatients" && (
+        <LazyPage>
+          <TherapistDashboard onNavigate={navigate} />
+        </LazyPage>
+      )}
+      {page === "adminWorkflow" &&
+        (user?.role === "super_admin" ? (
+          <LazyPage>
+            <SuperAdminWorkflowDashboard onNavigate={navigate} />
+          </LazyPage>
+        ) : (
+          <WorkspaceOverview onNavigate={navigate} />
+        ))}
+      {page === "adminUsers" &&
+        (user?.role === "super_admin" ? (
+          <LazyPage>
+            <SuperAdminDashboard />
+          </LazyPage>
+        ) : (
+          <WorkspaceOverview onNavigate={navigate} />
+        ))}
+      {page === "coach" && ENABLE_REALTIME_COACHING_SPIKE && (
+        <LazyPage>
+          <RealtimeCoachingSpike
+            onConfirmSuggestion={(exerciseId, recognizedFile) => {
+              setExercise(exerciseId);
+              selectFile(recognizedFile, "recognition");
+              navigate("analyze");
+            }}
+          />
+        </LazyPage>
+      )}
+      {page === "about" && <About onStart={() => navigate("analyze")} />}
+      {page === "login" && (
+        <Login
+          onSuccess={(authenticatedUser) =>
+            navigate(landingPageForRole(authenticatedUser))
+          }
+          onRegister={() => navigate("register")}
+          onForgotPassword={() => navigate("forgotPassword")}
+          onVerifyEmail={() => navigate("verifyEmail")}
+        />
+      )}
+      {page === "register" && <Register onLogin={() => navigate("login")} />}
+      {page === "forgotPassword" && (
+        <ForgotPassword onLogin={() => navigate("login")} />
+      )}
+      {page === "resetPassword" && (
+        <ResetPassword onLogin={() => navigate("login")} />
+      )}
+      {page === "verifyEmail" && (
+        <VerifyEmail onLogin={() => navigate("login")} />
+      )}
+      {page === "profile" &&
+        (user ? (
+          <Profile onLogout={() => navigate("home")} onNavigate={navigate} />
+        ) : (
+          <Login
+            onSuccess={(authenticatedUser) =>
+              navigate(landingPageForRole(authenticatedUser))
+            }
+            onRegister={() => navigate("register")}
+            onForgotPassword={() => navigate("forgotPassword")}
+            onVerifyEmail={() => navigate("verifyEmail")}
+          />
+        ))}
+    </AppShell>
+  );
 }
 
-export default function App(){return <ThemeProvider><LocaleProvider><AuthProvider><AppContent/></AuthProvider></LocaleProvider></ThemeProvider>;}
+export default function App() {
+  return (
+    <ThemeProvider>
+      <LocaleProvider>
+        <AuthProvider>
+          <AppContent />
+        </AuthProvider>
+      </LocaleProvider>
+    </ThemeProvider>
+  );
+}

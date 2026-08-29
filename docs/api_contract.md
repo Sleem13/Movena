@@ -1,5 +1,14 @@
 # API Contract
 
+## Rehabilitation Phase 1 additions
+
+- `GET /api/v1/patient/today` returns scheduled plan dosage, recorded completion/pain/difficulty/fatigue/comment values, optional analysis linkage, the next appointment, unread notifications, and 7-day completion summaries.
+- `POST /api/v1/patient/adherence` idempotently creates or updates a daily check-in. `analysis_session_id` is optional; when supplied, the server verifies patient ownership and exercise identity before linking it to the assigned plan item.
+- `GET /api/v1/therapist/patients/{patient_id}/adherence` is assignment-protected and returns subjective outcomes separately from the optional AI session reference.
+- `POST /api/v1/therapist/patients/{patient_id}/exercise-plans` creates a new plan version and pauses the prior active version instead of overwriting history. Plan items support rest interval, tempo, schedule days, targets, video request, and AI-analysis requirement.
+
+AI results are movement-analysis data only. They do not alter treatment or replace clinician review.
+
 ## `GET /health`
 
 Returns `200` JSON with `status`, `project`, and `version`.

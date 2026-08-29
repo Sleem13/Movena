@@ -71,8 +71,10 @@ Do not change `Environment` to `production` until all of these are complete:
 - Set `email_delivery_mode = "smtp"`, `email_from`, and the regional SES SMTP endpoint.
 - Add a custom Route 53/ACM domain if a branded URL is required.
 - Add AWS WAF rate limiting and managed protections for external public use.
-- Add Alembic migrations before schema changes are deployed to an existing RDS database.
+- Run `alembic upgrade head` with the migration owner and verify revision `0003_data_rights` before starting the application.
+- Add Daily and Paymob credentials to Secrets Manager only if those feature flags are approved; never expose them to Web or Expo builds.
 - Complete the privacy, consent, retention, deletion, incident-response, and legal review before processing identifiable patient data.
+- Complete every evidence item in `docs/care_platform_launch_gate.md`; local automated tests alone are not a release approval.
 - Load-test 100 MB uploads and the synchronous analysis duration. If analyses exceed the CloudFront/origin response window, move analysis to an asynchronous SQS worker workflow.
 
 ## Operational notes

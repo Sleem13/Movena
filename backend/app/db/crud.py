@@ -11,7 +11,10 @@ from uuid import uuid4
 from sqlalchemy import func, select, update
 from sqlalchemy.orm import Session, selectinload
 
-from app.db.models import AnalysisSession, DetectedIssue, ExercisePlan, ExercisePlanItem, PatientProfile
+from app.db.models import (
+    AnalysisSession, DetectedIssue, ExercisePlan, ExercisePlanItem, PatientProfile,
+    TherapistPatientAssignment,
+)
 from app.schemas.patient_schema import (
     DetectedIssueTrend, ExerciseBaselineComparison, ExercisePlanCreate, ExercisePlanDetail, ExercisePlanItemDetail,
     PatientCreate, PatientProgressSummary, PatientUpdate,
@@ -38,7 +41,7 @@ def _timestamp(value: datetime | None) -> float:
 
 def to_summary(row: AnalysisSession) -> SessionSummary:
     return SessionSummary(
-        session_id=row.session_id, exercise_id=row.exercise_id,
+        session_id=row.session_id, plan_item_id=row.plan_item_id, exercise_id=row.exercise_id,
         exercise_display_name=row.exercise_display_name, status=row.status,
         created_at=row.created_at, total_reps=row.total_reps,
         movement_score=row.movement_score,
@@ -181,7 +184,17 @@ def to_exercise_plan_detail(row: ExercisePlan) -> ExercisePlanDetail:
             reps=item.reps,
             days_per_week=item.days_per_week,
             instructions=item.instructions,
+            duration_minutes=item.duration_minutes,
+            rest_interval_seconds=item.rest_interval_seconds,
+            tempo=item.tempo,
+            precautions=item.precautions,
+            target_rom_degrees=item.target_rom_degrees,
+            target_score=item.target_score,
+            schedule_days=_json(item.schedule_days_json, []),
+            requested_media_upload=item.requested_media_upload,
+            requires_ai_analysis=item.requires_ai_analysis,
             sort_order=item.sort_order,
+            status=item.status,
         ) for item in row.items],
     )
 
@@ -189,13 +202,25 @@ def to_exercise_plan_detail(row: ExercisePlan) -> ExercisePlanDetail:
 def create_exercise_plan(
     db: Session, patient_id: str, data: ExercisePlanCreate, created_by_user_id: str | None
 ) -> ExercisePlan:
+    # A replacement is a new immutable plan version. Prior plans remain
+    # available for clinical history and are paused rather than overwritten.
+    db.execute(update(ExercisePlan).where(
+        ExercisePlan.patient_id == patient_id,
+        ExercisePlan.status == "active",
+    ).values(status="paused"))
     plan = ExercisePlan(
         plan_id=str(uuid4()), patient_id=patient_id, created_by_user_id=created_by_user_id,
         title=data.title, notes=data.notes, start_date=data.start_date, end_date=data.end_date,
     )
     plan.items = [ExercisePlanItem(
         item_id=str(uuid4()), exercise_id=item.exercise_id, sets=item.sets, reps=item.reps,
-        days_per_week=item.days_per_week, instructions=item.instructions, sort_order=index,
+        days_per_week=item.days_per_week, instructions=item.instructions,
+        duration_minutes=item.duration_minutes, rest_interval_seconds=item.rest_interval_seconds,
+        tempo=item.tempo, precautions=item.precautions,
+        target_rom_degrees=item.target_rom_degrees, target_score=item.target_score,
+        schedule_days_json=json.dumps(item.schedule_days),
+        requested_media_upload=item.requested_media_upload,
+        requires_ai_analysis=item.requires_ai_analysis, status="active", sort_order=index,
     ) for index, item in enumerate(data.items)]
     db.add(plan)
     db.commit()
@@ -298,11 +323,28 @@ def get_patient_progress_summary(db: Session, patient_id: str) -> PatientProgres
     )
 
 
-def get_therapist_dashboard_summary(db: Session) -> TherapistDashboardSummary:
-    sessions = list(db.scalars(select(AnalysisSession).order_by(AnalysisSession.created_at.desc())).all())
-    issue_counts = Counter(db.scalars(select(DetectedIssue.issue_code)).all())
+def get_therapist_dashboard_summary(
+    db: Session, therapist_user_id: str | None = None,
+) -> TherapistDashboardSummary:
+    patient_ids = None
+    if therapist_user_id:
+        patient_ids = list(db.scalars(select(TherapistPatientAssignment.patient_id).where(
+            TherapistPatientAssignment.therapist_user_id == therapist_user_id,
+            TherapistPatientAssignment.status == "active",
+        )).all())
+    session_statement = select(AnalysisSession).order_by(AnalysisSession.created_at.desc())
+    if patient_ids is not None:
+        session_statement = session_statement.where(AnalysisSession.patient_id.in_(patient_ids))
+    sessions = list(db.scalars(session_statement).all())
+    issue_statement = select(DetectedIssue.issue_code).join(
+        AnalysisSession, DetectedIssue.session_id == AnalysisSession.session_id
+    )
+    if patient_ids is not None:
+        issue_statement = issue_statement.where(AnalysisSession.patient_id.in_(patient_ids))
+    issue_counts = Counter(db.scalars(issue_statement).all())
     return TherapistDashboardSummary(
-        total_patients=db.scalar(select(func.count()).select_from(PatientProfile)) or 0,
+        total_patients=(len(patient_ids) if patient_ids is not None else
+                        db.scalar(select(func.count()).select_from(PatientProfile)) or 0),
         total_sessions=len(sessions),
         recent_sessions=[to_summary(row) for row in sessions[:10]],
         low_confidence_sessions=sum(row.analysis_confidence_level == "low" for row in sessions),

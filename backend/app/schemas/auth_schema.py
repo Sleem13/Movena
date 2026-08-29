@@ -9,6 +9,7 @@ class UserRole(str, Enum):
     admin = "admin"
     therapist = "therapist"
     patient = "patient"
+    support = "support"
     researcher_demo = "researcher_demo"
 
 
@@ -18,6 +19,8 @@ class UserRegisterRequest(BaseModel):
     password: str = Field(min_length=8, max_length=128)
     full_name: str = Field(min_length=1, max_length=120)
     role: UserRole = UserRole.researcher_demo
+    accepted_terms: bool = False
+    accepted_privacy: bool = False
 
     @field_validator("email")
     @classmethod

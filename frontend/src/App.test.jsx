@@ -8,7 +8,7 @@ import { confirmRecognitionSuggestion, getRecognitionModels, recognizeExerciseVi
 import { EXERCISES } from "./data/exercises.js";
 import {
   createPatientExercisePlan, createPatientProfile, getPatientProfile, getPatientProgress,
-  getTherapistDashboard, listPatientExercisePlans, listPatientProfiles, listPatientSessions,
+  getTherapistDashboard, listPatientAdherence, listPatientExercisePlans, listPatientProfiles, listPatientSessions,
 } from "./services/api.js";
 
 const authState = vi.hoisted(() => ({
@@ -31,12 +31,15 @@ vi.mock("./services/api.js", () => ({
   getArtifactBlob: vi.fn(),
   deleteSavedSession: vi.fn(),
   getTherapistDashboard: vi.fn(),
+  listPatientAdherence: vi.fn(),
   listPatientProfiles: vi.fn(),
   createPatientProfile: vi.fn(),
   getPatientProfile: vi.fn(),
   listPatientSessions: vi.fn(),
   getPatientProgress: vi.fn(),
   listPatientExercisePlans: vi.fn(),
+  listTherapistAdherenceAlerts: vi.fn().mockResolvedValue([]),
+  listTherapistAppointments: vi.fn().mockResolvedValue([]),
   createPatientExercisePlan: vi.fn(),
   updatePatientExercisePlanStatus: vi.fn(),
   verifyEmailToken: vi.fn(),
@@ -93,7 +96,8 @@ const rejectedReport = {
 
 function openUpload({ chooseExercise = true } = {}) {
   render(<App />);
-  fireEvent.click(screen.getAllByRole("button", { name: authState.user ? "Analyze a movement" : "Get started" }).at(-1));
+  fireEvent.click(screen.getAllByRole("button", { name: authState.user ? "Open care workspace" : "Get started" }).at(-1));
+  if (authState.user) fireEvent.click(screen.getAllByRole("button", { name: "Movement check" }).at(-1));
   if (authState.user && chooseExercise) chooseSelectOption("Exercise selector", "Bodyweight Squat");
 }
 
@@ -124,6 +128,7 @@ describe("Squat Analyzer healthcare dashboard", () => {
     getArtifactBlob.mockResolvedValue(new Blob(["webm-video"], { type: "video/webm" }));
     listSavedSessions.mockResolvedValue({ items: [], total: 0, limit: 50, offset: 0 });
     getTherapistDashboard.mockResolvedValue({ total_patients: 0, total_sessions: 0, low_confidence_sessions: 0, recent_sessions: [], common_detected_issues: [], sessions_by_exercise: {}, prototype_warning: "Prototype" });
+    listPatientAdherence.mockResolvedValue([]);
     listPatientProfiles.mockResolvedValue([]);
     listPatientExercisePlans.mockResolvedValue([]);
   });
@@ -163,16 +168,16 @@ describe("Squat Analyzer healthcare dashboard", () => {
     window.history.replaceState({}, "", "/workspace");
     render(<App />);
     expect(await screen.findByRole("heading", { name: /Welcome back, admin/i })).toBeInTheDocument();
-    expect(screen.getAllByRole("button", { name: "Analyze movement" })).toHaveLength(2);
-    expect(screen.getByRole("button", { name: "Patients" })).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "User administration" })).not.toBeInTheDocument();
-    expect(screen.getByText("Workspace status")).toBeInTheDocument();
+    expect(screen.getAllByRole("button", { name: "Movement check" })).toHaveLength(2);
+    expect(screen.getAllByRole("button", { name: "Patient caseload" })).toHaveLength(2);
+    expect(screen.queryByRole("button", { name: "Users & access" })).not.toBeInTheDocument();
+    expect(screen.getByText("Platform readiness")).toBeInTheDocument();
   });
 
   it("renders the exercise library with supported and unavailable planned exercises", async () => {
     render(<App />);
-    fireEvent.click(screen.getByRole("button", { name: "Analyze a movement" }));
-    fireEvent.click(screen.getByRole("button", { name: "Exercises" }));
+    fireEvent.click(screen.getAllByRole("button", { name: "Open care workspace" }).at(-1));
+    fireEvent.click(screen.getByRole("button", { name: "Exercise library" }));
     expect(await screen.findByText("Supported exercises")).toBeInTheDocument();
     expect(screen.getByText("Bodyweight Squat")).toBeInTheDocument();
     expect(screen.getByText("Hip Abduction")).toBeInTheDocument();
@@ -184,8 +189,8 @@ describe("Squat Analyzer healthcare dashboard", () => {
 
   it("filters the exercise library by search text and availability", async () => {
     render(<App />);
-    fireEvent.click(screen.getByRole("button", { name: "Analyze a movement" }));
-    fireEvent.click(screen.getByRole("button", { name: "Exercises" }));
+    fireEvent.click(screen.getAllByRole("button", { name: "Open care workspace" }).at(-1));
+    fireEvent.click(screen.getByRole("button", { name: "Exercise library" }));
     expect(await screen.findByText("Supported exercises")).toBeInTheDocument();
     fireEvent.change(screen.getByLabelText("Search exercises"), { target: { value: "shoulder" } });
     chooseSelectOption("Availability", "Supported only");
@@ -200,8 +205,8 @@ describe("Squat Analyzer healthcare dashboard", () => {
 
   it("opens Analyze from an exercise card with exercise-specific guidance", async () => {
     render(<App />);
-    fireEvent.click(screen.getByRole("button", { name: "Analyze a movement" }));
-    fireEvent.click(screen.getByRole("button", { name: "Exercises" }));
+    fireEvent.click(screen.getAllByRole("button", { name: "Open care workspace" }).at(-1));
+    fireEvent.click(screen.getByRole("button", { name: "Exercise library" }));
     const cards = await screen.findAllByRole("button", { name: /Analyze this exercise/i });
     fireEvent.click(cards[3]);
     expect(screen.getByLabelText("Exercise selector")).toHaveTextContent("Shoulder Abduction");
@@ -225,7 +230,8 @@ describe("Squat Analyzer healthcare dashboard", () => {
     });
 
     render(<App />);
-    fireEvent.click(screen.getByRole("button", { name: "Analyze a movement" }));
+    fireEvent.click(screen.getAllByRole("button", { name: "Open care workspace" }).at(-1));
+    fireEvent.click(screen.getAllByRole("button", { name: "Movement check" }).at(-1));
     fireEvent.click(screen.getByRole("button", { name: "Identify from video" }));
 
     expect(window.location.pathname).toBe("/analyze");
@@ -603,7 +609,7 @@ describe("Squat Analyzer healthcare dashboard", () => {
     expect(screen.getByText(/privacy and clinical-use notice/i)).toBeInTheDocument();
     expect(screen.getByText(/only process patient information with appropriate authorization and consent/i)).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Patient profiles" }));
-    expect(screen.getByText("No patient profiles yet")).toBeInTheDocument();
+    expect(await screen.findByText("No patient profiles yet")).toBeInTheDocument();
   });
 
   it("visualizes real therapist session scores, exercise volume, and issue frequency", async () => {
@@ -648,7 +654,7 @@ describe("Squat Analyzer healthcare dashboard", () => {
     render(<App />);
     await screen.findByText("Total patients");
     fireEvent.click(screen.getByRole("button", { name: "Patient profiles" }));
-    expect(screen.getByText("Demo Profile A")).toBeInTheDocument();
+    expect(await screen.findByText("Demo Profile A")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "View profile" }));
     expect(await screen.findByText("Exercise session history")).toBeInTheDocument();
     expect(screen.getByText(/Bodyweight Squat · 3 reps · score 88/i)).toBeInTheDocument();

@@ -12,10 +12,11 @@ ROLE_PERMISSIONS: dict[str, tuple[str, ...]] = {
         "patient:manage", "dashboard:therapist",
     ),
     "therapist": (
-        "analysis:create", "analysis:read:any", "session:manage:any",
-        "patient:manage", "dashboard:therapist",
+        "analysis:create", "analysis:read:assigned", "session:manage:assigned",
+        "patient:manage:assigned", "dashboard:therapist",
     ),
     "patient": ("analysis:create", "analysis:read:own", "session:manage:own"),
+    "support": ("support:account-status", "support:appointments:metadata"),
     "researcher_demo": ("analysis:create", "analysis:read:own", "session:manage:own"),
 }
 

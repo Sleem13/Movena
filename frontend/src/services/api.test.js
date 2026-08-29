@@ -22,6 +22,8 @@ import {
   analyzeExerciseVideo,
   artifactUrl,
   getTherapistDashboard,
+  getAdminWorkflow,
+  listPatientAdherence,
   listSavedSessions,
   recognizeExerciseVideo,
   confirmRecognitionSuggestion,
@@ -70,6 +72,21 @@ describe("deployment API configuration", () => {
     await analyzeExerciseVideo(exerciseId, new File(["video"], "movement.mp4", { type: "video/mp4" }));
     expect(mocks.post.mock.calls[0][0]).toContain(`/api/v1/analysis-jobs/${exerciseId}?`);
     expect(mocks.get).toHaveBeenCalledWith("/api/v1/analysis-jobs/job-1", { signal: undefined });
+  });
+
+  it("loads the super admin workflow snapshot", async () => {
+    mocks.get.mockResolvedValue({ data: { stages: [] } });
+    await getAdminWorkflow();
+    expect(mocks.get).toHaveBeenCalledWith("/api/v1/admin/workflow");
+  });
+
+  it("loads assignment-scoped patient adherence for therapist review", async () => {
+    mocks.get.mockResolvedValue({ data: [] });
+    await listPatientAdherence("patient-1");
+    expect(mocks.get).toHaveBeenCalledWith(
+      "/api/v1/therapist/patients/patient-1/adherence",
+      { params: {} },
+    );
   });
 
   it("sends the subject-warning override only when requested", async () => {

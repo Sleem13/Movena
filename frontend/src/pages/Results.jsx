@@ -5,7 +5,7 @@ import ResultsDashboard, { ExportActions } from "../components/results/ResultsDa
 import SpeechFeedbackControls from "../components/results/SpeechFeedbackControls.jsx";
 import { useLocale } from "../i18n/LocaleContext.jsx";
 
-export default function Results({ report, originalVideoUrl, onAnalyzeAnother, onGoAnalyze, onViewHistory }) {
+export default function Results({ report, originalVideoUrl, onAnalyzeAnother, onGoAnalyze, onViewHistory, onContinueCare }) {
   const { t, exerciseText } = useLocale();
   if (!report) {
     return <main className="mx-auto max-w-4xl px-6 py-20">
@@ -49,7 +49,7 @@ export default function Results({ report, originalVideoUrl, onAnalyzeAnother, on
         <Badge tone="teal">{t("results.savedSession")}</Badge>
         <p className="mt-2 text-xs text-slate-500">{t("results.sessionStored", { session: report.session_id.slice(0, 8) })}</p>
       </div>
-      <Button variant="secondary" onClick={onViewHistory}>{t("results.viewHistory")}</Button>
+      <div className="flex flex-wrap gap-2"><Button variant="secondary" onClick={onViewHistory}>{t("results.viewHistory")}</Button>{onContinueCare ? <Button onClick={onContinueCare}>{t("results.continueCheckIn")}</Button> : null}</div>
     </Card>}
     <ResultsDashboard report={report} originalVideoUrl={originalVideoUrl} onAnalyzeAnother={onAnalyzeAnother} />
   </main>;

@@ -27,6 +27,7 @@ class SessionCreate(BaseModel):
 
 class SessionSummary(BaseModel):
     session_id: str
+    plan_item_id: str | None = None
     exercise_id: str
     exercise_display_name: str
     status: str

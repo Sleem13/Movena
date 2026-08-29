@@ -37,7 +37,7 @@ def optional_current_user(
         raise AuthError(401, "INVALID_TOKEN", "The access token is invalid.")
     if payload.get("ver", 0) != user.token_version:
         raise AuthError(401, "TOKEN_REVOKED", "This session is no longer valid. Please log in again.")
-    if not user.is_active:
+    if not user.is_active or user.account_status != "active":
         raise AuthError(403, "USER_INACTIVE", "This user account is inactive.")
     if get_settings().require_email_verification and not user.is_verified:
         raise AuthError(403, "EMAIL_NOT_VERIFIED", "Verify your email before accessing this resource.")

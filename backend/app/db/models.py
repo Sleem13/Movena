@@ -2,11 +2,14 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 
 import json
 
-from sqlalchemy import Boolean, DateTime, Float, ForeignKey, Integer, String, Text, text
+from sqlalchemy import (
+    Boolean, CheckConstraint, Date, DateTime, Float, ForeignKey, Integer,
+    String, Text, UniqueConstraint, text,
+)
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.database import Base
@@ -22,6 +25,9 @@ class AnalysisSession(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     session_id: Mapped[str] = mapped_column(String(36), unique=True, index=True, nullable=False)
     patient_id: Mapped[str | None] = mapped_column(ForeignKey("patient_profiles.patient_id", ondelete="SET NULL"), index=True)
+    plan_item_id: Mapped[str | None] = mapped_column(
+        ForeignKey("exercise_plan_items.item_id", ondelete="SET NULL", name="fk_analysis_sessions_plan_item"), index=True
+    )
     owner_user_id: Mapped[str | None] = mapped_column(String(36), index=True)
     created_by_user_id: Mapped[str | None] = mapped_column(String(36), index=True)
     exercise_id: Mapped[str] = mapped_column(String(64), index=True, nullable=False)
@@ -170,11 +176,16 @@ class PatientProfile(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     patient_id: Mapped[str] = mapped_column(String(36), unique=True, index=True, nullable=False)
+    user_id: Mapped[str | None] = mapped_column(
+        ForeignKey("users.user_id", ondelete="SET NULL"), unique=True, index=True
+    )
     display_name: Mapped[str] = mapped_column(String(120), nullable=False)
     age_group: Mapped[str | None] = mapped_column(String(32))
     sex: Mapped[str | None] = mapped_column(String(32))
     clinical_group: Mapped[str | None] = mapped_column(String(64))
     notes: Mapped[str | None] = mapped_column(Text)
+    preferred_locale: Mapped[str] = mapped_column(String(8), default="ar", nullable=False)
+    timezone_name: Mapped[str] = mapped_column(String(64), default="Africa/Cairo", nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now, nullable=False)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now, onupdate=utc_now, nullable=False)
     sessions: Mapped[list[AnalysisSession]] = relationship(back_populates="patient")
@@ -221,6 +232,16 @@ class ExercisePlanItem(Base):
     reps: Mapped[int] = mapped_column(Integer, nullable=False)
     days_per_week: Mapped[int] = mapped_column(Integer, nullable=False)
     instructions: Mapped[str | None] = mapped_column(Text)
+    duration_minutes: Mapped[int | None] = mapped_column(Integer)
+    rest_interval_seconds: Mapped[int | None] = mapped_column(Integer)
+    tempo: Mapped[str | None] = mapped_column(String(64))
+    precautions: Mapped[str | None] = mapped_column(Text)
+    target_rom_degrees: Mapped[float | None] = mapped_column(Float)
+    target_score: Mapped[float | None] = mapped_column(Float)
+    schedule_days_json: Mapped[str] = mapped_column(Text, default="[]", nullable=False)
+    requested_media_upload: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    requires_ai_analysis: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    status: Mapped[str] = mapped_column(String(24), default="active", index=True, nullable=False)
     sort_order: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
 
     plan: Mapped[ExercisePlan] = relationship(back_populates="items")
@@ -257,3 +278,288 @@ class DetectedIssue(Base):
     severity: Mapped[str | None] = mapped_column(String(32))
     message: Mapped[str | None] = mapped_column(Text)
     session: Mapped[AnalysisSession] = relationship(back_populates="detected_issue_rows")
+
+
+class PatientHealthProfile(Base):
+    __tablename__ = "patient_health_profiles"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    patient_id: Mapped[str] = mapped_column(
+        ForeignKey("patient_profiles.patient_id", ondelete="CASCADE"), unique=True, index=True
+    )
+    emergency_contact_name: Mapped[str | None] = mapped_column(String(120))
+    emergency_contact_phone: Mapped[str | None] = mapped_column(String(32))
+    medical_summary: Mapped[str | None] = mapped_column(Text)
+    precautions: Mapped[str | None] = mapped_column(Text)
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=utc_now, onupdate=utc_now, nullable=False
+    )
+
+
+class TherapistPatientAssignment(Base):
+    __tablename__ = "therapist_patient_assignments"
+    __table_args__ = (
+        UniqueConstraint("therapist_user_id", "patient_id", name="uq_therapist_patient_assignment"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    assignment_id: Mapped[str] = mapped_column(String(36), unique=True, index=True, nullable=False)
+    therapist_user_id: Mapped[str] = mapped_column(
+        ForeignKey("users.user_id", ondelete="CASCADE"), index=True, nullable=False
+    )
+    patient_id: Mapped[str] = mapped_column(
+        ForeignKey("patient_profiles.patient_id", ondelete="CASCADE"), index=True, nullable=False
+    )
+    status: Mapped[str] = mapped_column(String(24), default="active", index=True, nullable=False)
+    assigned_by_user_id: Mapped[str | None] = mapped_column(String(36), index=True)
+    assigned_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now, nullable=False)
+
+
+class AdherenceEntry(Base):
+    __tablename__ = "adherence_entries"
+    __table_args__ = (
+        UniqueConstraint("patient_id", "plan_item_id", "scheduled_date", name="uq_daily_adherence"),
+        CheckConstraint("pain_before IS NULL OR (pain_before >= 0 AND pain_before <= 10)", name="ck_pain_before"),
+        CheckConstraint("pain_after IS NULL OR (pain_after >= 0 AND pain_after <= 10)", name="ck_pain_after"),
+        CheckConstraint("difficulty IS NULL OR (difficulty >= 1 AND difficulty <= 5)", name="ck_difficulty"),
+        CheckConstraint("fatigue IS NULL OR (fatigue >= 1 AND fatigue <= 5)", name="ck_fatigue"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    adherence_id: Mapped[str] = mapped_column(String(36), unique=True, index=True, nullable=False)
+    patient_id: Mapped[str] = mapped_column(
+        ForeignKey("patient_profiles.patient_id", ondelete="CASCADE"), index=True, nullable=False
+    )
+    plan_item_id: Mapped[str] = mapped_column(
+        ForeignKey("exercise_plan_items.item_id", ondelete="CASCADE"), index=True, nullable=False
+    )
+    scheduled_date: Mapped[date] = mapped_column(Date, index=True, nullable=False)
+    completion_status: Mapped[str] = mapped_column(String(24), nullable=False)
+    pain_before: Mapped[int | None] = mapped_column(Integer)
+    pain_after: Mapped[int | None] = mapped_column(Integer)
+    difficulty: Mapped[int | None] = mapped_column(Integer)
+    fatigue: Mapped[int | None] = mapped_column(Integer)
+    note: Mapped[str | None] = mapped_column(Text)
+    analysis_session_id: Mapped[str | None] = mapped_column(
+        ForeignKey("analysis_sessions.session_id", ondelete="SET NULL", name="fk_adherence_entries_analysis_session"), index=True
+    )
+    media_storage_key: Mapped[str | None] = mapped_column(Text)
+    idempotency_key: Mapped[str | None] = mapped_column(String(128), unique=True, index=True)
+    completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now, nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=utc_now, onupdate=utc_now, nullable=False
+    )
+
+
+class TherapistAvailability(Base):
+    __tablename__ = "therapist_availability"
+    __table_args__ = (
+        CheckConstraint("weekday >= 0 AND weekday <= 6", name="ck_availability_weekday"),
+        CheckConstraint("start_minute >= 0 AND start_minute < end_minute AND end_minute <= 1440", name="ck_availability_minutes"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    availability_id: Mapped[str] = mapped_column(String(36), unique=True, index=True, nullable=False)
+    therapist_user_id: Mapped[str] = mapped_column(
+        ForeignKey("users.user_id", ondelete="CASCADE"), index=True, nullable=False
+    )
+    weekday: Mapped[int] = mapped_column(Integer, index=True, nullable=False)
+    start_minute: Mapped[int] = mapped_column(Integer, nullable=False)
+    end_minute: Mapped[int] = mapped_column(Integer, nullable=False)
+    timezone_name: Mapped[str] = mapped_column(String(64), default="Africa/Cairo", nullable=False)
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+
+
+class Appointment(Base):
+    __tablename__ = "appointments"
+    __table_args__ = (
+        CheckConstraint("ends_at > starts_at", name="ck_appointment_time_range"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    appointment_id: Mapped[str] = mapped_column(String(36), unique=True, index=True, nullable=False)
+    patient_id: Mapped[str] = mapped_column(
+        ForeignKey("patient_profiles.patient_id", ondelete="CASCADE"), index=True, nullable=False
+    )
+    therapist_user_id: Mapped[str] = mapped_column(
+        ForeignKey("users.user_id", ondelete="CASCADE"), index=True, nullable=False
+    )
+    service_id: Mapped[str | None] = mapped_column(String(36), index=True)
+    starts_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), index=True, nullable=False)
+    ends_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), index=True, nullable=False)
+    status: Mapped[str] = mapped_column(String(24), default="scheduled", index=True, nullable=False)
+    delivery_mode: Mapped[str] = mapped_column(String(24), default="video", nullable=False)
+    daily_room_name: Mapped[str | None] = mapped_column(String(128), unique=True)
+    payment_status: Mapped[str] = mapped_column(String(24), default="unpaid", index=True, nullable=False)
+    cancellation_reason: Mapped[str | None] = mapped_column(Text)
+    created_by_user_id: Mapped[str] = mapped_column(String(36), index=True, nullable=False)
+    idempotency_key: Mapped[str | None] = mapped_column(String(128), unique=True, index=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now, nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=utc_now, onupdate=utc_now, nullable=False
+    )
+
+
+class ClinicalSessionNote(Base):
+    __tablename__ = "clinical_session_notes"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    note_id: Mapped[str] = mapped_column(String(36), unique=True, index=True, nullable=False)
+    appointment_id: Mapped[str] = mapped_column(
+        ForeignKey("appointments.appointment_id", ondelete="CASCADE"), index=True, nullable=False
+    )
+    therapist_user_id: Mapped[str] = mapped_column(String(36), index=True, nullable=False)
+    summary: Mapped[str] = mapped_column(Text, nullable=False)
+    recommendations: Mapped[str | None] = mapped_column(Text)
+    patient_visible: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now, nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=utc_now, onupdate=utc_now, nullable=False
+    )
+
+
+class Notification(Base):
+    __tablename__ = "notifications"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    notification_id: Mapped[str] = mapped_column(String(36), unique=True, index=True, nullable=False)
+    user_id: Mapped[str] = mapped_column(
+        ForeignKey("users.user_id", ondelete="CASCADE"), index=True, nullable=False
+    )
+    kind: Mapped[str] = mapped_column(String(64), index=True, nullable=False)
+    title: Mapped[str] = mapped_column(String(160), nullable=False)
+    body: Mapped[str] = mapped_column(Text, nullable=False)
+    action_url: Mapped[str | None] = mapped_column(Text)
+    dedup_key: Mapped[str | None] = mapped_column(String(160), unique=True, index=True)
+    read_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    email_sent_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    email_required: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    email_attempts: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    next_email_attempt_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), index=True)
+    last_email_error: Mapped[str | None] = mapped_column(Text)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now, index=True, nullable=False)
+
+
+class ServiceOffering(Base):
+    __tablename__ = "service_offerings"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    service_id: Mapped[str] = mapped_column(String(36), unique=True, index=True, nullable=False)
+    name_en: Mapped[str] = mapped_column(String(120), nullable=False)
+    name_ar: Mapped[str] = mapped_column(String(120), nullable=False)
+    description_en: Mapped[str | None] = mapped_column(Text)
+    description_ar: Mapped[str | None] = mapped_column(Text)
+    duration_minutes: Mapped[int] = mapped_column(Integer, nullable=False)
+    price_minor: Mapped[int] = mapped_column(Integer, nullable=False)
+    currency: Mapped[str] = mapped_column(String(3), default="EGP", nullable=False)
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True, index=True, nullable=False)
+
+
+class PackageOffering(Base):
+    __tablename__ = "package_offerings"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    package_id: Mapped[str] = mapped_column(String(36), unique=True, index=True, nullable=False)
+    name_en: Mapped[str] = mapped_column(String(120), nullable=False)
+    name_ar: Mapped[str] = mapped_column(String(120), nullable=False)
+    sessions_count: Mapped[int] = mapped_column(Integer, nullable=False)
+    validity_days: Mapped[int] = mapped_column(Integer, nullable=False)
+    price_minor: Mapped[int] = mapped_column(Integer, nullable=False)
+    currency: Mapped[str] = mapped_column(String(3), default="EGP", nullable=False)
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True, index=True, nullable=False)
+
+
+class Order(Base):
+    __tablename__ = "orders"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    order_id: Mapped[str] = mapped_column(String(36), unique=True, index=True, nullable=False)
+    user_id: Mapped[str] = mapped_column(
+        ForeignKey("users.user_id", ondelete="RESTRICT"), index=True, nullable=False
+    )
+    service_id: Mapped[str | None] = mapped_column(String(36), index=True)
+    package_id: Mapped[str | None] = mapped_column(String(36), index=True)
+    appointment_id: Mapped[str | None] = mapped_column(String(36), index=True)
+    amount_minor: Mapped[int] = mapped_column(Integer, nullable=False)
+    currency: Mapped[str] = mapped_column(String(3), default="EGP", nullable=False)
+    status: Mapped[str] = mapped_column(String(24), default="pending", index=True, nullable=False)
+    paymob_order_id: Mapped[str | None] = mapped_column(String(64), unique=True, index=True)
+    idempotency_key: Mapped[str] = mapped_column(String(128), unique=True, index=True, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now, nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=utc_now, onupdate=utc_now, nullable=False
+    )
+
+
+class Payment(Base):
+    __tablename__ = "payments"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    payment_id: Mapped[str] = mapped_column(String(36), unique=True, index=True, nullable=False)
+    order_id: Mapped[str] = mapped_column(
+        ForeignKey("orders.order_id", ondelete="RESTRICT"), index=True, nullable=False
+    )
+    provider_transaction_id: Mapped[str] = mapped_column(String(80), unique=True, index=True, nullable=False)
+    amount_minor: Mapped[int] = mapped_column(Integer, nullable=False)
+    status: Mapped[str] = mapped_column(String(24), index=True, nullable=False)
+    provider_payload_json: Mapped[str] = mapped_column(Text, default="{}", nullable=False)
+    received_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now, nullable=False)
+
+
+class Refund(Base):
+    __tablename__ = "refunds"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    refund_id: Mapped[str] = mapped_column(String(36), unique=True, index=True, nullable=False)
+    payment_id: Mapped[str] = mapped_column(
+        ForeignKey("payments.payment_id", ondelete="RESTRICT"), index=True, nullable=False
+    )
+    amount_minor: Mapped[int] = mapped_column(Integer, nullable=False)
+    reason: Mapped[str] = mapped_column(Text, nullable=False)
+    status: Mapped[str] = mapped_column(String(24), default="pending", index=True, nullable=False)
+    requested_by_user_id: Mapped[str] = mapped_column(String(36), index=True, nullable=False)
+    provider_refund_id: Mapped[str | None] = mapped_column(String(80), unique=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now, nullable=False)
+
+
+class PlatformSetting(Base):
+    __tablename__ = "platform_settings"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    key: Mapped[str] = mapped_column(String(96), unique=True, index=True, nullable=False)
+    value_json: Mapped[str] = mapped_column(Text, nullable=False)
+    updated_by_user_id: Mapped[str | None] = mapped_column(String(36), index=True)
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=utc_now, onupdate=utc_now, nullable=False
+    )
+
+
+class ProgressReport(Base):
+    __tablename__ = "progress_reports"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    progress_report_id: Mapped[str] = mapped_column(String(36), unique=True, index=True, nullable=False)
+    patient_id: Mapped[str] = mapped_column(
+        ForeignKey("patient_profiles.patient_id", ondelete="CASCADE"), index=True, nullable=False
+    )
+    created_by_user_id: Mapped[str] = mapped_column(String(36), index=True, nullable=False)
+    artifact_id: Mapped[str] = mapped_column(String(64), unique=True, index=True, nullable=False)
+    shared_with_patient: Mapped[bool] = mapped_column(Boolean, default=False, index=True, nullable=False)
+    period_start: Mapped[date] = mapped_column(Date, nullable=False)
+    period_end: Mapped[date] = mapped_column(Date, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now, nullable=False)
+
+
+class DataRightsRequest(Base):
+    __tablename__ = "data_rights_requests"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    request_id: Mapped[str] = mapped_column(String(36), unique=True, index=True, nullable=False)
+    user_id: Mapped[str] = mapped_column(ForeignKey("users.user_id", ondelete="CASCADE"), index=True, nullable=False)
+    request_type: Mapped[str] = mapped_column(String(24), index=True, nullable=False)
+    status: Mapped[str] = mapped_column(String(24), default="pending", index=True, nullable=False)
+    details: Mapped[str | None] = mapped_column(Text)
+    resolution_note: Mapped[str | None] = mapped_column(Text)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now, nullable=False)
+    completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))

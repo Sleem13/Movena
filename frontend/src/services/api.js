@@ -216,6 +216,52 @@ export async function getPatientProgress(patientId) {
   return (await api.get(`/api/v1/therapist/patients/${patientId}/progress`)).data;
 }
 
+export async function getPatientToday(day) {
+  return (await api.get("/api/v1/patient/today", { params: day ? { day } : {} })).data;
+}
+
+export async function recordPatientAdherence(payload, idempotencyKey = crypto.randomUUID()) {
+  return (await api.post("/api/v1/patient/adherence", payload, { headers: { "Idempotency-Key": idempotencyKey } })).data;
+}
+
+export async function listPatientAppointments() {
+  return (await api.get("/api/v1/patient/appointments")).data;
+}
+
+export async function joinAppointment(appointmentId) {
+  return (await api.get(`/api/v1/scheduling/appointments/${encodeURIComponent(appointmentId)}/join`)).data;
+}
+
+export async function listPatientNotifications() {
+  return (await api.get("/api/v1/patient/notifications")).data;
+}
+
+export async function markPatientNotificationRead(notificationId) {
+  return (await api.post(`/api/v1/patient/notifications/${encodeURIComponent(notificationId)}/read`)).data;
+}
+
+export async function listCatalog() {
+  const [services, packages] = await Promise.all([
+    api.get("/api/v1/catalog/services"), api.get("/api/v1/catalog/packages"),
+  ]);
+  return { services: services.data, packages: packages.data };
+}
+
+export async function startCheckout(payload, idempotencyKey = crypto.randomUUID()) {
+  return (await api.post("/api/v1/checkout", payload, { headers: { "Idempotency-Key": idempotencyKey } })).data;
+}
+
+export async function listTherapistAppointments() {
+  return (await api.get("/api/v1/therapist/appointments")).data;
+}
+
+export async function listTherapistAdherenceAlerts() {
+  return (await api.get("/api/v1/therapist/adherence-alerts")).data;
+}
+export async function listPatientAdherence(patientId, params = {}) {
+  return (await api.get(`/api/v1/therapist/patients/${patientId}/adherence`, { params })).data;
+}
+
 export async function listPatientExercisePlans(patientId) {
   return (await api.get(`/api/v1/therapist/patients/${patientId}/exercise-plans`)).data;
 }
@@ -238,6 +284,7 @@ export async function requestPasswordReset(email) { return (await api.post("/api
 export async function submitPasswordReset(token, newPassword) { return (await api.post("/api/v1/auth/reset-password", { token, new_password: newPassword })).data; }
 
 export async function listManagedUsers(params = {}) { return (await api.get("/api/v1/admin/users", { params })).data; }
+export async function getAdminWorkflow() { return (await api.get("/api/v1/admin/workflow")).data; }
 export async function createManagedUser(payload) { return (await api.post("/api/v1/admin/users", payload)).data; }
 export async function getManagedUser(userId) { return (await api.get(`/api/v1/admin/users/${userId}`)).data; }
 export async function updateManagedUserStatus(userId, status, reason) {

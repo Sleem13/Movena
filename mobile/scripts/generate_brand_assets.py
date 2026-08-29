@@ -22,7 +22,7 @@ def gradient(size: int) -> Image.Image:
     return image
 
 
-def draw_pulse(image: Image.Image, *, inset: int = 0, rounded_tile: bool = False) -> Image.Image:
+def draw_mark(image: Image.Image, *, inset: int = 0, rounded_tile: bool = False) -> Image.Image:
     size = image.width
     layer = Image.new("RGBA", image.size, (0, 0, 0, 0))
     draw = ImageDraw.Draw(layer)
@@ -31,29 +31,41 @@ def draw_pulse(image: Image.Image, *, inset: int = 0, rounded_tile: bool = False
         mask = Image.new("L", tile.size, 0)
         ImageDraw.Draw(mask).rounded_rectangle((0, 0, tile.width - 1, tile.height - 1), radius=tile.width // 4, fill=255)
         layer.paste(tile, (inset, inset), mask)
-    radius = int(size * 0.31)
-    draw.ellipse((size // 2 - radius, size // 2 - radius, size // 2 + radius, size // 2 + radius), outline=(255, 255, 255, 55), width=max(3, size // 32))
-    points = [(0.20, 0.53), (0.34, 0.53), (0.40, 0.36), (0.51, 0.70), (0.59, 0.48), (0.64, 0.59), (0.80, 0.59)]
-    xy = [(round(x * size), round(y * size)) for x, y in points]
+    scale = size / 64
+    pulse = [(12, 47), (22, 47), (25, 40), (30, 51), (35, 36), (39, 44), (52, 44)]
+    pulse_xy = [(round(x * scale), round(y * scale)) for x, y in pulse]
+    movement_segments = [
+        [(18, 31), (24, 26), (31.5, 23.5), (38, 25), (43.3, 29.1)],
+        [(29.5, 24), (33.7, 34.2), (42.5, 40.5)],
+        [(31.7, 29.4), (23.5, 39.2), (16.3, 41.6)],
+    ]
     shadow = Image.new("RGBA", image.size, (0, 0, 0, 0))
-    ImageDraw.Draw(shadow).line(xy, fill=(16, 36, 62, 85), width=max(5, size // 19), joint="curve")
+    shadow_draw = ImageDraw.Draw(shadow)
+    for segment in movement_segments:
+        shadow_draw.line([(round(x * scale), round(y * scale)) for x, y in segment], fill=(16, 36, 62, 85), width=max(5, round(4.8 * scale)), joint="curve")
+    head_box = tuple(round(value * scale) for value in (20.4, 12.4, 29.6, 21.6))
+    shadow_draw.ellipse(head_box, fill=(16, 36, 62, 85))
     shadow = shadow.filter(ImageFilter.GaussianBlur(max(1, size // 128)))
     layer.alpha_composite(shadow)
-    ImageDraw.Draw(layer).line(xy, fill=WHITE, width=max(5, size // 22), joint="curve")
+    draw = ImageDraw.Draw(layer)
+    draw.line(pulse_xy, fill=(255, 255, 255, 225), width=max(3, round(3.4 * scale)), joint="curve")
+    for segment in movement_segments:
+        draw.line([(round(x * scale), round(y * scale)) for x, y in segment], fill=WHITE, width=max(5, round(4.4 * scale)), joint="curve")
+    draw.ellipse(head_box, fill=WHITE)
     return Image.alpha_composite(image.convert("RGBA"), layer)
 
 
 def main() -> None:
     OUTPUT.mkdir(parents=True, exist_ok=True)
-    icon = draw_pulse(gradient(1024))
+    icon = draw_mark(gradient(1024))
     icon.convert("RGB").save(OUTPUT / "icon.png", optimize=True)
 
     adaptive = Image.new("RGBA", (1024, 1024), (0, 0, 0, 0))
-    adaptive = draw_pulse(adaptive)
+    adaptive = draw_mark(adaptive)
     adaptive.save(OUTPUT / "adaptive-icon.png", optimize=True)
 
     splash = Image.new("RGBA", (1024, 1024), (0, 0, 0, 0))
-    splash = draw_pulse(splash, inset=190, rounded_tile=True)
+    splash = draw_mark(splash, inset=190, rounded_tile=True)
     splash.save(OUTPUT / "splash-icon.png", optimize=True)
 
     icon.resize((64, 64), Image.Resampling.LANCZOS).convert("RGB").save(OUTPUT / "favicon.png", optimize=True)

@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta, timezone
 
 from fastapi.testclient import TestClient
-from sqlalchemy import select
+from sqlalchemy import inspect, select, text
 from sqlalchemy.orm import sessionmaker
 
 from app.api.v1 import auth as auth_routes
@@ -10,7 +10,7 @@ from app.core.config import get_settings
 from app.core.security import create_access_token, get_password_hash
 from app.services.auth_token_service import token_hash
 from app.db.database import Base, create_database_engine, get_db, init_db
-from app.db.models import User
+from app.db.models import Notification, User
 from app.main import app
 
 
@@ -118,6 +118,63 @@ def test_resend_and_single_use_password_recovery(tmp_path, monkeypatch):
         app.dependency_overrides.clear()
 
 
+def test_password_recovery_email_failure_notifies_super_admin_without_exposing_token(tmp_path, monkeypatch):
+    client, factory = auth_client(tmp_path)
+
+    def fail_delivery(email, token):
+        raise auth_routes.EmailDeliveryError("SMTP unavailable")
+
+    monkeypatch.setattr(auth_routes, "send_password_reset_email", fail_delivery)
+    try:
+        db = factory()
+        db.add_all([
+            User(
+                user_id="root-admin", username="root-admin", email="root@example.com",
+                password_hash=get_password_hash("StrongPassword123"), role="super_admin",
+                is_verified=True, is_active=True, account_status="active",
+            ),
+            User(
+                user_id="recovery-user", username="recovery-user", email="recover@example.com",
+                password_hash=get_password_hash("StrongPassword123"), role="patient",
+                is_verified=True, is_active=True, account_status="active",
+            ),
+        ])
+        db.commit()
+        db.close()
+
+        response = client.post("/api/v1/auth/forgot-password", json={"email": "recover@example.com"})
+        missing = client.post("/api/v1/auth/forgot-password", json={"email": "missing@example.com"})
+        assert response.status_code == missing.status_code == 200
+        assert response.json()["message"] == missing.json()["message"]
+
+        db = factory()
+        user = db.scalar(select(User).where(User.user_id == "recovery-user"))
+        alerts = db.scalars(select(Notification).where(
+            Notification.user_id == "root-admin",
+            Notification.kind == "password_reset_email_failed",
+        )).all()
+        assert user.reset_password_token_hash is None
+        assert user.reset_password_expires is None
+        assert user.reset_password_sent_at is not None
+        assert len(alerts) == 1
+        assert alerts[0].action_url == "/admin/users/recovery-user"
+        assert "recover@example.com" in alerts[0].body
+        assert "token" not in alerts[0].body.lower()
+        assert alerts[0].email_required is False
+        db.close()
+
+        repeated = client.post("/api/v1/auth/forgot-password", json={"email": "recover@example.com"})
+        assert repeated.status_code == 200
+        db = factory()
+        assert len(db.scalars(select(Notification).where(
+            Notification.user_id == "root-admin",
+            Notification.kind == "password_reset_email_failed",
+        )).all()) == 1
+        db.close()
+    finally:
+        app.dependency_overrides.clear()
+
+
 def test_unverified_legacy_user_has_full_access_when_verification_is_disabled(tmp_path, monkeypatch):
     monkeypatch.setenv("REQUIRE_EMAIL_VERIFICATION", "false")
     get_settings.cache_clear()
@@ -183,3 +240,27 @@ def test_compatibility_migration_assigns_unique_legacy_usernames(tmp_path):
 
     db = factory(); legacy = db.scalar(select(User).where(User.user_id == "legacy")); db.close()
     assert legacy.username == "person-2"
+
+
+def test_compatibility_migration_adds_rehabilitation_phase_columns(tmp_path):
+    database_path = tmp_path / "legacy-rehabilitation.db"
+    engine = create_database_engine(f"sqlite:///{database_path.as_posix()}")
+    with engine.begin() as connection:
+        connection.execute(text("CREATE TABLE analysis_sessions (id INTEGER PRIMARY KEY)"))
+        connection.execute(text("CREATE TABLE exercise_plan_items (id INTEGER PRIMARY KEY)"))
+        connection.execute(text("CREATE TABLE adherence_entries (id INTEGER PRIMARY KEY)"))
+
+    init_db(engine)
+    init_db(engine)
+
+    inspector = inspect(engine)
+    assert {"plan_item_id"} <= {
+        column["name"] for column in inspector.get_columns("analysis_sessions")
+    }
+    assert {
+        "rest_interval_seconds", "tempo", "target_rom_degrees", "target_score",
+        "requires_ai_analysis", "status",
+    } <= {column["name"] for column in inspector.get_columns("exercise_plan_items")}
+    assert {"fatigue", "analysis_session_id"} <= {
+        column["name"] for column in inspector.get_columns("adherence_entries")
+    }

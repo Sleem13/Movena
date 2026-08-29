@@ -1,5 +1,8 @@
 # PhysioVision AI
 
+**AI-Assisted Rehabilitation Platform**<br>
+*Move Better · Recover Faster · Live Healthier*
+
 PhysioVision AI is a video-based exercise coaching platform. It combines pose estimation, exercise-specific biomechanics rules, repetition tracking, temporal exercise recognition, annotated video, reports, session history, therapist-facing views, a React web client, and an Expo Android application.
 
 The product supports movement review and coaching conversations. It does not diagnose conditions, prescribe treatment, or replace a licensed physiotherapist.
@@ -187,6 +190,18 @@ python scripts/train_exercise_pose_gru.py
 
 Generated artifacts belong under `models/recognition/` with metadata, class labels, metrics, dataset provenance, and promotion status.
 
+## Rehabilitation workflow
+
+The authenticated product now treats PhysioVision as the movement-intelligence engine inside a therapist-prescribed rehabilitation workflow. Phase 1 includes a patient Today dashboard on web and Expo, immutable plan replacement/history, scheduled exercise dosage, pain/difficulty/fatigue check-ins, patient comments, therapist outcome review, and an ownership-validated link from saved analysis sessions to assigned plan items. Direct analysis and session-history routes remain supported.
+
+Apply schema changes with Alembic before starting an existing environment:
+
+```powershell
+.\.venv\Scripts\python.exe -m alembic upgrade head
+```
+
+The Phase 1 migration is reversible to revision `0003_data_rights` for validation on a disposable database. Production rollback still requires a reviewed backup/restore decision because clinical records must not be discarded casually. See [Phase 0 + Phase 1 checklist](docs/phase_0_1_implementation_checklist.md).
+
 ## Testing
 
 Backend and model tests:
@@ -265,6 +280,8 @@ Only SHA-256 token hashes are stored. Tokens expire, are invalidated after use, 
 - Do not promote a model only from training accuracy; record held-out per-class precision, recall, F1, confusion matrix, and confidence calibration.
 
 See [dataset strategy](docs/dataset_strategy.md), [recognition model card](docs/exercise_pose_recognition_model_card.md), and [adoption plan](docs/exercise_coaching_adoption_plan.md).
+
+The integrated patient-care, scheduling, Daily, Paymob, privacy, and release status is tracked in the [care-platform launch gate](docs/care_platform_launch_gate.md). It deliberately keeps production and real-patient use blocked until the external security, provider, device, clinical, and legal evidence is complete.
 
 ## Safety and privacy
 

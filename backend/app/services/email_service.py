@@ -58,3 +58,12 @@ def send_password_reset_email(email: str, token: str, settings: Settings | None 
         f"Reset your password by opening this single-use, time-limited link:\n\n{link}\n\nIf you did not request this, ignore this email.",
         active,
     )
+
+
+def send_care_notification_email(
+    email: str, subject: str, body: str, action_url: str | None = None,
+    settings: Settings | None = None,
+) -> None:
+    active = settings or get_settings()
+    action = f"\n\nOpen PhysioVision: {active.frontend_url}{action_url}" if action_url else ""
+    _send(email, subject, f"{body}{action}\n\nDo not reply with medical information by email.", active)

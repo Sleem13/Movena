@@ -1,9 +1,79 @@
-import {fireEvent,render,screen} from "@testing-library/react";import{vi,it,expect}from"vitest";
-const auth=vi.hoisted(()=>({login:vi.fn(),register:vi.fn(),logout:vi.fn(),user:null}));
-vi.mock("../context/AuthContext.jsx",()=>({useAuth:()=>auth}));
-import Login from "./Login.jsx";import Register from "./Register.jsx";import{Navbar}from"../components/layout/AppShell.jsx";import{LocaleProvider}from"../i18n/LocaleContext.jsx";
-it("renders login with administrator-managed account recovery",()=>{render(<Login/>);expect(screen.getByRole("heading",{name:"Log in to PhysioVision"})).toBeInTheDocument();expect(screen.getByText(/only enter information you are authorized to process/i)).toBeInTheDocument();expect(screen.getByText(/temporarily managed by your super administrator/i)).toBeInTheDocument();expect(screen.queryByRole("button",{name:"Resend verification"})).not.toBeInTheDocument();});
-it("reports an unreachable login server instead of invalid credentials",async()=>{auth.login.mockRejectedValueOnce(new Error("Network Error"));render(<Login/>);fireEvent.change(screen.getByLabelText("Username or email"),{target:{value:"admin"}});fireEvent.change(screen.getByLabelText("Password"),{target:{value:"Password"}});fireEvent.click(screen.getByRole("button",{name:"Log in"}));expect(await screen.findByText(/cannot reach the login server/i)).toBeInTheDocument();});
-it("requires a full name and unique login username during registration",()=>{render(<Register/>);expect(screen.getByRole("heading",{name:"Create your account"})).toBeInTheDocument();expect(screen.getByLabelText("Display name")).toBeRequired();expect(screen.getByLabelText(/Username/)).toBeRequired();expect(screen.getByText(/use this username to log in/i)).toBeInTheDocument();expect(screen.queryByText("admin")).not.toBeInTheDocument();});
-it("toggles password visibility in login and registration",()=>{const{unmount}=render(<Login/>);const loginPassword=screen.getByLabelText("Password");expect(loginPassword).toHaveAttribute("type","password");fireEvent.click(screen.getByRole("button",{name:"Show password"}));expect(loginPassword).toHaveAttribute("type","text");unmount();render(<Register/>);const registerPassword=screen.getByLabelText("Password");fireEvent.click(screen.getByRole("button",{name:"Show password"}));expect(registerPassword).toHaveAttribute("type","text");});
-it("hides therapist navigation for patient role",()=>{render(<LocaleProvider><Navbar currentPage="home" hasReport={false} onNavigate={vi.fn()} user={{role:"patient"}}/></LocaleProvider>);expect(screen.queryByRole("button",{name:"Therapist"})).not.toBeInTheDocument();});
+import { fireEvent, render, screen } from "@testing-library/react";
+import { vi, it, expect } from "vitest";
+const auth = vi.hoisted(() => ({
+  login: vi.fn(),
+  register: vi.fn(),
+  logout: vi.fn(),
+  user: null,
+}));
+vi.mock("../context/AuthContext.jsx", () => ({ useAuth: () => auth }));
+import Login from "./Login.jsx";
+import Register from "./Register.jsx";
+import { Navbar } from "../components/layout/AppShell.jsx";
+import { LocaleProvider } from "../i18n/LocaleContext.jsx";
+it("opens password recovery from login", () => {
+  const onForgotPassword = vi.fn();
+  render(<Login onForgotPassword={onForgotPassword} />);
+  expect(
+    screen.getByRole("heading", { name: "Log in to PhysioVision" }),
+  ).toBeInTheDocument();
+  expect(
+    screen.getByText(/only enter information you are authorized to process/i),
+  ).toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: "Forgot password?" }));
+  expect(onForgotPassword).toHaveBeenCalledOnce();
+  expect(
+    screen.queryByRole("button", { name: "Resend verification" }),
+  ).not.toBeInTheDocument();
+});
+it("reports an unreachable login server instead of invalid credentials", async () => {
+  auth.login.mockRejectedValueOnce(new Error("Network Error"));
+  render(<Login />);
+  fireEvent.change(screen.getByLabelText("Username or email"), {
+    target: { value: "admin" },
+  });
+  fireEvent.change(screen.getByLabelText("Password"), {
+    target: { value: "Password" },
+  });
+  fireEvent.click(screen.getByRole("button", { name: "Log in" }));
+  expect(
+    await screen.findByText(/cannot reach the login server/i),
+  ).toBeInTheDocument();
+});
+it("requires a full name and unique login username during registration", () => {
+  render(<Register />);
+  expect(
+    screen.getByRole("heading", { name: "Create your account" }),
+  ).toBeInTheDocument();
+  expect(screen.getByLabelText("Display name")).toBeRequired();
+  expect(screen.getByLabelText(/Username/)).toBeRequired();
+  expect(screen.getByText(/use this username to log in/i)).toBeInTheDocument();
+  expect(screen.queryByText("admin")).not.toBeInTheDocument();
+});
+it("toggles password visibility in login and registration", () => {
+  const { unmount } = render(<Login />);
+  const loginPassword = screen.getByLabelText("Password");
+  expect(loginPassword).toHaveAttribute("type", "password");
+  fireEvent.click(screen.getByRole("button", { name: "Show password" }));
+  expect(loginPassword).toHaveAttribute("type", "text");
+  unmount();
+  render(<Register />);
+  const registerPassword = screen.getByLabelText("Password");
+  fireEvent.click(screen.getByRole("button", { name: "Show password" }));
+  expect(registerPassword).toHaveAttribute("type", "text");
+});
+it("hides therapist navigation for patient role", () => {
+  render(
+    <LocaleProvider>
+      <Navbar
+        currentPage="home"
+        hasReport={false}
+        onNavigate={vi.fn()}
+        user={{ role: "patient" }}
+      />
+    </LocaleProvider>,
+  );
+  expect(
+    screen.queryByRole("button", { name: "Therapist" }),
+  ).not.toBeInTheDocument();
+});

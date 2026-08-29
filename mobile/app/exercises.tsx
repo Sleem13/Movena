@@ -20,8 +20,8 @@ export default function ExerciseLibraryScreen() {
   useFocusEffect(useCallback(() => { analysis.setVideo(null); analysis.setResult(null); }, [analysis]));
   const visibleItems = useMemo(() => filter === "available" ? items.filter((item) => item.supported_in_app) : items, [filter, items]);
   const open = (item: ExerciseMetadata) => { analysis.setExercise(item); router.push({ pathname: "/exercise/[id]", params: { id: item.exercise_id } }); };
-  return <AppShell active="exercises">
-    <BrandHeader title="Exercise library" subtitle="Choose a movement or let PhysioVision identify it from video." />
+  return <AppShell active="coach">
+    <BrandHeader title="Exercise library" subtitle="Explore supported exercises or open a PhysioVision movement check." />
     <Pressable accessibilityRole="button" onPress={() => router.push("/identify")} style={({ pressed }) => [styles.identify, pressed && styles.pressed]}><View style={styles.identifyIcon}><Ionicons name="scan-outline" size={25} color={colors.primary} /></View><View style={styles.flex}><Text style={styles.identifyTitle}>Not sure which exercise?</Text><Text style={styles.identifyText}>Identify it from a short video</Text></View><Ionicons name="chevron-forward" size={20} color={colors.primary} /></Pressable>
     {sessionMessage ? <ErrorState message={sessionMessage} action={<PrimaryButton title="Dismiss" onPress={clearSessionMessage} secondary />} /> : null}
     <View style={styles.segment}><Pressable onPress={() => setFilter("available")} style={[styles.segmentButton, filter === "available" && styles.segmentSelected]}><Text style={[styles.segmentText, filter === "available" && styles.segmentTextSelected]}>Available</Text></Pressable><Pressable onPress={() => setFilter("all")} style={[styles.segmentButton, filter === "all" && styles.segmentSelected]}><Text style={[styles.segmentText, filter === "all" && styles.segmentTextSelected]}>All exercises</Text></Pressable></View>

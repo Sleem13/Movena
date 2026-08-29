@@ -1,4 +1,5 @@
 import os
+import logging
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, status
@@ -25,20 +26,30 @@ from app.api.routes.analysis_jobs import router as analysis_jobs_router
 from app.api.v1.therapist import router as therapist_router
 from app.api.v1.auth import router as auth_router
 from app.api.v1.admin import router as admin_router
+from app.api.v1.patient import router as patient_router
+from app.api.v1.scheduling import router as scheduling_router
+from app.api.v1.catalog import router as catalog_router
+from app.api.v1.commerce import router as commerce_router
+from app.api.v1.admin_platform import router as admin_platform_router
+from app.api.v1.therapist_care import router as therapist_care_router
 from app.api.dependencies.auth import AuthError
 from app.core.config import get_settings
 from app.core.cors import cors_middleware_options
 from app.services.artifact_service import ensure_artifact_directories
 from app.services.exercise_recognition_service import initialize_active_recognition_models
-from app.db.database import init_db
+from app.db.database import init_db, verify_production_schema
 from app.core.logging_config import configure_logging
 from app.schemas.analysis_schema import ErrorResponse
 
 configure_logging()
+logger = logging.getLogger(__name__)
 settings = get_settings()
 settings.validate_deployment_safety()
 ensure_artifact_directories()
-init_db()
+if settings.app_env == "production":
+    verify_production_schema()
+else:
+    init_db()
 if settings.enable_exercise_recognition:
     initialize_active_recognition_models(
         settings,
@@ -115,7 +126,11 @@ async def validation_exception_handler(_request, exc: RequestValidationError) ->
 
 
 @app.exception_handler(SQLAlchemyError)
-async def database_exception_handler(_request, _exc: SQLAlchemyError) -> JSONResponse:
+async def database_exception_handler(_request, exc: SQLAlchemyError) -> JSONResponse:
+    logger.error(
+        "Database request failed",
+        exc_info=(type(exc), exc, exc.__traceback__),
+    )
     payload = ErrorResponse(
         error_code="DATABASE_UNAVAILABLE",
         message="The database is temporarily unavailable.",
@@ -153,6 +168,12 @@ app.include_router(realtime_coaching_router)
 app.include_router(analysis_jobs_router)
 app.include_router(auth_router)
 app.include_router(admin_router)
+app.include_router(patient_router)
+app.include_router(scheduling_router)
+app.include_router(catalog_router)
+app.include_router(commerce_router)
+app.include_router(admin_platform_router)
+app.include_router(therapist_care_router)
 if settings.enable_session_history:
     app.include_router(sessions_router)
 if settings.enable_therapist_dashboard:

@@ -6,13 +6,13 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { colors } from "@/src/config/theme";
 
-export type MainTab = "home" | "analyze" | "exercises" | "history" | "more";
+export type MainTab = "today" | "coach" | "progress" | "appointments" | "more";
 
-const tabs: { key: MainTab; label: string; icon: keyof typeof Ionicons.glyphMap; route: "/" | "/identify" | "/exercises" | "/history" | "/more" }[] = [
-  { key: "home", label: "Home", icon: "home-outline", route: "/" },
-  { key: "analyze", label: "Analyze", icon: "scan-outline", route: "/identify" },
-  { key: "exercises", label: "Exercises", icon: "fitness-outline", route: "/exercises" },
-  { key: "history", label: "History", icon: "time-outline", route: "/history" },
+const tabs: { key: MainTab; label: string; icon: keyof typeof Ionicons.glyphMap; route: "/today" | "/identify" | "/history" | "/appointments" | "/more" }[] = [
+  { key: "today", label: "Today", icon: "calendar-outline", route: "/today" },
+  { key: "coach", label: "Coach", icon: "scan-outline", route: "/identify" },
+  { key: "progress", label: "Progress", icon: "trending-up-outline", route: "/history" },
+  { key: "appointments", label: "Appointments", icon: "videocam-outline", route: "/appointments" },
   { key: "more", label: "More", icon: "ellipsis-horizontal-circle-outline", route: "/more" },
 ];
 
@@ -28,7 +28,7 @@ export function BrandHeader({ title, subtitle }: { title?: string; subtitle?: st
   const router = useRouter();
   return <View style={styles.header}>
     <View style={styles.brandRow}>
-      <View style={styles.brand}><Image source={require("../../assets/images/icon.png")} style={styles.logo} /><Text style={styles.brandName}>PhysioVision AI</Text></View>
+      <View style={styles.brand} accessibilityRole="image" accessibilityLabel="PhysioVision AI, AI-Assisted Rehabilitation Platform"><Image source={require("../../assets/images/brand-wordmark.png")} style={styles.wordmark} resizeMode="contain" /></View>
       <Pressable accessibilityRole="button" accessibilityLabel="Open profile" onPress={() => router.push("/profile")} style={({ pressed }) => [styles.profile, pressed && styles.pressed]}>
         <Ionicons name="person-outline" size={22} color={colors.text} />
       </Pressable>
@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
   shell: { flex: 1, backgroundColor: colors.background }, scroll: { flex: 1 }, scrollContent: { paddingBottom: 26 },
   content: { flexGrow: 1, paddingHorizontal: 20, paddingTop: 14, gap: 18 },
   header: { gap: 8 }, brandRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 8 },
-  brand: { flexDirection: "row", alignItems: "center", gap: 10 }, logo: { width: 38, height: 38, borderRadius: 11 }, brandName: { color: colors.text, fontSize: 18, fontWeight: "800" },
+  brand: { flex: 1, alignItems: "flex-start", justifyContent: "center" }, wordmark: { width: 230, height: 77 },
   profile: { width: 44, height: 44, borderRadius: 22, borderWidth: 1, borderColor: colors.border, alignItems: "center", justifyContent: "center", backgroundColor: colors.card },
   pageTitle: { color: colors.text, fontSize: 32, lineHeight: 38, fontWeight: "800", letterSpacing: -0.6 }, subtitle: { color: colors.muted, fontSize: 15, lineHeight: 22, maxWidth: 520 },
   nav: { minHeight: 76, paddingBottom: 8, paddingTop: 7, paddingHorizontal: 6, borderTopWidth: 1, borderTopColor: colors.border, backgroundColor: colors.card, flexDirection: "row", alignItems: "center", justifyContent: "space-around" },

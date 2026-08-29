@@ -208,6 +208,26 @@ button, a, input, select, textarea, label {
   box-shadow: var(--panel-shadow);
 }
 
+.patient-care-primary > :nth-child(1) { order: 1; }
+.patient-care-primary > :nth-child(2) { order: 3; }
+.patient-care-primary > :nth-child(3) { order: 2; }
+.patient-care-primary > .surface-card { min-width: 0; max-width: 100%; }
+.patient-care-primary .overflow-x-auto { max-width: 100%; }
+
+@media (max-width: 639px) {
+  .patient-care-primary table {
+    min-width: 100% !important;
+    table-layout: fixed;
+    font-size: 0.6875rem;
+  }
+
+  .patient-care-primary th,
+  .patient-care-primary td {
+    padding-inline: 0.35rem;
+    overflow-wrap: anywhere;
+  }
+}
+
 .hero-grid {
   background:
     linear-gradient(to bottom, transparent 76%, rgba(241, 246, 255, 0.92)),

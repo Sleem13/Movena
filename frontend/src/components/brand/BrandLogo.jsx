@@ -1,17 +1,21 @@
-export default function BrandLogo({ compact = false, className = "", markClassName = "" }) {
-  return (
-    <span className={`inline-flex min-w-0 items-center gap-3 ${className}`}>
+export default function BrandLogo({ compact = false, className = "", markClassName = "", imageClassName = "" }) {
+  if (compact) return (
+    <span className={`relative inline-block h-12 w-12 shrink-0 overflow-hidden rounded-[13px] shadow-[0_8px_20px_rgba(37,99,235,0.18)] ${markClassName} ${className}`}>
       <img
-        src="/favicon.svg"
+        src="/brand-wordmark.png"
         alt=""
         aria-hidden="true"
-        className={`h-11 w-11 shrink-0 rounded-[13px] shadow-[0_8px_20px_rgba(37,99,235,0.18)] ${markClassName}`}
+        className="absolute left-[-7px] top-[-10px] h-[68px] max-w-none"
       />
-      {compact ? null : (
-        <span className="truncate text-[20px] font-extrabold tracking-[-0.04em] text-clinical-ink">
-          PhysioVision AI
-        </span>
-      )}
+    </span>
+  );
+  return (
+    <span className={`inline-flex min-w-0 items-center rounded-xl px-1.5 py-1 shadow-sm ${className}`} style={{ backgroundColor: "#ffffff" }}>
+      <img
+        src="/brand-wordmark.png"
+        alt="PhysioVision AI — AI-Assisted Rehabilitation Platform. Move Better, Recover Faster, Live Healthier."
+        className={`h-auto w-[210px] max-w-full object-contain ${imageClassName}`}
+      />
     </span>
   );
 }

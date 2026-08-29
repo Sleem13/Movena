@@ -1,5 +1,5 @@
 import { Linking, StyleSheet, Text, View } from "react-native";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { absoluteApiUrl } from "@/src/api/client";
 import { Body, Card, EmptyState, Heading, PrimaryButton, SafetyNotice, Screen, StatusBadge, Title } from "@/src/components/UI";
 import { ResultSection } from "@/src/components/ResultSection";
@@ -19,6 +19,7 @@ const percent = (value?: number | null) => value == null ? "Not available" : `${
 
 export default function ResultScreen() {
   const router = useRouter();
+  const { planItemId, scheduledDate } = useLocalSearchParams<{ planItemId?: string; scheduledDate?: string }>();
   const { result, exercise, setResult, setVideo } = useAnalysis();
   if (!result) return <Screen><EmptyState title="No analysis result" message="Choose a supported exercise and upload a video first." /><PrimaryButton title="Exercise Library" onPress={() => router.replace("/exercises")} /></Screen>;
 
@@ -27,7 +28,7 @@ export default function ResultScreen() {
   const retry = () => {
     setResult(null);
     const id = exercise?.exercise_id || result.exercise_id || result.exercise;
-    router.replace({ pathname: "/upload/[id]", params: { id } });
+    router.replace({ pathname: "/upload/[id]", params: { id, ...(planItemId ? { planItemId, scheduledDate: scheduledDate || "" } : {}) } });
   };
   const restart = () => { setResult(null); setVideo(null); router.replace("/exercises"); };
 
@@ -66,6 +67,7 @@ export default function ResultScreen() {
     {result.ml_prediction && <Card tone="warning"><Heading>Experimental ML status</Heading><Body>{mlStatusMessage(result.ml_prediction)}</Body></Card>}
     {reportUrl && <PrimaryButton title="Open PDF report" onPress={() => Linking.openURL(reportUrl)} secondary />}
     {overlayUrl && <PrimaryButton title="Open annotated video" onPress={() => Linking.openURL(overlayUrl)} secondary />}
+    {planItemId && result.session_id ? <PrimaryButton title="Continue exercise check-in" onPress={() => router.replace({ pathname: "/today", params: { planItemId, scheduledDate: scheduledDate || "", analysisSessionId: result.session_id || "" } } as never)} /> : null}
     <PrimaryButton title="Known Limitations" onPress={() => router.push("/limitations")} secondary />
     <PrimaryButton title="Analyze another exercise" onPress={restart} />
     <SafetyNotice />

@@ -114,6 +114,17 @@ class Settings(BaseModel):
     email_verification_expire_minutes: int = 24 * 60
     password_reset_expire_minutes: int = 30
     auth_email_resend_cooldown_seconds: int = 60
+    enable_telemedicine: bool = False
+    daily_api_key: str = ""
+    daily_domain: str = ""
+    enable_payments: bool = False
+    paymob_api_key: str = ""
+    paymob_integration_id: str = ""
+    paymob_iframe_id: str = ""
+    paymob_hmac_secret: str = ""
+    cancellation_window_hours: int = 24
+    high_pain_threshold: int = 7
+    pain_increase_threshold: int = 3
 
     @classmethod
     def from_environment(cls) -> "Settings":
@@ -176,6 +187,17 @@ class Settings(BaseModel):
             email_verification_expire_minutes=int(os.getenv("EMAIL_VERIFICATION_EXPIRE_MINUTES", str(24 * 60))),
             password_reset_expire_minutes=int(os.getenv("PASSWORD_RESET_EXPIRE_MINUTES", "30")),
             auth_email_resend_cooldown_seconds=int(os.getenv("AUTH_EMAIL_RESEND_COOLDOWN_SECONDS", "60")),
+            enable_telemedicine=_bool("ENABLE_TELEMEDICINE", False),
+            daily_api_key=os.getenv("DAILY_API_KEY", "").strip(),
+            daily_domain=os.getenv("DAILY_DOMAIN", "").strip().removeprefix("https://").rstrip("/"),
+            enable_payments=_bool("ENABLE_PAYMENTS", False),
+            paymob_api_key=os.getenv("PAYMOB_API_KEY", "").strip(),
+            paymob_integration_id=os.getenv("PAYMOB_INTEGRATION_ID", "").strip(),
+            paymob_iframe_id=os.getenv("PAYMOB_IFRAME_ID", "").strip(),
+            paymob_hmac_secret=os.getenv("PAYMOB_HMAC_SECRET", "").strip(),
+            cancellation_window_hours=int(os.getenv("CANCELLATION_WINDOW_HOURS", "24")),
+            high_pain_threshold=int(os.getenv("HIGH_PAIN_THRESHOLD", "7")),
+            pain_increase_threshold=int(os.getenv("PAIN_INCREASE_THRESHOLD", "3")),
         )
 
     @property
@@ -191,6 +213,8 @@ class Settings(BaseModel):
             "public_demo_mode": self.enable_public_demo_mode,
             "auth_required_for_analysis": self.require_auth_for_analysis,
             "email_verification": self.require_email_verification,
+            "telemedicine": self.enable_telemedicine,
+            "payments": self.enable_payments,
         }
 
     @property
@@ -228,6 +252,13 @@ class Settings(BaseModel):
                 issues.append("SMTP delivery requires SMTP_HOST and a valid EMAIL_FROM")
             if not self.frontend_url.startswith("https://"):
                 issues.append("FRONTEND_URL must use HTTPS for verification and password-reset links")
+        if self.enable_telemedicine and (not self.daily_api_key or not self.daily_domain):
+            issues.append("ENABLE_TELEMEDICINE requires DAILY_API_KEY and DAILY_DOMAIN")
+        if self.enable_payments and not all((
+            self.paymob_api_key, self.paymob_integration_id,
+            self.paymob_iframe_id, self.paymob_hmac_secret,
+        )):
+            issues.append("ENABLE_PAYMENTS requires all Paymob server credentials")
         if issues:
             raise RuntimeError("Unsafe deployment configuration: " + "; ".join(issues))
 

@@ -11,11 +11,12 @@ from sqlalchemy import func, or_, select
 from sqlalchemy.orm import Session
 
 from app.api.dependencies.auth import require_super_admin
+from app.api.error_responses import api_error_response
 from app.core.security import get_password_hash
 from app.core.authorization import permissions_json_for_role
 from app.db.crud import to_summary
 from app.db.database import get_db
-from app.db.models import AnalysisSession, AuditLog, User, UserConsent, utc_now
+from app.db.models import AnalysisSession, AuditLog, PatientProfile, User, UserConsent, utc_now
 from app.schemas.admin_schema import (
     AccountActionResponse,
     AccountRoleUpdate,
@@ -26,7 +27,6 @@ from app.schemas.admin_schema import (
     ManagedUserSummary,
 )
 from app.schemas.auth_schema import UserRole
-from app.schemas.error_schema import ErrorResponse
 
 router = APIRouter(
     prefix="/api/v1/admin/users",
@@ -36,7 +36,7 @@ router = APIRouter(
 
 
 def error(code: str, message: str, status_code: int) -> JSONResponse:
-    return JSONResponse(status_code=status_code, content=ErrorResponse(error_code=code, message=message).model_dump())
+    return api_error_response(code, message, status_code)
 
 
 def find_user(db: Session, user_id: str) -> User | None:
@@ -115,6 +115,12 @@ def create_user(data: AdminUserCreate, actor: User = Depends(require_super_admin
         account_status="active",
     )
     db.add(target)
+    if target.role == UserRole.patient.value:
+        db.add(PatientProfile(
+            patient_id=str(uuid4()), user_id=target.user_id,
+            display_name=target.full_name or target.username or "Patient",
+            preferred_locale="ar", timezone_name="Africa/Cairo",
+        ))
     audit(db, actor, "user.created", target, {"username": target.username, "email": target.email, "role": target.role})
     db.commit()
     db.refresh(target)
