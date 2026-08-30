@@ -1,15 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="45 65 510 510" role="img" aria-label="PhysioVision AI">
+  <!-- Reuse the exact mark from the official wordmark so browser and page branding stay identical. -->
   <defs>
-    <linearGradient id="brand" x1="8" y1="8" x2="56" y2="56" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#2563EB" />
-      <stop offset="1" stop-color="#0F8F83" />
-    </linearGradient>
-    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#10243E" flood-opacity=".22" />
-    </filter>
+    <clipPath id="brand-mark-crop">
+      <rect x="45" y="65" width="510" height="510" />
+    </clipPath>
   </defs>
-  <rect width="64" height="64" rx="17" fill="url(#brand)" />
-  <path d="M12 47h10l3-7 5 11 5-15 4 8h13" fill="none" stroke="#FFFFFF" stroke-opacity=".88" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" />
-  <circle cx="25" cy="17" r="4.6" fill="#FFFFFF" filter="url(#shadow)" />
-  <path d="M18 31c4.5-5 9-7.5 13.5-7.5 4.8 0 7.8 2 11.8 5.6M29.5 24l4.2 10.2 8.8 6.3M31.7 29.4l-8.2 9.8-7.2 2.4" fill="none" stroke="#FFFFFF" stroke-width="4.4" stroke-linecap="round" stroke-linejoin="round" filter="url(#shadow)" />
+  <image href="/brand-wordmark.png" width="2000" height="702" preserveAspectRatio="xMinYMin meet" clip-path="url(#brand-mark-crop)" />
 </svg>
