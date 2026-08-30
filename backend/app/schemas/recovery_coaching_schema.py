@@ -79,3 +79,20 @@ class CoachingActionPlanCreate(BaseModel):
 
 class CoachingActionPlanUpdate(BaseModel):
     status: Literal["active", "completed", "paused", "cancelled"]
+
+
+class CoachingFollowUpAcknowledge(BaseModel):
+    disposition: Literal[
+        "contacted_patient", "scheduled_clinical_review",
+        "escalated_urgent_pathway", "reviewed_no_additional_action",
+    ]
+    note: str | None = Field(default=None, max_length=600)
+    clinician_attestation: Literal[True]
+
+
+class CoachingReminderPreferenceUpdate(BaseModel):
+    enabled: bool
+    local_time: str = Field(pattern=r"^(?:[01]\d|2[0-3]):[0-5]\d$")
+    cadence: Literal["daily", "weekdays"]
+    missed_follow_up_days: int = Field(ge=1, le=14)
+    patient_agreed: Literal[True]

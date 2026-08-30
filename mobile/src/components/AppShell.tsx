@@ -5,6 +5,7 @@ import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { colors } from "@/src/config/theme";
+import { BRAND } from "@/src/config/brand";
 
 export type MainTab = "today" | "coach" | "progress" | "appointments" | "more";
 
@@ -28,7 +29,7 @@ export function BrandHeader({ title, subtitle }: { title?: string; subtitle?: st
   const router = useRouter();
   return <View style={styles.header}>
     <View style={styles.brandRow}>
-      <View style={styles.brand} accessibilityRole="image" accessibilityLabel="PhysioVision AI, AI-Assisted Rehabilitation Platform"><Image source={require("../../assets/images/brand-wordmark.png")} style={styles.wordmark} resizeMode="contain" /></View>
+      <View style={styles.brand} accessibilityRole="image" accessibilityLabel={BRAND.accessibilityLabel}><Image source={BRAND.assets.wordmark} style={styles.wordmark} resizeMode="contain" /></View>
       <Pressable accessibilityRole="button" accessibilityLabel="Open profile" onPress={() => router.push("/profile")} style={({ pressed }) => [styles.profile, pressed && styles.pressed]}>
         <Ionicons name="person-outline" size={22} color={colors.text} />
       </Pressable>

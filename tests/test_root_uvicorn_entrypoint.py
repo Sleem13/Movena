@@ -46,6 +46,8 @@ def test_render_staging_starts_without_optional_ml_runtimes(tmp_path):
                 "EMAIL_FROM": "no-reply@example.com",
                 "SMTP_HOST": "smtp.example.com",
                 "FRONTEND_URL": "https://app.example.com",
+                "CLINICAL_ORGANIZATION_NAME": "Example Rehabilitation Organization",
+                "CLINICAL_ESCALATION_CONTACT": "+20-000-000-0000",
         }
     )
     script = """

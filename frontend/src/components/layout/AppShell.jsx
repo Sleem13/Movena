@@ -458,6 +458,9 @@ function WorkspaceTopbar({ user, onNavigate, onOpenMenu }) {
   useEffect(() => {
     if (!menuOpen) return undefined;
     function close(event) {
+      const insidePortaledSelect =
+        event.type === "pointerdown" && event.target?.closest?.(".select-menu");
+      if (insidePortaledSelect) return;
       if (
         event.key === "Escape" ||
         (event.type === "pointerdown" &&

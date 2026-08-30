@@ -50,6 +50,14 @@ The application is not an emergency-response system and does not guarantee real-
 
 Goal, check-in, action-plan, and update events are written to the audit log. Escalating check-ins also create therapist notifications. Access enforcement occurs on the API; the UI is not the security boundary.
 
+Clinical follow-up remains pending until an assigned clinical user acknowledges it with an attested disposition. Urgent records cannot be closed as "no additional action." The acknowledgement is immutable, audited, and visible to the patient. Organizations must define their escalation organization and contact before staging or production startup, and must establish their own review expectations without presenting the service as real-time monitoring.
+
+Patients may explicitly opt in to approximate daily or weekday reminders. The periodic notification worker sends one deduplicated patient reminder per due day and, after the configured number of missed days, one routine therapist follow-up per week. Disabling reminders does not disable symptom alerts created by a submitted check-in.
+
+The trend workspace charts longitudinal sleep, confidence, stress, energy, and activity reflections. Informal 1-5 coaching ratings are labeled non-diagnostic and are not mixed with, scored as, or represented as validated patient-reported outcome measures (PROMs). Validated instruments require a separate licensed/approved implementation, scoring contract, provenance, and clinical interpretation workflow.
+
+Five therapist-reviewed behavior-goal templates cover general rehabilitation adherence, orthopedic participation, neurologic support, persistent-symptom pacing, and sleep routine. Templates never prescribe exercise selection, dosage, postoperative progression, or treatment changes, and the patient must choose or explicitly accept the resulting goal.
+
 ## API
 
 All endpoints are under `/api/v1/recovery-coaching` and require an authenticated patient or clinical role.
@@ -57,9 +65,12 @@ All endpoints are under `/api/v1/recovery-coaching` and require an authenticated
 | Method | Endpoint | Purpose |
 |---|---|---|
 | `GET` | `/dashboard` | Patient-scoped summary, goals, check-ins, action plans, and safety copy |
+| `GET` | `/templates` | Read bounded behavior-goal templates and clinical-review rules |
 | `POST` | `/goals` | Create a patient-agreed SMART goal |
 | `PATCH` | `/goals/{goal_id}` | Update progress and lifecycle status |
 | `POST` | `/check-ins` | Record a reflection and compute the deterministic coaching state |
+| `POST` | `/check-ins/{check_in_id}/acknowledge` | Clinician attestation and immutable follow-up disposition |
+| `PUT` | `/reminder-preference` | Save patient-agreed reminder and missed-follow-up preferences |
 | `POST` | `/action-plans` | Create a therapist-reviewed, patient-agreed action plan |
 | `PATCH` | `/action-plans/{action_plan_id}` | Update action-plan status |
 
@@ -67,11 +78,13 @@ Clinical roles pass `patient_id` as a query parameter. Patient accounts are alwa
 
 ## Persistence and deployment
 
-Migration `0005_recovery_coaching` creates `recovery_coaching_goals`, `recovery_coaching_check_ins`, and `recovery_coaching_action_plans`. Apply it before deploying:
+Migration `0005_recovery_coaching` creates the coaching records. Migration `0006_coaching_follow_up` adds reminder preferences and clinical acknowledgement fields. Apply all revisions before deploying:
 
 ```powershell
 .\.venv\Scripts\python.exe -m alembic upgrade head
 ```
+
+Run `scripts/process_notifications.py` on a recurring worker schedule to enqueue due reminders and routine missed-check-in follow-ups. Worker execution frequency affects delivery latency and must not be described as a guaranteed response time.
 
 Treat coaching entries as health-related patient records under the platform’s retention, privacy, export, deletion, backup, and incident-response policies. Do not place patient narratives in model telemetry or public client configuration.
 

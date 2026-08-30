@@ -4,14 +4,15 @@ const mocks = vi.hoisted(() => {
   const get = vi.fn();
   const post = vi.fn();
   const patch = vi.fn();
+  const put = vi.fn();
   const del = vi.fn();
   const use = vi.fn();
   return {
     get,
     post,
-    patch,
+    patch, put,
     use,
-    create: vi.fn(() => ({ get, post, patch, delete: del, interceptors: { request: { use } } })),
+    create: vi.fn(() => ({ get, post, patch, put, delete: del, interceptors: { request: { use } } })),
   };
 });
 
@@ -25,7 +26,10 @@ import {
   getAdminWorkflow,
   getRehabRlGovernance,
   getRecoveryCoachingDashboard,
+  getRecoveryCoachingTemplates,
   createRecoveryCoachingCheckIn,
+  acknowledgeRecoveryCoachingCheckIn,
+  updateRecoveryCoachingReminderPreference,
   listPatientAdherence,
   listSavedSessions,
   recognizeExerciseVideo,
@@ -92,8 +96,12 @@ describe("deployment API configuration", () => {
   it("scopes recovery coaching records to the selected patient", async () => {
     mocks.get.mockResolvedValue({ data: { goals: [] } });
     mocks.post.mockResolvedValue({ data: { coaching_state: "ready" } });
+    mocks.put.mockResolvedValue({ data: { enabled: true } });
     await getRecoveryCoachingDashboard("patient-1");
+    await getRecoveryCoachingTemplates();
     await createRecoveryCoachingCheckIn({ energy: 3 }, "patient-1");
+    await acknowledgeRecoveryCoachingCheckIn("check-in-1", { clinician_attestation: true }, "patient-1");
+    await updateRecoveryCoachingReminderPreference({ enabled: true }, "patient-1");
     expect(mocks.get).toHaveBeenCalledWith(
       "/api/v1/recovery-coaching/dashboard",
       { params: { patient_id: "patient-1" } },
@@ -101,6 +109,17 @@ describe("deployment API configuration", () => {
     expect(mocks.post).toHaveBeenCalledWith(
       "/api/v1/recovery-coaching/check-ins",
       { energy: 3 },
+      { params: { patient_id: "patient-1" } },
+    );
+    expect(mocks.get).toHaveBeenCalledWith("/api/v1/recovery-coaching/templates");
+    expect(mocks.post).toHaveBeenCalledWith(
+      "/api/v1/recovery-coaching/check-ins/check-in-1/acknowledge",
+      { clinician_attestation: true },
+      { params: { patient_id: "patient-1" } },
+    );
+    expect(mocks.put).toHaveBeenCalledWith(
+      "/api/v1/recovery-coaching/reminder-preference",
+      { enabled: true },
       { params: { patient_id: "patient-1" } },
     );
   });

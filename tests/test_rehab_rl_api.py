@@ -89,6 +89,11 @@ def test_therapist_can_assess_simulate_and_read_library(tmp_path):
         assert governance_payload["decisions"] == 1
         assert governance_payload["safety_holds"] == 0
         assert governance_payload["modes"]["rehabrl_policy"] == 1
+        assert governance_payload["policy_decisions"] == 1
+        assert governance_payload["abstentions"] == 0
+        assert governance_payload["abstention_rate"] == 0.0
+        assert governance_payload["monitoring"]["automatic_promotion"] is False
+        assert governance_payload["monitoring"]["clinical_approval_required"] is True
         assert governance_payload["audit"]["enabled"] is True
         assert governance_payload["recent"][0]["decision_id"] == assessment.json()["decision_audit_id"]
 
@@ -163,6 +168,8 @@ def test_safety_gate_withholds_policy_and_refers_when_red_flag_present(tmp_path)
         assert governance.status_code == 200
         assert governance.json()["safety_holds"] == 1
         assert governance.json()["referrals"] == 1
+        assert governance.json()["abstentions"] == 1
+        assert governance.json()["abstention_rate"] == 1.0
     finally:
         app.dependency_overrides.clear()
 

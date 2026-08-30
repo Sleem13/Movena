@@ -46,6 +46,8 @@ def test_vercel_staging_origin_passes_authenticated_upload_preflight():
         smtp_host="smtp.example.com",
         email_from="no-reply@example.com",
         frontend_url="https://app.example.com",
+        clinical_organization_name="Example Rehabilitation Organization",
+        clinical_escalation_contact="+20-000-000-0000",
     )
     settings.validate_deployment_safety()
 

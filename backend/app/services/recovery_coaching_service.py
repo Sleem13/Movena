@@ -12,10 +12,12 @@ from sqlalchemy.orm import Session
 from app.core.config import get_settings
 from app.db.models import (
     PatientProfile, RecoveryCoachingActionPlan, RecoveryCoachingCheckIn,
-    RecoveryCoachingGoal, TherapistPatientAssignment, User,
+    RecoveryCoachingGoal, RecoveryCoachingReminderPreference,
+    TherapistPatientAssignment, User, utc_now,
 )
 from app.schemas.recovery_coaching_schema import (
-    CoachingActionPlanCreate, CoachingCheckInCreate, CoachingGoalCreate,
+    CoachingActionPlanCreate, CoachingCheckInCreate, CoachingFollowUpAcknowledge,
+    CoachingGoalCreate, CoachingReminderPreferenceUpdate,
 )
 from app.services.care_service import audit_event, create_notification, patient_for_user, user_can_access_patient
 
@@ -23,6 +25,54 @@ from app.services.care_service import audit_event, create_notification, patient_
 COACHING_DISCLAIMER = (
     "Recovery coaching supports self-directed habits and accountability. It does not provide diagnosis, "
     "psychotherapy, nutrition or medication advice, emergency counseling, or autonomous exercise prescription."
+)
+
+COACHING_TEMPLATES = (
+    {
+        "template_id": "general-routine-consistency",
+        "pathway": "General rehabilitation",
+        "domain": "adherence",
+        "title": "Build a consistent rehabilitation routine",
+        "specific_action": "Complete the clinician-approved rehabilitation routine at the agreed time on planned days.",
+        "measurement": "Record whether the agreed routine was completed on each planned day.",
+        "why_important": "Make the rehabilitation plan easier to follow consistently.",
+    },
+    {
+        "template_id": "orthopedic-participation",
+        "pathway": "Orthopedic recovery",
+        "domain": "participation",
+        "title": "Return to one meaningful daily activity",
+        "specific_action": "Practice one patient-selected daily activity within the clinician-agreed precautions and limits.",
+        "measurement": "Record completion and confidence without changing the prescribed dosage.",
+        "why_important": "Reconnect rehabilitation progress with a meaningful life role.",
+    },
+    {
+        "template_id": "neurologic-support-routine",
+        "pathway": "Neurologic rehabilitation",
+        "domain": "social_support",
+        "title": "Use agreed support for home practice",
+        "specific_action": "Arrange the agreed support person or accessibility setup before clinician-approved home practice.",
+        "measurement": "Record whether the support setup was available on planned practice days.",
+        "why_important": "Reduce access barriers while preserving safety and independence.",
+    },
+    {
+        "template_id": "persistent-symptom-pacing",
+        "pathway": "Persistent symptom management",
+        "domain": "activity",
+        "title": "Use a consistent activity window",
+        "specific_action": "Use the clinician-agreed activity window and pause for clinical review if symptoms change or worsen.",
+        "measurement": "Record completion and the main barrier; do not self-progress treatment dosage.",
+        "why_important": "Support a predictable routine without using coaching to modify treatment.",
+    },
+    {
+        "template_id": "sleep-routine",
+        "pathway": "Recovery routine",
+        "domain": "sleep_routine",
+        "title": "Create a consistent wind-down routine",
+        "specific_action": "Begin the patient-selected non-clinical wind-down routine at a consistent time.",
+        "measurement": "Record routine completion and perceived sleep quality at the next check-in.",
+        "why_important": "Support recovery habits without treating or diagnosing a sleep disorder.",
+    },
 )
 
 
@@ -66,6 +116,8 @@ def check_in_payload(row: RecoveryCoachingCheckIn) -> dict:
         "barrier_note": row.barrier_note, "symptoms_changed": row.symptoms_changed,
         "urgent_concern": row.urgent_concern, "coaching_state": row.coaching_state,
         "supportive_prompt": row.supportive_prompt, "created_at": row.created_at,
+        "reviewed_at": row.reviewed_at, "reviewed_by_user_id": row.reviewed_by_user_id,
+        "review_disposition": row.review_disposition, "review_note": row.review_note,
     }
 
 
@@ -76,6 +128,20 @@ def action_plan_payload(row: RecoveryCoachingActionPlan) -> dict:
         "frequency": row.frequency, "support_needed": row.support_needed,
         "review_date": row.review_date, "patient_agreed": row.patient_agreed,
         "status": row.status, "created_at": row.created_at, "updated_at": row.updated_at,
+    }
+
+
+def reminder_preference_payload(row: RecoveryCoachingReminderPreference | None) -> dict:
+    if row is None:
+        return {
+            "preference_id": None, "enabled": False, "local_time": "19:00",
+            "cadence": "daily", "missed_follow_up_days": 3, "patient_agreed": False,
+        }
+    return {
+        "preference_id": row.preference_id, "enabled": row.enabled,
+        "local_time": row.local_time, "cadence": row.cadence,
+        "missed_follow_up_days": row.missed_follow_up_days,
+        "patient_agreed": row.patient_agreed, "updated_at": row.updated_at,
     }
 
 
@@ -90,18 +156,26 @@ def dashboard(db: Session, patient: PatientProfile) -> dict:
     plans = db.scalars(select(RecoveryCoachingActionPlan).where(
         RecoveryCoachingActionPlan.patient_id == patient.patient_id,
     ).order_by(RecoveryCoachingActionPlan.review_date.desc())).all()
+    reminder_preference = db.scalar(select(RecoveryCoachingReminderPreference).where(
+        RecoveryCoachingReminderPreference.patient_id == patient.patient_id,
+    ))
     settings = get_settings()
     return {
         "patient": {"patient_id": patient.patient_id, "display_name": patient.display_name},
         "goals": [goal_payload(row) for row in goals],
         "check_ins": [check_in_payload(row) for row in check_ins],
         "action_plans": [action_plan_payload(row) for row in plans],
+        "reminder_preference": reminder_preference_payload(reminder_preference),
+        "trends": [check_in_payload(row) for row in reversed(check_ins)],
         "summary": {
             "active_goals": sum(row.status == "active" for row in goals),
             "completed_goals": sum(row.status == "completed" for row in goals),
             "check_ins_30d": len(check_ins),
             "average_confidence": round(mean(row.recovery_confidence for row in check_ins), 1) if check_ins else None,
             "follow_up_needed": sum(row.coaching_state != "ready" for row in check_ins),
+            "unacknowledged_follow_up": sum(
+                row.coaching_state != "ready" and row.reviewed_at is None for row in check_ins
+            ),
         },
         "scope": {
             "disclaimer": COACHING_DISCLAIMER,
@@ -109,6 +183,10 @@ def dashboard(db: Session, patient: PatientProfile) -> dict:
             "urgent_instruction": settings.clinical_escalation_instruction,
             "urgent_contact": settings.clinical_escalation_contact,
             "organization": settings.clinical_organization_name,
+            "escalation_configured": bool(settings.clinical_escalation_contact.strip()),
+            "monitoring_statement": "Check-ins are not monitored in real time and do not guarantee a response within a specific period.",
+            "review_expectation": "Clinical teams must follow their organization-defined review and escalation policy.",
+            "informal_ratings_separate_from_proms": True,
         },
     }
 
@@ -199,3 +277,71 @@ def create_action_plan(db: Session, actor: User, patient: PatientProfile, data: 
     })
     db.commit(); db.refresh(row)
     return action_plan_payload(row)
+
+
+def acknowledge_follow_up(
+    db: Session, actor: User, patient: PatientProfile,
+    row: RecoveryCoachingCheckIn, data: CoachingFollowUpAcknowledge,
+) -> dict:
+    if actor.role == "patient":
+        raise PermissionError("CLINICIAN_REVIEW_REQUIRED")
+    if row.coaching_state == "ready":
+        raise ValueError("FOLLOW_UP_NOT_REQUIRED")
+    if row.reviewed_at is not None:
+        raise ValueError("FOLLOW_UP_ALREADY_ACKNOWLEDGED")
+    if row.coaching_state == "urgent_escalation" and data.disposition == "reviewed_no_additional_action":
+        raise ValueError("URGENT_DISPOSITION_REQUIRED")
+    row.reviewed_at = utc_now()
+    row.reviewed_by_user_id = actor.user_id
+    row.review_disposition = data.disposition
+    row.review_note = data.note
+    audit_event(
+        db, actor.user_id, "recovery_coaching.follow_up_acknowledged",
+        "recovery_coaching_check_in", row.check_in_id,
+        {
+            "patient_id": patient.patient_id,
+            "coaching_state": row.coaching_state,
+            "disposition": data.disposition,
+            "clinician_attestation": True,
+        },
+    )
+    if patient.user_id:
+        create_notification(
+            db, patient.user_id, "recovery_coaching_reviewed",
+            "Recovery check-in reviewed",
+            "Your care team reviewed the recovery check-in that required follow-up.",
+            action_url="/recovery-coaching",
+            dedup_key=f"recovery-checkin-reviewed:{row.check_in_id}",
+        )
+    db.commit(); db.refresh(row)
+    return check_in_payload(row)
+
+
+def update_reminder_preference(
+    db: Session, actor: User, patient: PatientProfile,
+    data: CoachingReminderPreferenceUpdate,
+) -> dict:
+    row = db.scalar(select(RecoveryCoachingReminderPreference).where(
+        RecoveryCoachingReminderPreference.patient_id == patient.patient_id,
+    ))
+    created = row is None
+    if row is None:
+        row = RecoveryCoachingReminderPreference(
+            preference_id=str(uuid4()), patient_id=patient.patient_id,
+            created_by_user_id=actor.user_id,
+        )
+        db.add(row)
+    for key, value in data.model_dump().items():
+        setattr(row, key, value)
+    audit_event(
+        db, actor.user_id,
+        f"recovery_coaching.reminder_preference_{'created' if created else 'updated'}",
+        "recovery_coaching_reminder_preference", row.preference_id,
+        {
+            "patient_id": patient.patient_id, "enabled": row.enabled,
+            "cadence": row.cadence, "missed_follow_up_days": row.missed_follow_up_days,
+            "patient_agreed": True,
+        },
+    )
+    db.commit(); db.refresh(row)
+    return reminder_preference_payload(row)

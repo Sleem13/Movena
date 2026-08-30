@@ -96,6 +96,16 @@ def test_production_requires_clinical_escalation_configuration():
         settings.validate_deployment_safety()
 
 
+def test_staging_requires_clinical_escalation_configuration():
+    settings = safe_staging_settings(
+        clinical_organization_name="Your organization",
+        clinical_escalation_contact="",
+    )
+
+    with pytest.raises(RuntimeError, match="clinical escalation organization and contact"):
+        settings.validate_deployment_safety()
+
+
 def test_unsafe_staging_config_rejects_default_secret_and_http_cors():
     settings = safe_staging_settings(
         secret_key="change-me-in-production",

@@ -167,6 +167,34 @@ function TrajectoryChart({ rows }) {
   );
 }
 
+function MLOpsMonitoring({ governance }) {
+  if (!governance?.monitoring) return null;
+  const monitoring = governance.monitoring;
+  const topConditions = Object.entries(governance.conditions || {}).slice(0, 5);
+  return (
+    <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <p className="text-xs font-bold uppercase tracking-[0.12em] text-purple-700">MLOps monitoring</p>
+          <h2 className="mt-1 font-bold text-[#071b4a]">Coverage, abstention, and release controls</h2>
+          <p className="mt-1 text-sm text-slate-500">Observed decision-support usage is separated from performance claims that require labeled outcomes.</p>
+        </div>
+        <span className="rounded-full bg-purple-50 px-3 py-1.5 text-xs font-bold text-purple-700">Automatic promotion disabled</span>
+      </div>
+      <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-3">
+        <div className="rounded-xl bg-slate-50 p-3"><dt className="text-xs text-slate-500">Policy decisions</dt><dd className="mt-1 text-xl font-bold text-slate-800">{governance.policy_decisions}</dd></div>
+        <div className="rounded-xl bg-slate-50 p-3"><dt className="text-xs text-slate-500">Abstentions / protocol-only</dt><dd className="mt-1 text-xl font-bold text-slate-800">{governance.abstentions}</dd></div>
+        <div className="rounded-xl bg-slate-50 p-3"><dt className="text-xs text-slate-500">Abstention rate</dt><dd className="mt-1 text-xl font-bold text-slate-800">{Math.round(governance.abstention_rate * 100)}%</dd></div>
+      </dl>
+      <div className="mt-4 grid gap-4 lg:grid-cols-2">
+        <div className="rounded-xl border border-slate-200 p-4"><h3 className="text-sm font-bold text-slate-800">Decision coverage by condition</h3>{topConditions.length ? <ul className="mt-3 space-y-2 text-xs text-slate-600">{topConditions.map(([condition, count]) => <li key={condition} className="flex justify-between gap-3"><span>{condition.replaceAll("_", " ")}</span><strong>{count}</strong></li>)}</ul> : <p className="mt-3 text-xs text-slate-500">No decisions in this window.</p>}</div>
+        <div className="rounded-xl border border-amber-200 bg-amber-50 p-4"><h3 className="text-sm font-bold text-amber-900">Evidence limits</h3><ul className="mt-3 list-disc space-y-2 ps-5 text-xs leading-5 text-amber-950"><li>Drift: {monitoring.drift_status.replaceAll("_", " ")}.</li><li>Subgroups: {monitoring.subgroup_monitoring_status.replaceAll("_", " ")}.</li><li>Performance: {monitoring.performance_breakdown_status.replaceAll("_", " ")}.</li></ul></div>
+      </div>
+      <p className="mt-4 text-xs font-semibold text-slate-600">Rollback: {monitoring.rollback_control}. Clinical approval required before release.</p>
+    </section>
+  );
+}
+
 function OverviewTab({ data, manifest, governance, loading, error, onSelectTab }) {
   if (loading) return <Loading label="Loading policy overview" />;
   if (error) return <ErrorNotice message={error} />;
@@ -196,6 +224,7 @@ function OverviewTab({ data, manifest, governance, loading, error, onSelectTab }
       </section>
       {manifest ? <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><div className="flex flex-wrap items-start justify-between gap-3"><div><p className="text-xs font-bold uppercase tracking-[0.12em] text-blue-700">Model governance</p><h2 className="mt-1 font-bold text-[#071b4a]">Immutable inference contract</h2><p className="mt-1 text-sm text-slate-500">Only the checkpoint's versioned 12-label state space can reach policy inference.</p></div><span className={`rounded-full px-3 py-1.5 text-xs font-bold ${manifest.checkpoint.compatible ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-700"}`}>{manifest.checkpoint.compatible ? "Contract compatible" : "Inference disabled"}</span></div><dl className="mt-4 grid gap-3 text-sm sm:grid-cols-3"><div className="rounded-xl bg-slate-50 p-3"><dt className="text-xs text-slate-500">Contract</dt><dd className="mt-1 font-bold text-slate-800">{manifest.contract.version}</dd></div><div className="rounded-xl bg-slate-50 p-3"><dt className="text-xs text-slate-500">Dimensions</dt><dd className="mt-1 font-bold text-slate-800">{manifest.contract.state_dim} states · {manifest.contract.action_dim} actions</dd></div><div className="rounded-xl bg-slate-50 p-3"><dt className="text-xs text-slate-500">Fingerprint</dt><dd className="mt-1 truncate font-mono text-xs font-bold text-slate-800" title={manifest.contract.sha256}>{manifest.contract.sha256.slice(0, 16)}…</dd></div></dl></section> : null}
       {governance ? <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><div className="flex flex-wrap items-start justify-between gap-3"><div><p className="text-xs font-bold uppercase tracking-[0.12em] text-teal-700">Clinical governance</p><h2 className="mt-1 font-bold text-[#071b4a]">Traceable decision support</h2><p className="mt-1 text-sm text-slate-500">Privacy-minimized decision events support safety review and lifecycle monitoring.</p></div><span className="rounded-full bg-emerald-100 px-3 py-1.5 text-xs font-bold text-emerald-700">Audit logging active</span></div><dl className="mt-4 grid gap-3 text-sm sm:grid-cols-3"><div className="rounded-xl bg-slate-50 p-3"><dt className="text-xs text-slate-500">Decisions · {governance.window_days} days</dt><dd className="mt-1 text-xl font-bold text-slate-800">{governance.decisions}</dd></div><div className="rounded-xl bg-slate-50 p-3"><dt className="text-xs text-slate-500">Safety holds</dt><dd className="mt-1 text-xl font-bold text-slate-800">{governance.safety_holds}</dd></div><div className="rounded-xl bg-slate-50 p-3"><dt className="text-xs text-slate-500">Referral holds</dt><dd className="mt-1 text-xl font-bold text-slate-800">{governance.referrals}</dd></div></dl><div className={`mt-4 rounded-xl border p-4 ${governance.escalation.configured ? "border-emerald-100 bg-emerald-50" : "border-amber-100 bg-amber-50"}`}><p className={`text-xs font-bold uppercase tracking-wide ${governance.escalation.configured ? "text-emerald-800" : "text-amber-900"}`}>{governance.escalation.configured ? "Escalation contact configured" : "Escalation contact requires configuration"}</p><p className="mt-1 text-sm leading-6 text-slate-700">{governance.escalation.instruction}</p>{governance.escalation.contact ? <p className="mt-1 text-sm font-bold text-slate-800">{governance.escalation.organization}: {governance.escalation.contact}</p> : null}</div><p className="mt-3 text-xs leading-5 text-slate-500">{governance.audit.privacy_profile}.</p></section> : null}
+      <MLOpsMonitoring governance={governance} />
     </div>
   );
 }

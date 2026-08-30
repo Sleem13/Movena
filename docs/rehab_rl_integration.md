@@ -87,6 +87,8 @@ model-contract fingerprint. It intentionally excludes patient identifiers,
 free text, and raw clinical measurements. Therapists see their own rolling
 governance metrics; super administrators see the platform-wide aggregate.
 
+The governance view reports policy decisions, abstentions, abstention rate, condition coverage, and model-contract versions. It deliberately reports drift and outcome performance as not evaluable until labeled reference/outcome data exists. Camera-angle and device breakdowns belong to the vision-model pipeline and are not fabricated for RehabRL decisions; patient-subgroup fields are not collected in privacy-minimized decision events. Model promotion remains manual, requires clinical approval records, and retains the validated super-admin rollback control.
+
 Deployment-specific escalation guidance is configured with
 `CLINICAL_ORGANIZATION_NAME`, `CLINICAL_ESCALATION_CONTACT`, and
 `CLINICAL_ESCALATION_INSTRUCTION`. An unconfigured contact is visibly flagged
@@ -125,8 +127,8 @@ Sign in as a therapist, admin, or super administrator and open
 The integration was verified on 2026-08-30 with:
 
 - Original RehabRL focused suite: 17 passed.
-- Complete PhysioVision backend suite: 305 passed.
-- PhysioVision frontend suite: 134 passed.
+- Complete PhysioVision backend suite: 315 passed.
+- PhysioVision frontend suite: 144 passed.
 - Vite production build: passed; RehabRL is emitted as a lazy-loaded chunk.
 - Repository-root and staging startup without optional ML runtimes: passed.
 - CPU/container-layout check: NumPy trained policy loaded successfully.

@@ -174,6 +174,10 @@ export async function getRecoveryCoachingDashboard(patientId) {
   return (await api.get("/api/v1/recovery-coaching/dashboard", recoveryCoachingConfig(patientId))).data;
 }
 
+export async function getRecoveryCoachingTemplates() {
+  return (await api.get("/api/v1/recovery-coaching/templates")).data;
+}
+
 export async function createRecoveryCoachingGoal(payload, patientId) {
   return (await api.post("/api/v1/recovery-coaching/goals", payload, recoveryCoachingConfig(patientId))).data;
 }
@@ -188,6 +192,22 @@ export async function createRecoveryCoachingActionPlan(payload, patientId) {
 
 export async function updateRecoveryCoachingGoal(goalId, payload, patientId) {
   return (await api.patch(`/api/v1/recovery-coaching/goals/${encodeURIComponent(goalId)}`, payload, recoveryCoachingConfig(patientId))).data;
+}
+
+export async function acknowledgeRecoveryCoachingCheckIn(checkInId, payload, patientId) {
+  return (await api.post(
+    `/api/v1/recovery-coaching/check-ins/${encodeURIComponent(checkInId)}/acknowledge`,
+    payload,
+    recoveryCoachingConfig(patientId),
+  )).data;
+}
+
+export async function updateRecoveryCoachingReminderPreference(payload, patientId) {
+  return (await api.put(
+    "/api/v1/recovery-coaching/reminder-preference",
+    payload,
+    recoveryCoachingConfig(patientId),
+  )).data;
 }
 
 export async function getRehabRlInspector() {

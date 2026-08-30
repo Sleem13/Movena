@@ -354,6 +354,10 @@ class RecoveryCoachingCheckIn(Base):
     urgent_concern: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     coaching_state: Mapped[str] = mapped_column(String(24), index=True, nullable=False)
     supportive_prompt: Mapped[str] = mapped_column(Text, nullable=False)
+    reviewed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), index=True)
+    reviewed_by_user_id: Mapped[str | None] = mapped_column(String(36), index=True)
+    review_disposition: Mapped[str | None] = mapped_column(String(40), index=True)
+    review_note: Mapped[str | None] = mapped_column(Text)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now, nullable=False)
 
 
@@ -375,6 +379,30 @@ class RecoveryCoachingActionPlan(Base):
     review_date: Mapped[date] = mapped_column(Date, index=True, nullable=False)
     patient_agreed: Mapped[bool] = mapped_column(Boolean, nullable=False)
     status: Mapped[str] = mapped_column(String(24), default="active", index=True, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now, nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=utc_now, onupdate=utc_now, nullable=False
+    )
+
+
+class RecoveryCoachingReminderPreference(Base):
+    __tablename__ = "recovery_coaching_reminder_preferences"
+    __table_args__ = (
+        UniqueConstraint("patient_id", name="uq_recovery_coaching_reminder_patient"),
+        CheckConstraint("missed_follow_up_days >= 1 AND missed_follow_up_days <= 14", name="ck_coaching_missed_follow_up_days"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    preference_id: Mapped[str] = mapped_column(String(36), unique=True, index=True, nullable=False)
+    patient_id: Mapped[str] = mapped_column(
+        ForeignKey("patient_profiles.patient_id", ondelete="CASCADE"), index=True, nullable=False
+    )
+    enabled: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    local_time: Mapped[str] = mapped_column(String(5), default="19:00", nullable=False)
+    cadence: Mapped[str] = mapped_column(String(16), default="daily", nullable=False)
+    missed_follow_up_days: Mapped[int] = mapped_column(Integer, default=3, nullable=False)
+    patient_agreed: Mapped[bool] = mapped_column(Boolean, nullable=False)
+    created_by_user_id: Mapped[str] = mapped_column(String(36), index=True, nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now, nullable=False)
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=utc_now, onupdate=utc_now, nullable=False

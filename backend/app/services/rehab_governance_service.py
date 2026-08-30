@@ -70,6 +70,8 @@ def rehab_governance_summary(db: Session, actor: User, days: int = 30) -> dict:
 
     readiness: Counter[str] = Counter()
     modes: Counter[str] = Counter()
+    conditions: Counter[str] = Counter()
+    contract_versions: Counter[str] = Counter()
     recent = []
     for row in rows:
         try:
@@ -78,6 +80,8 @@ def rehab_governance_summary(db: Session, actor: User, days: int = 30) -> dict:
             metadata = {}
         readiness[str(metadata.get("treatment_readiness") or "unknown")] += 1
         modes[str(metadata.get("mode") or "unknown")] += 1
+        conditions[str(metadata.get("condition_id") or "unknown")] += 1
+        contract_versions[str(metadata.get("model_contract_version") or "unknown")] += 1
         if len(recent) < 10:
             recent.append({
                 "decision_id": row.resource_id,
@@ -88,6 +92,8 @@ def rehab_governance_summary(db: Session, actor: User, days: int = 30) -> dict:
             })
 
     settings = get_settings()
+    policy_decisions = modes.get("rehabrl_policy", 0)
+    abstentions = len(rows) - policy_decisions
     return {
         "scope": scope,
         "window_days": days,
@@ -95,6 +101,11 @@ def rehab_governance_summary(db: Session, actor: User, days: int = 30) -> dict:
         "safety_holds": sum(count for key, count in readiness.items() if key != "ready"),
         "referrals": readiness.get("hold_and_refer", 0),
         "modes": dict(sorted(modes.items())),
+        "conditions": dict(conditions.most_common()),
+        "contract_versions": dict(sorted(contract_versions.items())),
+        "policy_decisions": policy_decisions,
+        "abstentions": abstentions,
+        "abstention_rate": round(abstentions / len(rows), 4) if rows else 0.0,
         "readiness": dict(sorted(readiness.items())),
         "last_decision_at": rows[0].created_at if rows else None,
         "recent": recent,
@@ -108,5 +119,14 @@ def rehab_governance_summary(db: Session, actor: User, days: int = 30) -> dict:
             "organization": settings.clinical_organization_name,
             "contact": settings.clinical_escalation_contact,
             "instruction": settings.clinical_escalation_instruction,
+        },
+        "monitoring": {
+            "drift_status": "not_evaluable_without_labeled_reference_data",
+            "performance_breakdown_status": "requires_outcome_labels_and_reviewed_metadata",
+            "subgroup_monitoring_status": "not_collected_in_privacy_minimized_decision_events",
+            "camera_device_monitoring_status": "not_applicable_to_rehabrl_decisions",
+            "automatic_promotion": False,
+            "clinical_approval_required": True,
+            "rollback_control": "Super-admin checkpoint restore with compatibility validation",
         },
     }

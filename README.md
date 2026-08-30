@@ -31,6 +31,7 @@ The integrated RehabRL workspace provides therapist-reviewed recommendation cand
 - Temporal GRU and XGBoost exercise-recognition candidates.
 - Protected RehabRL workspace for stage-aware recommendation review, synthetic recovery simulation, and policy exercise exploration.
 - Protected Recovery & Lifestyle Coaching workspace for patient-chosen SMART goals, non-diagnostic check-ins, therapist-reviewed action plans, and hard safety escalation.
+- Cross-platform approved branding assets, optimized responsive wordmarks, Apple/PWA icons, and centralized web/mobile brand configuration.
 
 ## Supported exercises
 
@@ -212,7 +213,9 @@ The Phase 1 migration is reversible to revision `0003_data_rights` for validatio
 
 ### Recovery & Lifestyle Coaching
 
-Authenticated patients and assigned clinical users can open `/recovery-coaching`. Patients can create explicitly agreed SMART goals, record non-diagnostic daily reflections, identify barriers, and track progress. Therapists can review assigned patients and create patient-agreed action plans. New or worsening symptoms require clinical follow-up; an immediate concern pauses coaching, displays the organization-configured urgent pathway, creates a therapist notification, and records an audit event. Coaching never changes a prescription autonomously and does not provide diagnosis, psychotherapy, nutrition prescribing, or emergency care. See the [clinical and technical guide](docs/recovery_lifestyle_coaching.md).
+Authenticated patients and assigned clinical users can open `/recovery-coaching`. Patients can create explicitly agreed SMART goals, record non-diagnostic daily reflections, view longitudinal recovery trends, and opt in to reminders. Therapists can use bounded pathway templates, create patient-agreed action plans, and attest to symptom/urgent follow-up review. New or worsening symptoms require clinical follow-up; an immediate concern pauses coaching, displays the organization-configured urgent pathway, creates a therapist notification, and records an audit event. Informal coaching ratings remain separate from validated PROMs. Coaching never changes a prescription autonomously and does not provide diagnosis, psychotherapy, nutrition prescribing, or emergency care. See the [clinical and technical guide](docs/recovery_lifestyle_coaching.md).
+
+Brand generation, asset sizes, mobile safe-zone handling, and release checks are documented in the [branding system guide](docs/branding_system.md).
 
 ### RehabRL decision support
 
@@ -223,7 +226,7 @@ Authenticated therapists, administrators, and super administrators can open `/re
 - A searchable 26-condition clinical protocol catalog with red flags, precautions, phase goals, treatment options, progression criteria, and outcome measures.
 - A mandatory clinician safety gate that withholds model/treatment output for unscreened, unattested, postoperative-order-incomplete, or red-flag-positive cases.
 - A versioned MLOps model manifest with a SHA-256 contract fingerprint, checkpoint compatibility, intended-use limits, and release-monitoring requirements.
-- Privacy-minimized decision audit IDs, rolling safety-hold metrics, and organization-configurable escalation guidance.
+- Privacy-minimized decision audit IDs, rolling safety-hold/abstention metrics, condition and contract coverage, and organization-configurable escalation guidance.
 - Synthetic recovery trajectories for model evaluation.
 - The policy's prescription exercise library.
 - Super-admin-only model inspection, checkpoint restore, and training controls.

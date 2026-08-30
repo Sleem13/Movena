@@ -250,11 +250,11 @@ class Settings(BaseModel):
             issues.append("ENABLE_PUBLIC_DEMO_MODE must be false")
         if self.app_env == "production" and not self.database_url.startswith(("postgresql://", "postgresql+psycopg://", "postgres://")):
             issues.append("production DATABASE_URL must use PostgreSQL")
-        if self.app_env == "production" and (
+        if self.app_env in DEPLOYMENT_ENVIRONMENTS and (
             not self.clinical_escalation_contact.strip()
             or self.clinical_organization_name.strip().lower() == "your organization"
         ):
-            issues.append("production clinical escalation organization and contact must be configured")
+            issues.append("staging/production clinical escalation organization and contact must be configured")
         if not self.enable_subject_continuity_guard:
             issues.append("ENABLE_SUBJECT_CONTINUITY_GUARD must be true")
         if self.app_env == "production" and self.require_email_verification and self.email_delivery_mode != "smtp":
