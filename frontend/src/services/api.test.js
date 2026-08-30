@@ -23,6 +23,7 @@ import {
   artifactUrl,
   getTherapistDashboard,
   getAdminWorkflow,
+  getRehabRlGovernance,
   listPatientAdherence,
   listSavedSessions,
   recognizeExerciseVideo,
@@ -78,6 +79,12 @@ describe("deployment API configuration", () => {
     mocks.get.mockResolvedValue({ data: { stages: [] } });
     await getAdminWorkflow();
     expect(mocks.get).toHaveBeenCalledWith("/api/v1/admin/workflow");
+  });
+
+  it("loads the bounded RehabRL governance window", async () => {
+    mocks.get.mockResolvedValue({ data: { decisions: 0 } });
+    await getRehabRlGovernance(90);
+    expect(mocks.get).toHaveBeenCalledWith("/api/v1/rehab-rl/governance?days=90");
   });
 
   it("loads assignment-scoped patient adherence for therapist review", async () => {

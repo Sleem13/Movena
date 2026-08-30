@@ -12,7 +12,19 @@ class TrainingRequest(BaseModel):
     use_mhealth: bool = False
 
 
+class ClinicalSafetyScreen(BaseModel):
+    """Clinician attestation required before decision-support output is exposed."""
+
+    red_flags_reviewed: bool = False
+    red_flags_present: bool = False
+    precautions_reviewed: bool = False
+    postoperative: bool = False
+    procedure_orders_confirmed: bool = False
+    clinician_attestation: bool = False
+
+
 class AssessmentRequest(BaseModel):
+    condition_id: str | None = None
     injury_type: str = "ACL Tear"
     recovery_stage: int = Field(default=1, ge=0, le=4)
     injury_severity: float = Field(default=0.7, ge=0, le=1)
@@ -22,6 +34,7 @@ class AssessmentRequest(BaseModel):
     movement_quality: float = Field(default=0.55, ge=0, le=1)
     fatigue: float = Field(default=0.3, ge=0, le=1)
     adherence: float = Field(default=0.85, ge=0, le=1)
+    safety_screen: ClinicalSafetyScreen = Field(default_factory=ClinicalSafetyScreen)
 
 
 class SimulationRequest(BaseModel):

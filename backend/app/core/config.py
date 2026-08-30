@@ -125,6 +125,9 @@ class Settings(BaseModel):
     cancellation_window_hours: int = 24
     high_pain_threshold: int = 7
     pain_increase_threshold: int = 3
+    clinical_organization_name: str = "Your organization"
+    clinical_escalation_contact: str = ""
+    clinical_escalation_instruction: str = "Follow your organization's urgent or emergency referral pathway."
 
     @classmethod
     def from_environment(cls) -> "Settings":
@@ -186,6 +189,12 @@ class Settings(BaseModel):
             smtp_use_tls=_bool("SMTP_USE_TLS", True),
             email_verification_expire_minutes=int(os.getenv("EMAIL_VERIFICATION_EXPIRE_MINUTES", str(24 * 60))),
             password_reset_expire_minutes=int(os.getenv("PASSWORD_RESET_EXPIRE_MINUTES", "30")),
+            clinical_organization_name=os.getenv("CLINICAL_ORGANIZATION_NAME", "Your organization").strip(),
+            clinical_escalation_contact=os.getenv("CLINICAL_ESCALATION_CONTACT", "").strip(),
+            clinical_escalation_instruction=os.getenv(
+                "CLINICAL_ESCALATION_INSTRUCTION",
+                "Follow your organization's urgent or emergency referral pathway.",
+            ).strip(),
             auth_email_resend_cooldown_seconds=int(os.getenv("AUTH_EMAIL_RESEND_COOLDOWN_SECONDS", "60")),
             enable_telemedicine=_bool("ENABLE_TELEMEDICINE", False),
             daily_api_key=os.getenv("DAILY_API_KEY", "").strip(),
@@ -241,6 +250,11 @@ class Settings(BaseModel):
             issues.append("ENABLE_PUBLIC_DEMO_MODE must be false")
         if self.app_env == "production" and not self.database_url.startswith(("postgresql://", "postgresql+psycopg://", "postgres://")):
             issues.append("production DATABASE_URL must use PostgreSQL")
+        if self.app_env == "production" and (
+            not self.clinical_escalation_contact.strip()
+            or self.clinical_organization_name.strip().lower() == "your organization"
+        ):
+            issues.append("production clinical escalation organization and contact must be configured")
         if not self.enable_subject_continuity_guard:
             issues.append("ENABLE_SUBJECT_CONTINUITY_GUARD must be true")
         if self.app_env == "production" and self.require_email_verification and self.email_delivery_mode != "smtp":

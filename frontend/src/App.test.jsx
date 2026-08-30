@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import App from "./App.jsx";
 import { analyzeExerciseVideo } from "./services/api.js";
-import { getRehabRlExercises, getRehabRlOverview } from "./services/api.js";
+import { getRehabRlExercises, getRehabRlGovernance, getRehabRlModelManifest, getRehabRlOverview, getRehabRlProtocols } from "./services/api.js";
 import { getArtifactBlob, getExercises, getSavedSession, listSavedSessions } from "./services/api.js";
 import { confirmRecognitionSuggestion, getRecognitionModels, recognizeExerciseVideo } from "./services/api.js";
 import { EXERCISES } from "./data/exercises.js";
@@ -26,6 +26,9 @@ vi.mock("./services/api.js", () => ({
   getExercises: vi.fn(),
   getRehabRlOverview: vi.fn(),
   getRehabRlExercises: vi.fn(),
+  getRehabRlProtocols: vi.fn(),
+  getRehabRlModelManifest: vi.fn(),
+  getRehabRlGovernance: vi.fn(),
   createRehabRlAssessment: vi.fn(),
   simulateRehabRlTrajectory: vi.fn(),
   getRehabRlInspector: vi.fn(),
@@ -139,7 +142,10 @@ describe("Squat Analyzer healthcare dashboard", () => {
       signals: { last_checkpoint: { name: "best_model.pt.npy" }, policy_source: "trained policy", backend: "numpy", device: "cpu" },
       trajectory: [{ session: 0, rom: 32, strength: 18, pain: 70 }],
     });
-    getRehabRlExercises.mockResolvedValue({ items: [], categories: [], injuries: ["ACL Tear"] });
+    getRehabRlExercises.mockResolvedValue({ items: [], categories: [], injuries: ["ACL Tear"], conditions: [] });
+    getRehabRlProtocols.mockResolvedValue({ items: [], disclaimer: "Clinician review required." });
+    getRehabRlModelManifest.mockResolvedValue({ checkpoint: { compatible: true }, contract: { version: "rehabrl-state-v1", state_dim: 32, action_dim: 30, sha256: "a".repeat(64) } });
+    getRehabRlGovernance.mockResolvedValue({ window_days: 30, decisions: 0, safety_holds: 0, referrals: 0, audit: { privacy_profile: "No patient identifiers" }, escalation: { configured: false, organization: "Your organization", contact: "", instruction: "Follow your organization's urgent or emergency referral pathway." } });
     getArtifactBlob.mockResolvedValue(new Blob(["webm-video"], { type: "video/webm" }));
     listSavedSessions.mockResolvedValue({ items: [], total: 0, limit: 50, offset: 0 });
     getTherapistDashboard.mockResolvedValue({ total_patients: 0, total_sessions: 0, low_confidence_sessions: 0, recent_sessions: [], common_detected_issues: [], sessions_by_exercise: {}, prototype_warning: "Prototype" });
@@ -524,7 +530,7 @@ describe("Squat Analyzer healthcare dashboard", () => {
     window.history.replaceState({}, "", "/workspace");
     render(<App />);
     fireEvent.click(screen.getByRole("button", { name: "RehabRL Decision Support" }));
-    expect(await screen.findByRole("heading", { name: "RehabRL policy workspace" })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: "Rehabilitation planning workspace" })).toBeInTheDocument();
     expect(screen.getByText("Double Dueling DQN")).toBeInTheDocument();
     expect(window.location.pathname).toBe("/rehab-policy");
   });

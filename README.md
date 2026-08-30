@@ -214,11 +214,15 @@ Authenticated therapists, administrators, and super administrators can open `/re
 
 - Policy status and the active NumPy/CPU or PyTorch/CUDA backend.
 - Stage-aware prescription candidates generated from clinician-entered patient-state measures.
+- A searchable 26-condition clinical protocol catalog with red flags, precautions, phase goals, treatment options, progression criteria, and outcome measures.
+- A mandatory clinician safety gate that withholds model/treatment output for unscreened, unattested, postoperative-order-incomplete, or red-flag-positive cases.
+- A versioned MLOps model manifest with a SHA-256 contract fingerprint, checkpoint compatibility, intended-use limits, and release-monitoring requirements.
+- Privacy-minimized decision audit IDs, rolling safety-hold metrics, and organization-configurable escalation guidance.
 - Synthetic recovery trajectories for model evaluation.
 - The policy's prescription exercise library.
 - Super-admin-only model inspection, checkpoint restore, and training controls.
 
-Patients cannot access this workspace or its API. RehabRL outputs are experimental decision support: they require clinician review and must not be treated as autonomous prescriptions, diagnoses, or patient-specific outcome forecasts. See the [RehabRL integration guide](docs/rehab_rl_integration.md) and [improvement roadmap](docs/rehab_rl_improvement_roadmap.md).
+The packaged model still supports its original 12-condition state space. Additional cases are explicitly labeled as clinical protocol references and do not produce model confidence or Q-values. Patients cannot access this workspace or its API. All outputs require clinician review and must not be treated as autonomous prescriptions, diagnoses, or patient-specific outcome forecasts. See the [clinical protocol catalog](docs/rehab_clinical_protocols.md), [RehabRL integration guide](docs/rehab_rl_integration.md), and [improvement roadmap](docs/rehab_rl_improvement_roadmap.md).
 
 ## Testing
 
@@ -265,6 +269,8 @@ Important public client variables:
 Never place server secrets in `VITE_*` or `EXPO_PUBLIC_*`. Those values are included in client builds.
 
 Backend configuration includes database, authentication, CORS, upload-size, artifact, report, overlay, history, and analysis-authentication controls. Use `.env.example`, `.env.staging.example`, and `.env.production.example` as the source templates. Production starts fail closed when authentication, HTTPS origins, SMTP delivery, database configuration, or secrets are unsafe.
+
+RehabRL clinical governance uses the server-only variables `CLINICAL_ORGANIZATION_NAME`, `CLINICAL_ESCALATION_CONTACT`, and `CLINICAL_ESCALATION_INSTRUCTION`. Configure these for the deployment's approved urgent and emergency workflow; do not place them in public client variables.
 
 ### Protected super administrator
 

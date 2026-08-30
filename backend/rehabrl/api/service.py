@@ -6,6 +6,8 @@ import logging
 import math
 import re
 import threading
+import hashlib
+import json
 from dataclasses import asdict
 from pathlib import Path
 from typing import Any
@@ -14,6 +16,11 @@ import numpy as np
 import pandas as pd
 
 from rehabrl.config import Config, INJURY_TYPES, RECOVERY_STAGES
+from rehabrl.clinical_protocols import (
+    PROTOCOLS_BY_RL_INJURY,
+    get_protocol,
+    list_protocols,
+)
 from rehabrl.data.exercise_database import (
     ACTION_SPACE,
     EXERCISE_LIBRARY,
@@ -35,6 +42,7 @@ LOGGER = logging.getLogger(__name__)
 DEFAULT_SEED = 42
 MAX_TRAINING_HISTORY = 200
 RUN_FILENAME_PATTERN = re.compile(r"checkpoint_ep(\d+)")
+MODEL_CONTRACT_VERSION = "rehabrl-state-v1"
 
 
 def _initial_training_status() -> dict[str, Any]:
@@ -150,8 +158,21 @@ class RehabRLService:
         )
 
     def assessment(self, request: AssessmentRequest) -> dict[str, Any]:
-        self._validate_injury(request.injury_type)
-        state = PatientState(**request.model_dump())
+        protocol = self._resolve_protocol(request)
+        phase = protocol.phases[request.recovery_stage]
+        readiness = self._treatment_readiness(request)
+        if readiness != "ready":
+            return self._safety_hold_assessment(request, protocol, phase, readiness)
+        if protocol.rl_injury_type is None:
+            return self._protocol_reference_assessment(request, protocol, phase)
+        if not self._model_contract_compatible():
+            return self._safety_hold_assessment(
+                request, protocol, phase, "model_contract_incompatible"
+            )
+
+        state_data = request.model_dump(exclude={"condition_id", "safety_screen"})
+        state_data["injury_type"] = protocol.rl_injury_type
+        state = PatientState(**state_data)
         valid_actions = self._valid_action_ids(state.recovery_stage)
         action, q_values, source = self._select_action(state, valid_actions)
         prescription = get_prescription(action, injury_type=state.injury_type)
@@ -162,9 +183,18 @@ class RehabRLService:
         return json_safe(
             {
                 "source": source,
+                "mode": "rehabrl_policy",
                 "action_id": action,
                 "confidence": confidence,
                 "risk": risk,
+                "load_caution": risk,
+                "clinical_safety": {
+                    "red_flags_screened": True,
+                    "red_flags_present": False,
+                    "clinician_attested": True,
+                    "treatment_readiness": "ready",
+                    "message": "Safety screen and clinician attestation completed for this review.",
+                },
                 "prescription": {
                     "name": prescription.name,
                     "stage": RECOVERY_STAGES[prescription.stage],
@@ -180,6 +210,8 @@ class RehabRLService:
                 },
                 "q_values": q_values,
                 "valid_actions": valid_actions,
+                "protocol": protocol.to_dict(),
+                "phase_plan": asdict(phase),
             }
         )
 
@@ -227,7 +259,208 @@ class RehabRLService:
                     {exercise.category for exercise in EXERCISE_LIBRARY}
                 ),
                 "injuries": INJURY_TYPES,
+                "conditions": list_protocols(),
             }
+        )
+
+    def protocols(self) -> dict[str, Any]:
+        return json_safe(
+            {
+                "items": [
+                    protocol.to_dict()
+                    for protocol in (
+                        get_protocol(item["id"]) for item in list_protocols()
+                    )
+                    if protocol is not None
+                ],
+                "disclaimer": (
+                    "Protocol references require diagnosis, examination, clinical "
+                    "reasoning, shared decision-making, and procedure-specific orders."
+                ),
+            }
+        )
+
+    def model_manifest(self) -> dict[str, Any]:
+        """Expose the immutable inference contract and governance limitations."""
+        trainer = self._get_trainer()
+        contract = {
+            "version": MODEL_CONTRACT_VERSION,
+            "state_dim": trainer.cfg.model.state_dim,
+            "action_dim": trainer.cfg.model.n_actions,
+            "injury_labels": INJURY_TYPES,
+            "recovery_stages": RECOVERY_STAGES,
+            "actions": [
+                {
+                    "id": action.action_id,
+                    "stage": action.stage,
+                    "intensity": action.intensity,
+                    "progression": action.progression,
+                }
+                for action in ACTION_SPACE
+            ],
+        }
+        fingerprint = hashlib.sha256(
+            json.dumps(contract, sort_keys=True).encode("utf-8")
+        ).hexdigest()
+        compatible = self._model_contract_compatible(trainer)
+        return json_safe(
+            {
+                "model": "Double Dueling DQN rehabilitation policy",
+                "contract": {**contract, "sha256": fingerprint},
+                "checkpoint": {
+                    "compatible": compatible,
+                    "source": "packaged checkpoint" if trainer.find_checkpoint() else "heuristic fallback",
+                    "backend": trainer.backend,
+                    "device": trainer.device,
+                },
+                "intended_use": "Therapist-reviewed experimental decision support for the 12 trained labels only.",
+                "not_intended_for": [
+                    "Diagnosis",
+                    "Autonomous treatment selection",
+                    "Emergency triage",
+                    "Unscreened or unattested clinical use",
+                    "Protocol-reference conditions outside the trained label set",
+                ],
+                "monitoring": {
+                    "status": "pre-clinical validation",
+                    "required_before_release": [
+                        "External clinical validation",
+                        "Subgroup performance and calibration analysis",
+                        "Override and adverse-event monitoring",
+                        "Drift thresholds and rollback procedure",
+                        "Documented clinical approval",
+                    ],
+                },
+            }
+        )
+
+    def protocol(self, condition_id: str) -> dict[str, Any]:
+        protocol = get_protocol(condition_id)
+        if protocol is None:
+            raise InvalidInjuryError("Unknown condition")
+        return json_safe(protocol.to_dict())
+
+    @staticmethod
+    def _resolve_protocol(request: AssessmentRequest):
+        protocol = get_protocol(request.condition_id) if request.condition_id else None
+        if protocol is None and not request.condition_id:
+            protocol = PROTOCOLS_BY_RL_INJURY.get(request.injury_type)
+        if protocol is None:
+            raise InvalidInjuryError("Unknown condition")
+        return protocol
+
+    def _protocol_reference_assessment(self, request, protocol, phase) -> dict[str, Any]:
+        risk_score = (
+            0.45 * request.pain_level
+            + 0.35 * request.fatigue
+            + 0.2 * request.injury_severity
+        )
+        risk = "High" if risk_score > 0.68 else "Moderate" if risk_score > 0.42 else "Low"
+        return json_safe(
+            {
+                "source": "evidence-informed protocol reference",
+                "mode": "protocol_reference",
+                "action_id": None,
+                "confidence": None,
+                "risk": risk,
+                "load_caution": risk,
+                "clinical_safety": {
+                    "red_flags_screened": True,
+                    "red_flags_present": False,
+                    "clinician_attested": True,
+                    "treatment_readiness": "ready",
+                    "message": "Safety screen and clinician attestation completed for this review.",
+                },
+                "prescription": {
+                    "name": f"{protocol.name}: {phase.name}",
+                    "stage": RECOVERY_STAGES[phase.stage],
+                    "intensity": "Clinician selected",
+                    "progression": "Criteria based",
+                    "frequency": "Individualize after examination",
+                    "duration": phase.typical_timing,
+                    "rest": "Based on tissue and symptom response",
+                    "rationale": (
+                        "This condition is outside the trained RehabRL state space. "
+                        "The app is showing a clinical protocol reference without "
+                        "claiming a model prediction."
+                    ),
+                    "exercises": [],
+                },
+                "q_values": [],
+                "valid_actions": [],
+                "protocol": protocol.to_dict(),
+                "phase_plan": asdict(phase),
+            }
+        )
+
+    @staticmethod
+    def _treatment_readiness(request: AssessmentRequest) -> str:
+        screen = request.safety_screen
+        if screen.red_flags_present:
+            return "hold_and_refer"
+        if not screen.red_flags_reviewed or not screen.precautions_reviewed:
+            return "safety_screen_required"
+        if screen.postoperative and not screen.procedure_orders_confirmed:
+            return "procedure_orders_required"
+        if not screen.clinician_attestation:
+            return "clinician_attestation_required"
+        return "ready"
+
+    def _safety_hold_assessment(self, request, protocol, phase, readiness) -> dict[str, Any]:
+        messages = {
+            "hold_and_refer": "Treatment recommendation withheld. Stop and follow the appropriate urgent or medical referral pathway.",
+            "safety_screen_required": "Review red flags and condition-specific precautions before generating treatment guidance.",
+            "procedure_orders_required": "Confirm the surgeon's procedure-specific loading, range, brace, and weight-bearing orders.",
+            "clinician_attestation_required": "A qualified clinician must attest that the examination supports using this pathway.",
+            "model_contract_incompatible": "Policy inference is disabled because the runtime state/action contract does not match the validated checkpoint contract.",
+        }
+        return json_safe(
+            {
+                "source": "clinical safety gate",
+                "mode": "safety_hold",
+                "action_id": None,
+                "confidence": None,
+                "risk": "High" if readiness == "hold_and_refer" else "Undetermined",
+                "load_caution": "High" if readiness == "hold_and_refer" else "Undetermined",
+                "clinical_safety": {
+                    "red_flags_screened": request.safety_screen.red_flags_reviewed,
+                    "red_flags_present": request.safety_screen.red_flags_present,
+                    "clinician_attested": request.safety_screen.clinician_attestation,
+                    "treatment_readiness": readiness,
+                    "message": messages[readiness],
+                },
+                "prescription": {
+                    "name": "Treatment guidance withheld",
+                    "stage": RECOVERY_STAGES[phase.stage],
+                    "intensity": "Do not prescribe",
+                    "progression": "Complete safety requirements",
+                    "frequency": "Not applicable",
+                    "duration": "Not applicable",
+                    "rest": "Not applicable",
+                    "rationale": messages[readiness],
+                    "exercises": [],
+                },
+                "q_values": [],
+                "valid_actions": [],
+                "protocol": protocol.to_dict(),
+                "phase_plan": {
+                    "stage": phase.stage,
+                    "name": phase.name,
+                    "typical_timing": phase.typical_timing,
+                    "goals": [messages[readiness]],
+                    "interventions": [],
+                    "progression_criteria": ["Resolve the identified safety gate and repeat clinician review."],
+                },
+            }
+        )
+
+    def _model_contract_compatible(self, trainer: Trainer | None = None) -> bool:
+        active = trainer or self._get_trainer()
+        return (
+            active.cfg.model.state_dim == 32
+            and active.cfg.model.n_actions == len(ACTION_SPACE) == 30
+            and len(INJURY_TYPES) == 12
+            and [action.action_id for action in ACTION_SPACE] == list(range(30))
         )
 
     def inspector(self) -> dict[str, Any]:

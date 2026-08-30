@@ -154,6 +154,18 @@ export async function getRehabRlExercises() {
   return (await api.get("/api/v1/rehab-rl/exercises")).data;
 }
 
+export async function getRehabRlProtocols() {
+  return (await api.get("/api/v1/rehab-rl/protocols")).data;
+}
+
+export async function getRehabRlModelManifest() {
+  return (await api.get("/api/v1/rehab-rl/model-manifest")).data;
+}
+
+export async function getRehabRlGovernance(days = 30) {
+  return (await api.get(`/api/v1/rehab-rl/governance?days=${encodeURIComponent(days)}`)).data;
+}
+
 export async function getRehabRlInspector() {
   return (await api.get("/api/v1/rehab-rl/inspector")).data;
 }

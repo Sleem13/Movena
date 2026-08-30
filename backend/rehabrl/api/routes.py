@@ -40,6 +40,18 @@ def create_api_router(service: RehabRLService) -> APIRouter:
     def exercises() -> dict[str, Any]:
         return service.exercises()
 
+    @router.get("/protocols")
+    def protocols() -> dict[str, Any]:
+        return service.protocols()
+
+    @router.get("/protocols/{condition_id}")
+    def protocol(condition_id: str) -> dict[str, Any]:
+        return service.protocol(condition_id)
+
+    @router.get("/model-manifest")
+    def model_manifest() -> dict[str, Any]:
+        return service.model_manifest()
+
     @router.get("/inspector")
     def inspector() -> dict[str, Any]:
         return service.inspector()

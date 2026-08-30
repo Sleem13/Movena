@@ -61,9 +61,13 @@ All endpoints use the `/api/v1/rehab-rl` prefix.
 | Method | Path | Minimum role | Purpose |
 |---|---|---|---|
 | `GET` | `/overview` | Therapist/admin | Policy metrics, runtime, checkpoint, and reference trajectory |
-| `POST` | `/assessment` | Therapist/admin | Generate a reviewable prescription candidate |
+| `POST` | `/assessment` | Therapist/admin | Generate a reviewable prescription candidate and privacy-minimized audit record |
 | `POST` | `/simulate` | Therapist/admin | Run a synthetic recovery trajectory |
 | `GET` | `/exercises` | Therapist/admin | List policy exercise definitions and injury categories |
+| `GET` | `/protocols` | Therapist/admin | List detailed physical therapy condition pathways |
+| `GET` | `/protocols/{condition_id}` | Therapist/admin | Read one condition pathway |
+| `GET` | `/model-manifest` | Therapist/admin | Read model contract, compatibility, limitations, and monitoring requirements |
+| `GET` | `/governance?days=30` | Therapist/admin | Read scoped decision, safety-hold, referral, audit, and escalation status |
 | `GET` | `/inspector` | Super admin | Inspect architecture, configuration, statistics, and sampled weights |
 | `POST` | `/checkpoints/restore` | Super admin | Restore the compatible best-model checkpoint |
 | `POST` | `/training` | Super admin | Start a background training run |
@@ -71,6 +75,22 @@ All endpoints use the `/api/v1/rehab-rl` prefix.
 
 Assessment inputs are normalized to `0..1` where applicable and validated by
 Pydantic. Recovery stage is an integer from `0` (Acute) through `4` (Return).
+The optional `condition_id` selects the expanded clinical protocol catalog.
+Conditions outside the checkpoint's original 12 labels return a clearly marked
+protocol reference without an RL action, Q-values, or model-confidence score.
+See [Rehabilitation clinical protocol catalog](rehab_clinical_protocols.md).
+
+Every successful assessment response includes a `decision_audit_id`. The audit
+event stores the authenticated clinician, selected condition, recovery stage,
+decision mode, safety attestations, readiness outcome, action identifier, and
+model-contract fingerprint. It intentionally excludes patient identifiers,
+free text, and raw clinical measurements. Therapists see their own rolling
+governance metrics; super administrators see the platform-wide aggregate.
+
+Deployment-specific escalation guidance is configured with
+`CLINICAL_ORGANIZATION_NAME`, `CLINICAL_ESCALATION_CONTACT`, and
+`CLINICAL_ESCALATION_INSTRUCTION`. An unconfigured contact is visibly flagged
+in the workspace rather than silently presenting a generic number.
 
 ## Runtime and checkpoint selection
 

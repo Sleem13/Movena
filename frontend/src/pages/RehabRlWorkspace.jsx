@@ -5,6 +5,8 @@ import {
   BookOpen,
   BrainCircuit,
   CheckCircle2,
+  ClipboardList,
+  ExternalLink,
   FlaskConical,
   Gauge,
   LoaderCircle,
@@ -16,11 +18,15 @@ import {
 } from "lucide-react";
 
 import { PageHeader } from "../components/layout/AppShell.jsx";
+import ConditionCombobox from "../components/rehab/ConditionCombobox.jsx";
 import {
   createRehabRlAssessment,
   getRehabRlExercises,
   getRehabRlInspector,
+  getRehabRlGovernance,
   getRehabRlOverview,
+  getRehabRlModelManifest,
+  getRehabRlProtocols,
   getRehabRlTrainingStatus,
   restoreRehabRlCheckpoint,
   simulateRehabRlTrajectory,
@@ -44,6 +50,7 @@ const DEFAULT_INJURIES = [
 const STAGES = ["Acute", "Subacute", "Remodeling", "Functional", "Return"];
 
 const initialAssessment = {
+  condition_id: "acl_tear",
   injury_type: "ACL Tear",
   recovery_stage: 1,
   injury_severity: 0.7,
@@ -53,6 +60,14 @@ const initialAssessment = {
   movement_quality: 0.55,
   fatigue: 0.3,
   adherence: 0.85,
+  safety_screen: {
+    red_flags_reviewed: false,
+    red_flags_present: false,
+    precautions_reviewed: false,
+    postoperative: false,
+    procedure_orders_confirmed: false,
+    clinician_attestation: false,
+  },
 };
 
 function requestMessage(error) {
@@ -152,7 +167,7 @@ function TrajectoryChart({ rows }) {
   );
 }
 
-function OverviewTab({ data, loading, error, onSelectTab }) {
+function OverviewTab({ data, manifest, governance, loading, error, onSelectTab }) {
   if (loading) return <Loading label="Loading policy overview" />;
   if (error) return <ErrorNotice message={error} />;
   return (
@@ -179,20 +194,23 @@ function OverviewTab({ data, loading, error, onSelectTab }) {
           <button onClick={() => onSelectTab("assessment")} className="mt-6 inline-flex min-h-11 items-center gap-2 rounded-xl bg-white px-4 text-sm font-bold text-[#071b4a] hover:bg-blue-50"><Play size={17} />Start assessment</button>
         </div>
       </section>
+      {manifest ? <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><div className="flex flex-wrap items-start justify-between gap-3"><div><p className="text-xs font-bold uppercase tracking-[0.12em] text-blue-700">Model governance</p><h2 className="mt-1 font-bold text-[#071b4a]">Immutable inference contract</h2><p className="mt-1 text-sm text-slate-500">Only the checkpoint's versioned 12-label state space can reach policy inference.</p></div><span className={`rounded-full px-3 py-1.5 text-xs font-bold ${manifest.checkpoint.compatible ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-700"}`}>{manifest.checkpoint.compatible ? "Contract compatible" : "Inference disabled"}</span></div><dl className="mt-4 grid gap-3 text-sm sm:grid-cols-3"><div className="rounded-xl bg-slate-50 p-3"><dt className="text-xs text-slate-500">Contract</dt><dd className="mt-1 font-bold text-slate-800">{manifest.contract.version}</dd></div><div className="rounded-xl bg-slate-50 p-3"><dt className="text-xs text-slate-500">Dimensions</dt><dd className="mt-1 font-bold text-slate-800">{manifest.contract.state_dim} states · {manifest.contract.action_dim} actions</dd></div><div className="rounded-xl bg-slate-50 p-3"><dt className="text-xs text-slate-500">Fingerprint</dt><dd className="mt-1 truncate font-mono text-xs font-bold text-slate-800" title={manifest.contract.sha256}>{manifest.contract.sha256.slice(0, 16)}…</dd></div></dl></section> : null}
+      {governance ? <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><div className="flex flex-wrap items-start justify-between gap-3"><div><p className="text-xs font-bold uppercase tracking-[0.12em] text-teal-700">Clinical governance</p><h2 className="mt-1 font-bold text-[#071b4a]">Traceable decision support</h2><p className="mt-1 text-sm text-slate-500">Privacy-minimized decision events support safety review and lifecycle monitoring.</p></div><span className="rounded-full bg-emerald-100 px-3 py-1.5 text-xs font-bold text-emerald-700">Audit logging active</span></div><dl className="mt-4 grid gap-3 text-sm sm:grid-cols-3"><div className="rounded-xl bg-slate-50 p-3"><dt className="text-xs text-slate-500">Decisions · {governance.window_days} days</dt><dd className="mt-1 text-xl font-bold text-slate-800">{governance.decisions}</dd></div><div className="rounded-xl bg-slate-50 p-3"><dt className="text-xs text-slate-500">Safety holds</dt><dd className="mt-1 text-xl font-bold text-slate-800">{governance.safety_holds}</dd></div><div className="rounded-xl bg-slate-50 p-3"><dt className="text-xs text-slate-500">Referral holds</dt><dd className="mt-1 text-xl font-bold text-slate-800">{governance.referrals}</dd></div></dl><div className={`mt-4 rounded-xl border p-4 ${governance.escalation.configured ? "border-emerald-100 bg-emerald-50" : "border-amber-100 bg-amber-50"}`}><p className={`text-xs font-bold uppercase tracking-wide ${governance.escalation.configured ? "text-emerald-800" : "text-amber-900"}`}>{governance.escalation.configured ? "Escalation contact configured" : "Escalation contact requires configuration"}</p><p className="mt-1 text-sm leading-6 text-slate-700">{governance.escalation.instruction}</p>{governance.escalation.contact ? <p className="mt-1 text-sm font-bold text-slate-800">{governance.escalation.organization}: {governance.escalation.contact}</p> : null}</div><p className="mt-3 text-xs leading-5 text-slate-500">{governance.audit.privacy_profile}.</p></section> : null}
     </div>
   );
 }
 
-function AssessmentTab({ injuries }) {
+function AssessmentTab({ conditions, onDecisionLogged }) {
   const [form, setForm] = useState(initialAssessment);
   const [result, setResult] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const update = (key, value) => setForm((current) => ({ ...current, [key]: value }));
+  const updateSafety = (key, value) => setForm((current) => ({ ...current, safety_screen: { ...current.safety_screen, [key]: value } }));
   async function submit(event) {
     event.preventDefault();
     setLoading(true); setError(""); setResult(null);
-    try { setResult(await createRehabRlAssessment(form)); }
+    try { const nextResult = await createRehabRlAssessment(form); setResult(nextResult); onDecisionLogged?.(); }
     catch (requestError) { setError(requestMessage(requestError)); }
     finally { setLoading(false); }
   }
@@ -202,31 +220,80 @@ function AssessmentTab({ injuries }) {
         <h2 className="text-lg font-bold text-[#071b4a]">Patient state</h2>
         <p className="mt-1 text-sm text-slate-500">Enter clinician-reviewed normalized measures.</p>
         <div className="mt-5 grid gap-4 sm:grid-cols-2">
-          <label className="text-sm font-semibold text-slate-700">Injury type<select value={form.injury_type} onChange={(event) => update("injury_type", event.target.value)} className="mt-2 min-h-11 w-full rounded-xl border border-slate-300 bg-white px-3 font-normal">{injuries.map((item) => <option key={item}>{item}</option>)}</select></label>
+          <ConditionCombobox conditions={conditions} label="Condition or diagnosis" value={form.condition_id} onChange={(condition) => {
+            setForm((current) => ({
+              ...current,
+              condition_id: condition.id,
+              injury_type: condition.rl_injury_type || current.injury_type,
+              safety_screen: { ...initialAssessment.safety_screen },
+            }));
+            setResult(null);
+            setError("");
+          }} />
           <label className="text-sm font-semibold text-slate-700">Recovery stage<select value={form.recovery_stage} onChange={(event) => update("recovery_stage", Number(event.target.value))} className="mt-2 min-h-11 w-full rounded-xl border border-slate-300 bg-white px-3 font-normal">{STAGES.map((item, index) => <option key={item} value={index}>{item}</option>)}</select></label>
           {[["injury_severity", "Injury severity"], ["pain_level", "Pain level"], ["rom", "Range of motion"], ["strength", "Strength"], ["movement_quality", "Movement quality"], ["fatigue", "Fatigue"], ["adherence", "Adherence"]].map(([key, label]) => <RangeField key={key} label={label} value={form[key]} onChange={(value) => update(key, value)} />)}
         </div>
+        <fieldset className="mt-5 rounded-2xl border border-blue-100 bg-blue-50/50 p-4"><legend className="px-2 text-sm font-bold text-[#071b4a]">Mandatory clinical safety gate</legend><p className="mb-3 text-xs leading-5 text-slate-600">Attest only after examination and review of the selected pathway's red flags and precautions.</p><div className="space-y-2">{[["red_flags_reviewed", "I reviewed the condition-specific red flags"], ["precautions_reviewed", "I reviewed contraindications and precautions"], ["postoperative", "This is a postoperative case"], ...(form.safety_screen.postoperative ? [["procedure_orders_confirmed", "I confirmed surgeon-specific loading, ROM, brace, and weight-bearing orders"]] : []), ["clinician_attestation", "I attest that a qualified clinician examined the patient and this pathway is appropriate"]].map(([key, label]) => <label key={key} className="flex items-start gap-3 rounded-xl border border-slate-200 bg-white p-3 text-sm font-medium text-slate-700"><input type="checkbox" className="mt-0.5 h-4 w-4 accent-blue-600" checked={form.safety_screen[key]} onChange={(event) => updateSafety(key, event.target.checked)} />{label}</label>)}<label className="flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 p-3 text-sm font-bold text-red-800"><input type="checkbox" className="mt-0.5 h-4 w-4 accent-red-600" checked={form.safety_screen.red_flags_present} onChange={(event) => updateSafety("red_flags_present", event.target.checked)} />A red flag is present — withhold treatment guidance and show referral action</label></div></fieldset>
         {error ? <div className="mt-4"><ErrorNotice message={error} /></div> : null}
-        <button disabled={loading} className="mt-5 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 text-sm font-bold text-white hover:bg-blue-700 disabled:opacity-60">{loading ? <LoaderCircle className="animate-spin" size={18} /> : <BrainCircuit size={18} />}{loading ? "Evaluating policy" : "Generate recommendation"}</button>
+        <button disabled={loading} className={`mt-5 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl px-4 text-sm font-bold text-white disabled:opacity-60 ${form.safety_screen.red_flags_present ? "bg-red-700 hover:bg-red-800" : "bg-blue-600 hover:bg-blue-700"}`}>{loading ? <LoaderCircle className="animate-spin" size={18} /> : <BrainCircuit size={18} />}{loading ? "Evaluating safety and policy" : form.safety_screen.red_flags_present ? "Generate hold and referral guidance" : "Generate clinician-reviewed guidance"}</button>
       </form>
       <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
         {!result ? <div className="grid min-h-[28rem] place-items-center text-center"><div><Gauge className="mx-auto text-slate-300" size={44} /><h2 className="mt-4 font-bold text-[#071b4a]">Recommendation preview</h2><p className="mt-2 max-w-sm text-sm leading-6 text-slate-500">A prescription candidate, risk level, rationale, and exercise set will appear here for clinical review.</p></div></div> : <div className="space-y-5">
-          <div className="flex flex-wrap items-center justify-between gap-3"><div><p className="text-xs font-bold uppercase tracking-[0.12em] text-teal-700">{result.source}</p><h2 className="mt-1 text-xl font-bold text-[#071b4a]">{result.prescription.name}</h2></div><span className={`rounded-full px-3 py-1.5 text-xs font-bold ${result.risk === "High" ? "bg-red-100 text-red-700" : result.risk === "Moderate" ? "bg-amber-100 text-amber-800" : "bg-emerald-100 text-emerald-700"}`}>{result.risk} risk</span></div>
-          <div className="grid grid-cols-2 gap-3"><Metric label="Confidence" value={`${result.confidence}%`} /><Metric label="Stage" value={result.prescription.stage} /></div>
+          <div className="flex flex-wrap items-center justify-between gap-3"><div><p className="text-xs font-bold uppercase tracking-[0.12em] text-teal-700">{result.source}</p><h2 className="mt-1 text-xl font-bold text-[#071b4a]">{result.prescription.name}</h2></div><span className={`rounded-full px-3 py-1.5 text-xs font-bold ${result.load_caution === "High" ? "bg-red-100 text-red-700" : result.load_caution === "Moderate" ? "bg-amber-100 text-amber-800" : result.load_caution === "Low" ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-700"}`}>{result.load_caution || result.risk} load caution</span></div>
+          {result.mode === "safety_hold" ? <div role="alert" className="rounded-xl border border-red-200 bg-red-50 p-4"><p className="font-bold text-red-800">Treatment guidance is locked</p><p className="mt-1 text-sm leading-6 text-red-900">{result.clinical_safety.message}</p></div> : null}
+          {result.decision_audit_id ? <div className="rounded-xl border border-slate-200 bg-slate-50 p-3"><p className="text-xs font-bold uppercase tracking-wide text-slate-500">Decision audit ID</p><p className="mt-1 break-all font-mono text-xs font-semibold text-slate-700">{result.decision_audit_id}</p></div> : null}
+          <div className="grid grid-cols-2 gap-3"><Metric label={result.mode === "rehabrl_policy" ? "Policy confidence" : "Decision mode"} value={result.mode === "safety_hold" ? "Safety hold" : result.confidence == null ? "Clinical reference" : `${result.confidence}%`} /><Metric label="Stage" value={result.prescription.stage} /></div>
           <div className="rounded-xl bg-slate-50 p-4"><p className="text-xs font-bold uppercase tracking-wide text-slate-500">Rationale</p><p className="mt-2 text-sm leading-6 text-slate-700">{result.prescription.rationale}</p></div>
           <dl className="grid grid-cols-2 gap-3 text-sm">{[["Intensity", result.prescription.intensity], ["Frequency", result.prescription.frequency], ["Duration", result.prescription.duration], ["Rest", result.prescription.rest]].map(([label, value]) => <div key={label} className="rounded-xl border border-slate-200 p-3"><dt className="text-xs font-semibold text-slate-500">{label}</dt><dd className="mt-1 font-bold text-slate-800">{value}</dd></div>)}</dl>
-          <div><h3 className="font-bold text-[#071b4a]">Suggested exercises</h3><div className="mt-3 space-y-2">{result.prescription.exercises.map((exercise) => <div key={exercise.name} className="flex items-start gap-3 rounded-xl border border-slate-200 p-3"><CheckCircle2 className="mt-0.5 shrink-0 text-teal-600" size={18} /><div><p className="text-sm font-bold text-slate-800">{exercise.name}</p><p className="mt-1 text-xs leading-5 text-slate-500">{exercise.sets} sets · {exercise.reps} · {exercise.cue}</p></div></div>)}</div></div>
+          <div className="rounded-xl border border-teal-100 bg-teal-50/60 p-4"><p className="text-xs font-bold uppercase tracking-wide text-teal-700">Current phase goals</p><ul className="mt-2 space-y-1.5 text-sm text-slate-700">{result.phase_plan.goals.map((item) => <li key={item} className="flex gap-2"><CheckCircle2 className="mt-0.5 shrink-0 text-teal-600" size={16} />{item}</li>)}</ul></div>
+          {result.phase_plan.interventions.length ? <div><h3 className="font-bold text-[#071b4a]">Treatment options for clinician selection</h3><div className="mt-3 space-y-2">{result.phase_plan.interventions.map((item) => <div key={item} className="flex items-start gap-3 rounded-xl border border-slate-200 p-3"><CheckCircle2 className="mt-0.5 shrink-0 text-teal-600" size={18} /><p className="text-sm leading-5 text-slate-700">{item}</p></div>)}</div></div> : null}
+          {result.prescription.exercises.length ? <div><h3 className="font-bold text-[#071b4a]">RehabRL exercise candidates</h3><div className="mt-3 space-y-2">{result.prescription.exercises.map((exercise) => <div key={exercise.name} className="flex items-start gap-3 rounded-xl border border-slate-200 p-3"><CheckCircle2 className="mt-0.5 shrink-0 text-teal-600" size={18} /><div><p className="text-sm font-bold text-slate-800">{exercise.name}</p><p className="mt-1 text-xs leading-5 text-slate-500">{exercise.sets} sets · {exercise.reps} · {exercise.cue}</p></div></div>)}</div></div> : null}
+          <div><h3 className="font-bold text-[#071b4a]">Progress only when</h3><ul className="mt-3 space-y-2">{result.phase_plan.progression_criteria.map((item) => <li key={item} className="rounded-xl bg-slate-50 px-3 py-2 text-sm text-slate-700">{item}</li>)}</ul></div>
+          <div className={`rounded-xl border p-4 ${result.clinical_safety.red_flags_present ? "border-red-200 bg-red-50" : "border-amber-100 bg-amber-50"}`}><p className={`text-xs font-bold uppercase tracking-wide ${result.clinical_safety.red_flags_present ? "text-red-700" : "text-amber-800"}`}>{result.clinical_safety.red_flags_present ? "Positive red flag — hold and refer" : result.clinical_safety.treatment_readiness === "procedure_orders_required" ? "Procedure orders incomplete" : result.clinical_safety.treatment_readiness === "clinician_attestation_required" ? "Clinician attestation incomplete" : result.clinical_safety.red_flags_screened ? "Safety screen recorded" : "Safety screen incomplete"}</p><p className="mt-1 text-xs leading-5 text-slate-800">{result.clinical_safety.message}</p><ul className="mt-2 list-disc space-y-1 pl-4 text-xs leading-5 text-slate-800">{[...result.protocol.red_flags.slice(0, 3), ...result.protocol.precautions].map((item) => <li key={item}>{item}</li>)}</ul></div>
         </div>}
       </section>
     </div>
   );
 }
 
-function SimulationTab({ injuries }) {
+function SimulationTab({ conditions }) {
   const [form, setForm] = useState({ injury_type: "ACL Tear", injury_severity: 0.7, recovery_stage: 0, sessions: 40 });
   const [result, setResult] = useState(null); const [error, setError] = useState(""); const [loading, setLoading] = useState(false);
   async function submit(event) { event.preventDefault(); setLoading(true); setError(""); try { setResult(await simulateRehabRlTrajectory(form)); } catch (requestError) { setError(requestMessage(requestError)); } finally { setLoading(false); } }
-  return <div className="space-y-5"><form onSubmit={submit} className="grid gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm md:grid-cols-4 md:items-end"><label className="text-sm font-semibold text-slate-700">Injury<select value={form.injury_type} onChange={(event) => setForm({ ...form, injury_type: event.target.value })} className="mt-2 min-h-11 w-full rounded-xl border border-slate-300 px-3 font-normal">{injuries.map((item) => <option key={item}>{item}</option>)}</select></label><label className="text-sm font-semibold text-slate-700">Starting stage<select value={form.recovery_stage} onChange={(event) => setForm({ ...form, recovery_stage: Number(event.target.value) })} className="mt-2 min-h-11 w-full rounded-xl border border-slate-300 px-3 font-normal">{STAGES.map((item, index) => <option key={item} value={index}>{item}</option>)}</select></label><label className="text-sm font-semibold text-slate-700">Sessions<input type="number" min="5" max="100" value={form.sessions} onChange={(event) => setForm({ ...form, sessions: Number(event.target.value) })} className="mt-2 min-h-11 w-full rounded-xl border border-slate-300 px-3 font-normal" /></label><button disabled={loading} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 text-sm font-bold text-white hover:bg-blue-700 disabled:opacity-60">{loading ? <LoaderCircle className="animate-spin" size={18} /> : <FlaskConical size={18} />}Run simulation</button></form>{error ? <ErrorNotice message={error} /> : null}{result ? <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><div className="mb-5 grid gap-3 sm:grid-cols-3"><Metric label="Sessions simulated" value={result.sessions} /><Metric label="Total reward" value={result.total_reward} /><Metric label="Return stage reached" value={result.recovered ? "Yes" : "No"} /></div><TrajectoryChart rows={result.trajectory} /><p className="mt-4 text-xs leading-5 text-slate-500">Synthetic projection for model evaluation only. It is not a forecast of an individual patient’s outcome.</p></section> : <div className="grid min-h-64 place-items-center rounded-2xl border border-dashed border-slate-300 bg-white text-center"><div><FlaskConical className="mx-auto text-slate-300" size={40} /><p className="mt-3 font-bold text-slate-700">Configure and run a synthetic recovery trajectory</p></div></div>}</div>;
+  const selected = conditions.find((condition) => condition.rl_injury_type === form.injury_type) || conditions[0];
+  return <div className="space-y-5"><form onSubmit={submit} className="grid gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm md:grid-cols-4 md:items-end"><ConditionCombobox conditions={conditions} label="RL-supported condition" value={selected?.id} onChange={(condition) => setForm({ ...form, injury_type: condition.rl_injury_type })} /><label className="text-sm font-semibold text-slate-700">Starting stage<select value={form.recovery_stage} onChange={(event) => setForm({ ...form, recovery_stage: Number(event.target.value) })} className="mt-2 min-h-11 w-full rounded-xl border border-slate-300 px-3 font-normal">{STAGES.map((item, index) => <option key={item} value={index}>{item}</option>)}</select></label><label className="text-sm font-semibold text-slate-700">Sessions<input type="number" min="5" max="100" value={form.sessions} onChange={(event) => setForm({ ...form, sessions: Number(event.target.value) })} className="mt-2 min-h-11 w-full rounded-xl border border-slate-300 px-3 font-normal" /></label><button disabled={loading} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 text-sm font-bold text-white hover:bg-blue-700 disabled:opacity-60">{loading ? <LoaderCircle className="animate-spin" size={18} /> : <FlaskConical size={18} />}Run simulation</button></form>{error ? <ErrorNotice message={error} /> : null}{result ? <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><div className="mb-5 grid gap-3 sm:grid-cols-3"><Metric label="Sessions simulated" value={result.sessions} /><Metric label="Total reward" value={result.total_reward} /><Metric label="Return stage reached" value={result.recovered ? "Yes" : "No"} /></div><TrajectoryChart rows={result.trajectory} /><p className="mt-4 text-xs leading-5 text-slate-500">Synthetic projection for model evaluation only. It is not a forecast of an individual patient’s outcome.</p></section> : <div className="grid min-h-64 place-items-center rounded-2xl border border-dashed border-slate-300 bg-white text-center"><div><FlaskConical className="mx-auto text-slate-300" size={40} /><p className="mt-3 font-bold text-slate-700">Configure and run a synthetic recovery trajectory</p></div></div>}</div>;
+}
+
+function ProtocolsTab({ data, loading, error }) {
+  const [query, setQuery] = useState("");
+  const [category, setCategory] = useState("All");
+  const [selectedId, setSelectedId] = useState(null);
+  const categories = useMemo(() => ["All", ...new Set((data?.items || []).map((item) => item.category))], [data]);
+  const filtered = useMemo(() => (data?.items || []).filter((item) =>
+    (category === "All" || item.category === category) && item.search_text.toLowerCase().includes(query.toLowerCase()),
+  ), [data, query, category]);
+  const selected = (data?.items || []).find((item) => item.id === selectedId) || filtered[0] || data?.items?.[0];
+  if (loading) return <Loading label="Loading clinical protocol catalog" />;
+  if (error) return <ErrorNotice message={error} />;
+  return (
+    <div className="space-y-4">
+      <div className="flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:flex-row">
+        <label className="flex min-h-11 flex-1 items-center gap-2 rounded-xl border border-slate-300 px-3"><Search size={18} className="text-slate-400" /><input aria-label="Search clinical protocols" className="w-full outline-none" placeholder="Search condition, alias, body region, or category" value={query} onChange={(event) => setQuery(event.target.value)} /></label>
+        <select aria-label="Protocol category" value={category} onChange={(event) => setCategory(event.target.value)} className="min-h-11 rounded-xl border border-slate-300 bg-white px-3">{categories.map((item) => <option key={item}>{item}</option>)}</select>
+      </div>
+      <div className="grid gap-5 xl:grid-cols-[.72fr_1.28fr]">
+        <div className="grid content-start gap-2 sm:grid-cols-2 xl:grid-cols-1">{filtered.map((item) => <button key={item.id} onClick={() => setSelectedId(item.id)} className={`rounded-xl border p-4 text-left ${selected?.id === item.id ? "border-blue-300 bg-blue-50 ring-2 ring-blue-100" : "border-slate-200 bg-white hover:border-blue-200"}`}><div className="flex items-start justify-between gap-2"><p className="font-bold text-[#071b4a]">{item.name}</p>{item.rl_supported ? <span className="rounded-full bg-cyan-50 px-2 py-1 text-[10px] font-bold text-cyan-700">RL supported</span> : null}</div><p className="mt-1 text-xs font-semibold text-teal-700">{item.category} · {item.body_region}</p><p className="mt-2 line-clamp-2 text-xs leading-5 text-slate-500">{item.summary}</p></button>)}</div>
+        {selected ? <article className="h-fit rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+          <div className="flex flex-wrap items-start justify-between gap-3"><div><p className="text-xs font-bold uppercase tracking-wide text-teal-700">Clinical protocol reference</p><h2 className="mt-1 text-2xl font-bold text-[#071b4a]">{selected.name}</h2><p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">{selected.summary}</p><p className="mt-2 text-xs font-medium text-slate-500">Evidence reviewed {selected.evidence_reviewed_on} · Next review due {selected.next_review_due}</p></div><span className="rounded-full bg-slate-100 px-3 py-1.5 text-xs font-bold text-slate-700">{selected.phases.length} phases</span></div>
+          <div className="mt-5 grid gap-4 lg:grid-cols-2"><div className="rounded-xl border border-red-100 bg-red-50 p-4"><h3 className="text-sm font-bold text-red-800">Red flags and referral screen</h3><ul className="mt-2 list-disc space-y-1 pl-4 text-xs leading-5 text-red-900">{selected.red_flags.map((item) => <li key={item}>{item}</li>)}</ul></div><div className="rounded-xl border border-amber-100 bg-amber-50 p-4"><h3 className="text-sm font-bold text-amber-900">Precautions</h3><ul className="mt-2 list-disc space-y-1 pl-4 text-xs leading-5 text-amber-950">{selected.precautions.map((item) => <li key={item}>{item}</li>)}</ul></div></div>
+          <h3 className="mt-6 font-bold text-[#071b4a]">Criteria-based plan</h3>
+          <div className="mt-3 space-y-3">{selected.phases.map((phase) => <details key={phase.stage} className="rounded-xl border border-slate-200 p-4" open={phase.stage === 0}><summary className="cursor-pointer list-none font-bold text-slate-800"><span className="mr-2 inline-grid h-7 w-7 place-items-center rounded-lg bg-blue-50 text-xs text-blue-700">{phase.stage + 1}</span>{phase.name}<span className="ml-2 text-xs font-normal text-slate-500">{phase.typical_timing}</span></summary><div className="mt-4 grid gap-4 md:grid-cols-3">{[["Goals", phase.goals], ["Interventions", phase.interventions], ["Progression criteria", phase.progression_criteria]].map(([heading, items]) => <div key={heading}><p className="text-xs font-bold uppercase tracking-wide text-slate-500">{heading}</p><ul className="mt-2 list-disc space-y-1 pl-4 text-xs leading-5 text-slate-700">{items.map((item) => <li key={item}>{item}</li>)}</ul></div>)}</div></details>)}</div>
+          <div className="mt-6"><h3 className="font-bold text-[#071b4a]">Recommended outcome tracking</h3><div className="mt-2 flex flex-wrap gap-2">{selected.outcome_measures.map((item) => <span key={item} className="rounded-full bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-700">{item}</span>)}</div></div>
+          <div className="mt-6 border-t border-slate-200 pt-4"><p className="text-xs font-bold uppercase tracking-wide text-slate-500">Evidence sources</p><div className="mt-2 flex flex-wrap gap-3">{selected.sources.map((source) => <a key={source.url} href={source.url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-xs font-semibold text-blue-700 hover:underline">{source.title}<ExternalLink size={12} /></a>)}</div></div>
+        </article> : null}
+      </div>
+    </div>
+  );
 }
 
 function LibraryTab({ data, loading, error }) {
@@ -250,9 +317,11 @@ function OperationsTab() {
 
 export default function RehabRlWorkspace({ user }) {
   const [tab, setTab] = useState("overview");
-  const [overview, setOverview] = useState(null); const [library, setLibrary] = useState(null); const [error, setError] = useState(""); const [loading, setLoading] = useState(true);
-  useEffect(() => { let active = true; Promise.all([getRehabRlOverview(), getRehabRlExercises()]).then(([nextOverview, nextLibrary]) => { if (active) { setOverview(nextOverview); setLibrary(nextLibrary); } }).catch((requestError) => { if (active) setError(requestMessage(requestError)); }).finally(() => { if (active) setLoading(false); }); return () => { active = false; }; }, []);
-  const tabs = [{ id: "overview", label: "Overview", icon: Activity }, { id: "assessment", label: "Assessment", icon: BrainCircuit }, { id: "simulation", label: "Simulation", icon: FlaskConical }, { id: "library", label: "Policy exercises", icon: BookOpen }, ...(user?.role === "super_admin" ? [{ id: "operations", label: "Model operations", icon: ShieldCheck }] : [])];
-  const injuries = library?.injuries || DEFAULT_INJURIES;
-  return <main className="mx-auto max-w-[1500px] px-4 py-6 sm:px-6 lg:px-8 lg:py-8"><PageHeader eyebrow="Clinical decision support" title="RehabRL policy workspace" description="Review stage-aware rehabilitation recommendations and synthetic recovery trajectories inside PhysioVision AI." /><div className="mb-5 flex gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-900"><AlertTriangle className="mt-0.5 shrink-0" size={19} /><p><strong>Clinician review required.</strong> RehabRL outputs are experimental decision support, not autonomous prescriptions, diagnoses, or patient-specific outcome forecasts.</p></div><div className="mb-6 overflow-x-auto"><div className="inline-flex min-w-full gap-1 rounded-xl border border-slate-200 bg-white p-1 shadow-sm sm:min-w-0">{tabs.map(({ id, label, icon: Icon }) => <button key={id} onClick={() => setTab(id)} aria-current={tab === id ? "page" : undefined} className={`inline-flex min-h-11 flex-1 items-center justify-center gap-2 whitespace-nowrap rounded-lg px-4 text-sm font-bold transition ${tab === id ? "bg-[#071b4a] text-white" : "text-slate-600 hover:bg-slate-50"}`}><Icon size={17} />{label}</button>)}</div></div>{tab === "overview" ? <OverviewTab data={overview} loading={loading} error={error} onSelectTab={setTab} /> : null}{tab === "assessment" ? <AssessmentTab injuries={injuries} /> : null}{tab === "simulation" ? <SimulationTab injuries={injuries} /> : null}{tab === "library" ? <LibraryTab data={library} loading={loading} error={error} /> : null}{tab === "operations" && user?.role === "super_admin" ? <OperationsTab /> : null}</main>;
+  const [overview, setOverview] = useState(null); const [library, setLibrary] = useState(null); const [protocols, setProtocols] = useState(null); const [manifest, setManifest] = useState(null); const [governance, setGovernance] = useState(null); const [error, setError] = useState(""); const [loading, setLoading] = useState(true);
+  useEffect(() => { let active = true; Promise.all([getRehabRlOverview(), getRehabRlExercises(), getRehabRlProtocols(), getRehabRlModelManifest(), getRehabRlGovernance()]).then(([nextOverview, nextLibrary, nextProtocols, nextManifest, nextGovernance]) => { if (active) { setOverview(nextOverview); setLibrary(nextLibrary); setProtocols(nextProtocols); setManifest(nextManifest); setGovernance(nextGovernance); } }).catch((requestError) => { if (active) setError(requestMessage(requestError)); }).finally(() => { if (active) setLoading(false); }); return () => { active = false; }; }, []);
+  const refreshGovernance = () => getRehabRlGovernance().then(setGovernance).catch(() => {});
+  const tabs = [{ id: "overview", label: "Overview", icon: Activity }, { id: "assessment", label: "Assessment", icon: BrainCircuit }, { id: "protocols", label: "Clinical protocols", icon: ClipboardList }, { id: "simulation", label: "Simulation", icon: FlaskConical }, { id: "library", label: "Policy exercises", icon: BookOpen }, ...(user?.role === "super_admin" ? [{ id: "operations", label: "Model operations", icon: ShieldCheck }] : [])];
+  const conditions = library?.conditions || [];
+  const rlConditions = conditions.filter((condition) => condition.rl_supported);
+  return <main className="mx-auto max-w-[1500px] px-4 py-6 sm:px-6 lg:px-8 lg:py-8"><PageHeader eyebrow="Clinical decision support" title="Rehabilitation planning workspace" description="Review criteria-based physical therapy protocols and trained-policy suggestions inside PhysioVision AI." /><div className="mb-5 flex gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-900"><AlertTriangle className="mt-0.5 shrink-0" size={19} /><p><strong>Clinician review required.</strong> Protocols are references, not diagnoses or autonomous prescriptions. Examine the patient, screen red flags, apply procedure-specific orders, and use shared decision-making before treatment.</p></div><div className="mb-6 overflow-x-auto"><div className="inline-flex min-w-full gap-1 rounded-xl border border-slate-200 bg-white p-1 shadow-sm sm:min-w-0">{tabs.map(({ id, label, icon: Icon }) => <button key={id} onClick={() => setTab(id)} aria-current={tab === id ? "page" : undefined} className={`inline-flex min-h-11 flex-1 items-center justify-center gap-2 whitespace-nowrap rounded-lg px-4 text-sm font-bold transition ${tab === id ? "bg-[#071b4a] text-white" : "text-slate-600 hover:bg-slate-50"}`}><Icon size={17} />{label}</button>)}</div></div>{tab === "overview" ? <OverviewTab data={overview} manifest={manifest} governance={governance} loading={loading} error={error} onSelectTab={setTab} /> : null}{tab === "assessment" ? <AssessmentTab conditions={conditions} onDecisionLogged={refreshGovernance} /> : null}{tab === "protocols" ? <ProtocolsTab data={protocols} loading={loading} error={error} /> : null}{tab === "simulation" ? <SimulationTab conditions={rlConditions} /> : null}{tab === "library" ? <LibraryTab data={library} loading={loading} error={error} /> : null}{tab === "operations" && user?.role === "super_admin" ? <OperationsTab /> : null}</main>;
 }

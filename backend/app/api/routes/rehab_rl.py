@@ -9,9 +9,13 @@ from typing import Any, Callable
 
 from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
+from sqlalchemy.orm import Session
 
 from app.api.dependencies.auth import require_super_admin, require_therapist
 from app.api.error_responses import api_error_response
+from app.db.database import get_db
+from app.db.models import User
+from app.services.rehab_governance_service import record_rehab_decision, rehab_governance_summary
 from rehabrl.api.errors import (
     CheckpointLoadError,
     CheckpointNotFoundError,
@@ -56,8 +60,27 @@ def overview() -> Any:
 
 
 @router.post("/assessment")
-def assessment(request: AssessmentRequest) -> Any:
-    return _run(lambda: service.assessment(request))
+def assessment(
+    request: AssessmentRequest,
+    actor: User = Depends(require_therapist),
+    db: Session = Depends(get_db),
+) -> Any:
+    result = _run(lambda: service.assessment(request))
+    if isinstance(result, dict):
+        result["decision_audit_id"] = record_rehab_decision(
+            db, actor, request, result, service.model_manifest()["contract"]
+        )
+    return result
+
+
+@router.get("/governance")
+def governance(
+    days: int = 30,
+    actor: User = Depends(require_therapist),
+    db: Session = Depends(get_db),
+) -> Any:
+    bounded_days = max(1, min(days, 365))
+    return rehab_governance_summary(db, actor, bounded_days)
 
 
 @router.post("/simulate")
@@ -68,6 +91,21 @@ def simulate(request: SimulationRequest) -> Any:
 @router.get("/exercises")
 def exercises() -> Any:
     return _run(service.exercises)
+
+
+@router.get("/protocols")
+def protocols() -> Any:
+    return _run(service.protocols)
+
+
+@router.get("/protocols/{condition_id}")
+def protocol(condition_id: str) -> Any:
+    return _run(lambda: service.protocol(condition_id))
+
+
+@router.get("/model-manifest")
+def model_manifest() -> Any:
+    return _run(service.model_manifest)
 
 
 @router.get("/inspector", dependencies=[Depends(require_super_admin)])

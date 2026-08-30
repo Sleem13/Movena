@@ -22,6 +22,8 @@ def safe_staging_settings(**overrides):
         "smtp_host": "smtp.example.com",
         "email_from": "no-reply@example.com",
         "frontend_url": "https://staging.example.com",
+        "clinical_organization_name": "Example Rehabilitation Organization",
+        "clinical_escalation_contact": "+20-000-000-0000",
     }
     values.update(overrides)
     return Settings(**values)
@@ -79,6 +81,18 @@ def test_production_rejects_local_or_missing_database():
     settings = safe_staging_settings(app_env="production", database_url="sqlite:///local.db")
 
     with pytest.raises(RuntimeError, match="production DATABASE_URL must use PostgreSQL"):
+        settings.validate_deployment_safety()
+
+
+def test_production_requires_clinical_escalation_configuration():
+    settings = safe_staging_settings(
+        app_env="production",
+        database_url="postgresql://user:password@db.example.com/physiovision",
+        clinical_organization_name="Your organization",
+        clinical_escalation_contact="",
+    )
+
+    with pytest.raises(RuntimeError, match="clinical escalation organization and contact"):
         settings.validate_deployment_safety()
 
 
