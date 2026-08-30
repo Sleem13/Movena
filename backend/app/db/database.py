@@ -17,7 +17,7 @@ from app.core.config import database_url_from_environment, normalize_database_ur
 DEFAULT_DATABASE_PATH = BACKEND_ROOT / "physiovision_dev.db"
 DEFAULT_DATABASE_URL = f"sqlite:///{DEFAULT_DATABASE_PATH.as_posix()}"
 DATABASE_URL = database_url_from_environment(DEFAULT_DATABASE_URL)
-LATEST_SCHEMA_REVISION = "0004_rehab_phase1"
+LATEST_SCHEMA_REVISION = "0005_recovery_coaching"
 
 
 class Base(DeclarativeBase):

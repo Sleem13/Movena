@@ -33,6 +33,7 @@ from app.api.v1.catalog import router as catalog_router
 from app.api.v1.commerce import router as commerce_router
 from app.api.v1.admin_platform import router as admin_platform_router
 from app.api.v1.therapist_care import router as therapist_care_router
+from app.api.v1.recovery_coaching import router as recovery_coaching_router
 from app.api.dependencies.auth import AuthError
 from app.core.config import get_settings
 from app.core.cors import cors_middleware_options
@@ -176,6 +177,7 @@ app.include_router(catalog_router)
 app.include_router(commerce_router)
 app.include_router(admin_platform_router)
 app.include_router(therapist_care_router)
+app.include_router(recovery_coaching_router)
 if settings.enable_session_history:
     app.include_router(sessions_router)
 if settings.enable_therapist_dashboard:

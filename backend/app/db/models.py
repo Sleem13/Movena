@@ -296,6 +296,91 @@ class PatientHealthProfile(Base):
     )
 
 
+class RecoveryCoachingGoal(Base):
+    __tablename__ = "recovery_coaching_goals"
+    __table_args__ = (
+        CheckConstraint("confidence >= 1 AND confidence <= 5", name="ck_coaching_goal_confidence"),
+        CheckConstraint("progress_percent >= 0 AND progress_percent <= 100", name="ck_coaching_goal_progress"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    goal_id: Mapped[str] = mapped_column(String(36), unique=True, index=True, nullable=False)
+    patient_id: Mapped[str] = mapped_column(
+        ForeignKey("patient_profiles.patient_id", ondelete="CASCADE"), index=True, nullable=False
+    )
+    created_by_user_id: Mapped[str] = mapped_column(String(36), index=True, nullable=False)
+    domain: Mapped[str] = mapped_column(String(32), index=True, nullable=False)
+    title: Mapped[str] = mapped_column(String(120), nullable=False)
+    specific_action: Mapped[str] = mapped_column(Text, nullable=False)
+    measurement: Mapped[str] = mapped_column(String(160), nullable=False)
+    why_important: Mapped[str] = mapped_column(Text, nullable=False)
+    target_date: Mapped[date] = mapped_column(Date, index=True, nullable=False)
+    confidence: Mapped[int] = mapped_column(Integer, nullable=False)
+    progress_percent: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    status: Mapped[str] = mapped_column(String(24), default="proposed", index=True, nullable=False)
+    patient_agreed: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now, nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=utc_now, onupdate=utc_now, nullable=False
+    )
+
+
+class RecoveryCoachingCheckIn(Base):
+    __tablename__ = "recovery_coaching_check_ins"
+    __table_args__ = (
+        UniqueConstraint("patient_id", "check_in_date", name="uq_recovery_coaching_daily_check_in"),
+        CheckConstraint("energy >= 1 AND energy <= 5", name="ck_coaching_checkin_energy"),
+        CheckConstraint("sleep_quality >= 1 AND sleep_quality <= 5", name="ck_coaching_checkin_sleep"),
+        CheckConstraint("stress >= 1 AND stress <= 5", name="ck_coaching_checkin_stress"),
+        CheckConstraint("recovery_confidence >= 1 AND recovery_confidence <= 5", name="ck_coaching_checkin_confidence"),
+        CheckConstraint("activity_minutes >= 0 AND activity_minutes <= 1440", name="ck_coaching_checkin_activity"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    check_in_id: Mapped[str] = mapped_column(String(36), unique=True, index=True, nullable=False)
+    patient_id: Mapped[str] = mapped_column(
+        ForeignKey("patient_profiles.patient_id", ondelete="CASCADE"), index=True, nullable=False
+    )
+    created_by_user_id: Mapped[str] = mapped_column(String(36), index=True, nullable=False)
+    check_in_date: Mapped[date] = mapped_column(Date, index=True, nullable=False)
+    energy: Mapped[int] = mapped_column(Integer, nullable=False)
+    sleep_quality: Mapped[int] = mapped_column(Integer, nullable=False)
+    stress: Mapped[int] = mapped_column(Integer, nullable=False)
+    recovery_confidence: Mapped[int] = mapped_column(Integer, nullable=False)
+    activity_minutes: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    barrier_category: Mapped[str] = mapped_column(String(32), default="none", index=True, nullable=False)
+    barrier_note: Mapped[str | None] = mapped_column(Text)
+    symptoms_changed: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    urgent_concern: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    coaching_state: Mapped[str] = mapped_column(String(24), index=True, nullable=False)
+    supportive_prompt: Mapped[str] = mapped_column(Text, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now, nullable=False)
+
+
+class RecoveryCoachingActionPlan(Base):
+    __tablename__ = "recovery_coaching_action_plans"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    action_plan_id: Mapped[str] = mapped_column(String(36), unique=True, index=True, nullable=False)
+    goal_id: Mapped[str] = mapped_column(
+        ForeignKey("recovery_coaching_goals.goal_id", ondelete="CASCADE"), index=True, nullable=False
+    )
+    patient_id: Mapped[str] = mapped_column(
+        ForeignKey("patient_profiles.patient_id", ondelete="CASCADE"), index=True, nullable=False
+    )
+    created_by_user_id: Mapped[str] = mapped_column(String(36), index=True, nullable=False)
+    action_step: Mapped[str] = mapped_column(Text, nullable=False)
+    frequency: Mapped[str] = mapped_column(String(120), nullable=False)
+    support_needed: Mapped[str | None] = mapped_column(Text)
+    review_date: Mapped[date] = mapped_column(Date, index=True, nullable=False)
+    patient_agreed: Mapped[bool] = mapped_column(Boolean, nullable=False)
+    status: Mapped[str] = mapped_column(String(24), default="active", index=True, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now, nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=utc_now, onupdate=utc_now, nullable=False
+    )
+
+
 class TherapistPatientAssignment(Base):
     __tablename__ = "therapist_patient_assignments"
     __table_args__ = (

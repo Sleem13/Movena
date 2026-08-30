@@ -12,6 +12,7 @@ export const PAGE_PATHS = {
   adminUsers: "/admin/users",
   coach: "/coach",
   rehabPolicy: "/rehab-policy",
+  recoveryCoaching: "/recovery-coaching",
   about: "/about",
   login: "/login",
   register: "/register",

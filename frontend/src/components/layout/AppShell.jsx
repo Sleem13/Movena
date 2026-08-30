@@ -8,6 +8,7 @@ import {
   ClipboardList,
   Dumbbell,
   History,
+  HeartHandshake,
   Home,
   ListChecks,
   LockKeyhole,
@@ -55,6 +56,7 @@ function workspaceSectionsFor(user) {
         labelKey: "nav.myRehabilitation",
         items: [
           { id: "care", labelKey: "nav.todaysPlan", icon: CalendarHeart },
+          { id: "recoveryCoaching", labelKey: "nav.recoveryCoaching", icon: HeartHandshake },
           { id: "exercises", labelKey: "nav.myExercises", icon: Dumbbell },
           { id: "analyze", labelKey: "nav.aiExerciseCoach", icon: UploadCloud },
           {
@@ -87,6 +89,7 @@ function workspaceSectionsFor(user) {
             labelKey: "nav.rehabPolicy",
             icon: BrainCircuit,
           },
+          { id: "recoveryCoaching", labelKey: "nav.recoveryCoaching", icon: HeartHandshake },
         ],
       },
       {
@@ -133,6 +136,7 @@ function workspaceSectionsFor(user) {
             labelKey: "nav.rehabPolicy",
             icon: BrainCircuit,
           },
+          { id: "recoveryCoaching", labelKey: "nav.recoveryCoaching", icon: HeartHandshake },
         ],
       },
       {
@@ -154,6 +158,7 @@ function workspaceSectionsFor(user) {
         { id: "history", labelKey: "nav.movementReviews", icon: ClipboardList },
         ...movementSupport,
         { id: "rehabPolicy", labelKey: "nav.rehabPolicy", icon: BrainCircuit },
+        { id: "recoveryCoaching", labelKey: "nav.recoveryCoaching", icon: HeartHandshake },
       ],
     },
   ];
@@ -179,6 +184,7 @@ const workspacePages = new Set([
   "coach",
   "results",
   "rehabPolicy",
+  "recoveryCoaching",
   "profile",
 ]);
 

@@ -3,7 +3,7 @@
 **AI-Assisted Rehabilitation Platform**<br>
 *Move Better · Recover Faster · Live Healthier*
 
-PhysioVision AI is a video-based exercise coaching and rehabilitation platform. It combines pose estimation, exercise-specific biomechanics rules, repetition tracking, temporal exercise recognition, annotated video, reports, session history, therapist-facing care workflows, and protected RehabRL decision support across React web and Expo Android clients.
+PhysioVision AI is a video-based exercise coaching and rehabilitation platform. It combines pose estimation, exercise-specific biomechanics rules, repetition tracking, temporal exercise recognition, annotated video, reports, session history, therapist-facing care workflows, bounded recovery and lifestyle coaching, and protected RehabRL decision support across React web and Expo Android clients.
 
 The product supports movement review and coaching conversations. It does not diagnose conditions, prescribe treatment, or replace a licensed physiotherapist.
 
@@ -18,6 +18,7 @@ The integrated RehabRL workspace provides therapist-reviewed recommendation cand
 | Mobile application | Expo, React Native, Expo Router | Guided Android workflow for recording, recognition, analysis, and results |
 | ML/DL training | PyTorch, XGBoost, scikit-learn | Temporal exercise recognition experiments and model artifacts |
 | RehabRL decision support | Double Dueling DQN, NumPy/PyTorch | Clinician-reviewed recommendations, synthetic trajectories, and policy operations |
+| Recovery coaching | FastAPI, React, SQLAlchemy | Patient-agreed goals, daily reflections, barriers, action plans, and clinical escalation |
 
 ## Main capabilities
 
@@ -29,6 +30,7 @@ The integrated RehabRL workspace provides therapist-reviewed recommendation cand
 - Responsive web UI and a guided mobile UI with Home, Analyze, Exercises, History, and More navigation.
 - Temporal GRU and XGBoost exercise-recognition candidates.
 - Protected RehabRL workspace for stage-aware recommendation review, synthetic recovery simulation, and policy exercise exploration.
+- Protected Recovery & Lifestyle Coaching workspace for patient-chosen SMART goals, non-diagnostic check-ins, therapist-reviewed action plans, and hard safety escalation.
 
 ## Supported exercises
 
@@ -208,6 +210,10 @@ Apply schema changes with Alembic before starting an existing environment:
 
 The Phase 1 migration is reversible to revision `0003_data_rights` for validation on a disposable database. Production rollback still requires a reviewed backup/restore decision because clinical records must not be discarded casually. See [Phase 0 + Phase 1 checklist](docs/phase_0_1_implementation_checklist.md).
 
+### Recovery & Lifestyle Coaching
+
+Authenticated patients and assigned clinical users can open `/recovery-coaching`. Patients can create explicitly agreed SMART goals, record non-diagnostic daily reflections, identify barriers, and track progress. Therapists can review assigned patients and create patient-agreed action plans. New or worsening symptoms require clinical follow-up; an immediate concern pauses coaching, displays the organization-configured urgent pathway, creates a therapist notification, and records an audit event. Coaching never changes a prescription autonomously and does not provide diagnosis, psychotherapy, nutrition prescribing, or emergency care. See the [clinical and technical guide](docs/recovery_lifestyle_coaching.md).
+
 ### RehabRL decision support
 
 Authenticated therapists, administrators, and super administrators can open `/rehab-policy` to review:
@@ -333,6 +339,7 @@ See [product safety policy](docs/product_safety_policy.md), [privacy checklist](
 - [Exercise coaching adoption plan](docs/exercise_coaching_adoption_plan.md)
 - [RehabRL integration guide](docs/rehab_rl_integration.md)
 - [RehabRL improvement roadmap](docs/rehab_rl_improvement_roadmap.md)
+- [Recovery & Lifestyle Coaching clinical and technical guide](docs/recovery_lifestyle_coaching.md)
 - [References](docs/references.md)
 
 ## License

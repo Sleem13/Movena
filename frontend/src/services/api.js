@@ -166,6 +166,30 @@ export async function getRehabRlGovernance(days = 30) {
   return (await api.get(`/api/v1/rehab-rl/governance?days=${encodeURIComponent(days)}`)).data;
 }
 
+function recoveryCoachingConfig(patientId) {
+  return patientId ? { params: { patient_id: patientId } } : {};
+}
+
+export async function getRecoveryCoachingDashboard(patientId) {
+  return (await api.get("/api/v1/recovery-coaching/dashboard", recoveryCoachingConfig(patientId))).data;
+}
+
+export async function createRecoveryCoachingGoal(payload, patientId) {
+  return (await api.post("/api/v1/recovery-coaching/goals", payload, recoveryCoachingConfig(patientId))).data;
+}
+
+export async function createRecoveryCoachingCheckIn(payload, patientId) {
+  return (await api.post("/api/v1/recovery-coaching/check-ins", payload, recoveryCoachingConfig(patientId))).data;
+}
+
+export async function createRecoveryCoachingActionPlan(payload, patientId) {
+  return (await api.post("/api/v1/recovery-coaching/action-plans", payload, recoveryCoachingConfig(patientId))).data;
+}
+
+export async function updateRecoveryCoachingGoal(goalId, payload, patientId) {
+  return (await api.patch(`/api/v1/recovery-coaching/goals/${encodeURIComponent(goalId)}`, payload, recoveryCoachingConfig(patientId))).data;
+}
+
 export async function getRehabRlInspector() {
   return (await api.get("/api/v1/rehab-rl/inspector")).data;
 }

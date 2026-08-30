@@ -9,6 +9,7 @@ describe("navigation mapping", () => {
     ["/admin/users/123", "adminUsers"],
     ["/admin/payments", "adminWorkflow"],
     ["/rehab-policy", "rehabPolicy"],
+    ["/recovery-coaching", "recoveryCoaching"],
     ["/forgot-password", "forgotPassword"],
     ["/unknown", "home"],
   ])("maps %s to %s", (path, expected) => {

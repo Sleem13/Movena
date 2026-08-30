@@ -24,6 +24,8 @@ import {
   getTherapistDashboard,
   getAdminWorkflow,
   getRehabRlGovernance,
+  getRecoveryCoachingDashboard,
+  createRecoveryCoachingCheckIn,
   listPatientAdherence,
   listSavedSessions,
   recognizeExerciseVideo,
@@ -85,6 +87,22 @@ describe("deployment API configuration", () => {
     mocks.get.mockResolvedValue({ data: { decisions: 0 } });
     await getRehabRlGovernance(90);
     expect(mocks.get).toHaveBeenCalledWith("/api/v1/rehab-rl/governance?days=90");
+  });
+
+  it("scopes recovery coaching records to the selected patient", async () => {
+    mocks.get.mockResolvedValue({ data: { goals: [] } });
+    mocks.post.mockResolvedValue({ data: { coaching_state: "ready" } });
+    await getRecoveryCoachingDashboard("patient-1");
+    await createRecoveryCoachingCheckIn({ energy: 3 }, "patient-1");
+    expect(mocks.get).toHaveBeenCalledWith(
+      "/api/v1/recovery-coaching/dashboard",
+      { params: { patient_id: "patient-1" } },
+    );
+    expect(mocks.post).toHaveBeenCalledWith(
+      "/api/v1/recovery-coaching/check-ins",
+      { energy: 3 },
+      { params: { patient_id: "patient-1" } },
+    );
   });
 
   it("loads assignment-scoped patient adherence for therapist review", async () => {
