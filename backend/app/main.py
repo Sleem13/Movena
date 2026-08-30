@@ -23,6 +23,7 @@ from app.api.routes.exercise_recognition import router as exercise_recognition_r
 from app.api.routes.exercises import router as exercises_router
 from app.api.routes.realtime_coaching import router as realtime_coaching_router
 from app.api.routes.analysis_jobs import router as analysis_jobs_router
+from app.api.routes.rehab_rl import router as rehab_rl_router
 from app.api.v1.therapist import router as therapist_router
 from app.api.v1.auth import router as auth_router
 from app.api.v1.admin import router as admin_router
@@ -166,6 +167,7 @@ if settings.enable_exercise_recognition:
 app.include_router(exercises_router)
 app.include_router(realtime_coaching_router)
 app.include_router(analysis_jobs_router)
+app.include_router(rehab_rl_router)
 app.include_router(auth_router)
 app.include_router(admin_router)
 app.include_router(patient_router)

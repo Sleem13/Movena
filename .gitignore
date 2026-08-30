@@ -182,6 +182,9 @@ backend/artifacts/**
 !backend/artifacts/
 !backend/artifacts/**/
 !backend/artifacts/**/.gitkeep
+# RehabRL runtime training snapshots are generated artifacts. Curated
+# best-model checkpoints are tracked explicitly for CPU and CUDA deployments.
+backend/checkpoints/checkpoint_ep*.pt*
 .pnpm-store/
 data/raw/**
 data/augmented/**

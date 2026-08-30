@@ -38,6 +38,7 @@ const SuperAdminDashboard = lazy(
 const SuperAdminWorkflowDashboard = lazy(
   () => import("./pages/SuperAdminWorkflowDashboard.jsx"),
 );
+const RehabRlWorkspace = lazy(() => import("./pages/RehabRlWorkspace.jsx"));
 
 // Keep the default request on the low-latency path. Video encoding, PDF
 // generation, and chart payloads remain available as explicit opt-ins.
@@ -432,6 +433,14 @@ function AppContent() {
           />
         </LazyPage>
       )}
+      {page === "rehabPolicy" &&
+        (user && ["therapist", "admin", "super_admin"].includes(user.role) ? (
+          <LazyPage>
+            <RehabRlWorkspace user={user} />
+          </LazyPage>
+        ) : (
+          <WorkspaceOverview onNavigate={navigate} />
+        ))}
       {page === "about" && <About onStart={() => navigate("analyze")} />}
       {page === "login" && (
         <Login

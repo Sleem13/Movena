@@ -11,6 +11,7 @@ export const PAGE_PATHS = {
   adminWorkflow: "/admin/workflow",
   adminUsers: "/admin/users",
   coach: "/coach",
+  rehabPolicy: "/rehab-policy",
   about: "/about",
   login: "/login",
   register: "/register",

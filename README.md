@@ -3,9 +3,11 @@
 **AI-Assisted Rehabilitation Platform**<br>
 *Move Better · Recover Faster · Live Healthier*
 
-PhysioVision AI is a video-based exercise coaching platform. It combines pose estimation, exercise-specific biomechanics rules, repetition tracking, temporal exercise recognition, annotated video, reports, session history, therapist-facing views, a React web client, and an Expo Android application.
+PhysioVision AI is a video-based exercise coaching and rehabilitation platform. It combines pose estimation, exercise-specific biomechanics rules, repetition tracking, temporal exercise recognition, annotated video, reports, session history, therapist-facing care workflows, and protected RehabRL decision support across React web and Expo Android clients.
 
 The product supports movement review and coaching conversations. It does not diagnose conditions, prescribe treatment, or replace a licensed physiotherapist.
+
+The integrated RehabRL workspace provides therapist-reviewed recommendation candidates, synthetic recovery simulation, prescription exercise exploration, and super-admin model operations. See the [integration guide](docs/rehab_rl_integration.md) for its architecture, security model, API, deployment, and verification status.
 
 ## Product surfaces
 
@@ -15,6 +17,7 @@ The product supports movement review and coaching conversations. It does not dia
 | Web application | React, Vite | Browser exercise selection, uploads, analysis, results, history, and coaching UI |
 | Mobile application | Expo, React Native, Expo Router | Guided Android workflow for recording, recognition, analysis, and results |
 | ML/DL training | PyTorch, XGBoost, scikit-learn | Temporal exercise recognition experiments and model artifacts |
+| RehabRL decision support | Double Dueling DQN, NumPy/PyTorch | Clinician-reviewed recommendations, synthetic trajectories, and policy operations |
 
 ## Main capabilities
 
@@ -25,6 +28,7 @@ The product supports movement review and coaching conversations. It does not dia
 - Authentication, protected sessions, and therapist dashboard foundations.
 - Responsive web UI and a guided mobile UI with Home, Analyze, Exercises, History, and More navigation.
 - Temporal GRU and XGBoost exercise-recognition candidates.
+- Protected RehabRL workspace for stage-aware recommendation review, synthetic recovery simulation, and policy exercise exploration.
 
 ## Supported exercises
 
@@ -59,12 +63,14 @@ FastAPI authentication and validation
         +--> Exercise analyzer --> reps, phases, issues, confidence
         |
         +--> Optional overlay, PDF, frame data, and saved session
+        |
+        +--> RehabRL policy --> clinician-reviewed recommendation or simulation
 ```
 
 ## Repository layout
 
 ```text
-backend/     FastAPI application, services, database, and API tests
+backend/     FastAPI application, embedded RehabRL engine, checkpoints, services, database, and API tests
 frontend/    React/Vite web application
 mobile/      Expo/React Native Android application
 scripts/     Dataset preparation, evaluation, and ML/DL training scripts
@@ -202,6 +208,18 @@ Apply schema changes with Alembic before starting an existing environment:
 
 The Phase 1 migration is reversible to revision `0003_data_rights` for validation on a disposable database. Production rollback still requires a reviewed backup/restore decision because clinical records must not be discarded casually. See [Phase 0 + Phase 1 checklist](docs/phase_0_1_implementation_checklist.md).
 
+### RehabRL decision support
+
+Authenticated therapists, administrators, and super administrators can open `/rehab-policy` to review:
+
+- Policy status and the active NumPy/CPU or PyTorch/CUDA backend.
+- Stage-aware prescription candidates generated from clinician-entered patient-state measures.
+- Synthetic recovery trajectories for model evaluation.
+- The policy's prescription exercise library.
+- Super-admin-only model inspection, checkpoint restore, and training controls.
+
+Patients cannot access this workspace or its API. RehabRL outputs are experimental decision support: they require clinician review and must not be treated as autonomous prescriptions, diagnoses, or patient-specific outcome forecasts. See the [RehabRL integration guide](docs/rehab_rl_integration.md) and [improvement roadmap](docs/rehab_rl_improvement_roadmap.md).
+
 ## Testing
 
 Backend and model tests:
@@ -209,6 +227,12 @@ Backend and model tests:
 ```powershell
 .\.venv\Scripts\Activate.ps1
 python -m pytest
+```
+
+Focused RehabRL integration tests:
+
+```powershell
+python -m pytest -q tests/test_rehab_rl_api.py tests/test_root_uvicorn_entrypoint.py
 ```
 
 Web tests and build:
@@ -278,6 +302,7 @@ Only SHA-256 token hashes are stored. Tokens expire, are invalidated after use, 
 - Include multiple participants, camera views, clothing, lighting, backgrounds, and correct/incorrect technique.
 - The exercise pose CSV is useful for baseline training but is not sufficient by itself for dependable real-world validation.
 - Do not promote a model only from training accuracy; record held-out per-class precision, recall, F1, confusion matrix, and confidence calibration.
+- Do not promote a rehabilitation policy from simulated reward alone; require clinical baseline comparison, safety constraint evaluation, subgroup analysis, and documented clinician approval.
 
 See [dataset strategy](docs/dataset_strategy.md), [recognition model card](docs/exercise_pose_recognition_model_card.md), and [adoption plan](docs/exercise_coaching_adoption_plan.md).
 
@@ -300,6 +325,8 @@ See [product safety policy](docs/product_safety_policy.md), [privacy checklist](
 - [Mobile API contract](docs/mobile_api_contract.md)
 - [Cloud deployment preparation](docs/cloud_deployment_preparation.md)
 - [Exercise coaching adoption plan](docs/exercise_coaching_adoption_plan.md)
+- [RehabRL integration guide](docs/rehab_rl_integration.md)
+- [RehabRL improvement roadmap](docs/rehab_rl_improvement_roadmap.md)
 - [References](docs/references.md)
 
 ## License

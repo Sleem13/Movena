@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import {
   ArrowRight,
   BarChart3,
+  BrainCircuit,
   CalendarHeart,
   ChevronRight,
   ClipboardList,
@@ -81,6 +82,11 @@ function workspaceSectionsFor(user) {
             labelKey: "nav.aiMovementReview",
             icon: UploadCloud,
           },
+          {
+            id: "rehabPolicy",
+            labelKey: "nav.rehabPolicy",
+            icon: BrainCircuit,
+          },
         ],
       },
       {
@@ -122,6 +128,11 @@ function workspaceSectionsFor(user) {
             labelKey: "nav.movementAnalysis",
             icon: UploadCloud,
           },
+          {
+            id: "rehabPolicy",
+            labelKey: "nav.rehabPolicy",
+            icon: BrainCircuit,
+          },
         ],
       },
       {
@@ -142,6 +153,7 @@ function workspaceSectionsFor(user) {
       items: [
         { id: "history", labelKey: "nav.movementReviews", icon: ClipboardList },
         ...movementSupport,
+        { id: "rehabPolicy", labelKey: "nav.rehabPolicy", icon: BrainCircuit },
       ],
     },
   ];
@@ -166,6 +178,7 @@ const workspacePages = new Set([
   "adminUsers",
   "coach",
   "results",
+  "rehabPolicy",
   "profile",
 ]);
 

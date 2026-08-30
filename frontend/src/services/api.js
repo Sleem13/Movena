@@ -138,6 +138,38 @@ export async function getExercises() {
   return (await api.get("/api/v1/exercises")).data;
 }
 
+export async function getRehabRlOverview() {
+  return (await api.get("/api/v1/rehab-rl/overview")).data;
+}
+
+export async function createRehabRlAssessment(payload) {
+  return (await api.post("/api/v1/rehab-rl/assessment", payload)).data;
+}
+
+export async function simulateRehabRlTrajectory(payload) {
+  return (await api.post("/api/v1/rehab-rl/simulate", payload)).data;
+}
+
+export async function getRehabRlExercises() {
+  return (await api.get("/api/v1/rehab-rl/exercises")).data;
+}
+
+export async function getRehabRlInspector() {
+  return (await api.get("/api/v1/rehab-rl/inspector")).data;
+}
+
+export async function getRehabRlTrainingStatus() {
+  return (await api.get("/api/v1/rehab-rl/training")).data;
+}
+
+export async function startRehabRlTraining(payload) {
+  return (await api.post("/api/v1/rehab-rl/training", payload)).data;
+}
+
+export async function restoreRehabRlCheckpoint() {
+  return (await api.post("/api/v1/rehab-rl/checkpoints/restore")).data;
+}
+
 export async function getExercise(exerciseId) {
   return (await api.get(`/api/v1/exercises/${exerciseId}`)).data;
 }
