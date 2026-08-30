@@ -6,7 +6,7 @@ from fastapi import FastAPI, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.exc import OperationalError, SQLAlchemyError
 
 from app.api.routes.health import router as health_router
 from app.api.routes.artifacts import router as artifacts_router
@@ -133,9 +133,17 @@ async def database_exception_handler(_request, exc: SQLAlchemyError) -> JSONResp
         "Database request failed",
         exc_info=(type(exc), exc, exc.__traceback__),
     )
+    detail = str(getattr(exc, "orig", exc)).lower()
+    schema_outdated = isinstance(exc, OperationalError) and any(
+        marker in detail for marker in ("no such column", "undefined column", "does not exist")
+    )
     payload = ErrorResponse(
-        error_code="DATABASE_UNAVAILABLE",
-        message="The database is temporarily unavailable.",
+        error_code="DATABASE_SCHEMA_OUTDATED" if schema_outdated else "DATABASE_UNAVAILABLE",
+        message=(
+            "The database schema is out of date. Apply the latest migrations and restart the service."
+            if schema_outdated
+            else "The database is temporarily unavailable."
+        ),
     )
     return JSONResponse(
         status_code=status.HTTP_503_SERVICE_UNAVAILABLE,

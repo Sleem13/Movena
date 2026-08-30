@@ -144,6 +144,9 @@ const COPY = {
     unavailable: "Select an assigned patient to open coaching records.",
     profileRequired: "A patient profile is required to use recovery coaching.",
     updateError: "Unable to update recovery coaching right now.",
+    databaseUnavailable: "The database is temporarily unavailable.",
+    databaseSchemaOutdated:
+      "The database schema is out of date. Apply the latest migrations and restart the service.",
     nonDiagnostic: "Non-diagnostic · 1–5",
   },
   ar: {
@@ -252,9 +255,19 @@ const COPY = {
     unavailable: "اختر مريضًا مُسندًا لفتح سجلات التدريب.",
     profileRequired: "يلزم ملف مريض لاستخدام تدريب التعافي.",
     updateError: "تعذر تحديث تدريب التعافي الآن.",
+    databaseUnavailable: "قاعدة البيانات غير متاحة مؤقتًا.",
+    databaseSchemaOutdated:
+      "مخطط قاعدة البيانات قديم. طبّق أحدث الترحيلات ثم أعد تشغيل الخدمة.",
     nonDiagnostic: "غير تشخيصي · 1–5",
   },
 };
+
+function coachingErrorMessage(error, copy) {
+  return getApiErrorMessage(error, copy.updateError, {
+    DATABASE_UNAVAILABLE: copy.databaseUnavailable,
+    DATABASE_SCHEMA_OUTDATED: copy.databaseSchemaOutdated,
+  });
+}
 
 const DOMAINS = [
   "activity",
@@ -480,7 +493,7 @@ function GoalForm({
       }));
       await onSaved();
     } catch (requestError) {
-      setError(getApiErrorMessage(requestError, c.updateError));
+      setError(coachingErrorMessage(requestError, c));
     } finally {
       setBusy(false);
     }
@@ -666,7 +679,7 @@ function CheckInForm({ patientId, onSaved, locale, c }) {
       setResult(next);
       await onSaved();
     } catch (requestError) {
-      setError(getApiErrorMessage(requestError, c.updateError));
+      setError(coachingErrorMessage(requestError, c));
     } finally {
       setBusy(false);
     }
@@ -953,7 +966,7 @@ function ReminderForm({ preference, patientId, onSaved, c }) {
       );
       await onSaved();
     } catch (requestError) {
-      setError(getApiErrorMessage(requestError, c.updateError));
+      setError(coachingErrorMessage(requestError, c));
     } finally {
       setBusy(false);
     }
@@ -1065,7 +1078,7 @@ function FollowUpCard({ row, patientId, onSaved, c }) {
       );
       await onSaved();
     } catch (requestError) {
-      setError(getApiErrorMessage(requestError, c.updateError));
+      setError(coachingErrorMessage(requestError, c));
     } finally {
       setBusy(false);
     }
@@ -1201,7 +1214,7 @@ function ActionPlanForm({ patientId, goals, onSaved, c }) {
       }));
       await onSaved();
     } catch (requestError) {
-      setError(getApiErrorMessage(requestError, c.updateError));
+      setError(coachingErrorMessage(requestError, c));
     } finally {
       setBusy(false);
     }
@@ -1321,7 +1334,7 @@ export default function RecoveryCoachingWorkspace({ user }) {
         }
       })
       .catch((requestError) => {
-        if (active) setError(getApiErrorMessage(requestError, c.updateError));
+        if (active) setError(coachingErrorMessage(requestError, c));
       })
       .finally(() => {
         if (active && !patientId) setLoading(false);
@@ -1329,7 +1342,7 @@ export default function RecoveryCoachingWorkspace({ user }) {
     return () => {
       active = false;
     };
-  }, [clinicalRole, c.updateError, patientId]);
+  }, [clinicalRole, c, patientId]);
   const refresh = useCallback(
     async (silent = Boolean(data)) => {
       if (clinicalRole && !patientId) {
@@ -1348,12 +1361,12 @@ export default function RecoveryCoachingWorkspace({ user }) {
         setCanApplyTemplate(Boolean(templateData.can_apply_template));
         setError("");
       } catch (requestError) {
-        setError(getApiErrorMessage(requestError, c.updateError));
+        setError(coachingErrorMessage(requestError, c));
       } finally {
         if (!silent) setLoading(false);
       }
     },
-    [c.updateError, clinicalRole, data, patientId],
+    [c, clinicalRole, data, patientId],
   );
   useEffect(() => {
     refresh(false);

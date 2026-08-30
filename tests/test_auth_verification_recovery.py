@@ -264,3 +264,27 @@ def test_compatibility_migration_adds_rehabilitation_phase_columns(tmp_path):
     assert {"fatigue", "analysis_session_id"} <= {
         column["name"] for column in inspector.get_columns("adherence_entries")
     }
+
+
+def test_compatibility_migration_adds_recovery_review_columns(tmp_path):
+    engine = create_database_engine(
+        f"sqlite:///{(tmp_path / 'legacy-coaching.db').as_posix()}"
+    )
+    with engine.begin() as connection:
+        connection.execute(
+            text("CREATE TABLE recovery_coaching_check_ins (id INTEGER PRIMARY KEY)")
+        )
+
+    init_db(engine)
+    init_db(engine)
+
+    columns = {
+        column["name"]
+        for column in inspect(engine).get_columns("recovery_coaching_check_ins")
+    }
+    assert {
+        "reviewed_at",
+        "reviewed_by_user_id",
+        "review_disposition",
+        "review_note",
+    } <= columns

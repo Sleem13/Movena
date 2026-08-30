@@ -189,6 +189,26 @@ def init_db(bind: Engine | None = None) -> None:
                 "CREATE INDEX IF NOT EXISTS ix_adherence_entries_analysis_session_id "
                 "ON adherence_entries (analysis_session_id)"
             ))
+    if target.dialect.name == "sqlite" and "recovery_coaching_check_ins" in inspect(target).get_table_names():
+        columns = {column["name"] for column in inspect(target).get_columns("recovery_coaching_check_ins")}
+        additions = {
+            "reviewed_at": "TIMESTAMP NULL",
+            "reviewed_by_user_id": "VARCHAR(36) NULL",
+            "review_disposition": "VARCHAR(40) NULL",
+            "review_note": "TEXT NULL",
+        }
+        for column, definition in additions.items():
+            if column not in columns:
+                with target.begin() as connection:
+                    connection.execute(text(
+                        f"ALTER TABLE recovery_coaching_check_ins ADD COLUMN {column} {definition}"
+                    ))
+        with target.begin() as connection:
+            for column in ("reviewed_at", "reviewed_by_user_id", "review_disposition"):
+                connection.execute(text(
+                    f"CREATE INDEX IF NOT EXISTS ix_recovery_coaching_check_ins_{column} "
+                    f"ON recovery_coaching_check_ins ({column})"
+                ))
 
 
 def verify_production_schema(bind: Engine | None = None) -> None:

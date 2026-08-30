@@ -13,4 +13,20 @@ describe("getApiErrorMessage", () => {
       "Fallback",
     );
   });
+
+  it("prefers a localized message for a known API error code", () => {
+    const error = {
+      response: {
+        data: {
+          error_code: "DATABASE_SCHEMA_OUTDATED",
+          message: "English server message",
+        },
+      },
+    };
+    expect(
+      getApiErrorMessage(error, "Fallback", {
+        DATABASE_SCHEMA_OUTDATED: "مخطط قاعدة البيانات قديم.",
+      }),
+    ).toBe("مخطط قاعدة البيانات قديم.");
+  });
 });

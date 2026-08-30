@@ -1,3 +1,6 @@
-export function getApiErrorMessage(error, fallback) {
-  return error.response?.data?.message || fallback;
+export function getApiErrorMessage(error, fallback, messagesByCode = {}) {
+  const code = error.response?.data?.error_code;
+  return (
+    (code && messagesByCode[code]) || error.response?.data?.message || fallback
+  );
 }
