@@ -22,6 +22,10 @@ output "ecs_service_name" {
   value = aws_ecs_service.backend.name
 }
 
+output "rds_instance_identifier" {
+  value = aws_db_instance.database.identifier
+}
+
 output "rds_secret_arn" {
   value     = aws_db_instance.database.master_user_secret[0].secret_arn
   sensitive = true
