@@ -12,7 +12,13 @@ from app.db import models  # noqa: F401
 config = context.config
 if config.config_file_name:
     fileConfig(config.config_file_name)
-config.set_main_option("sqlalchemy.url", database_url_from_environment(config.get_main_option("sqlalchemy.url")))
+# Alembic stores options in ConfigParser, where percent characters are
+# interpolation markers. Managed database passwords can legitimately contain
+# them, so escape the completed URL before assigning it to the config.
+config.set_main_option(
+    "sqlalchemy.url",
+    database_url_from_environment(config.get_main_option("sqlalchemy.url")).replace("%", "%%"),
+)
 target_metadata = Base.metadata
 
 

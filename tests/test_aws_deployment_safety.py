@@ -1,5 +1,6 @@
 from pathlib import Path
 import re
+from configparser import ConfigParser
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -40,3 +41,14 @@ def test_staging_uses_reversible_cost_controls_without_downsizing_video_compute(
     variables = (PROJECT_ROOT / "infra" / "aws" / "variables.tf").read_text(encoding="utf-8")
     assert re.search(r'variable "ecs_cpu"[\s\S]*?default\s*=\s*2048', variables)
     assert re.search(r'variable "ecs_memory"[\s\S]*?default\s*=\s*4096', variables)
+
+
+def test_alembic_escapes_percent_characters_in_managed_database_urls():
+    alembic_env = (PROJECT_ROOT / "backend" / "alembic" / "env.py").read_text(encoding="utf-8")
+    assert '.replace("%", "%%")' in alembic_env
+
+    database_url = "postgresql+psycopg://user:p%ss@example.test/app"
+    parser = ConfigParser()
+    parser.add_section("alembic")
+    parser.set("alembic", "sqlalchemy.url", database_url.replace("%", "%%"))
+    assert parser.get("alembic", "sqlalchemy.url") == database_url
