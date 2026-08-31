@@ -9,10 +9,15 @@ from sqlalchemy.orm import Session
 from sqlalchemy.pool import StaticPool
 
 from app.db.crud import create_exercise_plan
-from app.db.models import AnalysisSession, Base, ExercisePlan, PatientProfile, TherapistPatientAssignment, User
-from app.schemas.care_schema import AdherenceCreate, CheckoutCreate
+from app.db.models import (
+    AdherenceEntry, AnalysisSession, AuditLog, Base, ExercisePlan, Notification,
+    PatientProfile, TherapistPatientAssignment, User,
+)
+from app.schemas.care_schema import AdherenceCreate, CheckoutCreate, ExerciseResponseReview
 from app.schemas.patient_schema import ExercisePlanCreate, ExercisePlanItemCreate
-from app.services.care_service import patient_today, record_adherence, user_can_access_patient
+from app.services.care_service import (
+    acknowledge_exercise_response, patient_today, record_adherence, user_can_access_patient,
+)
 from app.services.paymob_service import HMAC_FIELDS, _nested, verify_webhook_hmac
 
 
@@ -159,3 +164,65 @@ def test_rehab_analysis_link_rejects_wrong_exercise_and_new_plan_preserves_histo
 
     assert care_db.get(ExercisePlan, first.id).status == "paused"
     assert care_db.get(ExercisePlan, second.id).status == "active"
+
+
+def test_exercise_response_requires_acknowledgement_and_closes_clinical_review_loop(care_db: Session):
+    patient_user = _user("response-patient", "patient")
+    therapist = _user("response-therapist", "therapist")
+    profile = PatientProfile(
+        patient_id="response-profile", user_id=patient_user.user_id,
+        display_name="Response Patient",
+    )
+    care_db.add_all([patient_user, therapist, profile])
+    care_db.flush()
+    care_db.add(TherapistPatientAssignment(
+        assignment_id="response-assignment", therapist_user_id=therapist.user_id,
+        patient_id=profile.patient_id, status="active",
+    ))
+    care_db.commit()
+    plan = create_exercise_plan(care_db, profile.patient_id, ExercisePlanCreate(
+        title="Graded activity",
+        items=[ExercisePlanItemCreate(
+            exercise_id="sit_to_stand", sets=2, reps=6, days_per_week=3,
+        )],
+    ), therapist.user_id)
+
+    with pytest.raises(ValidationError, match="Safety acknowledgement"):
+        AdherenceCreate(
+            plan_item_id=plan.items[0].item_id, scheduled_date=date(2026, 8, 31),
+            completion_status="partial", symptoms_changed=True,
+        )
+
+    result = record_adherence(care_db, profile, AdherenceCreate(
+        plan_item_id=plan.items[0].item_id, scheduled_date=date(2026, 8, 31),
+        completion_status="partial", pain_before=2, pain_after=5,
+        perceived_exertion=9, symptoms_changed=True,
+        stopped_due_to_symptoms=True, symptom_flags=["dizziness"],
+        safety_acknowledged=True,
+    ), "response-check-in")
+
+    assert result.response_state == "clinical_follow_up"
+    assert result.clinician_review_required is True
+    assert "Do not progress" in result.supportive_instruction
+    notification = care_db.query(Notification).filter_by(
+        user_id=therapist.user_id, kind="exercise_response_follow_up",
+    ).one()
+    assert "review" in notification.title.lower()
+
+    with pytest.raises(ValueError, match="CLINICAL_REVIEW_PENDING"):
+        record_adherence(care_db, profile, AdherenceCreate(
+            plan_item_id=plan.items[0].item_id, scheduled_date=date(2026, 8, 31),
+            completion_status="completed", pain_before=0, pain_after=0,
+            perceived_exertion=2,
+        ), None)
+
+    row = care_db.query(AdherenceEntry).filter_by(adherence_id=result.adherence_id).one()
+    reviewed = acknowledge_exercise_response(care_db, therapist, row, ExerciseResponseReview(
+        disposition="contacted_patient", note="Reviewed symptoms and arranged follow-up.",
+        clinician_attestation=True,
+    ))
+    assert reviewed.clinician_review_required is False
+    assert reviewed.reviewed_by_user_id == therapist.user_id
+    assert care_db.query(AuditLog).filter_by(
+        action="exercise_response.reviewed", resource_id=row.adherence_id,
+    ).one().metadata_json

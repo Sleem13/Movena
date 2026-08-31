@@ -1,5 +1,6 @@
 """Therapist care operations beyond the analysis prototype."""
 
+import json
 from datetime import date, datetime, timedelta, timezone
 from uuid import uuid4
 
@@ -17,11 +18,12 @@ from app.db.models import (
 )
 from app.schemas.care_schema import (
     AppointmentSummary, ClinicalNoteCreate, ClinicalNoteDetail, NotificationSummary,
-    AvailabilityCreate, AvailabilityDetail,
+    AvailabilityCreate, AvailabilityDetail, ExerciseResponseReview,
 )
 from app.services.artifact_service import build_artifact_url, create_artifact
 from app.services.care_service import (
-    appointment_summary, audit_event, notification_summary, user_can_access_patient,
+    acknowledge_exercise_response, appointment_summary, audit_event,
+    notification_summary, user_can_access_patient,
 )
 from app.services.progress_report_service import generate_progress_report
 
@@ -72,7 +74,7 @@ def appointments(actor: User = Depends(require_therapist), db: Session = Depends
 def adherence_alerts(actor: User = Depends(require_therapist), db: Session = Depends(get_db)):
     rows = db.scalars(select(Notification).where(
         Notification.user_id == actor.user_id,
-        Notification.kind.in_(["high_pain", "low_adherence"]),
+        Notification.kind.in_(["high_pain", "low_adherence", "exercise_response_follow_up"]),
     ).order_by(Notification.created_at.desc()).limit(100)).all()
     return [notification_summary(row) for row in rows]
 
@@ -95,8 +97,47 @@ def patient_adherence(
         "scheduled_date": row.scheduled_date, "completion_status": row.completion_status,
         "pain_before": row.pain_before, "pain_after": row.pain_after,
         "difficulty": row.difficulty, "fatigue": row.fatigue, "note": row.note,
+        "perceived_exertion": row.perceived_exertion,
+        "symptoms_changed": row.symptoms_changed,
+        "stopped_due_to_symptoms": row.stopped_due_to_symptoms,
+        "symptom_flags": json.loads(row.symptom_flags_json or "[]"),
+        "response_state": row.response_state,
+        "supportive_instruction": row.supportive_instruction,
+        "clinician_review_required": row.clinician_review_required,
+        "reviewed_at": row.reviewed_at,
+        "reviewed_by_user_id": row.reviewed_by_user_id,
+        "review_disposition": row.review_disposition,
+        "review_note": row.review_note,
         "analysis_session_id": row.analysis_session_id,
     } for row in rows]
+
+
+@router.post("/patients/{patient_id}/adherence/{adherence_id}/acknowledge")
+def acknowledge_adherence_response(
+    patient_id: str, adherence_id: str, data: ExerciseResponseReview,
+    actor: User = Depends(require_therapist), db: Session = Depends(get_db),
+):
+    if not user_can_access_patient(db, actor, patient_id):
+        return error("PATIENT_ACCESS_DENIED", "This patient is not assigned to you.", 403)
+    row = db.scalar(select(AdherenceEntry).where(
+        AdherenceEntry.adherence_id == adherence_id,
+        AdherenceEntry.patient_id == patient_id,
+    ))
+    if row is None:
+        return error("ADHERENCE_NOT_FOUND", "Exercise response was not found.", 404)
+    try:
+        reviewed = acknowledge_exercise_response(db, actor, row, data)
+    except ValueError:
+        return error("REVIEW_NOT_REQUIRED", "This exercise response does not require review.", 409)
+    return {
+        "adherence_id": reviewed.adherence_id,
+        "response_state": reviewed.response_state,
+        "clinician_review_required": reviewed.clinician_review_required,
+        "reviewed_at": reviewed.reviewed_at,
+        "reviewed_by_user_id": reviewed.reviewed_by_user_id,
+        "review_disposition": reviewed.review_disposition,
+        "review_note": reviewed.review_note,
+    }
 
 
 @router.post(

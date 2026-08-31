@@ -11,6 +11,7 @@ import {
   Users,
 } from "lucide-react";
 import {
+  acknowledgeExerciseResponse,
   createPatientProfile,
   getPatientProfile,
   getPatientProgress,
@@ -361,6 +362,87 @@ function CareOperationsDashboard({
           )}
         </Card>
       </section>
+    </div>
+  );
+}
+
+export function ExerciseResponseReview({ patientId, entry, onReviewed }) {
+  const [open, setOpen] = useState(false);
+  const [disposition, setDisposition] = useState("contacted_patient");
+  const [note, setNote] = useState("");
+  const [attested, setAttested] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+
+  if (entry.response_state !== "clinical_follow_up") {
+    return <Badge tone="teal">Within reported tolerance</Badge>;
+  }
+  if (!entry.clinician_review_required || entry.reviewed_at) {
+    return (
+      <div>
+        <Badge tone="teal">Reviewed</Badge>
+        {entry.review_disposition ? (
+          <p className="mt-1 text-[11px] text-slate-500">
+            {entry.review_disposition.replaceAll("_", " ")}
+          </p>
+        ) : null}
+      </div>
+    );
+  }
+
+  async function submitReview(event) {
+    event.preventDefault();
+    setSaving(true);
+    setError("");
+    try {
+      const reviewed = await acknowledgeExerciseResponse(
+        patientId,
+        entry.adherence_id,
+        { disposition, note: note.trim() || null, clinician_attestation: attested },
+      );
+      onReviewed(reviewed);
+      setOpen(false);
+    } catch (requestError) {
+      setError(requestError.response?.data?.error?.message || "The review could not be saved.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <div className="min-w-56">
+      <div className="flex flex-wrap items-center gap-2">
+        <Badge tone="amber">Review needed</Badge>
+        <Button type="button" variant="ghost" className="min-h-8 px-2 text-xs" onClick={() => setOpen((value) => !value)}>
+          {open ? "Close" : "Review"}
+        </Button>
+      </div>
+      {open ? (
+        <form className="mt-3 space-y-2 rounded-xl border border-amber-200 bg-amber-50 p-3" onSubmit={submitReview}>
+          <label className="block text-xs font-semibold text-slate-700">
+            Disposition
+            <select className="mt-1 w-full rounded-lg border border-slate-200 bg-white p-2" value={disposition} onChange={(event) => setDisposition(event.target.value)}>
+              <option value="contacted_patient">Contacted patient</option>
+              <option value="plan_modified">Plan modified</option>
+              <option value="appointment_scheduled">Appointment scheduled</option>
+              <option value="referred_for_medical_review">Referred for medical review</option>
+              <option value="reviewed_no_change">Reviewed—no change</option>
+            </select>
+          </label>
+          <label className="block text-xs font-semibold text-slate-700">
+            Clinical note
+            <textarea className="mt-1 min-h-20 w-full rounded-lg border border-slate-200 bg-white p-2" value={note} onChange={(event) => setNote(event.target.value)} required={disposition === "reviewed_no_change"} maxLength={2000} />
+          </label>
+          <label className="flex items-start gap-2 text-xs font-semibold text-amber-950">
+            <input className="mt-0.5" type="checkbox" checked={attested} onChange={(event) => setAttested(event.target.checked)} required />
+            <span>I attest that I reviewed the patient-reported response and used clinical judgment.</span>
+          </label>
+          {error ? <Alert>{error}</Alert> : null}
+          <Button type="submit" className="w-full" disabled={saving || !attested}>
+            {saving ? "Saving…" : "Acknowledge review"}
+          </Button>
+        </form>
+      ) : null}
     </div>
   );
 }
@@ -881,6 +963,8 @@ export default function TherapistDashboard({ onNavigate }) {
                       <th className="px-4 py-3">Pain after</th>
                       <th className="px-4 py-3">Difficulty</th>
                       <th className="px-4 py-3">Fatigue</th>
+                      <th className="px-4 py-3">Effort</th>
+                      <th className="px-4 py-3">Response & review</th>
                       <th className="px-4 py-3">AI analysis</th>
                       <th className="px-5 py-3">Patient comment</th>
                     </tr>
@@ -914,6 +998,30 @@ export default function TherapistDashboard({ onNavigate }) {
                           {entry.difficulty ?? "—"}
                         </td>
                         <td className="px-4 py-3.5">{entry.fatigue ?? "—"}</td>
+                        <td className="px-4 py-3.5">
+                          {entry.perceived_exertion ?? "—"}
+                          {entry.perceived_exertion != null ? "/10" : ""}
+                        </td>
+                        <td className="px-4 py-3.5 align-top">
+                          <ExerciseResponseReview
+                            patientId={detail.patient_id}
+                            entry={entry}
+                            onReviewed={(reviewed) =>
+                              setAdherence((rows) =>
+                                rows.map((row) =>
+                                  row.adherence_id === reviewed.adherence_id
+                                    ? { ...row, ...reviewed }
+                                    : row,
+                                ),
+                              )
+                            }
+                          />
+                          {entry.symptom_flags?.length ? (
+                            <p className="mt-2 max-w-56 text-[11px] leading-4 text-amber-800">
+                              {entry.symptom_flags.map(pretty).join(", ")}
+                            </p>
+                          ) : null}
+                        </td>
                         <td className="px-4 py-3.5">
                           {entry.analysis_session_id ? (
                             <Badge tone="blue">Linked</Badge>

@@ -29,6 +29,7 @@ import {
   getRecoveryCoachingTemplates,
   createRecoveryCoachingCheckIn,
   acknowledgeRecoveryCoachingCheckIn,
+  acknowledgeExerciseResponse,
   updateRecoveryCoachingReminderPreference,
   listPatientAdherence,
   listSavedSessions,
@@ -130,6 +131,20 @@ describe("deployment API configuration", () => {
     expect(mocks.get).toHaveBeenCalledWith(
       "/api/v1/therapist/patients/patient-1/adherence",
       { params: {} },
+    );
+  });
+
+  it("submits an attested exercise-response review for the assigned patient", async () => {
+    mocks.post.mockResolvedValue({ data: { clinician_review_required: false } });
+    const payload = {
+      disposition: "contacted_patient",
+      note: "Reviewed with patient.",
+      clinician_attestation: true,
+    };
+    await acknowledgeExerciseResponse("patient-1", "adherence-1", payload);
+    expect(mocks.post).toHaveBeenCalledWith(
+      "/api/v1/therapist/patients/patient-1/adherence/adherence-1/acknowledge",
+      payload,
     );
   });
 

@@ -436,6 +436,7 @@ class AdherenceEntry(Base):
         CheckConstraint("pain_after IS NULL OR (pain_after >= 0 AND pain_after <= 10)", name="ck_pain_after"),
         CheckConstraint("difficulty IS NULL OR (difficulty >= 1 AND difficulty <= 5)", name="ck_difficulty"),
         CheckConstraint("fatigue IS NULL OR (fatigue >= 1 AND fatigue <= 5)", name="ck_fatigue"),
+        CheckConstraint("perceived_exertion IS NULL OR (perceived_exertion >= 0 AND perceived_exertion <= 10)", name="ck_perceived_exertion"),
     )
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
@@ -452,6 +453,17 @@ class AdherenceEntry(Base):
     pain_after: Mapped[int | None] = mapped_column(Integer)
     difficulty: Mapped[int | None] = mapped_column(Integer)
     fatigue: Mapped[int | None] = mapped_column(Integer)
+    perceived_exertion: Mapped[int | None] = mapped_column(Integer)
+    symptoms_changed: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    stopped_due_to_symptoms: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    symptom_flags_json: Mapped[str] = mapped_column(Text, default="[]", nullable=False)
+    response_state: Mapped[str] = mapped_column(String(32), default="not_assessed", index=True, nullable=False)
+    supportive_instruction: Mapped[str | None] = mapped_column(Text)
+    clinician_review_required: Mapped[bool] = mapped_column(Boolean, default=False, index=True, nullable=False)
+    reviewed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    reviewed_by_user_id: Mapped[str | None] = mapped_column(String(36), index=True)
+    review_disposition: Mapped[str | None] = mapped_column(String(40), index=True)
+    review_note: Mapped[str | None] = mapped_column(Text)
     note: Mapped[str | None] = mapped_column(Text)
     analysis_session_id: Mapped[str | None] = mapped_column(
         ForeignKey("analysis_sessions.session_id", ondelete="SET NULL", name="fk_adherence_entries_analysis_session"), index=True

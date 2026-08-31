@@ -350,6 +350,13 @@ export async function listPatientAdherence(patientId, params = {}) {
   return (await api.get(`/api/v1/therapist/patients/${patientId}/adherence`, { params })).data;
 }
 
+export async function acknowledgeExerciseResponse(patientId, adherenceId, payload) {
+  return (await api.post(
+    `/api/v1/therapist/patients/${patientId}/adherence/${adherenceId}/acknowledge`,
+    payload,
+  )).data;
+}
+
 export async function listPatientExercisePlans(patientId) {
   return (await api.get(`/api/v1/therapist/patients/${patientId}/exercise-plans`)).data;
 }

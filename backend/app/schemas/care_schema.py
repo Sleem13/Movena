@@ -8,6 +8,11 @@ from pydantic import BaseModel, Field, model_validator
 
 CompletionStatus = Literal["completed", "partial", "not_completed"]
 AppointmentStatus = Literal["scheduled", "confirmed", "completed", "cancelled", "no_show"]
+ExerciseSymptomFlag = Literal[
+    "pain_increase", "dizziness", "faintness", "unusual_shortness_of_breath",
+    "chest_discomfort", "new_numbness_or_weakness", "instability", "other",
+]
+ExerciseResponseState = Literal["not_assessed", "within_reported_tolerance", "clinical_follow_up"]
 
 
 class CarePlanItem(BaseModel):
@@ -29,6 +34,14 @@ class CarePlanItem(BaseModel):
     pain_after: int | None = None
     difficulty: int | None = None
     fatigue: int | None = None
+    perceived_exertion: int | None = None
+    symptoms_changed: bool = False
+    stopped_due_to_symptoms: bool = False
+    symptom_flags: list[ExerciseSymptomFlag] = Field(default_factory=list)
+    response_state: ExerciseResponseState = "not_assessed"
+    supportive_instruction: str | None = None
+    clinician_review_required: bool = False
+    reviewed_at: datetime | None = None
     patient_comment: str | None = None
     analysis_session_id: str | None = None
 
@@ -77,16 +90,51 @@ class AdherenceCreate(BaseModel):
     pain_after: int | None = Field(default=None, ge=0, le=10)
     difficulty: int | None = Field(default=None, ge=1, le=5)
     fatigue: int | None = Field(default=None, ge=1, le=5)
+    perceived_exertion: int | None = Field(default=None, ge=0, le=10)
+    symptoms_changed: bool = False
+    stopped_due_to_symptoms: bool = False
+    symptom_flags: list[ExerciseSymptomFlag] = Field(default_factory=list, max_length=8)
+    safety_acknowledged: bool = False
     note: str | None = Field(default=None, max_length=1000)
     analysis_session_id: str | None = Field(default=None, max_length=36)
+
+    @model_validator(mode="after")
+    def acknowledge_symptom_scope(self):
+        if (self.symptoms_changed or self.stopped_due_to_symptoms or self.symptom_flags) and not self.safety_acknowledged:
+            raise ValueError("Safety acknowledgement is required when symptoms are reported.")
+        return self
 
 
 class AdherenceDetail(AdherenceCreate):
     adherence_id: str
     patient_id: str
     alert_created: bool = False
+    response_state: ExerciseResponseState
+    supportive_instruction: str
+    clinician_review_required: bool
+    reviewed_at: datetime | None = None
+    reviewed_by_user_id: str | None = None
+    review_disposition: str | None = None
+    review_note: str | None = None
     created_at: datetime
     updated_at: datetime
+
+
+class ExerciseResponseReview(BaseModel):
+    disposition: Literal[
+        "contacted_patient", "plan_modified", "appointment_scheduled",
+        "referred_for_medical_review", "reviewed_no_change",
+    ]
+    note: str | None = Field(default=None, max_length=2000)
+    clinician_attestation: bool
+
+    @model_validator(mode="after")
+    def require_attestation_and_context(self):
+        if not self.clinician_attestation:
+            raise ValueError("Clinical review attestation is required.")
+        if self.disposition == "reviewed_no_change" and not (self.note or "").strip():
+            raise ValueError("Document a rationale when no change is needed.")
+        return self
 
 
 class AvailabilityCreate(BaseModel):

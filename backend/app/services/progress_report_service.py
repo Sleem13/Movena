@@ -49,6 +49,9 @@ def generate_progress_report(
     completed = sum(row.completion_status in {"completed", "partial"} for row in adherence)
     pain_before = [row.pain_before for row in adherence if row.pain_before is not None]
     pain_after = [row.pain_after for row in adherence if row.pain_after is not None]
+    exertion = [row.perceived_exertion for row in adherence if row.perceived_exertion is not None]
+    follow_up_responses = sum(row.response_state == "clinical_follow_up" for row in adherence)
+    pending_response_reviews = sum(row.clinician_review_required for row in adherence)
     scores = [row.movement_score for row in analyses if row.movement_score is not None]
     appointment_counts = Counter(row.status for row in appointments)
 
@@ -67,6 +70,9 @@ def generate_progress_report(
         ["Completed or partial", f"{completed} ({round(completed / len(adherence) * 100)}%)" if adherence else "No entries"],
         ["Average pain before", f"{mean(pain_before):.1f}/10" if pain_before else "Not recorded"],
         ["Average pain after", f"{mean(pain_after):.1f}/10" if pain_after else "Not recorded"],
+        ["Average reported effort", f"{mean(exertion):.1f}/10" if exertion else "Not recorded"],
+        ["Exercise responses needing follow-up", str(follow_up_responses)],
+        ["Pending therapist response reviews", str(pending_response_reviews)],
         ["Appointments", str(len(appointments))],
         ["Completed appointments", str(appointment_counts.get("completed", 0))],
         ["Movement analyses", str(len(analyses))],
@@ -94,7 +100,7 @@ def generate_progress_report(
         Spacer(1, 5 * mm),
         Paragraph("Important limitation", styles["Heading2"]),
         Paragraph(
-            "This report summarizes recorded activity and computer-vision observations. "
+            "This report summarizes recorded activity, patient-reported exercise responses, and computer-vision observations. "
             "It does not diagnose a condition, prescribe treatment, or establish clinical improvement.",
             styles["BodyText"],
         ),

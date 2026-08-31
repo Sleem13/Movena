@@ -19,7 +19,17 @@ from app.db.models import (
 from app.schemas.auth_schema import UserRole
 from app.schemas.care_schema import (
     AdherenceCreate, AdherenceDetail, AppointmentCreate, AppointmentSummary,
-    CarePlanItem, NotificationSummary, PatientTodayResponse,
+    CarePlanItem, ExerciseResponseReview, NotificationSummary, PatientTodayResponse,
+)
+
+
+EXERCISE_RESPONSE_OK = (
+    "Continue only as prescribed. This check-in does not authorize exercise progression; "
+    "contact your treating clinician if symptoms change or you are unsure."
+)
+EXERCISE_RESPONSE_FOLLOW_UP = (
+    "Do not progress this exercise. Pause or use only the modification already provided by your clinician, "
+    "and contact your treating clinician for review. Seek appropriate urgent help for severe or concerning symptoms."
 )
 
 
@@ -173,6 +183,14 @@ def patient_today(db: Session, patient: PatientProfile, day: date) -> PatientTod
             pain_after=entry.pain_after if entry else None,
             difficulty=entry.difficulty if entry else None,
             fatigue=entry.fatigue if entry else None,
+            perceived_exertion=entry.perceived_exertion if entry else None,
+            symptoms_changed=entry.symptoms_changed if entry else False,
+            stopped_due_to_symptoms=entry.stopped_due_to_symptoms if entry else False,
+            symptom_flags=json.loads(entry.symptom_flags_json or "[]") if entry else [],
+            response_state=entry.response_state if entry else "not_assessed",
+            supportive_instruction=entry.supportive_instruction if entry else None,
+            clinician_review_required=entry.clinician_review_required if entry else False,
+            reviewed_at=entry.reviewed_at if entry else None,
             patient_comment=entry.note if entry else None,
             analysis_session_id=entry.analysis_session_id if entry else None,
         ))
@@ -251,8 +269,25 @@ def record_adherence(
             raise ValueError("ANALYSIS_SESSION_ACCESS_DENIED")
         if linked_session.exercise_id != item.exercise_id:
             raise ValueError("ANALYSIS_EXERCISE_MISMATCH")
-    for field in ("completion_status", "pain_before", "pain_after", "difficulty", "fatigue", "note"):
+    previous_response = (
+        row.pain_before, row.pain_after, row.difficulty, row.fatigue,
+        row.perceived_exertion, row.symptoms_changed, row.stopped_due_to_symptoms,
+        row.symptom_flags_json,
+    )
+    previous_reviewed_at = row.reviewed_at
+    submitted_response = (
+        data.pain_before, data.pain_after, data.difficulty, data.fatigue,
+        data.perceived_exertion, data.symptoms_changed, data.stopped_due_to_symptoms,
+        json.dumps(data.symptom_flags),
+    )
+    if row.clinician_review_required and submitted_response != previous_response:
+        raise ValueError("CLINICAL_REVIEW_PENDING")
+    for field in (
+        "completion_status", "pain_before", "pain_after", "difficulty", "fatigue",
+        "perceived_exertion", "symptoms_changed", "stopped_due_to_symptoms", "note",
+    ):
         setattr(row, field, getattr(data, field))
+    row.symptom_flags_json = json.dumps(data.symptom_flags)
     if data.analysis_session_id is not None:
         row.analysis_session_id = data.analysis_session_id
     if linked_session is not None:
@@ -267,21 +302,41 @@ def record_adherence(
             and data.pain_after - data.pain_before >= settings.pain_increase_threshold
         )
     )
-    if alert:
+    follow_up = bool(
+        alert or data.symptoms_changed or data.stopped_due_to_symptoms
+        or data.symptom_flags or (data.perceived_exertion is not None and data.perceived_exertion >= 9)
+    )
+    row.response_state = "clinical_follow_up" if follow_up else "within_reported_tolerance"
+    row.supportive_instruction = EXERCISE_RESPONSE_FOLLOW_UP if follow_up else EXERCISE_RESPONSE_OK
+    current_response = (
+        row.pain_before, row.pain_after, row.difficulty, row.fatigue,
+        row.perceived_exertion, row.symptoms_changed, row.stopped_due_to_symptoms,
+        row.symptom_flags_json,
+    )
+    if follow_up and current_response != previous_response:
+        row.reviewed_at = None
+        row.reviewed_by_user_id = None
+        row.review_disposition = None
+        row.review_note = None
+    row.clinician_review_required = follow_up and row.reviewed_at is None
+    if follow_up:
         therapist_ids = db.scalars(select(TherapistPatientAssignment.therapist_user_id).where(
             TherapistPatientAssignment.patient_id == patient.patient_id,
             TherapistPatientAssignment.status == "active",
         )).all()
         for therapist_id in therapist_ids:
+            review_cycle = previous_reviewed_at.isoformat() if previous_reviewed_at else "initial"
             create_notification(
-                db, therapist_id, "high_pain", "Pain review needed",
-                f"{patient.display_name} recorded a pain response that needs professional review.",
+                db, therapist_id, "exercise_response_follow_up", "Exercise response review needed",
+                f"{patient.display_name} recorded an exercise response that needs professional review.",
                 action_url=f"/therapist?patient={patient.patient_id}",
-                dedup_key=f"pain:{patient.patient_id}:{data.plan_item_id}:{data.scheduled_date}",
+                dedup_key=f"exercise-response:{patient.patient_id}:{data.plan_item_id}:{data.scheduled_date}:{review_cycle}",
             )
     audit_event(db, patient.user_id, "adherence.recorded", "adherence", row.adherence_id, {
         "patient_id": patient.patient_id, "plan_item_id": data.plan_item_id,
-        "scheduled_date": data.scheduled_date.isoformat(), "alert_created": alert,
+        "scheduled_date": data.scheduled_date.isoformat(), "alert_created": follow_up,
+        "response_state": row.response_state, "symptoms_changed": data.symptoms_changed,
+        "stopped_due_to_symptoms": data.stopped_due_to_symptoms,
     })
     db.commit()
     db.refresh(row)
@@ -290,9 +345,39 @@ def record_adherence(
         plan_item_id=row.plan_item_id, scheduled_date=row.scheduled_date,
         completion_status=row.completion_status, pain_before=row.pain_before,
         pain_after=row.pain_after, difficulty=row.difficulty, note=row.note,
-        fatigue=row.fatigue, analysis_session_id=row.analysis_session_id,
-        alert_created=alert, created_at=row.created_at, updated_at=row.updated_at,
+        fatigue=row.fatigue, perceived_exertion=row.perceived_exertion,
+        symptoms_changed=row.symptoms_changed,
+        stopped_due_to_symptoms=row.stopped_due_to_symptoms,
+        symptom_flags=json.loads(row.symptom_flags_json or "[]"),
+        safety_acknowledged=data.safety_acknowledged,
+        analysis_session_id=row.analysis_session_id,
+        alert_created=follow_up, response_state=row.response_state,
+        supportive_instruction=row.supportive_instruction or EXERCISE_RESPONSE_OK,
+        clinician_review_required=row.clinician_review_required,
+        reviewed_at=row.reviewed_at, reviewed_by_user_id=row.reviewed_by_user_id,
+        review_disposition=row.review_disposition, review_note=row.review_note,
+        created_at=row.created_at, updated_at=row.updated_at,
     )
+
+
+def acknowledge_exercise_response(
+    db: Session, actor: User, row: AdherenceEntry, data: ExerciseResponseReview,
+) -> AdherenceEntry:
+    if not row.clinician_review_required or row.response_state != "clinical_follow_up":
+        raise ValueError("REVIEW_NOT_REQUIRED")
+    row.reviewed_at = utc_now()
+    row.reviewed_by_user_id = actor.user_id
+    row.review_disposition = data.disposition
+    row.review_note = data.note
+    row.clinician_review_required = False
+    audit_event(db, actor.user_id, "exercise_response.reviewed", "adherence_entry", row.adherence_id, {
+        "patient_id": row.patient_id,
+        "disposition": data.disposition,
+        "clinician_attestation": True,
+    })
+    db.commit()
+    db.refresh(row)
+    return row
 
 
 def create_appointment(

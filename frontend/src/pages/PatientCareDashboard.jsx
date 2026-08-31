@@ -52,6 +52,11 @@ const copy = {
     before: "Pain before",
     after: "Pain after",
     difficulty: "Difficulty",
+    exertion: "Effort (0–10)",
+    symptomsChanged: "I noticed new or worsening symptoms.",
+    stoppedForSymptoms: "I stopped because of symptoms.",
+    symptomTypes: "Exercise response",
+    safetyAck: "I understand this check-in is not monitored in real time and does not replace urgent or clinical care.",
     note: "Note for therapist",
     save: "Save check-in",
     join: "Join secure call",
@@ -69,8 +74,17 @@ const copy = {
       "Your care profile has not been linked yet. Contact your therapist or administrator to complete setup.",
     retry: "Retry",
     technical: "Technical details",
+    responseReview: "Your therapist needs to review this response",
+    responseOk: "Exercise response saved",
   },
   ar: {
+    exertion: "المجهود (0–10)",
+    symptomsChanged: "لاحظت أعراضًا جديدة أو متزايدة.",
+    stoppedForSymptoms: "توقفت بسبب الأعراض.",
+    symptomTypes: "استجابة التمرين",
+    safetyAck: "أفهم أن هذا التسجيل لا تتم مراقبته فورًا ولا يحل محل الرعاية العاجلة أو السريرية.",
+    responseReview: "تحتاج هذه الاستجابة إلى مراجعة المعالج",
+    responseOk: "تم حفظ استجابة التمرين",
     eyebrow: "رعايتي",
     title: "خطة التأهيل اليوم",
     desc: "نفّذ التمارين التي وصفها الطبيب وسجّل الألم وابقَ على تواصل معه.",
@@ -132,10 +146,15 @@ export default function PatientCareDashboard({
   const [selected, setSelected] = useState(null);
   const [form, setForm] = useState({
     completion_status: "completed",
-    pain_before: 0,
-    pain_after: 0,
+    pain_before: "",
+    pain_after: "",
     difficulty: 1,
     fatigue: 1,
+    perceived_exertion: "",
+    symptoms_changed: false,
+    stopped_due_to_symptoms: false,
+    symptom_flags: [],
+    safety_acknowledged: false,
     note: "",
     analysis_session_id: null,
   });
@@ -144,6 +163,7 @@ export default function PatientCareDashboard({
   const [technicalError, setTechnicalError] = useState("");
   const [setupRequired, setSetupRequired] = useState(false);
   const [billingPhone, setBillingPhone] = useState("");
+  const [responseNotice, setResponseNotice] = useState(null);
   const displayName =
     user?.full_name ||
     user?.email?.split("@")[0] ||
@@ -151,6 +171,24 @@ export default function PatientCareDashboard({
   const completedToday =
     today?.plan_items?.filter((item) => item.completion_status === "completed")
       .length || 0;
+  const openCheckIn = (item) => {
+    setResponseNotice(null);
+    setSelected(item);
+    setForm({
+      completion_status: item.completion_status || "completed",
+      pain_before: item.pain_before ?? "",
+      pain_after: item.pain_after ?? "",
+      difficulty: item.difficulty ?? 1,
+      fatigue: item.fatigue ?? 1,
+      perceived_exertion: item.perceived_exertion ?? "",
+      symptoms_changed: item.symptoms_changed || false,
+      stopped_due_to_symptoms: item.stopped_due_to_symptoms || false,
+      symptom_flags: item.symptom_flags || [],
+      safety_acknowledged: false,
+      note: item.patient_comment || "",
+      analysis_session_id: item.analysis_session_id || null,
+    });
+  };
   const load = async () => {
     setBusy(true);
     setError("");
@@ -209,15 +247,17 @@ export default function PatientCareDashboard({
     setBusy(true);
     setError("");
     try {
-      await recordPatientAdherence({
+      const response = await recordPatientAdherence({
         plan_item_id: selected.item_id,
         scheduled_date: today.date,
         ...form,
-        pain_before: Number(form.pain_before),
-        pain_after: Number(form.pain_after),
+        pain_before: form.pain_before === "" ? null : Number(form.pain_before),
+        pain_after: form.pain_after === "" ? null : Number(form.pain_after),
         difficulty: Number(form.difficulty),
         fatigue: Number(form.fatigue),
+        perceived_exertion: form.perceived_exertion === "" ? null : Number(form.perceived_exertion),
       });
+      setResponseNotice(response);
       setSelected(null);
       onAnalysisLinked?.();
       await load();
@@ -314,6 +354,15 @@ export default function PatientCareDashboard({
         }
       />
       {error ? <Alert className="mb-5">{error}</Alert> : null}
+      {responseNotice ? (
+        <Alert
+          className="mb-5"
+          tone={responseNotice.clinician_review_required ? "warning" : "success"}
+          title={responseNotice.clinician_review_required ? c.responseReview : c.responseOk}
+        >
+          {responseNotice.supportive_instruction}
+        </Alert>
+      ) : null}
       <div className="grid gap-5 xl:grid-cols-[minmax(0,1.6fr)_minmax(300px,.75fr)]">
         <div className="patient-care-primary min-w-0 flex flex-col gap-5">
           <Card className="overflow-hidden">
@@ -380,7 +429,7 @@ export default function PatientCareDashboard({
                           {item.completion_status}
                         </Badge>
                       ) : (
-                        <Button onClick={() => setSelected(item)}>
+                        <Button onClick={() => openCheckIn(item)}>
                           {c.complete}
                         </Button>
                       )}
@@ -522,20 +571,7 @@ export default function PatientCareDashboard({
                             variant={
                               item.completion_status ? "secondary" : "primary"
                             }
-                            onClick={() => {
-                              setSelected(item);
-                              setForm({
-                                completion_status:
-                                  item.completion_status || "completed",
-                                pain_before: item.pain_before ?? 0,
-                                pain_after: item.pain_after ?? 0,
-                                difficulty: item.difficulty ?? 1,
-                                fatigue: item.fatigue ?? 1,
-                                note: item.patient_comment || "",
-                                analysis_session_id:
-                                  item.analysis_session_id || null,
-                              });
-                            }}
+                            onClick={() => openCheckIn(item)}
                           >
                             <MessageSquareText size={15} />
                             {item.completion_status
@@ -712,7 +748,93 @@ export default function PatientCareDashboard({
                   className="mt-2 w-full rounded-lg border p-2"
                 />
               </label>
+              <label className="text-sm font-semibold">
+                {c.exertion}
+                <input
+                  type="number"
+                  min="0"
+                  max="10"
+                  value={form.perceived_exertion}
+                  onChange={(event) =>
+                    setForm({ ...form, perceived_exertion: event.target.value })
+                  }
+                  className="mt-2 w-full rounded-lg border p-2"
+                />
+              </label>
             </div>
+            <fieldset className="mt-5 rounded-xl border border-amber-200 bg-amber-50/60 p-4">
+              <legend className="px-1 text-sm font-bold text-amber-950">
+                {c.symptomTypes}
+              </legend>
+              <div className="space-y-3 text-sm text-slate-700">
+                <label className="flex items-start gap-2">
+                  <input
+                    type="checkbox"
+                    className="mt-1"
+                    checked={form.symptoms_changed}
+                    onChange={(event) =>
+                      setForm({ ...form, symptoms_changed: event.target.checked })
+                    }
+                  />
+                  <span>{c.symptomsChanged}</span>
+                </label>
+                <label className="flex items-start gap-2">
+                  <input
+                    type="checkbox"
+                    className="mt-1"
+                    checked={form.stopped_due_to_symptoms}
+                    onChange={(event) =>
+                      setForm({ ...form, stopped_due_to_symptoms: event.target.checked })
+                    }
+                  />
+                  <span>{c.stoppedForSymptoms}</span>
+                </label>
+                <div className="grid gap-2 sm:grid-cols-2">
+                  {[
+                    ["pain_increase", locale === "ar" ? "زيادة الألم" : "Pain increase"],
+                    ["dizziness", locale === "ar" ? "دوخة" : "Dizziness"],
+                    ["faintness", locale === "ar" ? "شعور بالإغماء" : "Faintness"],
+                    ["unusual_shortness_of_breath", locale === "ar" ? "ضيق نفس غير معتاد" : "Unusual shortness of breath"],
+                    ["chest_discomfort", locale === "ar" ? "انزعاج في الصدر" : "Chest discomfort"],
+                    ["new_numbness_or_weakness", locale === "ar" ? "خدر أو ضعف جديد" : "New numbness or weakness"],
+                    ["instability", locale === "ar" ? "عدم ثبات" : "Instability"],
+                    ["other", locale === "ar" ? "أخرى" : "Other"],
+                  ].map(([value, label]) => (
+                    <label key={value} className="flex items-center gap-2 rounded-lg bg-white px-3 py-2">
+                      <input
+                        type="checkbox"
+                        checked={form.symptom_flags.includes(value)}
+                        onChange={() =>
+                          setForm((current) => ({
+                            ...current,
+                            symptom_flags: current.symptom_flags.includes(value)
+                              ? current.symptom_flags.filter((flag) => flag !== value)
+                              : [...current.symptom_flags, value],
+                          }))
+                        }
+                      />
+                      <span>{label}</span>
+                    </label>
+                  ))}
+                </div>
+                {form.symptoms_changed ||
+                form.stopped_due_to_symptoms ||
+                form.symptom_flags.length > 0 ? (
+                  <label className="flex items-start gap-2 border-t border-amber-200 pt-3 font-semibold text-amber-950">
+                    <input
+                      type="checkbox"
+                      required
+                      className="mt-1"
+                      checked={form.safety_acknowledged}
+                      onChange={(event) =>
+                        setForm({ ...form, safety_acknowledged: event.target.checked })
+                      }
+                    />
+                    <span>{c.safetyAck}</span>
+                  </label>
+                ) : null}
+              </div>
+            </fieldset>
             <div className="mt-4 flex flex-wrap gap-2">
               {[
                 ["completed", c.done],

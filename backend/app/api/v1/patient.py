@@ -159,6 +159,12 @@ def adherence(
     except ValueError as exc:
         if str(exc) == "ANALYSIS_EXERCISE_MISMATCH":
             return error("ANALYSIS_EXERCISE_MISMATCH", "The saved analysis belongs to a different exercise.", 422)
+        if str(exc) == "CLINICAL_REVIEW_PENDING":
+            return error(
+                "CLINICAL_REVIEW_PENDING",
+                "This response is awaiting therapist review and cannot be replaced yet.",
+                409,
+            )
         return error("ANALYSIS_SESSION_ACCESS_DENIED", "The saved analysis is not available to this patient.", 403)
 
 
