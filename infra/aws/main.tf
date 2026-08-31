@@ -22,7 +22,7 @@ locals {
   name         = "physiovision-${var.environment}"
   frontend_url = "https://${aws_cloudfront_distribution.app.domain_name}"
   selected_azs = slice(data.aws_availability_zones.available.names, 0, 2)
-  common_environment = [
+  common_environment = concat([
     { name = "ANALYSIS_JOB_MAX_CONCURRENCY", value = "1" },
     { name = "APP_ENV", value = var.environment },
     { name = "APP_VERSION", value = var.app_version },
@@ -54,7 +54,11 @@ locals {
     { name = "MAX_UPLOAD_SIZE_MB", value = "100" },
     { name = "ARTIFACT_RETENTION_HOURS", value = tostring(var.artifact_retention_hours) },
     { name = "POSE_TARGET_FPS", value = "12" },
-  ]
+    ], var.environment == "staging" ? [
+    { name = "CLINICAL_ORGANIZATION_NAME", value = "PhysioVision AI staging" },
+    { name = "CLINICAL_ESCALATION_CONTACT", value = "Your assigned clinician or local emergency services" },
+    { name = "CLINICAL_ESCALATION_INSTRUCTION", value = "This staging service is not monitored for emergencies. Stop and contact your assigned clinician or local emergency services." },
+  ] : [])
   base_secrets = [
     { name = "SECRET_KEY", valueFrom = "${var.app_secret_arn}:SECRET_KEY::" },
     { name = "DATABASE_USER", valueFrom = "${aws_db_instance.database.master_user_secret[0].secret_arn}:username::" },
@@ -193,7 +197,7 @@ resource "aws_db_instance" "database" {
   db_subnet_group_name        = aws_db_subnet_group.main.name
   vpc_security_group_ids      = [aws_security_group.database.id]
   publicly_accessible         = false
-  backup_retention_period     = var.environment == "production" ? 14 : 7
+  backup_retention_period     = var.environment == "production" ? 14 : 1
   deletion_protection         = var.protect_data
   skip_final_snapshot         = !var.protect_data
   final_snapshot_identifier   = var.protect_data ? "${local.name}-final" : null
@@ -205,7 +209,7 @@ resource "aws_efs_file_system" "artifacts" {
   encrypted        = true
   performance_mode = "generalPurpose"
   throughput_mode  = "bursting"
-  lifecycle_policy { transition_to_ia = "AFTER_7_DAYS" }
+  lifecycle_policy { transition_to_ia = var.environment == "production" ? "AFTER_7_DAYS" : "AFTER_1_DAY" }
   tags = { Name = "${local.name}-artifacts" }
 }
 
@@ -241,12 +245,12 @@ resource "aws_ecr_repository" "backend" {
 
 resource "aws_ecr_lifecycle_policy" "backend" {
   repository = aws_ecr_repository.backend.name
-  policy     = jsonencode({ rules = [{ rulePriority = 1, description = "Keep latest 15 images", selection = { tagStatus = "any", countType = "imageCountMoreThan", countNumber = 15 }, action = { type = "expire" } }] })
+  policy     = jsonencode({ rules = [{ rulePriority = 1, description = "Keep only recent immutable images", selection = { tagStatus = "any", countType = "imageCountMoreThan", countNumber = var.environment == "production" ? 15 : 5 }, action = { type = "expire" } }] })
 }
 
 resource "aws_cloudwatch_log_group" "backend" {
   name              = "/ecs/${local.name}"
-  retention_in_days = var.environment == "production" ? 90 : 30
+  retention_in_days = var.environment == "production" ? 90 : 7
 }
 
 resource "aws_iam_role" "ecs_execution" {
@@ -281,7 +285,17 @@ resource "aws_ecs_cluster" "main" {
   name = local.name
   setting {
     name  = "containerInsights"
-    value = "enabled"
+    value = var.environment == "production" ? "enabled" : "disabled"
+  }
+}
+
+resource "aws_ecs_cluster_capacity_providers" "main" {
+  cluster_name       = aws_ecs_cluster.main.name
+  capacity_providers = ["FARGATE", "FARGATE_SPOT"]
+
+  default_capacity_provider_strategy {
+    capacity_provider = var.environment == "production" ? "FARGATE" : "FARGATE_SPOT"
+    weight            = 1
   }
 }
 
@@ -364,12 +378,16 @@ resource "aws_ecs_service" "backend" {
   cluster                            = aws_ecs_cluster.main.id
   task_definition                    = aws_ecs_task_definition.backend.arn
   desired_count                      = var.desired_count
-  launch_type                        = "FARGATE"
   platform_version                   = "1.4.0"
   health_check_grace_period_seconds  = 120
   deployment_minimum_healthy_percent = 100
   deployment_maximum_percent         = 200
   enable_execute_command             = true
+
+  capacity_provider_strategy {
+    capacity_provider = var.environment == "production" ? "FARGATE" : "FARGATE_SPOT"
+    weight            = 1
+  }
 
   network_configuration {
     subnets          = aws_subnet.public[*].id
@@ -381,7 +399,7 @@ resource "aws_ecs_service" "backend" {
     container_name   = "backend"
     container_port   = 8000
   }
-  depends_on = [aws_lb_listener.http, aws_efs_mount_target.artifacts]
+  depends_on = [aws_lb_listener.http, aws_efs_mount_target.artifacts, aws_ecs_cluster_capacity_providers.main]
 }
 
 resource "aws_s3_bucket" "frontend" {
@@ -408,6 +426,25 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "frontend" {
 resource "aws_s3_bucket_versioning" "frontend" {
   bucket = aws_s3_bucket.frontend.id
   versioning_configuration { status = "Enabled" }
+}
+
+resource "aws_s3_bucket_lifecycle_configuration" "frontend" {
+  bucket     = aws_s3_bucket.frontend.id
+  depends_on = [aws_s3_bucket_versioning.frontend]
+
+  rule {
+    id     = "remove-stale-deployment-versions"
+    status = "Enabled"
+    filter {}
+
+    noncurrent_version_expiration {
+      noncurrent_days = var.environment == "production" ? 30 : 7
+    }
+
+    abort_incomplete_multipart_upload {
+      days_after_initiation = 1
+    }
+  }
 }
 
 resource "aws_cloudfront_origin_access_control" "frontend" {
