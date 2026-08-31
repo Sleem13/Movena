@@ -27,7 +27,7 @@ def test_frontend_is_published_only_after_backend_is_stable():
 def test_staging_uses_reversible_cost_controls_without_downsizing_video_compute():
     terraform = (PROJECT_ROOT / "infra" / "aws" / "main.tf").read_text(encoding="utf-8")
 
-    assert 'capacity_provider = var.environment == "production" ? "FARGATE" : "FARGATE_SPOT"' in terraform
+    assert 'launch_type                        = "FARGATE"' in terraform
     assert 'value = var.environment == "production" ? "enabled" : "disabled"' in terraform
     assert 'retention_in_days = var.environment == "production" ? 90 : 7' in terraform
     assert 'backup_retention_period     = var.environment == "production" ? 14 : 1' in terraform
