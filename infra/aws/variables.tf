@@ -84,6 +84,18 @@ variable "desired_count" {
   default = 1
 }
 
+variable "enable_staging_schedule" {
+  description = "Suspend staging compute and database resources outside weekday working hours."
+  type        = bool
+  default     = true
+}
+
+variable "staging_schedule_timezone" {
+  description = "IANA timezone used by the staging cost-control schedules."
+  type        = string
+  default     = "Africa/Cairo"
+}
+
 variable "artifact_retention_hours" {
   type    = number
   default = 24

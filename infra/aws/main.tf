@@ -388,6 +388,126 @@ resource "aws_ecs_service" "backend" {
   depends_on = [aws_lb_listener.http, aws_efs_mount_target.artifacts]
 }
 
+resource "aws_iam_role" "staging_scheduler" {
+  count = var.environment == "staging" && var.enable_staging_schedule ? 1 : 0
+
+  name = "${local.name}-scheduler"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect    = "Allow"
+      Principal = { Service = "scheduler.amazonaws.com" }
+      Action    = "sts:AssumeRole"
+    }]
+  })
+}
+
+resource "aws_iam_role_policy" "staging_scheduler" {
+  count = var.environment == "staging" && var.enable_staging_schedule ? 1 : 0
+
+  name = "start-stop-staging"
+  role = aws_iam_role.staging_scheduler[0].id
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect   = "Allow"
+        Action   = ["ecs:UpdateService"]
+        Resource = [aws_ecs_service.backend.id]
+      },
+      {
+        Effect   = "Allow"
+        Action   = ["rds:StartDBInstance", "rds:StopDBInstance"]
+        Resource = [aws_db_instance.database.arn]
+      }
+    ]
+  })
+}
+
+resource "aws_scheduler_schedule" "staging_database_start" {
+  count = var.environment == "staging" && var.enable_staging_schedule ? 1 : 0
+
+  name                         = "${local.name}-database-start"
+  schedule_expression          = "cron(45 7 ? * MON-FRI *)"
+  schedule_expression_timezone = var.staging_schedule_timezone
+
+  flexible_time_window { mode = "OFF" }
+  target {
+    arn      = "arn:aws:scheduler:::aws-sdk:rds:startDBInstance"
+    role_arn = aws_iam_role.staging_scheduler[0].arn
+    input    = jsonencode({ DbInstanceIdentifier = aws_db_instance.database.identifier })
+    retry_policy {
+      maximum_event_age_in_seconds = 300
+      maximum_retry_attempts       = 1
+    }
+  }
+}
+
+resource "aws_scheduler_schedule" "staging_service_start" {
+  count = var.environment == "staging" && var.enable_staging_schedule ? 1 : 0
+
+  name                         = "${local.name}-service-start"
+  schedule_expression          = "cron(0 8 ? * MON-FRI *)"
+  schedule_expression_timezone = var.staging_schedule_timezone
+
+  flexible_time_window { mode = "OFF" }
+  target {
+    arn      = "arn:aws:scheduler:::aws-sdk:ecs:updateService"
+    role_arn = aws_iam_role.staging_scheduler[0].arn
+    input = jsonencode({
+      Cluster      = aws_ecs_cluster.main.name
+      Service      = aws_ecs_service.backend.name
+      DesiredCount = var.desired_count
+    })
+    retry_policy {
+      maximum_event_age_in_seconds = 300
+      maximum_retry_attempts       = 1
+    }
+  }
+}
+
+resource "aws_scheduler_schedule" "staging_service_stop" {
+  count = var.environment == "staging" && var.enable_staging_schedule ? 1 : 0
+
+  name                         = "${local.name}-service-stop"
+  schedule_expression          = "cron(0 20 ? * * *)"
+  schedule_expression_timezone = var.staging_schedule_timezone
+
+  flexible_time_window { mode = "OFF" }
+  target {
+    arn      = "arn:aws:scheduler:::aws-sdk:ecs:updateService"
+    role_arn = aws_iam_role.staging_scheduler[0].arn
+    input = jsonencode({
+      Cluster      = aws_ecs_cluster.main.name
+      Service      = aws_ecs_service.backend.name
+      DesiredCount = 0
+    })
+    retry_policy {
+      maximum_event_age_in_seconds = 300
+      maximum_retry_attempts       = 1
+    }
+  }
+}
+
+resource "aws_scheduler_schedule" "staging_database_stop" {
+  count = var.environment == "staging" && var.enable_staging_schedule ? 1 : 0
+
+  name                         = "${local.name}-database-stop"
+  schedule_expression          = "cron(15 20 ? * * *)"
+  schedule_expression_timezone = var.staging_schedule_timezone
+
+  flexible_time_window { mode = "OFF" }
+  target {
+    arn      = "arn:aws:scheduler:::aws-sdk:rds:stopDBInstance"
+    role_arn = aws_iam_role.staging_scheduler[0].arn
+    input    = jsonencode({ DbInstanceIdentifier = aws_db_instance.database.identifier })
+    retry_policy {
+      maximum_event_age_in_seconds = 300
+      maximum_retry_attempts       = 1
+    }
+  }
+}
+
 resource "aws_s3_bucket" "frontend" {
   bucket_prefix = "physiovision-${var.environment}-web-"
 }

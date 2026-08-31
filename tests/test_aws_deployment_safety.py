@@ -63,3 +63,22 @@ def test_rehabilitation_migration_adopts_existing_postgres_foreign_keys():
     assert 'if "fk_adherence_entries_analysis_session" not in adherence_foreign_keys:' in migration
     assert 'get_foreign_keys("analysis_sessions")' in migration
     assert 'if "fk_analysis_sessions_plan_item" not in analysis_foreign_keys:' in migration
+
+
+def test_staging_is_suspended_outside_cairo_working_hours():
+    terraform = (PROJECT_ROOT / "infra" / "aws" / "main.tf").read_text(encoding="utf-8")
+    workflow = (PROJECT_ROOT / ".github" / "workflows" / "deploy-aws.yml").read_text(
+        encoding="utf-8"
+    )
+
+    assert terraform.count('schedule_expression_timezone = var.staging_schedule_timezone') == 4
+    assert 'schedule_expression          = "cron(45 7 ? * MON-FRI *)"' in terraform
+    assert 'schedule_expression          = "cron(0 8 ? * MON-FRI *)"' in terraform
+    assert 'schedule_expression          = "cron(0 20 ? * * *)"' in terraform
+    assert 'schedule_expression          = "cron(15 20 ? * * *)"' in terraform
+    assert 'arn      = "arn:aws:scheduler:::aws-sdk:rds:stopDBInstance"' in terraform
+    assert 'arn      = "arn:aws:scheduler:::aws-sdk:ecs:updateService"' in terraform
+    assert 'DesiredCount = 0' in terraform
+    assert "- name: Ensure staging is awake for deployment" in workflow
+    assert "- name: Restore scheduled staging state" in workflow
+    assert "TZ=Africa/Cairo date" in workflow
