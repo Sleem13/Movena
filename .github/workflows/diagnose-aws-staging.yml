@@ -1,0 +1,39 @@
+name: Diagnose AWS staging
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: eu-central-1
+          role-session-name: physiovision-diagnostics-${{ github.run_id }}
+      - name: Describe ECS service
+        run: >-
+          aws ecs describe-services
+          --cluster physiovision-staging
+          --services backend
+          --query 'services[0].{status:status,desired:desiredCount,running:runningCount,pending:pendingCount,taskDefinition:taskDefinition,deployments:deployments,events:events[0:20]}'
+      - name: Describe recent ECS tasks
+        shell: bash
+        run: |
+          TASKS="$(aws ecs list-tasks --cluster physiovision-staging --desired-status STOPPED --max-results 20 --query 'taskArns' --output text)"
+          RUNNING="$(aws ecs list-tasks --cluster physiovision-staging --desired-status RUNNING --max-results 20 --query 'taskArns' --output text)"
+          if [ -n "$TASKS" ] && [ "$TASKS" != "None" ]; then
+            aws ecs describe-tasks --cluster physiovision-staging --tasks $TASKS \
+              --query 'tasks[].{taskArn:taskArn,taskDefinitionArn:taskDefinitionArn,lastStatus:lastStatus,stopCode:stopCode,stoppedReason:stoppedReason,containers:containers[].{name:name,lastStatus:lastStatus,exitCode:exitCode,reason:reason}}'
+          fi
+          if [ -n "$RUNNING" ] && [ "$RUNNING" != "None" ]; then
+            aws ecs describe-tasks --cluster physiovision-staging --tasks $RUNNING \
+              --query 'tasks[].{taskArn:taskArn,taskDefinitionArn:taskDefinitionArn,lastStatus:lastStatus,healthStatus:healthStatus,containers:containers[].{name:name,lastStatus:lastStatus,healthStatus:healthStatus,reason:reason}}'
+          fi
+      - name: Tail backend startup logs
+        run: aws logs tail /ecs/physiovision-staging --since 30m --format short
