@@ -52,3 +52,14 @@ def test_alembic_escapes_percent_characters_in_managed_database_urls():
     parser.add_section("alembic")
     parser.set("alembic", "sqlalchemy.url", database_url.replace("%", "%%"))
     assert parser.get("alembic", "sqlalchemy.url") == database_url
+
+
+def test_rehabilitation_migration_adopts_existing_postgres_foreign_keys():
+    migration = (
+        PROJECT_ROOT / "backend" / "alembic" / "versions" / "0004_rehabilitation_phase1.py"
+    ).read_text(encoding="utf-8")
+
+    assert 'get_foreign_keys("adherence_entries")' in migration
+    assert 'if "fk_adherence_entries_analysis_session" not in adherence_foreign_keys:' in migration
+    assert 'get_foreign_keys("analysis_sessions")' in migration
+    assert 'if "fk_analysis_sessions_plan_item" not in analysis_foreign_keys:' in migration

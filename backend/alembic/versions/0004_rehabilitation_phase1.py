@@ -45,14 +45,24 @@ def upgrade() -> None:
         op.create_index("ix_exercise_plan_items_status", "exercise_plan_items", ["status"])
 
     if op.get_bind().dialect.name == "postgresql":
-        op.create_foreign_key(
-            "fk_adherence_entries_analysis_session", "adherence_entries", "analysis_sessions",
-            ["analysis_session_id"], ["session_id"], ondelete="SET NULL",
-        )
-        op.create_foreign_key(
-            "fk_analysis_sessions_plan_item", "analysis_sessions", "exercise_plan_items",
-            ["plan_item_id"], ["item_id"], ondelete="SET NULL",
-        )
+        adherence_foreign_keys = {
+            constraint.get("name")
+            for constraint in sa.inspect(op.get_bind()).get_foreign_keys("adherence_entries")
+        }
+        if "fk_adherence_entries_analysis_session" not in adherence_foreign_keys:
+            op.create_foreign_key(
+                "fk_adherence_entries_analysis_session", "adherence_entries", "analysis_sessions",
+                ["analysis_session_id"], ["session_id"], ondelete="SET NULL",
+            )
+        analysis_foreign_keys = {
+            constraint.get("name")
+            for constraint in sa.inspect(op.get_bind()).get_foreign_keys("analysis_sessions")
+        }
+        if "fk_analysis_sessions_plan_item" not in analysis_foreign_keys:
+            op.create_foreign_key(
+                "fk_analysis_sessions_plan_item", "analysis_sessions", "exercise_plan_items",
+                ["plan_item_id"], ["item_id"], ondelete="SET NULL",
+            )
 
 
 def downgrade() -> None:
