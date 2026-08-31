@@ -289,16 +289,6 @@ resource "aws_ecs_cluster" "main" {
   }
 }
 
-resource "aws_ecs_cluster_capacity_providers" "main" {
-  cluster_name       = aws_ecs_cluster.main.name
-  capacity_providers = ["FARGATE", "FARGATE_SPOT"]
-
-  default_capacity_provider_strategy {
-    capacity_provider = var.environment == "production" ? "FARGATE" : "FARGATE_SPOT"
-    weight            = 1
-  }
-}
-
 resource "aws_lb" "backend" {
   name                       = substr(local.name, 0, 32)
   load_balancer_type         = "application"
@@ -378,16 +368,12 @@ resource "aws_ecs_service" "backend" {
   cluster                            = aws_ecs_cluster.main.id
   task_definition                    = aws_ecs_task_definition.backend.arn
   desired_count                      = var.desired_count
+  launch_type                        = "FARGATE"
   platform_version                   = "1.4.0"
   health_check_grace_period_seconds  = 120
   deployment_minimum_healthy_percent = 100
   deployment_maximum_percent         = 200
   enable_execute_command             = true
-
-  capacity_provider_strategy {
-    capacity_provider = var.environment == "production" ? "FARGATE" : "FARGATE_SPOT"
-    weight            = 1
-  }
 
   network_configuration {
     subnets          = aws_subnet.public[*].id
@@ -399,7 +385,7 @@ resource "aws_ecs_service" "backend" {
     container_name   = "backend"
     container_port   = 8000
   }
-  depends_on = [aws_lb_listener.http, aws_efs_mount_target.artifacts, aws_ecs_cluster_capacity_providers.main]
+  depends_on = [aws_lb_listener.http, aws_efs_mount_target.artifacts]
 }
 
 resource "aws_s3_bucket" "frontend" {
