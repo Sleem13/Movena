@@ -1,4 +1,4 @@
-"""Provision the protected PhysioVision super-administrator account."""
+"""Provision the protected Movena super-administrator account."""
 from __future__ import annotations
 
 import argparse
@@ -20,12 +20,13 @@ def main() -> int:
     email = os.getenv("SUPER_ADMIN_EMAIL", "").strip()
     password = os.getenv("SUPER_ADMIN_PASSWORD", "")
     name = os.getenv("SUPER_ADMIN_FULL_NAME", "Super Administrator")
+    username = os.getenv("SUPER_ADMIN_USERNAME", "").strip() or None
     if not email or not password:
         print("Set SUPER_ADMIN_EMAIL and SUPER_ADMIN_PASSWORD before running this script.", file=sys.stderr)
         return 2
     init_db()
     try:
-        user, changed = seed_super_admin(email, password, name, reset=args.reset)
+        user, changed = seed_super_admin(email, password, name, username, reset=args.reset)
     except ValueError as exc:
         print(str(exc), file=sys.stderr)
         return 2

@@ -1,10 +1,10 @@
-# PhysioVision AI Development Journey
+# Movena Development Journey
 
 This document preserves the chronological sprint history that previously dominated the project READMEs. The main [README](../README.md) now describes the current product and setup, while this file records how the platform evolved.
 
 ## Journey summary
 
-PhysioVision AI began as a squat-analysis MVP, then expanded through five broad phases:
+Movena began as a squat-analysis MVP, then expanded through five broad phases:
 
 1. Establish a reliable video, pose, repetition, and feedback pipeline.
 2. Add confidence handling, datasets, ML experiments, and additional exercises.
@@ -62,7 +62,7 @@ Work after the numbered sprint sequence has focused on converting the engineerin
 - Preserved the selected recognition video when opening analysis, removing the duplicate-upload step.
 - Added coach/bystander subject-switch detection and safer single-person guidance.
 - Connected the mobile staging build to the deployed Render backend.
-- Added the PhysioVision Android icon, adaptive icon, favicon, and splash assets.
+- Added the Movena Android icon, adaptive icon, favicon, and splash assets.
 - Redesigned the mobile application around Home, Analyze, Exercises, History, and More navigation.
 - Reorganized optional analysis artifacts under a collapsed settings menu.
 - Added a four-step Exercise → Video → Review → Results progress model.

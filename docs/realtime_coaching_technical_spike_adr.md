@@ -16,7 +16,7 @@ parallel analyzer stack or storing raw camera streams.
 
 ## Decision
 
-PhysioVision AI will keep upload-based, rule-based analysis as the product
+Movena will keep upload-based, rule-based analysis as the product
 baseline. Real-time coaching remains behind the frontend feature flag:
 
 ```text

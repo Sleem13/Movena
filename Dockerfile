@@ -12,10 +12,14 @@ RUN sed -i 's|http://deb.debian.org|https://deb.debian.org|g' /etc/apt/sources.l
 
 WORKDIR /app
 COPY backend/requirements.txt /app/backend/requirements.txt
+COPY requirements-prmd.txt /app/requirements-prmd.txt
 RUN python -m pip install --no-cache-dir -r /app/backend/requirements.txt
+ARG INSTALL_PRMD_RUNTIME=false
+RUN if [ "$INSTALL_PRMD_RUNTIME" = "true" ]; then python -m pip install --no-cache-dir -r /app/requirements-prmd.txt; fi
 COPY backend /app/backend
 COPY alembic.ini /app/alembic.ini
 COPY models/recognition /app/models/recognition
+COPY models/form_quality /app/models/form_quality
 WORKDIR /app/backend
 RUN mkdir -p artifacts/overlays artifacts/reports tmp/uploads
 

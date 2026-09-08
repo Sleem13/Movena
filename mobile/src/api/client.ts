@@ -45,7 +45,7 @@ export async function apiRequest<T>(path: string, init: RequestInit = {}, authen
   } catch (error) {
     if (error instanceof ApiError) throw error;
     if ((error as Error).name === "AbortError") throw new ApiError("The request timed out. Check the backend connection and try again.", "TIMEOUT");
-    throw new ApiError("Cannot reach PhysioVision AI. Confirm the backend URL and Wi-Fi connection.", "NETWORK_ERROR");
+    throw new ApiError("Cannot reach Movena. Confirm the backend URL and Wi-Fi connection.", "NETWORK_ERROR");
   } finally {
     clearTimeout(timeout);
   }

@@ -2,7 +2,7 @@
 
 > **DRAFT — DO NOT SEND UNTIL GO/CONDITIONAL GO AND REAL DESTINATIONS ARE VERIFIED.**
 
-You are invited to a small, private PhysioVision AI product-QA beta. This is not a public release, medical device, clinical service, diagnosis tool, or treatment prescription. Expected time: approximately 30–45 minutes across the assigned tasks.
+You are invited to a small, private Movena product-QA beta. This is not a public release, medical device, clinical service, diagnosis tool, or treatment prescription. Expected time: approximately 30–45 minutes across the assigned tasks.
 
 Before testing:
 

@@ -2,7 +2,7 @@
 
 | Field | Result |
 |---|---|
-| EAS project | `@selim97/physiovision-ai-mobile` |
+| EAS project | `@selim97/movena-mobile` |
 | Profile | `preview-staging` |
 | Command | `eas build --profile preview-staging --platform android` |
 | Distribution | Internal APK |
@@ -14,7 +14,7 @@
 
 ## Sprint 28D rebuild — 2026-07-19
 
-- EAS preview contains `EXPO_PUBLIC_API_BASE_URL=https://name-physiovision-api-staging.onrender.com` and `EXPO_PUBLIC_APP_ENV=staging`.
+- EAS preview contains `EXPO_PUBLIC_API_BASE_URL=https://name-movena-api-staging.onrender.com` and `EXPO_PUBLIC_APP_ENV=staging`.
 - Live HTTPS checks returned `200` for `/health`, `/ready`, and `/api/v1/exercises`; health reports staging, database OK, auth-required analysis, and public demo disabled.
 - Previous build `45862c87-e43b-4c1d-8eea-d722f5e367bc` finished successfully for version `0.28.0`.
 - Post-fix rebuild `a10a3920-23e3-4097-ae7a-861a61bda01d` finished successfully on 2026-07-19 for Android `0.28.0` build version 1.

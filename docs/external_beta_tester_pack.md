@@ -18,9 +18,9 @@ Required private placeholders remain inactive: `[PRIVATE_FEEDBACK_FORM_URL]`, `[
 
 ## Welcome
 
-Thank you for helping test PhysioVision AI. This private, invite-only beta checks whether the app installs, uploads controlled exercise videos, explains results, and handles errors clearly. It is product QA, not clinical testing.
+Thank you for helping test Movena. This private, invite-only beta checks whether the app installs, uploads controlled exercise videos, explains results, and handles errors clearly. It is product QA, not clinical testing.
 
-PhysioVision AI supports exercise monitoring and does not replace assessment by a licensed physiotherapist. It is not a medical device, does not diagnose injury or disease, and does not prescribe treatment. Results may be inaccurate.
+Movena supports exercise monitoring and does not replace assessment by a licensed physiotherapist. It is not a medical device, does not diagnose injury or disease, and does not prescribe treatment. Results may be inaccurate.
 
 ## Before testing
 

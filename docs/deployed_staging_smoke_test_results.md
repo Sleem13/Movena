@@ -4,7 +4,7 @@ Render HTTPS staging and Supabase PostgreSQL are now reachable. The results belo
 
 ## Gate-closure check — 2026-07-19
 
-- Render backend: `https://name-physiovision-api-staging.onrender.com`.
+- Render backend: `https://name-movena-api-staging.onrender.com`.
 - `GET /health`: HTTP 200; version `0.28.0-rc.1`, environment staging, database OK, auth required, public demo disabled.
 - `GET /ready`: HTTP 200; database connection OK and artifact directories writable.
 - `GET /api/v1/exercises`: HTTP 200; five supported exercises and seven planned/unavailable exercises returned.

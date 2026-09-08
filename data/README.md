@@ -1,4 +1,4 @@
-# PhysioVision AI Data Directory
+# Movena Data Directory
 
 This directory defines the expected local dataset layout for Sprint 1.5 dataset pipeline validation.
 

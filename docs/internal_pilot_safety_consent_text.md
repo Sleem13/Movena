@@ -1,8 +1,8 @@
 # Internal Pilot Safety and Consent Text
 
-**PhysioVision AI supports exercise monitoring and does not replace assessment by a licensed physiotherapist.**
+**Movena supports exercise monitoring and does not replace assessment by a licensed physiotherapist.**
 
-This is an internal test build of PhysioVision AI. It is not a medical device and is not approved for clinical use. It does not diagnose a condition, determine whether an exercise is safe, or prescribe treatment. Do not use it for an emergency, a painful condition, or a treatment decision.
+This is an internal test build of Movena. It is not a medical device and is not approved for clinical use. It does not diagnose a condition, determine whether an exercise is safe, or prescribe treatment. Do not use it for an emergency, a painful condition, or a treatment decision.
 
 Stop exercising if you feel pain, dizziness, numbness, chest discomfort, unusual shortness of breath, instability, or other unusual discomfort. Seek appropriate professional or urgent care when needed; the app cannot assess those symptoms.
 

@@ -1,1 +1,1 @@
-"""Importable command-line utilities for PhysioVision AI."""
+"""Importable command-line utilities for Movena."""

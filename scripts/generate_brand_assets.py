@@ -1,12 +1,8 @@
-"""Generate exact, optimized web brand derivatives from the approved wordmark.
-
-This is a deterministic crop/resize pipeline. It never redraws or generatively
-alters the approved PhysioVision artwork.
-"""
+"""Generate deterministic Movena web brand assets."""
 
 from pathlib import Path
 
-from PIL import Image
+from PIL import Image, ImageDraw, ImageFont
 
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
@@ -21,6 +17,15 @@ ICON_SIZES = {
     "icon-192.png": 192,
     "icon-512.png": 512,
 }
+CANVAS_SIZE = (1600, 640)
+TEXT_X = 588
+NAME_Y = 166
+TAGLINE_Y = 414
+NAME = "Movena"
+TAGLINE = "Move Better, Recover Together."
+INK = "#071B4A"
+TEAL = "#0F8F83"
+FONT_ROOT = Path("C:/Windows/Fonts")
 
 
 def resize_contain(image: Image.Image, width: int) -> Image.Image:
@@ -28,9 +33,26 @@ def resize_contain(image: Image.Image, width: int) -> Image.Image:
     return image.resize((width, height), Image.Resampling.LANCZOS)
 
 
+def font(name: str, size: int) -> ImageFont.FreeTypeFont:
+    return ImageFont.truetype(str(FONT_ROOT / name), size)
+
+
+def build_master_wordmark(source: Image.Image) -> Image.Image:
+    mark = source.crop(MARK_CROP)
+    wordmark = Image.new("RGBA", CANVAS_SIZE, (0, 0, 0, 0))
+    wordmark.alpha_composite(mark, (MARK_CROP[0], MARK_CROP[1]))
+
+    draw = ImageDraw.Draw(wordmark)
+    draw.text((TEXT_X, NAME_Y), NAME, fill=INK, font=font("arialbd.ttf", 178))
+    draw.text((TEXT_X + 4, TAGLINE_Y), TAGLINE, fill=TEAL, font=font("arial.ttf", 62))
+    return wordmark
+
+
 def main() -> None:
     ICON_ROOT.mkdir(parents=True, exist_ok=True)
-    with Image.open(SOURCE).convert("RGBA") as wordmark:
+    with Image.open(SOURCE).convert("RGBA") as source:
+        wordmark = build_master_wordmark(source)
+        wordmark.save(SOURCE, format="PNG", optimize=True)
         mark = wordmark.crop(MARK_CROP)
         for filename, size in ICON_SIZES.items():
             mark.resize((size, size), Image.Resampling.LANCZOS).save(

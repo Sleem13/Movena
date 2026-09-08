@@ -13,7 +13,7 @@ npm run build
 The backend `CORS_ALLOWED_ORIGINS` must include each exact HTTPS origin, without wildcard, path, or trailing slash. For the current Render and Vercel staging deployment, configure this value in the Render environment:
 
 ```text
-CORS_ALLOWED_ORIGINS=https://name-physiovision-api-staging.onrender.com,https://physio-vision-ai.vercel.app
+CORS_ALLOWED_ORIGINS=https://name-movena-api-staging.onrender.com,https://physio-vision-ai.vercel.app
 ```
 
 Render does not import the repository's `.env.staging.example` automatically. Save the environment-variable change in the Render dashboard and redeploy the backend before testing the browser upload again. Do not put secrets in `VITE_*`; Vite embeds them in public browser code.

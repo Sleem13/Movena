@@ -1,4 +1,4 @@
-# PhysioVision AI Full Product Roadmap
+# Movena Full Product Roadmap
 
 ## Sprint 29E — First-Wave External Beta Execution
 
@@ -56,7 +56,7 @@ Status: execution package complete, external dependencies blocked. Render/Neon/V
 
 Status: repository-level staging readiness implemented. Fail-closed staging configuration, PostgreSQL/Psycopg support, internal EAS staging profile, explicit client origins, signed temporary artifacts, and release checklists are present. Actual provider deployment, signed Android build, physical-device QA, and controlled pilot approval remain gated. No public release or model promotion occurred.
 
-PhysioVision AI currently supports `bodyweight_squat`, `sit_to_stand`, `knee_extension`, `shoulder_abduction`, and the Sprint 19 `hip_abduction` rule-based MVP. All other exercises below are planned and are not production-ready. Rule-based biomechanics remains primary; ML/DL remains experimental until documented validation and promotion criteria are satisfied.
+Movena currently supports `bodyweight_squat`, `sit_to_stand`, `knee_extension`, `shoulder_abduction`, and the Sprint 19 `hip_abduction` rule-based MVP. All other exercises below are planned and are not production-ready. Rule-based biomechanics remains primary; ML/DL remains experimental until documented validation and promotion criteria are satisfied.
 
 ## Sprint 12 — Deployment & Mobile-Ready API Hardening
 

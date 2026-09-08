@@ -1,4 +1,4 @@
-"""Temporal pose classifier used by the PhysioVision sequence-training pipeline."""
+"""Temporal pose classifier used by the Movena sequence-training pipeline."""
 
 from __future__ import annotations
 

@@ -67,7 +67,7 @@ export default function MoreScreen() {
         />
       </View>
       <View style={styles.about}>
-        <Text style={styles.aboutTitle}>PhysioVision AI</Text>
+        <Text style={styles.aboutTitle}>Movena</Text>
         <Text style={styles.aboutText}>
           Movement intelligence inside your rehabilitation journey.
         </Text>

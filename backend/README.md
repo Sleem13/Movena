@@ -1,4 +1,4 @@
-# PhysioVision AI Backend
+# Movena Backend
 
 ## Controlled staging
 
@@ -6,7 +6,7 @@ Copy values from `.env.staging.example` into the hosting provider's secret/envir
 
 Use `/health` for liveness and `/ready` for database/artifact readiness. Reports and overlays require bearer auth or an unexpired signed link when protected analysis is enabled. See `docs/staging_deployment_strategy.md` and `docs/staging_artifact_storage_plan.md`.
 
-FastAPI backend for the PhysioVision AI movement-analysis API.
+FastAPI backend for the Movena movement-analysis API.
 
 ## Setup
 

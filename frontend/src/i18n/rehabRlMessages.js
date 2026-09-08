@@ -1,8 +1,8 @@
 const ARABIC_TEXT = Object.freeze({
   "Clinical decision support": "دعم القرار السريري",
   "Rehabilitation planning workspace": "مساحة تخطيط التأهيل",
-  "Review criteria-based physical therapy protocols and trained-policy suggestions inside PhysioVision AI.":
-    "راجع بروتوكولات العلاج الطبيعي القائمة على المعايير واقتراحات النموذج المدرّب داخل PhysioVision AI.",
+  "Review criteria-based physical therapy protocols and trained-policy suggestions inside Movena.":
+    "راجع بروتوكولات العلاج الطبيعي القائمة على المعايير واقتراحات النموذج المدرّب داخل Movena.",
   "Clinician review required.": "مراجعة الأخصائي مطلوبة.",
   "Protocols are references, not diagnoses or autonomous prescriptions. Examine the patient, screen red flags, apply procedure-specific orders, and use shared decision-making before treatment.":
     "البروتوكولات مراجع وليست تشخيصات أو وصفات علاجية مستقلة. افحص المريض، وتحقق من العلامات الحمراء، وطبّق تعليمات الإجراء المحددة، واستخدم اتخاذ القرار المشترك قبل العلاج.",

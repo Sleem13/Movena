@@ -23,7 +23,7 @@ export async function recognizeExerciseVideo(video: MobileVideo, onProgress?: (p
     request.setRequestHeader("Accept", "application/json");
     if (token) request.setRequestHeader("Authorization", `Bearer ${token}`);
     request.upload.onprogress = (event) => event.lengthComputable && onProgress?.(Math.round((event.loaded / event.total) * 100));
-    request.onerror = () => reject(new ApiError("Cannot reach PhysioVision AI. Confirm the backend URL and Wi-Fi connection.", "NETWORK_ERROR"));
+    request.onerror = () => reject(new ApiError("Cannot reach Movena. Confirm the backend URL and Wi-Fi connection.", "NETWORK_ERROR"));
     request.ontimeout = () => reject(new ApiError("Exercise identification timed out. Try a shorter recording.", "TIMEOUT"));
     request.onabort = () => reject(new ApiError("Identification cancelled. Your selected video is still available.", "CANCELLED"));
     signal?.addEventListener("abort", () => request.abort(), { once: true });

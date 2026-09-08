@@ -29,7 +29,7 @@ def artifact_slug(exercise_id: str | None) -> str:
 
 def artifact_download_filename(exercise_id: str | None, kind: str) -> str:
     suffix = ARTIFACT_SUFFIXES[kind]
-    return f"physiovision-{artifact_slug(exercise_id)}-{kind}{suffix}"
+    return f"movena-{artifact_slug(exercise_id)}-{kind}{suffix}"
 
 
 def build_artifact_url(

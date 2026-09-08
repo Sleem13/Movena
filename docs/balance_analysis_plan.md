@@ -4,7 +4,7 @@ Status: Very important implementation task, first MVP pass complete in backend a
 
 ## Scope
 
-PhysioVision AI now supports a conservative `balance` analyzer for short static standing balance videos. The first pass estimates:
+Movena now supports a conservative `balance` analyzer for short static standing balance videos. The first pass estimates:
 
 - visible hold duration,
 - stance mode proxy: quiet standing, narrow/tandem stance, or unilateral stance,

@@ -4,7 +4,7 @@
 
 Recent literature shows rapid progress in AI-assisted rehabilitation, markerless motion capture, pose estimation, and remote monitoring. However, there remains a practical gap between technical feasibility and clinically useful physiotherapy tools. Many systems can estimate pose landmarks or classify movements, but fewer systems provide therapist-centered, interpretable, single-camera assessment of common lower-limb rehabilitation exercises in home or outpatient settings.
 
-PhysioVision AI addresses this gap by focusing on a constrained MVP for knee rehabilitation and lower-limb exercise assessment. The system is intended to support physiotherapists by generating movement metrics, compensation flags, progress summaries, and therapist-friendly reports. It does not replace clinical judgment, diagnose pathology, or prescribe treatment independently.
+Movena addresses this gap by focusing on a constrained MVP for knee rehabilitation and lower-limb exercise assessment. The system is intended to support physiotherapists by generating movement metrics, compensation flags, progress summaries, and therapist-friendly reports. It does not replace clinical judgment, diagnose pathology, or prescribe treatment independently.
 
 ## Specific Gaps in Current Systems
 
@@ -28,9 +28,9 @@ Automated movement-quality scores may correlate with expert ratings in selected 
 
 Remote rehabilitation tools often emphasize exercise delivery or real-time feedback but may underemphasize longitudinal reporting. Physiotherapists need session-to-session trends, adherence patterns, range-of-motion changes, and flagged compensations in a format that can support documentation and follow-up.
 
-## How PhysioVision AI Addresses the Gap
+## How Movena Addresses the Gap
 
-PhysioVision AI addresses the research gap through a clinically scoped MVP:
+Movena addresses the research gap through a clinically scoped MVP:
 
 - It focuses on knee rehabilitation and lower-limb exercises rather than broad general fitness.
 - It uses markerless camera-based pose estimation to improve accessibility.
@@ -63,4 +63,4 @@ The research gap leads to the following product requirements. Only the squat-spe
 
 ## Final Gap Statement
 
-There is a need for an accessible, clinically cautious, therapist-centered computer vision platform that analyzes common lower-limb rehabilitation exercises using ordinary cameras and converts pose data into interpretable movement-quality feedback and progress reports. PhysioVision AI is designed to fill this gap by functioning as a physiotherapist support tool for knee rehabilitation assessment, not as a replacement for professional clinical evaluation.
+There is a need for an accessible, clinically cautious, therapist-centered computer vision platform that analyzes common lower-limb rehabilitation exercises using ordinary cameras and converts pose data into interpretable movement-quality feedback and progress reports. Movena is designed to fill this gap by functioning as a physiotherapist support tool for knee rehabilitation assessment, not as a replacement for professional clinical evaluation.

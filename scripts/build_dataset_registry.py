@@ -1,4 +1,4 @@
-"""Build the conservative, modality-aware PhysioVision dataset registry."""
+"""Build the conservative, modality-aware Movena dataset registry."""
 from __future__ import annotations
 import argparse,json
 from pathlib import Path

@@ -10,8 +10,8 @@ describe("secure token storage", () => {
     await saveToken("token");
     await expect(getToken()).resolves.toBe("token");
     await clearToken();
-    expect(SecureStore.setItemAsync).toHaveBeenCalledWith("physiovision_access_token", "token");
-    expect(SecureStore.deleteItemAsync).toHaveBeenCalledWith("physiovision_access_token");
+    expect(SecureStore.setItemAsync).toHaveBeenCalledWith("movena_access_token", "token");
+    expect(SecureStore.deleteItemAsync).toHaveBeenCalledWith("movena_access_token");
   });
 
   it("uses volatile session storage when the native module is unavailable", async () => {
@@ -20,6 +20,6 @@ describe("secure token storage", () => {
     await expect(getToken()).resolves.toBe("temporary-token");
     await clearToken();
     await expect(getToken()).resolves.toBeNull();
-    expect(SecureStore.setItemAsync).not.toHaveBeenCalledWith("physiovision_access_token", "temporary-token");
+    expect(SecureStore.setItemAsync).not.toHaveBeenCalledWith("movena_access_token", "temporary-token");
   });
 });

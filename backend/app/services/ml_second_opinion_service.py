@@ -165,6 +165,8 @@ def predict_ml_second_opinion(
     provider_config = provider_catalog.get(exercise_id)
     if not isinstance(provider_config, dict):
         return unconfigured_prediction(exercise_id)
+    if provider_config.get("enabled") is False:
+        return unconfigured_prediction(exercise_id, "Configured provider is disabled pending validation.")
     model_mode = str(provider_config.get("model_mode", "")).strip()
     if model_mode not in SUPPORTED_MODEL_MODES:
         return unconfigured_prediction(exercise_id, "Configured provider uses an unsupported model_mode.")

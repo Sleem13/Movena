@@ -4,4 +4,4 @@ export const colors = {
   muted: "#64748B", border: "#E2E8F0", paleBlue: "#EFF6FF", paleTeal: "#ECFDFB", paleAmber: "#FFFBEB",
 };
 
-export const DISCLAIMER = "PhysioVision AI supports exercise monitoring and does not replace assessment by a licensed physiotherapist.";
+export const DISCLAIMER = "Movena supports exercise monitoring and does not replace assessment by a licensed physiotherapist.";

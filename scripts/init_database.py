@@ -1,4 +1,4 @@
-"""Initialize the local PhysioVision AI analysis-session database."""
+"""Initialize the local Movena analysis-session database."""
 
 from __future__ import annotations
 

@@ -14,7 +14,7 @@ from app.core.artifact_config import BACKEND_ROOT
 from app.core.config import database_url_from_environment, normalize_database_url
 
 
-DEFAULT_DATABASE_PATH = BACKEND_ROOT / "physiovision_dev.db"
+DEFAULT_DATABASE_PATH = BACKEND_ROOT / "movena_dev.db"
 DEFAULT_DATABASE_URL = f"sqlite:///{DEFAULT_DATABASE_PATH.as_posix()}"
 DATABASE_URL = database_url_from_environment(DEFAULT_DATABASE_URL)
 LATEST_SCHEMA_REVISION = "0006_coaching_follow_up"

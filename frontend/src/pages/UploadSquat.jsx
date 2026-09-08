@@ -364,6 +364,7 @@ export default function UploadSquat(props) {
               <AnalysisOptions
                 exercise={props.exercise}
                 value={props.options}
+                mlReadiness={props.mlReadiness}
                 onChange={props.onOptionsChange}
                 disabled={props.isLoading}
               />

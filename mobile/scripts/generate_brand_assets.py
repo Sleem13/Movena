@@ -1,4 +1,4 @@
-"""Generate Expo assets from the approved PhysioVision source artwork.
+"""Generate Expo assets from the approved Movena source artwork.
 
 This deterministic crop/resize pipeline keeps web and mobile artwork aligned.
 It does not redraw or generatively alter the approved mark.

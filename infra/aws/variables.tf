@@ -44,7 +44,7 @@ variable "email_delivery_mode" {
 
 variable "email_from" {
   type    = string
-  default = "no-reply@physiovision.local"
+  default = "no-reply@movena.local"
 }
 
 variable "smtp_host" {

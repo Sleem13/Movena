@@ -2,7 +2,7 @@
 
 ## Scope
 
-Sprint 9 adds `sit_to_stand` as the second active PhysioVision AI exercise. It analyzes repeated chair-stand movement using MediaPipe landmarks and transparent rules. It does not estimate fall risk, diagnose disease, or replace physiotherapist assessment.
+Sprint 9 adds `sit_to_stand` as the second active Movena exercise. It analyzes repeated chair-stand movement using MediaPipe landmarks and transparent rules. It does not estimate fall risk, diagnose disease, or replace physiotherapist assessment.
 
 ## Movement Pipeline
 

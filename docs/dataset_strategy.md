@@ -1,12 +1,12 @@
-# PhysioVision AI Dataset Strategy
+# Movena Dataset Strategy
 
 ## Why We Should Not Rely on One Dataset
 
-PhysioVision AI needs to work across exercises, camera views, body types, lighting conditions, repetition speeds, and rehabilitation movement patterns. No single public dataset covers that full operating range.
+Movena needs to work across exercises, camera views, body types, lighting conditions, repetition speeds, and rehabilitation movement patterns. No single public dataset covers that full operating range.
 
 A squat-only dataset is useful for the Sprint 1 MVP, but it will not validate rehabilitation correctness, clinical scoring, camera robustness, sensor-based monitoring, or multi-exercise generalization. Rehabilitation datasets such as REHAB24-6, UCO Physical Rehabilitation, DynTherapy, UI-PRMD, and KIMORE each contribute a different slice of evidence: RGB video, skeleton sequences, repetition segmentation, correctness labels, multi-view recordings, or clinical quality scores. The UCI Physical Therapy Exercises Dataset adds a separate wearable-sensor time-series track for future multimodal research.
 
-The practical strategy is to use public datasets for research support, benchmarking, and early validation, while building a custom PhysioVision dataset for real-world product performance. Public datasets help us avoid designing rules in a vacuum. Custom data is still necessary because our target camera setup, upload workflow, patient instructions, body framing, and feedback labels will be specific to PhysioVision AI.
+The practical strategy is to use public datasets for research support, benchmarking, and early validation, while building a custom Movena dataset for real-world product performance. Public datasets help us avoid designing rules in a vacuum. Custom data is still necessary because our target camera setup, upload workflow, patient instructions, body framing, and feedback labels will be specific to Movena.
 
 ## Dataset Phases
 
@@ -35,7 +35,7 @@ Primary datasets:
 - UI-PRMD
 
 Goals:
-- Compare PhysioVision features against rehabilitation movement benchmarks.
+- Compare Movena features against rehabilitation movement benchmarks.
 - Evaluate repetition segmentation, movement phases, and correctness labels.
 - Test whether generic pose features transfer from squat to rehab movements.
 
@@ -100,7 +100,7 @@ Strengths:
 Limitations:
 - It is an image dataset, not a video dataset.
 - It cannot validate repetition counting, movement phases, tempo, or temporal consistency.
-- It should not replace custom PhysioVision squat videos, which are required for the upload workflow and temporal analysis.
+- It should not replace custom Movena squat videos, which are required for the upload workflow and temporal analysis.
 - It is not clinical rehabilitation evidence and must not be used to make diagnostic claims.
 
 ### REHAB24-6
@@ -113,7 +113,7 @@ Strengths:
 Limitations:
 - Not squat-specific.
 - Data format may require custom adapters.
-- Labels may not map one-to-one to PhysioVision feedback categories.
+- Labels may not map one-to-one to Movena feedback categories.
 
 ### UCO Physical Rehabilitation Dataset
 
@@ -148,7 +148,7 @@ Strengths:
 
 Limitations:
 - Older benchmark style and sensor assumptions may not match phone-upload RGB workflows.
-- Not directly labeled for PhysioVision issue categories.
+- Not directly labeled for Movena issue categories.
 - Requires mapping from source skeleton format to the unified schema.
 
 ### KIMORE
@@ -161,7 +161,7 @@ Strengths:
 Limitations:
 - Heavier data modalities and clinical scoring make it better for later validation than Sprint 1.
 - Labels and scores need careful interpretation before being used in patient-facing feedback.
-- Not a substitute for PhysioVision-specific consented custom data.
+- Not a substitute for Movena-specific consented custom data.
 
 ## UCI Physical Therapy Exercises Dataset
 
@@ -175,14 +175,14 @@ Sensors:
 
 The UCI Physical Therapy Exercises Dataset contains wearable inertial and magnetic sensor data collected during physical therapy exercises. The UCI repository describes eight exercise types, three execution styles, and five XSens MTx sensor units, each containing tri-axial accelerometer, gyroscope, and magnetometer sensors sampled at 25 Hz.
 
-Use case in PhysioVision AI:
+Use case in Movena:
 - Future wearable-sensor analysis for rehabilitation exercise classification.
 - Execution quality classification for correct, fast, and low-amplitude movement styles.
 - Baseline time-series modeling for segmentation, clustering, and classification.
 - Multimodal research where wearable sensors may complement camera-based pose estimation.
 
 Why it is useful:
-- It gives PhysioVision a non-video benchmark for rehabilitation movement recognition.
+- It gives Movena a non-video benchmark for rehabilitation movement recognition.
 - It supports robust time-series feature engineering and sequence modeling.
 - It can help compare movement quality signals from sensors against camera-derived angle features in future research.
 

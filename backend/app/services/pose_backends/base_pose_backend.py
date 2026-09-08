@@ -18,7 +18,7 @@ class PoseBackendUnavailableError(PoseBackendError):
 class PoseBackendResult:
     """Normalized result shared by all benchmark backends.
 
-    Each frame uses the existing PhysioVision landmark dictionary shape so the
+    Each frame uses the existing Movena landmark dictionary shape so the
     rule-based analyzer can consume candidate outputs without being replaced.
     """
 

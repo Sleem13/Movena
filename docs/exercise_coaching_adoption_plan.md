@@ -2,9 +2,9 @@
 
 ## Decision
 
-PhysioVision AI extends its existing exercise engine rather than importing a second application architecture. Eight rule-based development analyzers now exist; push-up, shoulder press, and bicep curl are conservative MVP additions and are not approved for the external-beta allowlist. Exercise recognition is suggestion-only, manual selection remains primary, and no planned movement can run until its own validity, phase, scoring, confidence, safety, and review gates pass.
+Movena extends its existing exercise engine rather than importing a second application architecture. Eight rule-based development analyzers now exist; push-up, shoulder press, and bicep curl are conservative MVP additions and are not approved for the external-beta allowlist. Exercise recognition is suggestion-only, manual selection remains primary, and no planned movement can run until its own validity, phase, scoring, confidence, safety, and review gates pass.
 
-New code, APIs, model IDs, UI labels, and artifacts use PhysioVision terminology. External research inputs retain provenance only in controlled dataset records; they are not used as product branding.
+New code, APIs, model IDs, UI labels, and artifacts use Movena terminology. External research inputs retain provenance only in controlled dataset records; they are not used as product branding.
 
 ## Implemented Foundation
 
@@ -59,7 +59,7 @@ Mobile now follows the same contract through its Exercise Library: **Identify Ex
 
 ## Subject Identity Safety
 
-The current MediaPipe pipeline is single-subject. Before recognition, rep counting, scoring, report creation, or overlay generation, PhysioVision evaluates pose-center and body-scale continuity across usable frames. A severe discontinuity, or repeated suspicious discontinuities, raises `SUBJECT_SWITCH_DETECTED`; analysis stops and the API returns bounded frame/timestamp diagnostics plus single-person recording guidance. Thresholds are configurable through `SUBJECT_*` environment values, and the guard defaults to enabled.
+The current MediaPipe pipeline is single-subject. Before recognition, rep counting, scoring, report creation, or overlay generation, Movena evaluates pose-center and body-scale continuity across usable frames. A severe discontinuity, or repeated suspicious discontinuities, raises `SUBJECT_SWITCH_DETECTED`; analysis stops and the API returns bounded frame/timestamp diagnostics plus single-person recording guidance. Thresholds are configurable through `SUBJECT_*` environment values, and the guard defaults to enabled.
 
 This guard prevents mixed-person reports but does not claim to identify every visible person. The next multi-person phase must introduce a multi-person detector or pose model, persistent track IDs, explicit athlete selection, and separate temporal/analyzer state per track. Instance segmentation may improve overlapping-person handling, but segmentation alone cannot preserve identity. Until that phase is validated, coaches, spotters, and bystanders must remain outside the recording frame and the product analyzes one person at a time.
 

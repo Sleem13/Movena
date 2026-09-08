@@ -23,7 +23,7 @@ export default function BrandLogo({ compact = false, className = "", markClassNa
         />
         <img
           src={BRAND.assets.wordmarkFallback}
-          alt={`${BRAND.name} — ${BRAND.description} ${BRAND.tagline}.`}
+          alt={`${BRAND.name} — ${BRAND.tagline}`}
           width="420"
           height="147"
           decoding="async"

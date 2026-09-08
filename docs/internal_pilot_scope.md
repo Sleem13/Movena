@@ -6,7 +6,7 @@ Sprint 25 evaluates product usability, upload reliability, result/rejection clar
 
 ## Participants and duration
 
-Only invited PhysioVision AI engineering, product, QA, and designated physiotherapy-domain reviewers may participate. The planned pilot lasts 10 business days after the readiness gate is approved. Access is named, revocable, and must not be forwarded.
+Only invited Movena engineering, product, QA, and designated physiotherapy-domain reviewers may participate. The planned pilot lasts 10 business days after the readiness gate is approved. Access is named, revocable, and must not be forwarded.
 
 ## In scope
 
@@ -26,7 +26,7 @@ Use test videos only. Do not upload real patient-identifiable videos, patient na
 
 ## Safety disclaimer
 
-PhysioVision AI provides movement-monitoring feedback for educational product testing. It is not a medical device, does not diagnose or prescribe treatment, and does not replace a licensed healthcare professional. Stop activity for pain, dizziness, numbness, chest discomfort, unusual shortness of breath, instability, or unusual discomfort and seek appropriate professional or urgent help.
+Movena provides movement-monitoring feedback for educational product testing. It is not a medical device, does not diagnose or prescribe treatment, and does not replace a licensed healthcare professional. Stop activity for pain, dizziness, numbness, chest discomfort, unusual shortness of breath, instability, or unusual discomfort and seek appropriate professional or urgent help.
 
 ## Success criteria
 

@@ -1,6 +1,6 @@
 # Staging Deployment Strategy
 
-PhysioVision AI staging is an internal engineering environment. It is not a public pilot, medical service, or patient-record system. Use synthetic or explicitly non-identifiable test recordings only.
+Movena staging is an internal engineering environment. It is not a public pilot, medical service, or patient-record system. Use synthetic or explicitly non-identifiable test recordings only.
 
 ## Recommended path: managed single-instance staging
 

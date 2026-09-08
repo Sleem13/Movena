@@ -28,7 +28,7 @@ that the current policy is clinically validated.
 ## P1 — Clinical workflow integration
 
 1. Link assessments to an authorized patient profile and active care-plan item.
-2. Prefill only validated measures from PhysioVision sessions; require clinician
+2. Prefill only validated measures from Movena sessions; require clinician
    confirmation before policy execution.
 3. Add approve, modify, reject, and supersede states for recommendation records.
 4. Show the exact rationale, constraints, model version, and data completeness

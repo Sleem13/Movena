@@ -1,7 +1,7 @@
 {
-  "name": "PhysioVision AI",
-  "short_name": "PhysioVision",
-  "description": "AI-assisted rehabilitation and clinician-reviewed movement intelligence.",
+  "name": "Movena",
+  "short_name": "Movena",
+  "description": "Movement intelligence for therapist-guided recovery.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

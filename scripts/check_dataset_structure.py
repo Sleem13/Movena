@@ -1,4 +1,4 @@
-"""Validate the local PhysioVision AI dataset folder structure."""
+"""Validate the local Movena dataset folder structure."""
 
 from __future__ import annotations
 
@@ -76,7 +76,7 @@ def ensure_gitkeep(path: Path) -> None:
 def check_structure(create: bool = False) -> int:
     """Print a dataset structure report and return a shell-friendly status code."""
     missing: list[Path] = []
-    print("PhysioVision AI dataset structure report")
+    print("Movena dataset structure report")
     print("=" * 44)
 
     for directory in EXPECTED_DATA_DIRS:
@@ -113,7 +113,7 @@ def check_structure(create: bool = False) -> int:
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Check PhysioVision AI dataset folders.")
+    parser = argparse.ArgumentParser(description="Check Movena dataset folders.")
     parser.add_argument("--create", action="store_true", help="Create missing folders and .gitkeep files.")
     return parser.parse_args()
 

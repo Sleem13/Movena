@@ -1,11 +1,13 @@
-# PhysioVision AI
+# Movena
 
-**AI-Assisted Rehabilitation Platform**<br>
-*Move Better · Recover Faster · Live Healthier*
+**Movement intelligence for therapist-guided recovery**<br>
+*Move better. Recover together.*
 
-PhysioVision AI is a video-based exercise coaching and rehabilitation platform. It combines pose estimation, exercise-specific biomechanics rules, repetition tracking, temporal exercise recognition, annotated video, reports, session history, therapist-facing care workflows, bounded recovery and lifestyle coaching, and protected RehabRL decision support across React web and Expo Android clients.
+Movena is movement intelligence for therapist-guided recovery. It combines pose estimation, exercise-specific biomechanics rules, repetition tracking, temporal exercise recognition, annotated video, reports, session history, therapist-facing care workflows, bounded recovery and lifestyle coaching, and protected RehabRL decision support across React web and Expo Android clients.
 
 The product supports movement review and coaching conversations. It does not diagnose conditions, prescribe treatment, or replace a licensed physiotherapist.
+
+Name clearance is not complete. Before public release, review the [Movena name clearance memo](docs/movena_name_clearance.md) and obtain formal trademark counsel approval.
 
 The integrated RehabRL workspace provides therapist-reviewed recommendation candidates, synthetic recovery simulation, prescription exercise exploration, and super-admin model operations. See the [integration guide](docs/rehab_rl_integration.md) for its architecture, security model, API, deployment, and verification status.
 
@@ -201,7 +203,7 @@ Generated artifacts belong under `models/recognition/` with metadata, class labe
 
 ## Rehabilitation workflow
 
-The authenticated product now treats PhysioVision as the movement-intelligence engine inside a therapist-prescribed rehabilitation workflow. Phase 1 includes a patient Today dashboard on web and Expo, immutable plan replacement/history, scheduled exercise dosage, pain/difficulty/fatigue check-ins, patient comments, therapist outcome review, and an ownership-validated link from saved analysis sessions to assigned plan items. Direct analysis and session-history routes remain supported.
+The authenticated product now treats Movena as the movement-intelligence engine inside a therapist-prescribed rehabilitation workflow. Phase 1 includes a patient Today dashboard on web and Expo, immutable plan replacement/history, scheduled exercise dosage, pain/difficulty/fatigue check-ins, patient comments, therapist outcome review, and an ownership-validated link from saved analysis sessions to assigned plan items. Direct analysis and session-history routes remain supported.
 
 Apply schema changes with Alembic before starting an existing environment:
 
@@ -272,7 +274,7 @@ Important public client variables:
 | Variable | Consumer | Example |
 |---|---|---|
 | `VITE_API_BASE_URL` | Web | `http://127.0.0.1:8000` |
-| `EXPO_PUBLIC_API_BASE_URL` | Mobile | `https://name-physiovision-api-staging.onrender.com` |
+| `EXPO_PUBLIC_API_BASE_URL` | Mobile | `https://name-movena-api-staging.onrender.com` |
 | `EXPO_PUBLIC_APP_ENV` | Mobile | `development`, `staging`, or `production` |
 
 Never place server secrets in `VITE_*` or `EXPO_PUBLIC_*`. Those values are included in client builds.
@@ -288,6 +290,7 @@ Provision the root account from server-only environment variables. Never expose 
 ```powershell
 $env:SUPER_ADMIN_EMAIL="owner@example.com"
 $env:SUPER_ADMIN_PASSWORD="use-a-unique-long-password"
+$env:SUPER_ADMIN_USERNAME="owner"
 $env:SUPER_ADMIN_FULL_NAME="Application Owner"
 .\.venv\Scripts\python.exe scripts\seed_super_admin.py
 ```
@@ -340,6 +343,7 @@ See [product safety policy](docs/product_safety_policy.md), [privacy checklist](
 - [Mobile API contract](docs/mobile_api_contract.md)
 - [Cloud deployment preparation](docs/cloud_deployment_preparation.md)
 - [Exercise coaching adoption plan](docs/exercise_coaching_adoption_plan.md)
+- [PRMD production readiness](docs/prmd_production_readiness.md)
 - [RehabRL integration guide](docs/rehab_rl_integration.md)
 - [RehabRL improvement roadmap](docs/rehab_rl_improvement_roadmap.md)
 - [Recovery & Lifestyle Coaching clinical and technical guide](docs/recovery_lifestyle_coaching.md)

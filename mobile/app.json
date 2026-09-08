@@ -1,19 +1,19 @@
 {
   "expo": {
-    "name": "PhysioVision AI",
-    "slug": "physiovision-ai-mobile",
+    "name": "Movena",
+    "slug": "movena-mobile",
     "version": "0.28.0",
     "icon": "./assets/images/icon.png",
     "orientation": "portrait",
-    "scheme": "physiovision",
+    "scheme": "movena",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "ai.physiovision.mobile"
+      "bundleIdentifier": "ai.movena.mobile"
     },
     "android": {
-      "package": "ai.physiovision.mobile",
+      "package": "ai.movena.mobile",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#2563EB"
@@ -43,8 +43,8 @@
       [
         "expo-image-picker",
         {
-          "photosPermission": "Allow PhysioVision AI to select a movement video for temporary analysis.",
-          "cameraPermission": "Allow PhysioVision AI to record a movement video for temporary analysis.",
+          "photosPermission": "Allow Movena to select a movement video for temporary analysis.",
+          "cameraPermission": "Allow Movena to record a movement video for temporary analysis.",
           "microphonePermission": false
         }
       ]

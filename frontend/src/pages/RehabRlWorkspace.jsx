@@ -1691,7 +1691,7 @@ export default function RehabRlWorkspace({ user }) {
           eyebrow={tr("Clinical decision support")}
           title={tr("Rehabilitation planning workspace")}
           description={tr(
-            "Review criteria-based physical therapy protocols and trained-policy suggestions inside PhysioVision AI.",
+            "Review criteria-based physical therapy protocols and trained-policy suggestions inside Movena.",
           )}
         />
         <div className="mb-5 flex gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-900">

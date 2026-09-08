@@ -4,7 +4,7 @@
 
 **Blocked before provisioning.** `DATABASE_URL` and `NEON_API_KEY` are unset, no Neon project/branch identifier is configured, and no Neon CLI is installed. Consequently no managed PostgreSQL instance was created, no schema was initialized, no administrator/beta account was seeded, and no backup or restore was executed. These are pending operational steps, not passes. No real patient data was accessed or introduced.
 
-Create a dedicated Neon project or branch named for PhysioVision AI staging. Do not connect production or patient databases. Require TLS and restrict administrative access.
+Create a dedicated Neon project or branch named for Movena staging. Do not connect production or patient databases. Require TLS and restrict administrative access.
 
 Use the provider connection string as `DATABASE_URL`. Common `postgresql://` or `postgres://` URLs are normalized to SQLAlchemy's Psycopg 3 dialect. If writing it explicitly:
 

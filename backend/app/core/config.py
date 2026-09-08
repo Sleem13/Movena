@@ -34,7 +34,7 @@ def normalize_database_url(value: str) -> str:
     return value
 
 
-def database_url_from_environment(default: str = "sqlite:///./physiovision_dev.db") -> str:
+def database_url_from_environment(default: str = "sqlite:///./movena_dev.db") -> str:
     """Build a PostgreSQL URL from secret-injected fields without exposing it in task definitions."""
     configured = os.getenv("DATABASE_URL", "").strip()
     if configured:
@@ -44,7 +44,7 @@ def database_url_from_environment(default: str = "sqlite:///./physiovision_dev.d
         return default
     user = quote_plus(os.getenv("DATABASE_USER", ""))
     password = quote_plus(os.getenv("DATABASE_PASSWORD", ""))
-    name = quote_plus(os.getenv("DATABASE_NAME", "physiovision"))
+    name = quote_plus(os.getenv("DATABASE_NAME", "movena"))
     port = int(os.getenv("DATABASE_PORT", "5432"))
     return f"postgresql+psycopg://{user}:{password}@{host}:{port}/{name}"
 
@@ -58,13 +58,13 @@ def _bool(name: str, default: bool) -> bool:
 
 
 class Settings(BaseModel):
-    project_name: str = "PhysioVision AI"
+    project_name: str = "Movena"
     version: str = "0.12.0"
     api_v1_prefix: str = "/api/v1"
     app_env: str = "development"
     api_host: str = "127.0.0.1"
     api_port: int = Field(default=8000, ge=1, le=65535)
-    database_url: str = "sqlite:///./physiovision_dev.db"
+    database_url: str = "sqlite:///./movena_dev.db"
     cors_allowed_origins: list[str] = Field(default_factory=lambda: list(DEFAULT_CORS_ORIGINS))
     upload_dir: Path = BACKEND_ROOT / "tmp/uploads"
     artifact_dir: Path = ARTIFACTS_DIR
@@ -92,6 +92,7 @@ class Settings(BaseModel):
     enable_session_history: bool = True
     enable_therapist_dashboard: bool = True
     enable_ml_second_opinion: bool = True
+    required_ml_exercises: list[str] = Field(default_factory=list)
     enable_exercise_recognition: bool = True
     enable_report_generation: bool = True
     enable_overlay_generation: bool = True
@@ -105,7 +106,7 @@ class Settings(BaseModel):
     frontend_url: str = "http://localhost:5173"
     email_delivery_mode: str = "console"
     require_email_verification: bool = False
-    email_from: str = "no-reply@physiovision.local"
+    email_from: str = "no-reply@movena.local"
     smtp_host: str = ""
     smtp_port: int = 587
     smtp_username: str = ""
@@ -159,6 +160,7 @@ class Settings(BaseModel):
             enable_session_history=_bool("ENABLE_SESSION_HISTORY", True),
             enable_therapist_dashboard=_bool("ENABLE_THERAPIST_DASHBOARD", True),
             enable_ml_second_opinion=_bool("ENABLE_ML_SECOND_OPINION", True),
+            required_ml_exercises=_csv(os.getenv("REQUIRED_ML_EXERCISES"), []),
             enable_exercise_recognition=_bool(
                 "ENABLE_EXERCISE_RECOGNITION",
                 _bool("ENABLE_ML_SECOND_OPINION", True),
@@ -181,7 +183,7 @@ class Settings(BaseModel):
             frontend_url=os.getenv("FRONTEND_URL", "http://localhost:5173").rstrip("/"),
             email_delivery_mode=os.getenv("EMAIL_DELIVERY_MODE", "console").strip().lower(),
             require_email_verification=_bool("REQUIRE_EMAIL_VERIFICATION", False),
-            email_from=os.getenv("EMAIL_FROM", "no-reply@physiovision.local").strip(),
+            email_from=os.getenv("EMAIL_FROM", "no-reply@movena.local").strip(),
             smtp_host=os.getenv("SMTP_HOST", "").strip(),
             smtp_port=int(os.getenv("SMTP_PORT", "587")),
             smtp_username=os.getenv("SMTP_USERNAME", "").strip(),
@@ -257,6 +259,8 @@ class Settings(BaseModel):
             issues.append("staging/production clinical escalation organization and contact must be configured")
         if not self.enable_subject_continuity_guard:
             issues.append("ENABLE_SUBJECT_CONTINUITY_GUARD must be true")
+        if self.required_ml_exercises and not self.enable_ml_second_opinion:
+            issues.append("ENABLE_ML_SECOND_OPINION must be true when REQUIRED_ML_EXERCISES is configured")
         if self.app_env == "production" and self.require_email_verification and self.email_delivery_mode != "smtp":
             issues.append("production email verification requires EMAIL_DELIVERY_MODE=smtp")
         if self.email_delivery_mode not in {"console", "smtp"}:

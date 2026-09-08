@@ -2,10 +2,10 @@
 param(
     [string]$AccountId = "720466551087",
     [string]$Region = "eu-central-1",
-    [string]$Repository = "Sleem13/PhysioVision-AI",
+    [string]$Repository = "Sleem13/Movena",
     [string]$Branch = "main",
-    [string]$RoleName = "PhysioVisionGitHubDeploy",
-    [string]$StateBucket = "physiovision-terraform-state-720466551087-eu-central-1"
+    [string]$RoleName = "MovenaGitHubDeploy",
+    [string]$StateBucket = "movena-terraform-state-720466551087-eu-central-1"
 )
 
 $ErrorActionPreference = "Stop"
@@ -60,7 +60,7 @@ $iamPolicy = @{
     Version = "2012-10-17"
     Statement = @(
         @{
-            Sid = "ManagePhysioVisionRoles"
+            Sid = "ManageMovenaRoles"
             Effect = "Allow"
             Action = @(
                 "iam:CreateRole", "iam:DeleteRole", "iam:GetRole", "iam:TagRole", "iam:UntagRole",
@@ -68,7 +68,7 @@ $iamPolicy = @{
                 "iam:ListRolePolicies", "iam:AttachRolePolicy", "iam:DetachRolePolicy", "iam:ListAttachedRolePolicies",
                 "iam:PassRole"
             )
-            Resource = "arn:aws:iam::$AccountId`:role/physiovision-*"
+            Resource = "arn:aws:iam::$AccountId`:role/movena-*"
         },
         @{
             Sid = "CreateRequiredServiceLinkedRoles"
@@ -101,11 +101,11 @@ try {
         Invoke-Aws iam update-assume-role-policy --role-name $RoleName --policy-document "file://$trustFile"
     }
     else {
-        Invoke-Aws iam create-role --role-name $RoleName --description "GitHub OIDC deployer for PhysioVision AI" --max-session-duration 7200 --assume-role-policy-document "file://$trustFile" | Out-Null
+        Invoke-Aws iam create-role --role-name $RoleName --description "GitHub OIDC deployer for Movena" --max-session-duration 7200 --assume-role-policy-document "file://$trustFile" | Out-Null
     }
 
     Invoke-Aws iam attach-role-policy --role-name $RoleName --policy-arn "arn:aws:iam::aws:policy/PowerUserAccess"
-    Invoke-Aws iam put-role-policy --role-name $RoleName --policy-name "PhysioVisionIamDeployment" --policy-document "file://$policyFile"
+    Invoke-Aws iam put-role-policy --role-name $RoleName --policy-name "MovenaIamDeployment" --policy-document "file://$policyFile"
 }
 finally {
     Remove-Item -LiteralPath $trustFile, $policyFile -Force -ErrorAction SilentlyContinue

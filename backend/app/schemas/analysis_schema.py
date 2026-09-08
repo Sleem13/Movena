@@ -61,6 +61,9 @@ class MLPrediction(BaseModel):
     ml_confidence_level: str | None = None
     agrees_with_rule_based: bool | None = None
     disagreement_note: str | None = None
+    experimental_quality_score: int | None = Field(default=None, ge=0, le=100)
+    artifact_verified: bool = False
+    validation_status: str | None = None
 
 
 class RepEvent(BaseModel):

@@ -1,0 +1,26 @@
+{
+  "catalog_version": 1,
+  "source": "wideindeed/Physiology-LLM-Capstone",
+  "clearance_status": "blocked_missing_license_and_model_provenance",
+  "models": {
+    "sit_to_stand": {
+      "enabled": false,
+      "callable": "app.ml_providers.prmd_keras_provider:infer",
+      "artifact_path": "sit_to_stand_robust.keras",
+      "model_name": "UI-PRMD sit-to-stand BiLSTM",
+      "model_card_path": "models/form_quality/external_capstone/sit_to_stand_model_card.md",
+      "source_model": "sit_to_stand_robust.keras",
+      "model_mode": "pretrained_as_is",
+      "feature_source": "prmd_22_joint_sequence",
+      "input_shape": [1, 88, 66],
+      "normalizer": "pelvis_width",
+      "output_type": "sigmoid_quality_regression",
+      "raw_min": 0.6,
+      "raw_max": 0.96,
+      "sha256": "99b18cf621a3fa4d113fbe557f9998fba5e501e5bde67f635b0d8dd92d6b6f00",
+      "license_status": "blocked",
+      "validation_status": "blocked",
+      "clinician_review_status": "blocked"
+    }
+  }
+}

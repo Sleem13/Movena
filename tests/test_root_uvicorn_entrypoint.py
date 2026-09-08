@@ -10,7 +10,7 @@ REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 
 
 def test_root_uvicorn_entrypoint_exposes_fastapi_app():
-    assert app.title == "PhysioVision AI"
+    assert app.title == "Movena"
 
 
 def test_render_root_uvicorn_entrypoint_exposes_fastapi_app():
@@ -26,7 +26,7 @@ def test_render_root_uvicorn_entrypoint_exposes_fastapi_app():
         text=True,
     )
 
-    assert result.stdout.strip().splitlines()[-1] == "PhysioVision AI"
+    assert result.stdout.strip().splitlines()[-1] == "Movena"
 
 
 def test_render_staging_starts_without_optional_ml_runtimes(tmp_path):
@@ -71,4 +71,4 @@ print(app.title)
         text=True,
     )
 
-    assert result.stdout.strip().splitlines()[-1] == "PhysioVision AI"
+    assert result.stdout.strip().splitlines()[-1] == "Movena"

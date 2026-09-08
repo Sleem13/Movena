@@ -20,7 +20,7 @@ export function validateLoginInput(email: string, password: string): string | nu
 export function authRequestErrorMessage(error: AuthRequestError, action: "create" | "login"): string {
   switch (error.code) {
     case "NETWORK_ERROR":
-      return "Cannot reach PhysioVision AI. Check the backend address and Wi-Fi connection, then retry.";
+      return "Cannot reach Movena. Check the backend address and Wi-Fi connection, then retry.";
     case "TIMEOUT":
       return "The account request timed out. Check your connection and try again.";
     case "SERVER_UNAVAILABLE":

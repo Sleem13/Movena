@@ -19,4 +19,4 @@ def test_backend_directory_uvicorn_entrypoint_exposes_fastapi_app():
         text=True,
     )
 
-    assert result.stdout.strip().splitlines()[-1] == "PhysioVision AI"
+    assert result.stdout.strip().splitlines()[-1] == "Movena"

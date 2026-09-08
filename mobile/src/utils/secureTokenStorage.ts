@@ -1,6 +1,6 @@
 import * as SecureStore from "expo-secure-store";
 
-const TOKEN_KEY = "physiovision_access_token";
+const TOKEN_KEY = "movena_access_token";
 let volatileToken: string | null = null;
 
 async function secureStoreIsAvailable(): Promise<boolean> {

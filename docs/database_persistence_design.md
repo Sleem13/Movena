@@ -2,7 +2,7 @@
 
 ## Configuration
 
-SQLAlchemy 2.x is used with SQLite at `backend/physiovision_dev.db` by default. `DATABASE_URL` can select a future PostgreSQL deployment, for example `postgresql+psycopg://user:password@host/database`; a PostgreSQL driver is intentionally not part of the current local core environment.
+SQLAlchemy 2.x is used with SQLite at `backend/movena_dev.db` by default. `DATABASE_URL` can select a future PostgreSQL deployment, for example `postgresql+psycopg://user:password@host/database`; a PostgreSQL driver is intentionally not part of the current local core environment.
 
 The database initializes tables safely on backend startup and through `python scripts/init_database.py`. Tests create isolated temporary SQLite engines and do not depend on the developer database.
 

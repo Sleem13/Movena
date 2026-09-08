@@ -5,7 +5,7 @@ Reviewed workspace: `C:\Users\Admin\Documents\GitHub\PysioVision-AI`
 
 ## 1. Executive Summary
 
-PhysioVision AI is **Conditionally Ready after local environment reset and dependency installation**. The repository has a coherent squat-focused FastAPI backend, a matching React frontend, separated camera and sensor dataset pipelines, synthetic unit tests, safety-oriented wording, and correct raw/processed data ignore rules. The frontend production build and isolated core-logic checks pass.
+Movena is **Conditionally Ready after local environment reset and dependency installation**. The repository has a coherent squat-focused FastAPI backend, a matching React frontend, separated camera and sensor dataset pipelines, synthetic unit tests, safety-oriented wording, and correct raw/processed data ignore rules. The frontend production build and isolated core-logic checks pass.
 
 Two conditions prevent an unconditional readiness decision in this checkout:
 
@@ -26,7 +26,7 @@ No model was trained, no major feature was added, and the current architecture w
 - Root and backend tests, including whether they rely on raw datasets.
 - Requested documentation files and consistency with the implemented squat-only MVP.
 - Python and frontend dependency declarations and the active runtime state.
-- The `PysioVision` versus `PhysioVision` spelling and space/hyphen path concern.
+- The `PysioVision` versus `Movena` spelling and space/hyphen path concern.
 
 ## 3. Current Project Status
 
@@ -179,12 +179,12 @@ Existing tests correctly avoid real raw datasets and large files. Critical missi
 
 ### P2 improvement
 
-- The code folder/workspace spelling `PysioVision-AI` differs from the intended product name `PhysioVision AI`. No imports or code paths depend on the folder name, so no automatic rename is needed.
+- The code folder/workspace spelling `PysioVision-AI` differs from the intended product name `Movena`. No imports or code paths depend on the folder name, so no automatic rename is needed.
 - The frontend has two package-manager lockfile styles; standardize on npm or pnpm.
 - CORS configuration should become environment-driven before deployment.
 - Add frontend tests/linting and expand dataset-service tests.
 
-Safe rename guidance: stop backend/frontend processes, commit or stash all work, rename the parent folder from outside it (for example `Rename-Item -LiteralPath 'PysioVision-AI' -NewName 'PhysioVision-AI'`), reopen the project, recreate or reactivate `.venv` if its scripts contain old absolute paths, and rerun structure/tests/build. A path with spaces is also supported by Python and Node when quoted, but a hyphenated folder is simpler for shell commands.
+Safe rename guidance: stop backend/frontend processes, commit or stash all work, rename the parent folder from outside it (for example `Rename-Item -LiteralPath 'PysioVision-AI' -NewName 'Movena'`), reopen the project, recreate or reactivate `.venv` if its scripts contain old absolute paths, and rerun structure/tests/build. A path with spaces is also supported by Python and Node when quoted, but a hyphenated folder is simpler for shell commands.
 
 ## 10. Fixes Applied
 

@@ -8,5 +8,5 @@ export function exerciseArtifactSlug(exerciseId) {
 
 export function artifactFilename(exerciseId, kind) {
   const extension = kind === "report" ? "pdf" : "webm";
-  return `physiovision-${exerciseArtifactSlug(exerciseId)}-${kind}.${extension}`;
+  return `movena-${exerciseArtifactSlug(exerciseId)}-${kind}.${extension}`;
 }

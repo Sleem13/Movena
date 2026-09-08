@@ -4,7 +4,7 @@ import { DISCLAIMER } from "@/src/config/theme";
 
 describe("React Native text-child safety", () => {
   it("uses the required licensed-physiotherapist disclaimer", () => {
-    expect(DISCLAIMER).toBe("PhysioVision AI supports exercise monitoring and does not replace assessment by a licensed physiotherapist.");
+    expect(DISCLAIMER).toBe("Movena supports exercise monitoring and does not replace assessment by a licensed physiotherapist.");
   });
   it("does not use empty-string state directly with && inside native views", () => {
     const files = ["app/exercises.tsx", "app/upload/[id].tsx", "app/login.tsx", "app/register.tsx"];

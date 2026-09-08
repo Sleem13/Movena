@@ -2,14 +2,17 @@
 
 ## Decision
 
-PhysioVision AI remains the product and architecture baseline. The imported
+Movena remains the product and architecture baseline. The imported
 `Powered-Physiotherapy-System-master` project is a concept reference only and
 must not be merged, deployed, or used with real user or patient data.
 
-The useful ideas will be reimplemented within PhysioVision's existing safety,
+The useful ideas will be reimplemented within Movena's existing safety,
 privacy, testing, authentication, and deployment controls. Third-party code,
 models, datasets, prompts, assets, and claims require provenance and license
 review before any reuse.
+
+For the locally reviewed `Physiology-LLM-Capstone-main` source, use the
+source-specific plan in `docs/physiology_llm_capstone_integration_plan.md`.
 
 ## Immediate Containment
 

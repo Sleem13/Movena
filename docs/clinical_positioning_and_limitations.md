@@ -2,7 +2,7 @@
 
 ## Intended Positioning
 
-PhysioVision AI supports exercise monitoring and educational movement review. It can summarize visible movement patterns, repetitions, selected joint-angle estimates, input quality, and measurement confidence. It is not a diagnostic device, a substitute for examination, or an autonomous treatment-planning system.
+Movena supports exercise monitoring and educational movement review. It can summarize visible movement patterns, repetitions, selected joint-angle estimates, input quality, and measurement confidence. It is not a diagnostic device, a substitute for examination, or an autonomous treatment-planning system.
 
 With appropriate consent and access controls, it may help physiotherapists review exercise execution remotely. It should not be relied upon for high-risk patients, medically unstable users, or activities requiring close guarding without appropriate professional supervision and an approved care context.
 

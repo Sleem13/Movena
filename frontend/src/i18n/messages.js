@@ -1,5 +1,5 @@
 export const DEFAULT_LOCALE = "en";
-export const LOCALE_STORAGE_KEY = "physiovision_locale";
+export const LOCALE_STORAGE_KEY = "movena_locale";
 
 export const SUPPORTED_LOCALES = [
   { code: "en", label: "English", direction: "ltr" },
@@ -374,7 +374,7 @@ export const MESSAGES = {
     "upload.recognitionReadyText":
       "The same video is selected for the {exercise} analyzer. Review the options and start analysis; there is no need to choose the file again.",
     "upload.autoRerouteNotice":
-      "The selected {selected} analyzer did not detect a valid movement. Video recognition suggested {suggested} with {confidence} confidence, so PhysioVision automatically analyzed the video with that analyzer.",
+      "The selected {selected} analyzer did not detect a valid movement. Video recognition suggested {suggested} with {confidence} confidence, so Movena automatically analyzed the video with that analyzer.",
     "results.autoRoutedTitle": "Exercise recognized and assessed",
     "results.recognitionReviewTitle": "Exercise recognized — review needed",
     "language.label": "Language",
@@ -460,7 +460,7 @@ export const MESSAGES = {
       "Import a video of the person performing the exercise.",
     "workspace.stepAnalyze": "Run a movement check",
     "workspace.stepAnalyzeHelp":
-      "Use PhysioVision movement intelligence for the selected exercise.",
+      "Use Movena movement intelligence for the selected exercise.",
     "workspace.stepReview": "Review movement observations",
     "workspace.stepReviewHelp":
       "AI-assisted analysis highlights movement observations for review.",
@@ -470,8 +470,8 @@ export const MESSAGES = {
     "workspace.stepPatient": "Review patient history",
     "workspace.stepPatientHelp":
       "Associate and review saved history when the workflow supports it.",
-    "brand.tagline": "AI-Assisted Rehabilitation Platform",
-    "footer.product": "Move Better · Recover Faster · Live Healthier",
+    "brand.tagline": "Movement intelligence for therapist-guided recovery",
+    "footer.product": "Move Better, Recover Together.",
     "footer.disclaimer":
       "This analysis does not replace assessment, diagnosis, or treatment by a licensed professional.",
     "status.supported": "Supported",
@@ -509,7 +509,7 @@ export const MESSAGES = {
     "home.titlePrefix": "Rehabilitation care that",
     "home.titleHighlight": "stays connected.",
     "home.description":
-      "Bring therapist-led plans, daily exercise tracking, remote follow-up, and PhysioVision movement intelligence into one continuous rehabilitation journey.",
+      "Bring therapist-led plans, daily exercise tracking, remote follow-up, and Movena movement intelligence into one continuous rehabilitation journey.",
     "home.start": "Access platform",
     "home.accessPlatform": "Access platform",
     "home.getStarted": "Get started",
@@ -551,13 +551,13 @@ export const MESSAGES = {
     "home.howEyebrow": "How it works",
     "home.howTitle": "A connected path from plan to progress",
     "home.howDescription":
-      "The care plan leads the experience; PhysioVision supports the moments where movement evidence helps.",
+      "The care plan leads the experience; Movena supports the moments where movement evidence helps.",
     "home.stepUploadTitle": "Follow today's plan",
     "home.stepUploadDescription":
       "See the prescribed dosage, instructions, precautions, and next care task.",
     "home.stepReviewTitle": "Complete a guided movement check",
     "home.stepReviewDescription":
-      "When requested, PhysioVision estimates reps, angles, and movement observations.",
+      "When requested, Movena estimates reps, angles, and movement observations.",
     "home.stepDiscussTitle": "Share progress with your therapist",
     "home.stepDiscussDescription":
       "Combine check-ins and movement evidence for professional review and follow-up.",
@@ -612,7 +612,7 @@ export const MESSAGES = {
     "upload.pickerEyebrow": "Exercise selection",
     "upload.pickerTitle": "Which exercise is shown?",
     "upload.pickerDescription":
-      "Choose the movement in your video so PhysioVision can apply the correct analysis. Your selected video will remain in place.",
+      "Choose the movement in your video so Movena can apply the correct analysis. Your selected video will remain in place.",
     "upload.noExerciseTitle": "Choose an exercise before analysis",
     "upload.noExerciseDescription":
       "Select from the supported movements now, or upload your video first and we'll ask before analysis.",
@@ -671,6 +671,8 @@ export const MESSAGES = {
       "Save this analysis to your protected session history.",
     "options.mlUnavailable":
       "No {exercise} ML model is available; rule-based analysis remains primary.",
+    "options.modelReady": "Ready",
+    "options.modelUnavailable": "Unavailable",
     "camera.recordingTips": "Recording tips",
     "camera.title": "Camera placement guide",
     "camera.visible": "Keep {landmarks} visible.",
@@ -836,7 +838,7 @@ export const MESSAGES = {
     "exercises.startExercise": "Start Exercise",
     "exercises.reviewExercise": "View & Analyze",
     "auth.loginEyebrow": "Welcome back",
-    "auth.loginTitle": "Log in to PhysioVision",
+    "auth.loginTitle": "Log in to Movena",
     "auth.loginDescription":
       "Use your account to securely access the platform.",
     "auth.warning":
@@ -846,7 +848,7 @@ export const MESSAGES = {
     "auth.sideDescription":
       "Access saved sessions, exercise analysis tools, and therapist-facing review surfaces.",
     "auth.sideWarning":
-      "Use PhysioVision in accordance with your organization's privacy, consent, and record-retention policies.",
+      "Use Movena in accordance with your organization's privacy, consent, and record-retention policies.",
     "auth.expired": "Your session may have expired. Please log in again.",
     "auth.invalid": "Please check your username/email and password.",
     "auth.network":
@@ -859,7 +861,7 @@ export const MESSAGES = {
     "auth.backToLogin": "Back to login",
     "auth.registerBadge": "Secure platform access",
     "auth.registerTitle": "Create your account",
-    "auth.registerDescription": "Set up your secure PhysioVision workspace.",
+    "auth.registerDescription": "Set up your secure Movena workspace.",
     "auth.created": "Account created. You can log in immediately.",
     "auth.registerFailed": "Registration failed.",
     "auth.displayPlaceholder": "Your name",
@@ -878,7 +880,7 @@ export const MESSAGES = {
     "auth.managedAccessHelp":
       "Email verification and recovery are temporarily managed by your super administrator.",
     "profile.title": "Profile",
-    "profile.developmentUser": "PhysioVision user",
+    "profile.developmentUser": "Movena user",
     "profile.logout": "Log out",
     "profile.workflowDescription":
       "Monitor the care journey, operational exceptions, privacy requests, and audit activity from one de-identified view.",
@@ -1083,6 +1085,8 @@ export const MESSAGES = {
     "results.mlTitle": "ML second opinion",
     "results.mlHelp": "Optional experimental comparison",
     "results.mlBadge": "Experimental · not clinically validated",
+    "results.mlVerifiedBadge": "Verified artifact · therapist review required",
+    "results.experimentalQuality": "Experimental quality",
     "results.predictedLabel": "Predicted label",
     "results.model": "Model",
     "results.modelMode": "Model mode",
@@ -1096,7 +1100,7 @@ export const MESSAGES = {
     "results.noLimitations": "No additional limitations returned.",
     "results.medicalDisclaimer": "Medical disclaimer",
     "results.disclaimer":
-      "PhysioVision AI supports exercise monitoring and does not replace assessment by a licensed physiotherapist. This educational analysis does not provide diagnosis or treatment.",
+      "Movena supports exercise monitoring and does not replace assessment by a licensed physiotherapist. This educational analysis does not provide diagnosis or treatment.",
     "results.downloadPdf": "Download PDF report",
     "results.downloadOverlay": "Download annotated video",
     "results.exportJson": "Export JSON",
@@ -1222,7 +1226,7 @@ export const MESSAGES = {
     "history.compareDisclaimer":
       "Differences are descriptive product observations, not recovery percentages or evidence of clinical improvement or deterioration.",
     "history.notice":
-      "Protect patient privacy and save only information you are authorized to process. PhysioVision analysis should not be used as the sole clinical record.",
+      "Protect patient privacy and save only information you are authorized to process. Movena analysis should not be used as the sole clinical record.",
     "therapist.eyebrow": "Clinical workspace",
     "therapist.title": "Clinical Dashboard",
     "therapist.description":
@@ -1350,7 +1354,7 @@ export const MESSAGES = {
     "about.eyebrow": "About the product",
     "about.title": "Movement insight with a clear safety boundary",
     "about.description":
-      "PhysioVision AI is a movement-analysis platform that combines computer-vision landmarks, explicit biomechanics rules, and optional assisted-review tools.",
+      "Movena is movement intelligence for therapist-guided recovery, combining computer-vision landmarks, explicit biomechanics rules, and optional assisted-review tools.",
     "about.safetyTitle": "Safety before certainty",
     "about.safetyText":
       "Results stay conservative, disclose limitations, and never claim diagnosis.",
@@ -1541,12 +1545,12 @@ export const MESSAGES = {
       "Please try again. The analyzer was not opened because the recognition confirmation was not saved.",
     "coach.noAnalyzerTitle": "Analyzer unavailable",
     "coach.noAnalyzerText":
-      "This label can be recognized, but PhysioVision does not have an active coaching analyzer for it.",
+      "This label can be recognized, but Movena does not have an active coaching analyzer for it.",
   },
   ar: {
     "workspace.stepAnalyze": "نفّذ فحص الحركة",
     "workspace.stepAnalyzeHelp":
-      "استخدم ذكاء الحركة من PhysioVision للتمرين المحدد.",
+      "استخدم ذكاء الحركة من Movena للتمرين المحدد.",
     "workspace.stepPatient": "مراجعة سجل المريض",
     "workspace.stepPatientHelp":
       "اربط السجل المحفوظ وراجعه عندما يدعم سير العمل ذلك.",
@@ -1562,7 +1566,7 @@ export const MESSAGES = {
     "upload.recognitionReadyText":
       "تم اختيار الفيديو نفسه لمحلل {exercise}. راجع الخيارات وابدأ التحليل؛ لا حاجة لاختيار الملف مرة ثانية.",
     "upload.autoRerouteNotice":
-      "لم يرصد محلل {selected} المحدد حركة صالحة. اقترح التعرف على الفيديو {suggested} بثقة {confidence}، لذلك حلل PhysioVision الفيديو تلقائيا باستخدام ذلك المحلل.",
+      "لم يرصد محلل {selected} المحدد حركة صالحة. اقترح التعرف على الفيديو {suggested} بثقة {confidence}، لذلك حلل Movena الفيديو تلقائيا باستخدام ذلك المحلل.",
     "results.autoRoutedTitle": "تم التعرف على التمرين وتقييمه",
     "results.recognitionReviewTitle":
       "تم التعرف على التمرين — يحتاج إلى مراجعة",
@@ -1650,8 +1654,8 @@ export const MESSAGES = {
       "يسلط التحليل المدعوم بالذكاء الاصطناعي الضوء على ملاحظات الحركة للمراجعة.",
     "workspace.stepSave": "احفظ النتائج أو صدّرها",
     "workspace.stepSaveHelp": "احفظ الجلسة أو صدّر النتائج لإعداد التقارير.",
-    "brand.tagline": "منصة تأهيل مدعومة بالذكاء الاصطناعي",
-    "footer.product": "تحرّك أفضل · تعافَ أسرع · عش بصحة أفضل",
+    "brand.tagline": "ذكاء الحركة للتعافي بإرشاد المعالج",
+    "footer.product": "تحرّك بشكل أفضل. تعافَ مع فريقك.",
     "footer.disclaimer":
       "هذا التحليل لا يغني عن التقييم أو التشخيص أو العلاج بواسطة مختص مرخص.",
     "status.supported": "مدعوم",
@@ -1689,7 +1693,7 @@ export const MESSAGES = {
     "home.titlePrefix": "رعاية تأهيلية",
     "home.titleHighlight": "تبقى متصلة.",
     "home.description":
-      "اجمع خطط المعالج ومتابعة التمارين اليومية والمتابعة عن بُعد وذكاء الحركة من PhysioVision في رحلة تأهيل واحدة متصلة.",
+      "اجمع خطط المعالج ومتابعة التمارين اليومية والمتابعة عن بُعد وذكاء الحركة من Movena في رحلة تأهيل واحدة متصلة.",
     "home.start": "الدخول إلى المنصة",
     "home.accessPlatform": "الدخول إلى المنصة",
     "home.getStarted": "ابدأ الآن",
@@ -1730,13 +1734,13 @@ export const MESSAGES = {
     "home.howEyebrow": "كيف يعمل",
     "home.howTitle": "مسار متصل من الخطة إلى التقدم",
     "home.howDescription":
-      "تقود خطة الرعاية التجربة، ويدعم PhysioVision اللحظات التي تفيد فيها أدلة الحركة.",
+      "تقود خطة الرعاية التجربة، ويدعم Movena اللحظات التي تفيد فيها أدلة الحركة.",
     "home.stepUploadTitle": "اتبع خطة اليوم",
     "home.stepUploadDescription":
       "اطّلع على الجرعة والتعليمات والاحتياطات ومهمة الرعاية التالية.",
     "home.stepReviewTitle": "أكمل فحص حركة موجّهًا",
     "home.stepReviewDescription":
-      "عند طلب المعالج، يقدّر PhysioVision التكرارات والزوايا وملاحظات الحركة.",
+      "عند طلب المعالج، يقدّر Movena التكرارات والزوايا وملاحظات الحركة.",
     "home.stepDiscussTitle": "شارك تقدمك مع المعالج",
     "home.stepDiscussDescription":
       "اجمع التسجيلات اليومية وأدلة الحركة للمراجعة المهنية والمتابعة.",
@@ -1790,7 +1794,7 @@ export const MESSAGES = {
     "upload.pickerEyebrow": "اختيار التمرين",
     "upload.pickerTitle": "ما التمرين الظاهر؟",
     "upload.pickerDescription":
-      "اختر الحركة الظاهرة في الفيديو ليطبق PhysioVision التحليل الصحيح. سيظل الفيديو المختار محفوظًا.",
+      "اختر الحركة الظاهرة في الفيديو ليطبق Movena التحليل الصحيح. سيظل الفيديو المختار محفوظًا.",
     "upload.noExerciseTitle": "اختر تمرينًا قبل التحليل",
     "upload.noExerciseDescription":
       "اختر من الحركات المدعومة الآن، أو ارفع الفيديو أولًا وسنطلب منك الاختيار قبل التحليل.",
@@ -1848,6 +1852,8 @@ export const MESSAGES = {
     "options.saveDescription": "احفظ هذا التحليل في سجل جلساتك المحمي.",
     "options.mlUnavailable":
       "لا يتوفر نموذج تعلم آلي لتمرين {exercise}؛ يبقى التحليل القائم على القواعد هو الأساس.",
+    "options.modelReady": "جاهز",
+    "options.modelUnavailable": "غير متاح",
     "camera.recordingTips": "نصائح التسجيل",
     "camera.title": "دليل وضع الكاميرا",
     "camera.visible": "حافظ على ظهور {landmarks}.",
@@ -2007,7 +2013,7 @@ export const MESSAGES = {
     "exercises.startExercise": "ابدأ التمرين",
     "exercises.reviewExercise": "عرض وتحليل",
     "auth.loginEyebrow": "مرحبا بعودتك",
-    "auth.loginTitle": "تسجيل الدخول إلى PhysioVision",
+    "auth.loginTitle": "تسجيل الدخول إلى Movena",
     "auth.loginDescription": "استخدم حسابك للوصول الآمن إلى المنصة.",
     "auth.warning":
       "احم خصوصية المرضى. أدخل فقط المعلومات المصرح لك بمعالجتها واتبع سياسات الموافقة والتعامل مع البيانات في مؤسستك.",
@@ -2016,7 +2022,7 @@ export const MESSAGES = {
     "auth.sideDescription":
       "ادخل إلى الجلسات المحفوظة وأدوات تحليل التمارين وواجهات المراجعة الموجهة للمعالج.",
     "auth.sideWarning":
-      "استخدم PhysioVision وفقا لسياسات الخصوصية والموافقة والاحتفاظ بالسجلات في مؤسستك.",
+      "استخدم Movena وفقا لسياسات الخصوصية والموافقة والاحتفاظ بالسجلات في مؤسستك.",
     "auth.expired": "ربما انتهت جلستك. يرجى تسجيل الدخول مرة أخرى.",
     "auth.invalid":
       "يرجى التحقق من اسم المستخدم/البريد الإلكتروني وكلمة المرور.",
@@ -2030,7 +2036,7 @@ export const MESSAGES = {
     "auth.backToLogin": "العودة إلى تسجيل الدخول",
     "auth.registerBadge": "وصول آمن إلى المنصة",
     "auth.registerTitle": "إنشاء حسابك",
-    "auth.registerDescription": "أنشئ مساحة عملك الآمنة على PhysioVision.",
+    "auth.registerDescription": "أنشئ مساحة عملك الآمنة على Movena.",
     "auth.created": "تم إنشاء الحساب. يمكنك تسجيل الدخول فورًا.",
     "auth.registerFailed": "فشل التسجيل.",
     "auth.displayPlaceholder": "اسمك",
@@ -2049,7 +2055,7 @@ export const MESSAGES = {
     "auth.managedAccessHelp":
       "يدير المسؤول الأعلى التحقق من البريد واستعادة الحساب مؤقتًا.",
     "profile.title": "الملف الشخصي",
-    "profile.developmentUser": "مستخدم PhysioVision",
+    "profile.developmentUser": "مستخدم Movena",
     "profile.logout": "تسجيل الخروج",
     "profile.workflowDescription":
       "راقب رحلة الرعاية والاستثناءات التشغيلية وطلبات الخصوصية وسجل التدقيق من واجهة واحدة منزوعة الهوية.",
@@ -2246,6 +2252,8 @@ export const MESSAGES = {
     "results.mlTitle": "رأي ثان من نموذج تعلم آلي",
     "results.mlHelp": "مقارنة تجريبية اختيارية",
     "results.mlBadge": "تجريبي · غير موثق سريريا",
+    "results.mlVerifiedBadge": "ملف متحقق منه · مراجعة المعالج مطلوبة",
+    "results.experimentalQuality": "الجودة التجريبية",
     "results.predictedLabel": "التصنيف المتوقع",
     "results.model": "النموذج",
     "results.modelMode": "وضع النموذج",
@@ -2259,7 +2267,7 @@ export const MESSAGES = {
     "results.noLimitations": "لا توجد قيود إضافية مرجعة.",
     "results.medicalDisclaimer": "تنبيه طبي",
     "results.disclaimer":
-      "يدعم PhysioVision AI متابعة التمارين ولا يغني عن تقييم أخصائي علاج طبيعي مرخص. هذا التحليل التعليمي لا يقدم تشخيصا أو علاجا.",
+      "يدعم Movena متابعة التمارين ولا يغني عن تقييم أخصائي علاج طبيعي مرخص. هذا التحليل التعليمي لا يقدم تشخيصا أو علاجا.",
     "results.downloadPdf": "تنزيل تقرير PDF",
     "results.downloadOverlay": "تنزيل الفيديو المعلّم",
     "results.exportJson": "تصدير JSON",
@@ -2383,7 +2391,7 @@ export const MESSAGES = {
     "history.compareDisclaimer":
       "الفروق ملاحظات وصفية من المنتج، وليست نسب تعافٍ أو دليلًا على تحسن أو تدهور سريري.",
     "history.notice":
-      "احم خصوصية المرضى واحفظ فقط المعلومات المصرح لك بمعالجتها. لا ينبغي استخدام تحليل PhysioVision كسجل سريري وحيد.",
+      "احم خصوصية المرضى واحفظ فقط المعلومات المصرح لك بمعالجتها. لا ينبغي استخدام تحليل Movena كسجل سريري وحيد.",
     "therapist.eyebrow": "مساحة العمل السريرية",
     "therapist.title": "لوحة العمل السريرية",
     "therapist.description": "راجع المرضى وجلسات الحركة وتقدم برامج التأهيل.",
@@ -2508,7 +2516,7 @@ export const MESSAGES = {
     "about.eyebrow": "حول المنتج",
     "about.title": "فهم الحركة مع حد واضح للسلامة",
     "about.description":
-      "PhysioVision AI منصة لتحليل الحركة تجمع بين نقاط الوضعية من الرؤية الحاسوبية وقواعد الميكانيكا الحيوية الصريحة وأدوات المراجعة المساعدة الاختيارية.",
+      "Movena هي ذكاء الحركة للتعافي بإرشاد المعالج، وتجمع بين نقاط الوضعية من الرؤية الحاسوبية وقواعد الميكانيكا الحيوية الصريحة وأدوات المراجعة المساعدة الاختيارية.",
     "about.safetyTitle": "السلامة قبل اليقين",
     "about.safetyText": "تبقى النتائج محافظة وتعرض القيود ولا تدعي التشخيص.",
     "about.transparentTitle": "تفسير شفاف",
@@ -2694,7 +2702,7 @@ export const MESSAGES = {
       "حاول مرة أخرى. لم يتم فتح المحلل لأن تأكيد التعرف لم يتم حفظه.",
     "coach.noAnalyzerTitle": "المحلل غير متاح",
     "coach.noAnalyzerText":
-      "يمكن التعرف على هذا التصنيف، لكن لا يوجد محلل تدريب نشط له في PhysioVision.",
+      "يمكن التعرف على هذا التصنيف، لكن لا يوجد محلل تدريب نشط له في Movena.",
   },
 };
 
@@ -2730,8 +2738,8 @@ export function getExerciseText(exerciseId, locale = DEFAULT_LOCALE) {
       locale === "ar" ? "غير متاح للتحليل." : "Not available for analysis.",
     safety:
       locale === "ar"
-        ? "لا تستخدم PhysioVision AI لتحليل هذا التمرين بعد."
-        : "Do not use PhysioVision AI to analyze this exercise yet.",
+        ? "لا تستخدم Movena لتحليل هذا التمرين بعد."
+        : "Do not use Movena to analyze this exercise yet.",
   };
 }
 

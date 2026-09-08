@@ -8,7 +8,7 @@ const api = axios.create({
 });
 
 api.interceptors?.request.use((config) => {
-  const token = typeof localStorage !== "undefined" ? localStorage.getItem("physiovision_access_token") : null;
+  const token = typeof localStorage !== "undefined" ? localStorage.getItem("movena_access_token") : null;
   if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
 });
@@ -236,6 +236,10 @@ export async function getRecognitionModels() {
 
 export async function getCoachingReadiness() {
   return (await api.get("/api/v1/coaching/readiness")).data;
+}
+
+export async function getMlModelReadiness() {
+  return (await api.get("/api/v1/ml/readiness")).data;
 }
 
 export async function recognizeExerciseVideo(videoFile, onProgress, options = {}) {

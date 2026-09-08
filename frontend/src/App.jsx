@@ -23,7 +23,7 @@ import {
   pageForPath,
   PAGE_PATHS,
 } from "./config/navigation.js";
-import { analyzeExerciseVideo, getExercises } from "./services/api.js";
+import { analyzeExerciseVideo, getExercises, getMlModelReadiness } from "./services/api.js";
 
 const TherapistDashboard = lazy(() => import("./pages/TherapistDashboard.jsx"));
 const PatientCareDashboard = lazy(
@@ -116,15 +116,38 @@ function AppContent() {
   const [rehabContext, setRehabContext] = useState(null);
   const [pendingRehabAnalysis, setPendingRehabAnalysis] = useState(null);
   const [exercises, setExercises] = useState(EXERCISES);
+  const [mlReadiness, setMlReadiness] = useState(null);
   const analysisControllerRef = useRef(null);
 
   useEffect(() => {
-    getExercises()
-      .then(
-        (items) => Array.isArray(items) && items.length && setExercises(items),
-      )
-      .catch(() => {});
+    let cancelled = false;
+    Promise.allSettled([getExercises(), getMlModelReadiness()]).then(
+      ([exerciseResult, readinessResult]) => {
+        if (cancelled) return;
+        if (
+          exerciseResult.status === "fulfilled" &&
+          Array.isArray(exerciseResult.value) &&
+          exerciseResult.value.length
+        ) {
+          setExercises(exerciseResult.value);
+        }
+        if (readinessResult.status === "fulfilled" && readinessResult.value) {
+          setMlReadiness(readinessResult.value);
+        }
+      },
+    );
+    return () => {
+      cancelled = true;
+    };
   }, []);
+
+  useEffect(() => {
+    if (!options.include_ml || !exercise || !mlReadiness?.models) return;
+    const model = mlReadiness.models.find((item) => item.exercise_id === exercise);
+    if (model && !["ready", "available"].includes(model.status)) {
+      setOptions((current) => ({ ...current, include_ml: false }));
+    }
+  }, [exercise, mlReadiness, options.include_ml]);
 
   useEffect(() => {
     function handlePopState() {
@@ -366,6 +389,7 @@ function AppContent() {
           isLoading={isLoading}
           progress={progress}
           options={options}
+          mlReadiness={mlReadiness}
           onOptionsChange={setOptions}
           onFileChange={handleFileChange}
           onFileSelect={selectFile}

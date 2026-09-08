@@ -4,7 +4,7 @@ import { colors } from "@/src/config/theme";
 import { Body, Card, Heading, PrimaryButton } from "./UI";
 
 export function PermissionState({ kind, onRetry }: { kind: "camera" | "library"; onRetry: () => void }) {
-  return <Card tone="warning"><Heading>{kind === "camera" ? "Camera" : "Photo library"} permission denied</Heading><Body>Enable access in device settings, then retry. PhysioVision AI only uses the selected recording for the requested analysis.</Body><PrimaryButton title="Retry permission" onPress={onRetry} secondary /></Card>;
+  return <Card tone="warning"><Heading>{kind === "camera" ? "Camera" : "Photo library"} permission denied</Heading><Body>Enable access in device settings, then retry. Movena only uses the selected recording for the requested analysis.</Body><PrimaryButton title="Retry permission" onPress={onRetry} secondary /></Card>;
 }
 
 export function VideoPreviewCard({ video }: { video: MobileVideo }) {

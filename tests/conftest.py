@@ -12,10 +12,10 @@ os.environ["SECRET_KEY"] = "test-secret-key-for-pytest-only-1234567890"
 os.environ["CORS_ALLOWED_ORIGINS"] = "http://localhost:5173,http://127.0.0.1:5173"
 os.environ["REQUIRE_AUTH_FOR_ANALYSIS"] = "false"
 os.environ["ENABLE_PUBLIC_DEMO_MODE"] = "true"
-os.environ["DATABASE_URL"] = "sqlite:///./test_physiovision.db"
+os.environ["DATABASE_URL"] = "sqlite:///./test_movena.db"
 
 BACKEND = Path(__file__).resolve().parents[1] / "backend"
-_TEST_DATABASE_PATH = BACKEND.parent / "test_physiovision.db"
+_TEST_DATABASE_PATH = BACKEND.parent / "test_movena.db"
 _TEST_DATABASE_PATH.unlink(missing_ok=True)
 if str(BACKEND) not in sys.path:
     sys.path.insert(0, str(BACKEND))

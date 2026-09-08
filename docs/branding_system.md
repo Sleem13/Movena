@@ -1,4 +1,4 @@
-# PhysioVision branding system
+# Movena branding system
 
 ## Source of truth
 
@@ -29,7 +29,7 @@ Expo uses the same approved mark for the application icon, Android adaptive fore
 .\.venv\Scripts\python.exe mobile\scripts\generate_brand_assets.py
 ```
 
-After changing the approved master, run both generators, inspect the 16-pixel favicon, Apple icon, masked Android icon, splash screen, light/dark browser chrome, and installed PWA. Do not substitute a condition-specific or runner-only symbol for the approved PhysioVision mark.
+After changing the approved master, run both generators, inspect the 16-pixel favicon, Apple icon, masked Android icon, splash screen, light/dark browser chrome, and installed PWA. Do not substitute a condition-specific or runner-only symbol for the approved Movena mark.
 
 ## Release check
 

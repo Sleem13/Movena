@@ -4,7 +4,7 @@
 
 ## Before you start
 
-PhysioVision AI is an experimental movement-monitoring app. It describes observed movement patterns from a test video. It is not a medical device, does not diagnose injury or disease, does not prescribe treatment, and does not replace a licensed physiotherapist.
+Movena is an experimental movement-monitoring app. It describes observed movement patterns from a test video. It is not a medical device, does not diagnose injury or disease, does not prescribe treatment, and does not replace a licensed physiotherapist.
 
 **Do not upload videos containing real patients, identifiable personal information, or sensitive health information.** Use only a video of yourself created for this beta, or a supplied test video. Stop exercising if you feel pain, dizziness, instability, or another concerning symptom and seek appropriate professional help.
 

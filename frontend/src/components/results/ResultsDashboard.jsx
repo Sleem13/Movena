@@ -136,6 +136,10 @@ export function MLSecondOpinionCard({ prediction }) {
   const { t, pretty } = useLocale();
   if (!prediction) return null;
   const confidence = prediction.confidence == null ? t("common.notAvailable") : `${Math.round(prediction.confidence * 100)}%`;
+  const qualityScore = prediction.experimental_quality_score == null
+    ? t("common.notAvailable")
+    : `${prediction.experimental_quality_score}/100`;
+  const verified = prediction.artifact_verified === true;
   return (
     <Card className="overflow-hidden">
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-clinical-line bg-violet-50/60 p-5">
@@ -143,10 +147,10 @@ export function MLSecondOpinionCard({ prediction }) {
           <span className="grid h-10 w-10 place-items-center rounded-xl bg-violet-100 text-violet-700"><BrainCircuit size={20} aria-hidden="true" /></span>
           <div><h2 className="text-lg font-bold text-clinical-ink">{t("results.mlTitle")}</h2><p className="text-xs text-slate-500">{t("results.mlHelp")}</p></div>
         </div>
-        <Badge tone="amber">{t("results.mlBadge")}</Badge>
+        <Badge tone={verified ? "teal" : "amber"}>{t(verified ? "results.mlVerifiedBadge" : "results.mlBadge")}</Badge>
       </div>
       <div className="p-5">
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
           <div className="rounded-xl bg-slate-50 p-3">
             <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">{t("results.predictedLabel")}</p>
             <p className="mt-2 text-sm font-bold text-slate-800">{prediction.predicted_label ? pretty(prediction.predicted_label) : t("common.unavailable")}</p>
@@ -156,6 +160,10 @@ export function MLSecondOpinionCard({ prediction }) {
             <p className="mt-2 text-sm font-bold text-slate-800">{confidence}</p>
           </div>
           <div className="rounded-xl bg-slate-50 p-3">
+            <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">{t("results.experimentalQuality")}</p>
+            <p className="mt-2 text-sm font-bold text-slate-800">{qualityScore}</p>
+          </div>
+          <div className="rounded-xl bg-slate-50 p-3">
             <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">{t("results.model")}</p>
             <p className="mt-2 text-sm font-bold text-slate-800">{prediction.model_name || t("results.baselineUnavailable")}</p>
             <p className="mt-1 text-[11px] text-slate-500">{prediction.model_version}</p>
@@ -163,7 +171,7 @@ export function MLSecondOpinionCard({ prediction }) {
           <div className="rounded-xl bg-slate-50 p-3">
             <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">{t("results.providerStatus")}</p>
             <p className="mt-2 text-sm font-bold text-slate-800">{prediction.provider_status ? pretty(prediction.provider_status) : t("common.unavailable")}</p>
-            <p className="mt-1 text-[11px] text-slate-500">{prediction.model_mode ? pretty(prediction.model_mode) : t("results.modelMode")}</p>
+            <p className="mt-1 text-[11px] text-slate-500">{prediction.validation_status ? pretty(prediction.validation_status) : prediction.model_mode ? pretty(prediction.model_mode) : t("results.modelMode")}</p>
           </div>
         </div>
         <div className="mt-4"><Alert tone="warning" title={t("results.mlPrimary")}>{prediction.warning || t("results.mlWarning")}</Alert></div>
@@ -192,7 +200,7 @@ export function ExportActions({ report }) {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = `physiovision-${report.exercise || "movement"}-analysis.json`;
+    link.download = `movena-${report.exercise || "movement"}-analysis.json`;
     link.click();
     URL.revokeObjectURL(url);
   }

@@ -328,7 +328,7 @@ class RehabEnvironment:
         seed: int = 42,
         use_mhealth: bool = False,
         mhealth_data_dir: Optional[str] = None,
-        physiovision_data_dir: Optional[str] = None,
+        movena_data_dir: Optional[str] = None,
     ):
         self.cfg = cfg or EnvConfig()
         self.rng = np.random.default_rng(seed)
@@ -345,7 +345,7 @@ class RehabEnvironment:
         self.current_mhealth_idx = 0
 
         self.rehab24_loader = (
-            Rehab246Loader(physiovision_data_dir) if physiovision_data_dir else None
+            Rehab246Loader(movena_data_dir) if movena_data_dir else None
         )
         self.current_rehab24_profile: Optional[Rehab246Profile] = None
 

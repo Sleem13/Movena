@@ -42,7 +42,7 @@ def generate_session_report(report: AnalysisResponse, output_path: Path) -> Path
     exercise_name = report.exercise_name or display_names.get(report.exercise, report.exercise.replace("_", " ").title())
     story = [
         Paragraph(
-            f"PhysioVision AI - {exercise_name} Session Report",
+            f"Movena - {exercise_name} Session Report",
             styles["Title"],
         ),
         Spacer(1, 5 * mm),

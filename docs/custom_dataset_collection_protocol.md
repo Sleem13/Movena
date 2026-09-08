@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This protocol defines how to collect PhysioVision AI squat videos for research and product validation. The immediate focus is the squat MVP. Future exercises can reuse the same file naming, consent, labeling, and safety structure.
+This protocol defines how to collect Movena squat videos for research and product validation. The immediate focus is the squat MVP. Future exercises can reuse the same file naming, consent, labeling, and safety structure.
 
 ## Safety Disclaimer
 

@@ -1,16 +1,16 @@
 # Privacy and Safety Notice
 
-PhysioVision AI is an AI-assisted movement analysis and rehabilitation support platform.
+Movena is an AI-assisted movement analysis and rehabilitation support platform.
 
 It is designed to help users and reviewers observe movement quality, rep counting, confidence, and exercise feedback.
 
 ## Important Limitations
 
-PhysioVision AI does not diagnose medical conditions.
+Movena does not diagnose medical conditions.
 
-PhysioVision AI does not prescribe treatment.
+Movena does not prescribe treatment.
 
-PhysioVision AI does not replace a licensed physiotherapist or medical professional.
+Movena does not replace a licensed physiotherapist or medical professional.
 
 The analysis may be affected by camera angle, lighting, clothing, video quality, body visibility, and pose-estimation confidence.
 

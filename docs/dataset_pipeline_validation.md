@@ -2,7 +2,7 @@
 
 ## Sprint 1.5 Goal
 
-Sprint 1.5 validates the data pipeline foundation for PhysioVision AI without training a model. The goal is to keep three paths cleanly separated:
+Sprint 1.5 validates the data pipeline foundation for Movena without training a model. The goal is to keep three paths cleanly separated:
 
 - Camera/video-based exercise analysis.
 - Wearable sensor-based exercise analysis.
@@ -38,7 +38,7 @@ Raw datasets are local-only. Do not commit raw videos, public dataset downloads,
 
 Raw folders should contain manually downloaded or consented local data:
 
-- `data/raw/custom_videos/` for PhysioVision camera recordings.
+- `data/raw/custom_videos/` for Movena camera recordings.
 - `data/raw/squat_kaggle/` for squat-specific public data.
 - `data/raw/uci_physical_therapy_exercises/` for UCI wearable-sensor time-series data.
 - Future rehab datasets under their named folders.

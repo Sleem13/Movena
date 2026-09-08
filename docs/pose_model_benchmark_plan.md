@@ -2,7 +2,7 @@
 
 ## Objective
 
-Compare pretrained landmark detectors on the same custom squat videos while holding the downstream PhysioVision angle calculations and rule-based interpretation constant. This is an offline engineering benchmark, not model training or clinical validation.
+Compare pretrained landmark detectors on the same custom squat videos while holding the downstream Movena angle calculations and rule-based interpretation constant. This is an offline engineering benchmark, not model training or clinical validation.
 
 ## Backends and controls
 

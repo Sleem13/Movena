@@ -118,7 +118,7 @@ def test_overlay_preview_and_download_routes_return_browser_compatible_webm(monk
     assert download.status_code == 200
     assert download.headers["content-type"].startswith("video/webm")
     assert download.headers["content-disposition"].startswith("attachment")
-    assert "physiovision-walking-gait-screen-overlay.webm" in download.headers["content-disposition"]
+    assert "movena-walking-gait-screen-overlay.webm" in download.headers["content-disposition"]
     assert suffix_preview.status_code == 200
     assert missing.status_code == 404
     assert missing.json() == {

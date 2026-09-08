@@ -68,7 +68,7 @@ def create_join_token(
     result = _request("POST", "/meeting-tokens", {"properties": {
         "room_name": room_name,
         "user_id": user.user_id,
-        "user_name": user.full_name or user.username or "PhysioVision user",
+        "user_name": user.full_name or user.username or "Movena user",
         "is_owner": is_owner,
         "nbf": int(join_at.timestamp()),
         "exp": int(expires_at.timestamp()),

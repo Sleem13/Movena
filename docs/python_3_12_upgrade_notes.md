@@ -2,7 +2,7 @@
 
 ## Upgrade Rationale
 
-PhysioVision AI moved to Python 3.12 to use a current, supported Python runtime with newer language/runtime improvements and current binary wheels across the project’s FastAPI, MediaPipe, OpenCV, pandas, scikit-learn, ReportLab, and testing stack. The upgrade also removes dependence on older external virtual environments whose launchers and installed packages had become inconsistent.
+Movena moved to Python 3.12 to use a current, supported Python runtime with newer language/runtime improvements and current binary wheels across the project’s FastAPI, MediaPipe, OpenCV, pandas, scikit-learn, ReportLab, and testing stack. The upgrade also removes dependence on older external virtual environments whose launchers and installed packages had become inconsistent.
 
 This was an environment validation change only. Application logic, model training behavior, thresholds, APIs, and architecture were not changed as part of the upgrade review.
 
@@ -12,7 +12,7 @@ The project-local interpreter reports:
 
 ```text
 Python 3.12.10
-C:\Users\Admin\Documents\GitHub\PhysioVision-AI\.venv\Scripts\python.exe
+C:\Users\Admin\Documents\GitHub\Movena\.venv\Scripts\python.exe
 ```
 
 Always confirm both version and executable path:
@@ -45,7 +45,7 @@ py -3.12 -m venv .venv
 .\.venv\Scripts\Activate.ps1
 ```
 
-Before removing `.venv`, verify the current directory is the PhysioVision AI repository. Do not remove or reuse virtual environments belonging to other projects.
+Before removing `.venv`, verify the current directory is the Movena repository. Do not remove or reuse virtual environments belonging to other projects.
 
 If local policy blocks PowerShell scripts, do not rely on activation. Run the project interpreter explicitly:
 

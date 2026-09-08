@@ -15,7 +15,7 @@ it("opens password recovery from login", () => {
   const onForgotPassword = vi.fn();
   render(<Login onForgotPassword={onForgotPassword} />);
   expect(
-    screen.getByRole("heading", { name: "Log in to PhysioVision" }),
+    screen.getByRole("heading", { name: "Log in to Movena" }),
   ).toBeInTheDocument();
   expect(
     screen.getByText(/only enter information you are authorized to process/i),

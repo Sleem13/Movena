@@ -14,7 +14,7 @@ Local path:
 
 ## Why It Matters
 
-This dataset gives PhysioVision AI a non-camera rehabilitation benchmark. Camera pose estimation is useful for body position and joint-angle analysis, but wearable sensors can capture movement rhythm, acceleration, angular velocity, amplitude, and smoothness. Those signals are valuable for exercise classification, execution quality modeling, and future home-rehab monitoring.
+This dataset gives Movena a non-camera rehabilitation benchmark. Camera pose estimation is useful for body position and joint-angle analysis, but wearable sensors can capture movement rhythm, acceleration, angular velocity, amplitude, and smoothness. Those signals are valuable for exercise classification, execution quality modeling, and future home-rehab monitoring.
 
 It is especially useful for future multimodal AI because it lets us design a sensor-data pipeline now without disturbing the current squat video MVP.
 

@@ -1,6 +1,6 @@
 import { API_BASE_URL } from "./api.js";
 
-const TOKEN_KEY = "physiovision_access_token";
+const TOKEN_KEY = "movena_access_token";
 
 export function coachingWebSocketUrl(baseUrl = API_BASE_URL) {
   const url = new URL("/api/v1/coaching/stream", baseUrl);

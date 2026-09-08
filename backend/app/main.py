@@ -23,6 +23,7 @@ from app.api.routes.exercise_recognition import router as exercise_recognition_r
 from app.api.routes.exercises import router as exercises_router
 from app.api.routes.realtime_coaching import router as realtime_coaching_router
 from app.api.routes.analysis_jobs import router as analysis_jobs_router
+from app.api.routes.ml_models import router as ml_models_router
 from app.api.routes.rehab_rl import router as rehab_rl_router
 from app.api.v1.therapist import router as therapist_router
 from app.api.v1.auth import router as auth_router
@@ -39,6 +40,7 @@ from app.core.config import get_settings
 from app.core.cors import cors_middleware_options
 from app.services.artifact_service import ensure_artifact_directories
 from app.services.exercise_recognition_service import initialize_active_recognition_models
+from app.services.ml_model_readiness_service import validate_required_ml_models
 from app.db.database import init_db, verify_production_schema
 from app.core.logging_config import configure_logging
 from app.schemas.analysis_schema import ErrorResponse
@@ -47,6 +49,7 @@ configure_logging()
 logger = logging.getLogger(__name__)
 settings = get_settings()
 settings.validate_deployment_safety()
+validate_required_ml_models(settings.required_ml_exercises)
 ensure_artifact_directories()
 if settings.app_env == "production":
     verify_production_schema()
@@ -79,7 +82,7 @@ async def lifespan(_app: FastAPI):
 app = FastAPI(
     title=settings.project_name,
     version=settings.version,
-    description="Movement-analysis API for the PhysioVision AI educational MVP.",
+    description="Movement-analysis API for the Movena educational MVP.",
     lifespan=lifespan,
 )
 
@@ -176,6 +179,7 @@ if settings.enable_exercise_recognition:
 app.include_router(exercises_router)
 app.include_router(realtime_coaching_router)
 app.include_router(analysis_jobs_router)
+app.include_router(ml_models_router)
 app.include_router(rehab_rl_router)
 app.include_router(auth_router)
 app.include_router(admin_router)

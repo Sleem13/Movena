@@ -1,10 +1,10 @@
-# PhysioVision AI — Private Staging Release Status
+# Movena — Private Staging Release Status
 
 ## Release Status
 
 Decision: GO for private controlled staging release.
 
-PhysioVision AI is deployed and validated as a private staging product release. It is suitable for internal review, private demos, and controlled non-clinical testing preparation.
+Movena is deployed and validated as a private staging product release. It is suitable for internal review, private demos, and controlled non-clinical testing preparation.
 
 ## Evidence
 

@@ -6,9 +6,9 @@
 
 Hello `[TESTER ALIAS]`,
 
-You are invited to help test PhysioVision AI during a private, invite-only product beta. The expected time commitment is approximately `[30–45 MINUTES]` before `[FEEDBACK DEADLINE]`. This is not a public release or clinical service.
+You are invited to help test Movena during a private, invite-only product beta. The expected time commitment is approximately `[30–45 MINUTES]` before `[FEEDBACK DEADLINE]`. This is not a public release or clinical service.
 
-PhysioVision AI supports exercise monitoring for bodyweight squat, sit-to-stand, knee extension, shoulder abduction, and hip abduction. It is experimental, may be inaccurate, and is not a medical device. Do not use it for clinical care, diagnosis, treatment, emergencies, or medical decisions.
+Movena supports exercise monitoring for bodyweight squat, sit-to-stand, knee extension, shoulder abduction, and hip abduction. It is experimental, may be inaccurate, and is not a medical device. Do not use it for clinical care, diagnosis, treatment, emergencies, or medical decisions.
 
 **Use only your own non-identifying test video or a supplied fixture. Do not upload real patients, identifiable personal information, or sensitive health information. Do not share the app, credentials, backend address, reports, or artifacts publicly.**
 

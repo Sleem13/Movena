@@ -52,8 +52,8 @@ def test_artifact_resolution_and_expiry(monkeypatch, tmp_path):
 
 
 def test_artifact_download_filename_uses_safe_exercise_slug():
-    assert artifact_download_filename("walking_gait_screen", "report") == "physiovision-walking-gait-screen-report.pdf"
-    assert artifact_download_filename("../../Unsafe Name", "overlay") == "physiovision-unsafe-name-overlay.webm"
+    assert artifact_download_filename("walking_gait_screen", "report") == "movena-walking-gait-screen-report.pdf"
+    assert artifact_download_filename("../../Unsafe Name", "overlay") == "movena-unsafe-name-overlay.webm"
 
 
 def test_invalid_artifact_ids_return_404_without_path_access(monkeypatch, tmp_path):

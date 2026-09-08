@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 
-export const THEME_STORAGE_KEY = "physiovision_theme";
+export const THEME_STORAGE_KEY = "movena_theme";
 export const THEME_OPTIONS = ["light", "dark", "system"];
 
 const ThemeContext = createContext(null);

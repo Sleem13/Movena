@@ -57,7 +57,7 @@ def generate_progress_report(
 
     styles = getSampleStyleSheet()
     story = [
-        Paragraph("PhysioVision AI - Patient Progress Report", styles["Title"]),
+        Paragraph("Movena - Patient Progress Report", styles["Title"]),
         Spacer(1, 4 * mm),
         Paragraph(f"Patient: {patient.display_name}", styles["BodyText"]),
         Paragraph(f"Period: {period_start.isoformat()} to {period_end.isoformat()}", styles["BodyText"]),

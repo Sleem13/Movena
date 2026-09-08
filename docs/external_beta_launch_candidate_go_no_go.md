@@ -4,7 +4,7 @@
 
 **Decision: GO for private controlled staging release.**
 
-PhysioVision AI backend and frontend infrastructure are deployed and validated. The system is suitable for private demonstrations, internal review, and controlled non-clinical testing.
+Movena backend and frontend infrastructure are deployed and validated. The system is suitable for private demonstrations, internal review, and controlled non-clinical testing.
 
 ### Evidence
 

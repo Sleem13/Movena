@@ -2,7 +2,7 @@
 
 ## Validated Python environment
 
-The PhysioVision AI core application is validated with Python 3.12.10 in a project-local `.venv`.
+The Movena core application is validated with Python 3.12.10 in a project-local `.venv`.
 
 ## MediaPipe and protobuf
 

@@ -2,7 +2,7 @@
 
 This is an invite-only beta candidate, not a public release or clinical service.
 
-PhysioVision AI currently supports only bodyweight squat, sit-to-stand, knee extension, shoulder abduction, and hip abduction. Choosing the wrong exercise or submitting another movement can produce rejection or irrelevant output.
+Movena currently supports only bodyweight squat, sit-to-stand, knee extension, shoulder abduction, and hip abduction. Choosing the wrong exercise or submitting another movement can produce rejection or irrelevant output.
 
 - Camera view and framing strongly affect results. Side/front requirements differ by exercise and observed pattern.
 - Pose estimation may miss or misplace landmarks. Low light, loose clothing, occlusion, cropped joints, background clutter, rapid motion, and camera movement reduce reliability.

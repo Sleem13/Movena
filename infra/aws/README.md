@@ -1,4 +1,4 @@
-# PhysioVision AI on AWS
+# Movena on AWS
 
 This stack deploys the current application without rewriting its analysis pipeline:
 

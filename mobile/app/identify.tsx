@@ -35,7 +35,7 @@ export default function IdentifyExerciseScreen() {
   async function confirm() { if (!video || !result?.suggested_exercise_id || uncertain || confirming) return; setConfirming(true); setError(""); try { const exercise = await getExerciseById(result.suggested_exercise_id); if (!exercise.supported_in_app) throw new Error("This exercise does not have an available analyzer yet."); if (result.recognition_event_id) await confirmRecognitionSuggestion(result.recognition_event_id, exercise.exercise_id); const handoff = buildRecognitionHandoff(exercise, video); analysis.setExercise(handoff.exercise); analysis.setVideo(handoff.video); analysis.setResult(null); router.replace(handoff.route); } catch (requestError) { setError((requestError as Error).message); } finally { setConfirming(false); } }
 
   return <AppShell active="coach">
-    <BrandHeader title="Movement coach" subtitle="Add a short exercise video for a guided PhysioVision movement check." />
+    <BrandHeader title="Movement coach" subtitle="Add a short exercise video for a guided Movena movement check." />
     <AnalysisSteps active={video ? (result ? 3 : 2) : 1} />
     {!video ? <>
       <SectionTitle>How would you like to add your video?</SectionTitle>

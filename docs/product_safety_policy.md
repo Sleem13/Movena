@@ -38,7 +38,7 @@ Allowed language includes exercise monitoring, observed movement pattern, possib
 
 ## Sprint 26 stability-release boundary
 
-PhysioVision AI supports exercise monitoring and does not replace assessment by a licensed physiotherapist. Product copy may describe an observed movement pattern, possible compensation, limited observed range, or low confidence and may suggest professional review. It must not state or imply diagnosis, injury detection, weakness detection, a treatment plan, medical-device status, or clinical validation.
+Movena supports exercise monitoring and does not replace assessment by a licensed physiotherapist. Product copy may describe an observed movement pattern, possible compensation, limited observed range, or low confidence and may suggest professional review. It must not state or imply diagnosis, injury detection, weakness detection, a treatment plan, medical-device status, or clinical validation.
 
 Stability automation is not participant or clinical evidence. A zero-issue empty pilot log cannot be interpreted as safety validation. Missing disclaimers, a normal score on rejected input, artifact/token exposure, or diagnosis/treatment wording remains a stop-testing issue.
 
@@ -68,7 +68,7 @@ Internal development builds must retain the same boundary during offline, timeou
 
 ## Scope
 
-PhysioVision AI provides educational movement-monitoring support. It does not diagnose injury or disease, determine fitness for activity, prescribe or modify treatment, or replace a licensed physiotherapist or other healthcare professional.
+Movena provides educational movement-monitoring support. It does not diagnose injury or disease, determine fitness for activity, prescribe or modify treatment, or replace a licensed physiotherapist or other healthcare professional.
 
 ## Non-Negotiable Behaviors
 

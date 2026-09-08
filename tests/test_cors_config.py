@@ -6,7 +6,7 @@ from backend.app.core.config import Settings
 from backend.app.core.cors import cors_middleware_options
 
 
-RENDER_ORIGIN = "https://name-physiovision-api-staging.onrender.com"
+RENDER_ORIGIN = "https://name-movena-api-staging.onrender.com"
 VERCEL_ORIGIN = "https://physio-vision-ai.vercel.app"
 
 

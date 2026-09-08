@@ -9,11 +9,11 @@
     <link rel="manifest" href="/manifest.webmanifest" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#071b4a" />
-    <meta name="description" content="PhysioVision AI turns exercise video into clear, educational movement insights and visual reports." />
-    <meta name="application-name" content="PhysioVision AI" />
+    <meta name="description" content="Movena turns exercise video into clear, educational movement insights and visual reports." />
+    <meta name="application-name" content="Movena" />
     <script>
       (() => {
-        const saved = localStorage.getItem("physiovision_theme");
+        const saved = localStorage.getItem("movena_theme");
         const theme = saved === "light" || saved === "dark"
           ? saved
           : matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
@@ -21,7 +21,7 @@
         document.documentElement.style.colorScheme = theme;
       })();
     </script>
-    <title>PhysioVision AI</title>
+    <title>Movena</title>
   </head>
   <body>
     <div id="root"></div>

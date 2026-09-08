@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import App from "./App.jsx";
 import { analyzeExerciseVideo } from "./services/api.js";
 import { getRehabRlExercises, getRehabRlGovernance, getRehabRlModelManifest, getRehabRlOverview, getRehabRlProtocols } from "./services/api.js";
-import { getArtifactBlob, getExercises, getSavedSession, listSavedSessions } from "./services/api.js";
+import { getArtifactBlob, getExercises, getMlModelReadiness, getSavedSession, listSavedSessions } from "./services/api.js";
 import { confirmRecognitionSuggestion, getRecognitionModels, recognizeExerciseVideo } from "./services/api.js";
 import { EXERCISES } from "./data/exercises.js";
 import {
@@ -24,6 +24,7 @@ vi.mock("./context/AuthContext.jsx", () => ({
 vi.mock("./services/api.js", () => ({
   analyzeExerciseVideo: vi.fn(),
   getExercises: vi.fn(),
+  getMlModelReadiness: vi.fn(),
   getRehabRlOverview: vi.fn(),
   getRehabRlExercises: vi.fn(),
   getRehabRlProtocols: vi.fn(),
@@ -145,6 +146,13 @@ describe("Squat Analyzer healthcare dashboard", () => {
     authState.user = { user_id: "test-admin", email: "admin@example.com", role: "admin" };
     vi.clearAllMocks();
     getExercises.mockResolvedValue(EXERCISES);
+    getMlModelReadiness.mockResolvedValue({
+      feature_enabled: true,
+      models: EXERCISES.filter((item) => item.supported_in_app).map((item) => ({
+        exercise_id: item.exercise_id,
+        status: "ready",
+      })),
+    });
     getRehabRlOverview.mockResolvedValue({
       metrics: { algorithm: "Double Dueling DQN", state_features: 32, clinical_actions: 30 },
       signals: { last_checkpoint: { name: "best_model.pt.npy" }, policy_source: "trained policy", backend: "numpy", device: "cpu" },
@@ -191,6 +199,23 @@ describe("Squat Analyzer healthcare dashboard", () => {
     fireEvent.click(exerciseSelector);
     expect(screen.getByText("One person only")).toBeInTheDocument();
     expect(screen.getByText(/keep coaches, spotters, and bystanders outside the frame/i)).toBeInTheDocument();
+  });
+
+  it("disables an unavailable exercise model without blocking rule analysis", async () => {
+    getMlModelReadiness.mockResolvedValueOnce({
+      feature_enabled: true,
+      models: [
+        { exercise_id: "bodyweight_squat", status: "available" },
+        { exercise_id: "sit_to_stand", status: "blocked" },
+      ],
+    });
+    openUpload();
+    chooseSelectOption("Exercise selector", "Sit-to-Stand");
+
+    await waitFor(() => expect(screen.getByLabelText("ML second opinion")).toBeDisabled());
+    expect(screen.getByText("Unavailable")).toBeInTheDocument();
+    expect(screen.getByText(/No sit-to-stand ML model is available/i)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Analyze sit-to-stand" })).toBeDisabled();
   });
 
   it("renders the authenticated clinical workspace with role-aware navigation", async () => {
@@ -742,15 +767,17 @@ describe("Squat Analyzer healthcare dashboard", () => {
     expect(screen.getByText("Rep count confidence")).toBeInTheDocument();
     expect(screen.getByText("Score breakdown")).toBeInTheDocument();
     expect(screen.getByText("88%")).toBeInTheDocument();
-    expect(screen.getByText(/PhysioVision AI supports exercise monitoring and does not replace assessment by a licensed physiotherapist/i)).toBeInTheDocument();
+    expect(screen.getByText(/Movena supports exercise monitoring and does not replace assessment by a licensed physiotherapist/i)).toBeInTheDocument();
   });
 
   it("renders the ML second opinion only when returned", async () => {
-    await analyzeWith({ ...report, ml_prediction: { enabled: true, predicted_label: "squat_correct", confidence: 0.82, model_name: "svc_rbf", model_version: "sprint_5_baseline", warning: "Experimental baseline model. Not clinically validated." } });
+    await analyzeWith({ ...report, ml_prediction: { enabled: true, predicted_label: "squat_correct", confidence: 0.82, experimental_quality_score: 80, artifact_verified: true, model_name: "svc_rbf", model_version: "sprint_5_baseline", warning: "Experimental baseline model. Not clinically validated." } });
     expect(screen.getByText("ML second opinion")).toBeInTheDocument();
     expect(screen.getByText("Squat Correct")).toBeInTheDocument();
     expect(screen.getByText("82%")).toBeInTheDocument();
     expect(screen.getByText("svc_rbf")).toBeInTheDocument();
+    expect(screen.getAllByText("80/100").length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByText("Verified artifact · therapist review required")).toBeInTheDocument();
     expect(screen.getByText(/rule-based analysis remains primary/i)).toBeInTheDocument();
   });
 
@@ -817,7 +844,7 @@ describe("Squat Analyzer healthcare dashboard", () => {
     authState.user = null;
     render(<App />);
     fireEvent.click(screen.getByRole("button", { name: "Log in" }));
-    expect(screen.getByRole("heading", { name: "Log in to PhysioVision" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Log in to Movena" })).toBeInTheDocument();
   });
 
   it("shows the supported formats for an unsupported-file response", async () => {

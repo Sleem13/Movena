@@ -14,7 +14,7 @@ Sprint 28D audit (2026-07-19): staging is reachable and the Android rebuild is u
 
 ## Short invitation
 
-You are invited to help test the private PhysioVision AI exercise-monitoring beta for `[BETA DATES]`. This is product-quality testing, not healthcare or clinical research. Participation is optional and access must not be shared.
+You are invited to help test the private Movena exercise-monitoring beta for `[BETA DATES]`. This is product-quality testing, not healthcare or clinical research. Participation is optional and access must not be shared.
 
 ## Who may participate
 
@@ -26,7 +26,7 @@ Invited adults who can follow the test-only data rules and are not using the app
 2. Install only from `[PRIVATE_ANDROID_INSTALL_URL]` and use `[BETA_LOGIN_INSTRUCTIONS]`.
 3. Do not share the app, credentials, backend address, reports, or annotated videos.
 
-**Use test videos only. Do not upload real patients, identifiable personal information, or sensitive health information.** PhysioVision AI is experimental, not a medical device, not clinically validated, and not for diagnosis or treatment prescription. Feedback may be inaccurate.
+**Use test videos only. Do not upload real patients, identifiable personal information, or sensitive health information.** Movena is experimental, not a medical device, not clinically validated, and not for diagnosis or treatment prescription. Feedback may be inaccurate.
 
 ## Testing tasks
 

@@ -57,7 +57,7 @@ def infer_source_split(image_path: Path, input_dir: Path) -> str:
 
 
 def normalize_folder_label(folder_name: str) -> str | None:
-    """Map a source class folder to the stable PhysioVision label taxonomy."""
+    """Map a source class folder to the stable Movena label taxonomy."""
     key = "_".join(folder_name.strip().lower().replace("-", " ").split())
     return LABEL_MAP.get(key)
 

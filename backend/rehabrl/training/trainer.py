@@ -84,14 +84,14 @@ class Trainer:
         use_mhealth: bool = False,  # Use mHealth dataset
         exercise_ref_dir: Optional[str] = None,
         exercise_ref_strength: float = 0.2,  # guidance strength from exercise references
-        physiovision_data_dir: Optional[str] = None,
+        movena_data_dir: Optional[str] = None,
     ):
         self.cfg = cfg or Config()
         self.env = RehabEnvironment(
             cfg=self.cfg.env,
             seed=seed,
             use_mhealth=use_mhealth,
-            physiovision_data_dir=physiovision_data_dir,
+            movena_data_dir=movena_data_dir,
         )
         self.rng = np.random.default_rng(seed)
 

@@ -2,7 +2,7 @@
 
 ## Objective
 
-Prepare PhysioVision AI for controlled closed pilot readiness by strengthening privacy, safety, monitoring, and operational workflows.
+Prepare Movena for controlled closed pilot readiness by strengthening privacy, safety, monitoring, and operational workflows.
 
 ## Current Status
 

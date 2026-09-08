@@ -2,8 +2,8 @@
 
 ## Status
 
-RehabRL is embedded in PhysioVision AI as an experimental, protected clinical
-decision-support module. The integration reuses PhysioVision authentication,
+RehabRL is embedded in Movena as an experimental, protected clinical
+decision-support module. The integration reuses Movena authentication,
 role authorization, CORS, error responses, navigation, deployment, and logging.
 The standalone RehabRL FastAPI server and React shell are not mounted.
 
@@ -19,13 +19,13 @@ The workspace is available at `/rehab-policy`. It provides:
 ## Architecture
 
 ```text
-PhysioVision React workspace
+Movena React workspace
         |
         | Bearer token
         v
 /api/v1/rehab-rl router
         |
-        +--> PhysioVision role authorization
+        +--> Movena role authorization
         |
         +--> RehabRL service facade
                   |
@@ -109,7 +109,7 @@ policy or the clinical heuristic fallback.
 
 ## Local development
 
-Start the normal PhysioVision backend and frontend; no second RehabRL server is
+Start the normal Movena backend and frontend; no second RehabRL server is
 needed.
 
 ```powershell
@@ -127,8 +127,8 @@ Sign in as a therapist, admin, or super administrator and open
 The integration was verified on 2026-08-30 with:
 
 - Original RehabRL focused suite: 17 passed.
-- Complete PhysioVision backend suite: 315 passed.
-- PhysioVision frontend suite: 144 passed.
+- Complete Movena backend suite: 315 passed.
+- Movena frontend suite: 144 passed.
 - Vite production build: passed; RehabRL is emitted as a lazy-loaded chunk.
 - Repository-root and staging startup without optional ML runtimes: passed.
 - CPU/container-layout check: NumPy trained policy loaded successfully.
@@ -171,4 +171,4 @@ privacy, bias, and model-governance gates in the
 ## License
 
 The embedded RehabRL source retains its upstream Apache License 2.0 at
-`backend/rehabrl/LICENSE`. PhysioVision AI retains its repository-level license.
+`backend/rehabrl/LICENSE`. Movena retains its repository-level license.

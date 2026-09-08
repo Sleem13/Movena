@@ -12,7 +12,7 @@ The dataset contains 1:1 side-view squat images organized into three classes:
 
 The local raw path is `data/raw/zenodo_squat_dataset/`. Downloading is manual; repository scripts never download it.
 
-## Why It Is Useful for PhysioVision AI
+## Why It Is Useful for Movena
 
 The dataset is closely aligned with the current squat exercise and provides labeled still images for testing whether pose-derived posture features separate the three source categories. It can support:
 
@@ -22,13 +22,13 @@ The dataset is closely aligned with the current squat exercise and provides labe
 - Rule-based knee, hip, trunk, and ankle angle validation.
 - A future supervised image classifier after labels, splits, leakage, and subject diversity are audited.
 
-Its labels should be treated as source annotations, not clinical diagnoses. PhysioVision feedback must retain conservative wording such as “possible back-position issue” or “possible heel-position issue.”
+Its labels should be treated as source annotations, not clinical diagnoses. Movena feedback must retain conservative wording such as “possible back-position issue” or “possible heel-position issue.”
 
 ## How It Differs From Video Datasets
 
 Each record is an independent image. There is no ordered frame sequence, timestamp, repetition phase, tempo, or full movement cycle. Therefore, this dataset can validate posture at captured moments but cannot validate repetition counting, descent/ascent phase detection, temporal smoothing, movement speed, or consistency across a repetition.
 
-Custom PhysioVision squat videos remain necessary for end-to-end upload testing, rep counting, movement-phase analysis, and real camera-condition validation.
+Custom Movena squat videos remain necessary for end-to-end upload testing, rep counting, movement-phase analysis, and real camera-condition validation.
 
 ## Recommended Preprocessing
 
@@ -104,4 +104,4 @@ Expected outputs:
 
 ## Medical and Safety Disclaimer
 
-This dataset and its derived PhysioVision features are for research, engineering validation, exercise monitoring, and educational support only. They do not diagnose injury, determine treatment, or replace assessment by a licensed physiotherapist. Any user experiencing pain, dizziness, instability, or unsafe symptoms should stop exercising and consult a qualified healthcare professional.
+This dataset and its derived Movena features are for research, engineering validation, exercise monitoring, and educational support only. They do not diagnose injury, determine treatment, or replace assessment by a licensed physiotherapist. Any user experiencing pain, dizziness, instability, or unsafe symptoms should stop exercising and consult a qualified healthcare professional.

@@ -1,8 +1,8 @@
 export const BRAND = Object.freeze({
-  name: "PhysioVision AI",
-  shortName: "PhysioVision",
-  tagline: "Move Better · Recover Faster · Live Healthier",
-  description: "AI-assisted rehabilitation and clinician-reviewed movement intelligence.",
+  name: "Movena",
+  shortName: "Movena",
+  tagline: "Move Better, Recover Together.",
+  description: "Movement intelligence for therapist-guided recovery.",
   colors: Object.freeze({
     ink: "#071b4a",
     blue: "#2563eb",

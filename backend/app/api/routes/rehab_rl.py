@@ -1,6 +1,6 @@
 """Protected RehabRL decision-support endpoints.
 
-The reinforcement-learning engine is embedded as a library. PhysioVision owns
+The reinforcement-learning engine is embedded as a library. Movena owns
 authentication, authorization, CORS, error formatting, and application startup.
 """
 

@@ -46,6 +46,12 @@ def test_exercise_recognition_has_an_explicit_override(monkeypatch):
     assert Settings.from_environment().enable_exercise_recognition is True
 
 
+def test_config_reads_required_ml_exercises(monkeypatch):
+    monkeypatch.setenv("REQUIRED_ML_EXERCISES", "sit_to_stand,knee_extension")
+
+    assert Settings.from_environment().required_ml_exercises == ["sit_to_stand", "knee_extension"]
+
+
 def test_config_parses_origins_and_blocks_production_wildcard(monkeypatch):
     monkeypatch.setenv("APP_ENV", "production")
     monkeypatch.setenv("CORS_ALLOWED_ORIGINS", "*,https://app.example.com")

@@ -57,7 +57,7 @@ def test_staging_smtp_requires_delivery_settings_and_https_frontend():
 def test_production_rejects_console_email_mode():
     settings = safe_staging_settings(
         app_env="production",
-        database_url="postgresql://user:password@db.example.com/physiovision",
+        database_url="postgresql://user:password@db.example.com/movena",
         email_delivery_mode="console",
         require_email_verification=True,
     )
@@ -69,7 +69,7 @@ def test_production_rejects_console_email_mode():
 def test_production_allows_console_mode_when_email_verification_is_suspended():
     settings = safe_staging_settings(
         app_env="production",
-        database_url="postgresql://user:password@db.example.com/physiovision",
+        database_url="postgresql://user:password@db.example.com/movena",
         email_delivery_mode="console",
         require_email_verification=False,
     )
@@ -87,7 +87,7 @@ def test_production_rejects_local_or_missing_database():
 def test_production_requires_clinical_escalation_configuration():
     settings = safe_staging_settings(
         app_env="production",
-        database_url="postgresql://user:password@db.example.com/physiovision",
+        database_url="postgresql://user:password@db.example.com/movena",
         clinical_organization_name="Your organization",
         clinical_escalation_contact="",
     )
@@ -159,6 +159,16 @@ def test_staging_cors_filters_wildcard():
     assert settings.effective_cors_origins == ["https://staging.example.com"]
 
 
+def test_deployment_rejects_required_ml_when_feature_is_disabled():
+    settings = safe_staging_settings(
+        enable_ml_second_opinion=False,
+        required_ml_exercises=["sit_to_stand"],
+    )
+
+    with pytest.raises(RuntimeError, match="ENABLE_ML_SECOND_OPINION"):
+        settings.validate_deployment_safety()
+
+
 def test_postgres_provider_urls_use_psycopg3():
     assert normalize_database_url("postgresql://user:pass@host/db") == "postgresql+psycopg://user:pass@host/db"
     assert normalize_database_url("postgres://user:pass@host/db") == "postgresql+psycopg://user:pass@host/db"
@@ -169,11 +179,11 @@ def test_database_url_can_be_built_from_secret_injected_fields(monkeypatch):
     monkeypatch.delenv("DATABASE_URL", raising=False)
     monkeypatch.setenv("DATABASE_HOST", "db.internal")
     monkeypatch.setenv("DATABASE_PORT", "5432")
-    monkeypatch.setenv("DATABASE_NAME", "physiovision")
+    monkeypatch.setenv("DATABASE_NAME", "movena")
     monkeypatch.setenv("DATABASE_USER", "app_user")
     monkeypatch.setenv("DATABASE_PASSWORD", "p@ss:/word")
 
-    assert database_url_from_environment() == "postgresql+psycopg://app_user:p%40ss%3A%2Fword@db.internal:5432/physiovision"
+    assert database_url_from_environment() == "postgresql+psycopg://app_user:p%40ss%3A%2Fword@db.internal:5432/movena"
 
 
 def test_protected_artifact_url_is_signed_and_rejects_unsigned_access(monkeypatch):

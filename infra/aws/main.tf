@@ -19,7 +19,7 @@ data "aws_cloudfront_origin_request_policy" "all_viewer_except_host" {
 }
 
 locals {
-  name         = "physiovision-${var.environment}"
+  name         = "movena-${var.environment}"
   frontend_url = "https://${aws_cloudfront_distribution.app.domain_name}"
   selected_azs = slice(data.aws_availability_zones.available.names, 0, 2)
   common_environment = concat([
@@ -55,7 +55,7 @@ locals {
     { name = "ARTIFACT_RETENTION_HOURS", value = tostring(var.artifact_retention_hours) },
     { name = "POSE_TARGET_FPS", value = "12" },
     ], var.environment == "staging" ? [
-    { name = "CLINICAL_ORGANIZATION_NAME", value = "PhysioVision AI staging" },
+    { name = "CLINICAL_ORGANIZATION_NAME", value = "Movena staging" },
     { name = "CLINICAL_ESCALATION_CONTACT", value = "Your assigned clinician or local emergency services" },
     { name = "CLINICAL_ESCALATION_INSTRUCTION", value = "This staging service is not monitored for emergencies. Stop and contact your assigned clinician or local emergency services." },
   ] : [])
@@ -191,8 +191,8 @@ resource "aws_db_instance" "database" {
   max_allocated_storage       = 100
   storage_type                = "gp3"
   storage_encrypted           = true
-  db_name                     = "physiovision"
-  username                    = "physiovision_admin"
+  db_name                     = "movena"
+  username                    = "movena_admin"
   manage_master_user_password = true
   db_subnet_group_name        = aws_db_subnet_group.main.name
   vpc_security_group_ids      = [aws_security_group.database.id]
@@ -237,7 +237,7 @@ resource "aws_efs_access_point" "artifacts" {
 }
 
 resource "aws_ecr_repository" "backend" {
-  name                 = "physiovision/backend"
+  name                 = "movena/backend"
   image_tag_mutability = "IMMUTABLE"
   image_scanning_configuration { scan_on_push = true }
   encryption_configuration { encryption_type = "AES256" }
@@ -509,7 +509,7 @@ resource "aws_scheduler_schedule" "staging_database_stop" {
 }
 
 resource "aws_s3_bucket" "frontend" {
-  bucket_prefix = "physiovision-${var.environment}-web-"
+  bucket_prefix = "movena-${var.environment}-web-"
 }
 
 resource "aws_s3_bucket_public_access_block" "frontend" {

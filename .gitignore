@@ -172,10 +172,14 @@ cython_debug/
 # Ruff stuff:
 .ruff_cache/
 
-# PhysioVision AI local runtime
+# Movena local runtime
 backend/tmp/
 backend/physiovision_dev.db*
 physiovision_dev.db*
+backend/movena_dev.db*
+movena_dev.db*
+backend/test_movena.db*
+test_movena.db*
 frontend/node_modules/
 frontend/dist/
 backend/artifacts/**

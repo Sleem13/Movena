@@ -16,7 +16,7 @@ provider "aws" {
 
   default_tags {
     tags = {
-      Application = "PhysioVision AI"
+      Application = "Movena"
       Environment = var.environment
       ManagedBy   = "Terraform"
     }

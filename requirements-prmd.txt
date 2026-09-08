@@ -1,0 +1,3 @@
+# Optional isolated runtime for approved legacy Keras PRMD model artifacts.
+# Do not add this file to the default API image until catalog governance gates pass.
+tensorflow-cpu==2.21.0

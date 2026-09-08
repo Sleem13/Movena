@@ -77,7 +77,7 @@ def save_gpu_environment_report(report: dict[str, Any], report_dir: Path = DEFAU
 def main() -> int:
     report = collect_gpu_environment()
     json_path, markdown_path = save_gpu_environment_report(report)
-    print("PhysioVision AI GPU environment")
+    print("Movena GPU environment")
     print(json.dumps(report, indent=2))
     print(f"JSON report: {json_path}")
     print(f"Markdown report: {markdown_path}")

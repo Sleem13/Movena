@@ -141,11 +141,12 @@ def test_super_admin_seed_is_protected_and_idempotent(tmp_path):
     engine = create_database_engine(f"sqlite:///{(tmp_path / 'super-seed.db').as_posix()}")
     Base.metadata.create_all(engine)
     db = sessionmaker(bind=engine, expire_on_commit=False)()
-    first, changed = seed_super_admin("owner@example.com", "StrongPassword123", "Owner", db=db)
-    second, changed_again = seed_super_admin("owner@example.com", "StrongPassword123", "Owner", db=db)
+    first, changed = seed_super_admin("owner@example.com", "StrongPassword123", "Owner", "Root.Owner", db=db)
+    second, changed_again = seed_super_admin("owner@example.com", "StrongPassword123", "Owner", "Root.Owner", db=db)
     assert changed and not changed_again
     assert first.user_id == second.user_id
     assert first.role == "super_admin" and first.is_protected and first.is_active
+    assert first.username == "root.owner"
     with pytest.raises(ValueError, match="protected"):
         seed_admin("owner@example.com", "StrongPassword123", "Admin", reset=True, db=db)
     db.refresh(first)

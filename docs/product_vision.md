@@ -1,6 +1,8 @@
-# PhysioVision AI Product Vision
+# Movena Product Vision
 
-**Positioning:** “PhysioVision AI is a physiotherapist-informed movement analysis and rehabilitation support platform that combines rule-based biomechanics, confidence-aware feedback, and validated ML/DL support for multi-exercise rehab monitoring.”
+**Positioning:** “Movena is movement intelligence for therapist-guided recovery.”
+
+Public naming status: hold. The working name requires formal trademark and domain clearance before launch. See [Movena name clearance memo](movena_name_clearance.md).
 
 ## Product direction
 
@@ -15,7 +17,7 @@ The current MVP supports video-based bodyweight squat and sit-to-stand analysis.
 
 ## Product role
 
-PhysioVision AI provides exercise monitoring and educational support. Rule-based biomechanics is primary. Confidence-aware feedback exposes input and measurement limitations. ML/DL may provide optional support only after track-specific evidence and documented promotion criteria are satisfied.
+Movena provides exercise monitoring and educational support. Rule-based biomechanics is primary. Confidence-aware feedback exposes input and measurement limitations. ML/DL may provide optional support only after track-specific evidence and documented promotion criteria are satisfied.
 
 ## Non-goals
 

@@ -2,7 +2,7 @@
 
 > **DRAFT — testing has not started.** Use only after pre-invite GO, private invitation, and recorded consent.
 
-This is invite-only product QA, not public or clinical use. PhysioVision AI does not diagnose, prescribe treatment, or replace a licensed healthcare professional. Feedback can be inaccurate.
+This is invite-only product QA, not public or clinical use. Movena does not diagnose, prescribe treatment, or replace a licensed healthcare professional. Feedback can be inaccurate.
 
 1. Read the approved consent/privacy notice and known limitations.
 2. Install the approved internal Android build from the private link.

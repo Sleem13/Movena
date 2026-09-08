@@ -1,6 +1,6 @@
 # Phase 0 + Phase 1 implementation checklist
 
-This checklist maps `CODEX_Live_Exercise_Coaching_PhysioVision_Patch_Plan.md` to the existing repository. It records the state before the additive Phase 1 patch and prevents duplicate modules.
+This checklist maps `CODEX_Live_Exercise_Coaching_Movena_Patch_Plan.md` to the existing repository. It records the state before the additive Phase 1 patch and prevents duplicate modules.
 
 ## Phase 0 — audit and stabilization
 
@@ -24,7 +24,7 @@ This checklist maps `CODEX_Live_Exercise_Coaching_PhysioVision_Patch_Plan.md` to
 - [x] Basic 7-day adherence and pain summaries are available.
 - [x] Add fatigue/exertion to completion records and surface all recorded outcomes in Today and therapist review.
 - [x] Add rest interval, tempo, target ROM, target score, and explicit AI/video requirements to assigned exercises.
-- [x] Add an explicit, ownership-validated link between a saved PhysioVision analysis session and an assigned exercise completion.
+- [x] Add an explicit, ownership-validated link between a saved Movena analysis session and an assigned exercise completion.
 - [x] Preserve plan history by treating dosage replacement as a new plan/revision; never overwrite completed-plan history.
 - [x] Verify upgrade and downgrade of the Phase 1 migration on a disposable database.
 - [x] Run backend, frontend, mobile typecheck/tests, and production builds after implementation.

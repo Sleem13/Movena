@@ -6,7 +6,7 @@ import {
   registerUser,
 } from "../services/api.js";
 const AuthContext = createContext(null);
-const TOKEN_KEY = "physiovision_access_token";
+const TOKEN_KEY = "movena_access_token";
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(

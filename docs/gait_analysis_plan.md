@@ -4,7 +4,7 @@ Status: Very important implementation task, first MVP pass complete in backend a
 
 ## Scope
 
-PhysioVision AI now supports a conservative `walking_gait_screen` analyzer for short walking videos. The first pass estimates:
+Movena now supports a conservative `walking_gait_screen` analyzer for short walking videos. The first pass estimates:
 
 - step/contact count from visible foot trajectory,
 - complete same-side gait cycles,

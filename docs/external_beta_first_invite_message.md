@@ -4,7 +4,7 @@
 
 Hello `[TESTER ALIAS]`,
 
-You are invited to a small, private test of PhysioVision AI. This invite-only beta evaluates installation, video upload, result clarity, and error handling. It is not a public release, medical device, clinical service, diagnosis, or treatment tool.
+You are invited to a small, private test of Movena. This invite-only beta evaluates installation, video upload, result clarity, and error handling. It is not a public release, medical device, clinical service, diagnosis, or treatment tool.
 
 Expected time: `[30–45 MINUTES]` during `[APPROVED TEST WINDOW]`.
 

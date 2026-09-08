@@ -208,7 +208,7 @@ function Brand({
     <button
       onClick={onClick}
       className="group min-w-0 rounded-xl text-left transition hover:opacity-90"
-      aria-label="PhysioVision AI home"
+      aria-label="Movena home"
     >
       {compact ? (
         <BrandLogo compact />

@@ -60,7 +60,7 @@ describe("deployment API configuration", () => {
   });
 
   it("attaches the development bearer token", () => {
-    localStorage.setItem("physiovision_access_token", "token-123");
+    localStorage.setItem("movena_access_token", "token-123");
     const interceptor = mocks.use.mock.calls[0][0];
     expect(interceptor({ headers: {} }).headers.Authorization).toBe("Bearer token-123");
     localStorage.clear();

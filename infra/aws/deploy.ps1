@@ -10,7 +10,7 @@ param(
 $ErrorActionPreference = "Stop"
 $RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..\..")).Path
 $TerraformDir = $PSScriptRoot
-$SecretName = "physiovision/$Environment/app"
+$SecretName = "movena/$Environment/app"
 
 function Require-Command([string]$Name) {
     if (-not (Get-Command $Name -ErrorAction SilentlyContinue)) {
@@ -37,7 +37,7 @@ $Identity = aws sts get-caller-identity --region $Region --output json | Convert
 Write-Host "AWS account: $($Identity.Account) | principal: $($Identity.Arn) | region: $Region" -ForegroundColor Cyan
 Write-Warning "This stack creates billable ECS Fargate, Application Load Balancer, RDS PostgreSQL, EFS, CloudFront, S3, ECR, CloudWatch, and Secrets Manager resources."
 if ([string]::IsNullOrWhiteSpace($StateBucket)) {
-    $StateBucket = "physiovision-terraform-state-$($Identity.Account)-$Region"
+    $StateBucket = "movena-terraform-state-$($Identity.Account)-$Region"
 }
 
 $SecretArn = aws secretsmanager describe-secret --secret-id $SecretName --region $Region --query ARN --output text 2>$null
@@ -57,7 +57,7 @@ if ($LASTEXITCODE -ne 0) {
     $SecretFile = [IO.Path]::GetTempFileName()
     try {
         $SecretPayload | ConvertTo-Json -Compress | Set-Content -LiteralPath $SecretFile -Encoding utf8NoBOM
-        $SecretArn = aws secretsmanager create-secret --name $SecretName --description "PhysioVision $Environment runtime secrets" --secret-string "file://$SecretFile" --region $Region --query ARN --output text
+        $SecretArn = aws secretsmanager create-secret --name $SecretName --description "Movena $Environment runtime secrets" --secret-string "file://$SecretFile" --region $Region --query ARN --output text
         if ($LASTEXITCODE -ne 0) { throw "Failed to create the application secret." }
     }
     finally {
@@ -69,7 +69,7 @@ if ($LASTEXITCODE -ne 0) {
 
 terraform -chdir=$TerraformDir init -reconfigure `
     -backend-config "bucket=$StateBucket" `
-    -backend-config "key=physiovision/$Environment/terraform.tfstate" `
+    -backend-config "key=movena/$Environment/terraform.tfstate" `
     -backend-config "region=$Region" `
     -backend-config "encrypt=true" `
     -backend-config "use_lockfile=true"
@@ -90,7 +90,7 @@ aws ecr get-login-password --region $Region | docker login --username AWS --pass
 docker build --pull --tag $Image $RepoRoot
 docker push $Image
 
-$PlanFile = Join-Path $TerraformDir "physiovision.tfplan"
+$PlanFile = Join-Path $TerraformDir "movena.tfplan"
 terraform -chdir=$TerraformDir plan -out=$PlanFile -var "aws_region=$Region" -var "environment=$Environment" -var "app_version=$AppVersion" -var "app_secret_arn=$SecretArn" -var "backend_image=$Image"
 $Confirmation = Read-Host "Review the Terraform plan above. Type DEPLOY to create/update AWS resources"
 if ($Confirmation -cne "DEPLOY") {
@@ -120,7 +120,7 @@ finally {
 }
 
 aws cloudfront create-invalidation --distribution-id $DistributionId --paths "/*" | Out-Null
-aws ecs wait services-stable --cluster "physiovision-$Environment" --services backend --region $Region
+aws ecs wait services-stable --cluster "movena-$Environment" --services backend --region $Region
 
 $ReadyUrl = "$ApplicationUrl/ready"
 for ($attempt = 1; $attempt -le 20; $attempt++) {

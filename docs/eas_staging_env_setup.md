@@ -2,7 +2,7 @@
 
 ## Current status
 
-EAS authentication succeeds and the preview environment now contains `EXPO_PUBLIC_API_BASE_URL=https://name-physiovision-api-staging.onrender.com` plus `EXPO_PUBLIC_APP_ENV=staging`. A post-fix internal Android rebuild is in progress under build ID `a10a3920-23e3-4097-ae7a-861a61bda01d`.
+EAS authentication succeeds and the preview environment now contains `EXPO_PUBLIC_API_BASE_URL=https://name-movena-api-staging.onrender.com` plus `EXPO_PUBLIC_APP_ENV=staging`. A post-fix internal Android rebuild is in progress under build ID `a10a3920-23e3-4097-ae7a-861a61bda01d`.
 
 `EXPO_PUBLIC_*` values are embedded public client configuration. Never place secrets, database credentials, tokens, or private keys in them.
 

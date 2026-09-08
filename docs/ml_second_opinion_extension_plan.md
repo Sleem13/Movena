@@ -1,6 +1,6 @@
 # Very Important: ML Second Opinion Extension
 
-PhysioVision AI now treats the ML second opinion as an app-wide optional layer, not a squat-only feature. Rule-based biomechanical analysis remains primary for every workout and assessment.
+Movena now treats the ML second opinion as an app-wide optional layer, not a squat-only feature. Rule-based biomechanical analysis remains primary for every workout and assessment.
 
 ## Supported Model Modes
 
@@ -24,12 +24,16 @@ Set `ML_SECOND_OPINION_CATALOG` to a JSON file with one entry per exercise. A co
 ```json
 {
   "shoulder_flexion": {
+    "enabled": true,
     "model_mode": "fine_tuned",
     "feature_source": "video_frames",
     "callable": "app.ml_providers.shoulder_flexion:infer"
   }
 }
 ```
+
+Set `enabled` to `false` to keep an inventoried provider explicitly disabled.
+Catalogs created before this gate remain compatible when the field is omitted.
 
 The callable receives `exercise_id`, `frames`, `detected_issues`, and `model_config`, then returns an `MLPrediction` or a dict matching that schema.
 

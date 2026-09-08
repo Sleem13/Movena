@@ -2,7 +2,7 @@
 
 ## Plain-language acknowledgement
 
-PhysioVision AI is experimental, invite-only beta software for exercise monitoring and product testing; it is not a public release. It is not a medical device, is not clinically validated, does not diagnose conditions, and does not prescribe treatment. Its movement feedback, confidence, scores, overlays, and reports may be incomplete or inaccurate. Do not use them for medical decisions.
+Movena is experimental, invite-only beta software for exercise monitoring and product testing; it is not a public release. It is not a medical device, is not clinically validated, does not diagnose conditions, and does not prescribe treatment. Its movement feedback, confidence, scores, overlays, and reports may be incomplete or inaccurate. Do not use them for medical decisions.
 
 I understand that:
 

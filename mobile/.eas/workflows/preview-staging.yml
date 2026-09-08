@@ -1,4 +1,4 @@
-name: PhysioVision Android Preview Staging
+name: Movena Android Preview Staging
 
 jobs:
   build_android:
