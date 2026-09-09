@@ -1,12 +1,12 @@
 {
   "name": "Movena",
   "short_name": "Movena",
-  "description": "Movement intelligence for therapist-guided recovery.",
+  "description": "Clear movement insights. Connected care.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
-  "background_color": "#f5f8fc",
-  "theme_color": "#071b4a",
+  "background_color": "#f5f7f8",
+  "theme_color": "#245edb",
   "icons": [
     {
       "src": "/movena-mark.png",

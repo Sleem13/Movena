@@ -6,7 +6,7 @@ export function Button({ as: Component = "button", variant = "primary", classNam
     secondary: "border border-clinical-line bg-white text-clinical-ink shadow-sm hover:border-blue-300 hover:bg-clinical-sky active:scale-[0.98]",
     ghost: "text-slate-600 hover:bg-slate-100 hover:text-clinical-ink",
   };
-  return <Component className={`ui-button inline-flex min-h-11 items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition duration-150 ease-out disabled:scale-100 disabled:cursor-not-allowed disabled:opacity-50 ${styles[variant]} ${className}`} {...props}>{children}</Component>;
+  return <Component data-variant={variant} className={`ui-button inline-flex min-h-11 items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition duration-150 ease-out disabled:scale-100 disabled:cursor-not-allowed disabled:opacity-50 ${styles[variant]} ${className}`} {...props}>{children}</Component>;
 }
 
 export function Card({ as: Component = "section", className = "", children, ...props }) {
@@ -15,7 +15,7 @@ export function Card({ as: Component = "section", className = "", children, ...p
 
 export function Badge({ tone = "blue", children, className = "" }) {
   const tones = { blue: "bg-blue-50 text-blue-700 ring-blue-100", teal: "bg-teal-50 text-teal-700 ring-teal-100", amber: "bg-amber-50 text-amber-800 ring-amber-200", slate: "bg-slate-100 text-slate-700 ring-slate-200", red: "bg-red-50 text-red-700 ring-red-100" };
-  return <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ring-inset ${tones[tone]} ${className}`}>{children}</span>;
+  return <span data-tone={tone} className={`ui-badge inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ring-inset ${tones[tone]} ${className}`}>{children}</span>;
 }
 
 export function Alert({ title, children, tone = "error", className = "" }) {

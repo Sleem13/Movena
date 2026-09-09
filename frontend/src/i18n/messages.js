@@ -476,7 +476,7 @@ export const MESSAGES = {
     "workspace.stepPatient": "Review patient history",
     "workspace.stepPatientHelp":
       "Associate and review saved history when the workflow supports it.",
-    "brand.tagline": "Movement intelligence for therapist-guided recovery",
+    "brand.tagline": "Move forward, together.",
     "footer.product": "Move Better, Recover Together.",
     "footer.disclaimer":
       "This analysis does not replace assessment, diagnosis, or treatment by a licensed professional.",
@@ -1671,7 +1671,7 @@ export const MESSAGES = {
       "يسلط التحليل المدعوم بالذكاء الاصطناعي الضوء على ملاحظات الحركة للمراجعة.",
     "workspace.stepSave": "احفظ النتائج أو صدّرها",
     "workspace.stepSaveHelp": "احفظ الجلسة أو صدّر النتائج لإعداد التقارير.",
-    "brand.tagline": "ذكاء الحركة للتعافي بإرشاد المعالج",
+    "brand.tagline": "نتقدم معاً.",
     "footer.product": "تحرّك بشكل أفضل. تعافَ مع فريقك.",
     "footer.disclaimer":
       "هذا التحليل لا يغني عن التقييم أو التشخيص أو العلاج بواسطة مختص مرخص.",

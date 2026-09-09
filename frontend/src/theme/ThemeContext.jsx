@@ -1,4 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { BRAND } from "../config/brand.js";
 
 export const THEME_STORAGE_KEY = "movena_theme";
 export const THEME_OPTIONS = ["light", "dark", "system"];
@@ -38,7 +39,7 @@ export function ThemeProvider({ children }) {
   useEffect(() => {
     document.documentElement.dataset.theme = resolvedTheme;
     document.documentElement.style.colorScheme = resolvedTheme;
-    document.querySelector('meta[name="theme-color"]')?.setAttribute("content", resolvedTheme === "dark" ? "#071426" : "#ffffff");
+    document.querySelector('meta[name="theme-color"]')?.setAttribute("content", resolvedTheme === "dark" ? BRAND.colors.darkCanvas : BRAND.colors.blue);
   }, [resolvedTheme]);
 
   const value = useMemo(() => ({ theme, resolvedTheme, setTheme }), [theme, resolvedTheme, setTheme]);
