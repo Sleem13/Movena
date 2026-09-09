@@ -25,6 +25,12 @@ class WorkflowStage(BaseModel):
     status: WorkflowStatus = "on_track"
 
 
+class ClinicalGoalStatus(BaseModel):
+    key: str
+    attention_count: int = Field(ge=0)
+    status: WorkflowStatus = "on_track"
+
+
 class WorkflowAttentionItem(BaseModel):
     id: str
     type: str
@@ -68,6 +74,7 @@ class AdminWorkflowResponse(BaseModel):
     timezone: str = "Africa/Cairo"
     metrics: WorkflowMetrics
     stages: list[WorkflowStage]
+    clinical_goals: list[ClinicalGoalStatus]
     attention_queue: list[WorkflowAttentionItem]
     today: WorkflowToday
     payment_exceptions: WorkflowPaymentExceptions

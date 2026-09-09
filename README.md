@@ -347,6 +347,7 @@ See [product safety policy](docs/product_safety_policy.md), [privacy checklist](
 - [RehabRL integration guide](docs/rehab_rl_integration.md)
 - [RehabRL improvement roadmap](docs/rehab_rl_improvement_roadmap.md)
 - [Recovery & Lifestyle Coaching clinical and technical guide](docs/recovery_lifestyle_coaching.md)
+- [Complete Care clinical goals and recommendations](docs/complete_care_clinical_goals_recommendations.md)
 - [References](docs/references.md)
 
 ## License

@@ -48,6 +48,15 @@ const METRIC_ICONS = {
   paid_orders: CircleDollarSign,
 };
 
+const CLINICAL_GOAL_ICONS = {
+  safety_boundaries: ShieldCheck,
+  function_first: HeartPulse,
+  adherence_confidence: Check,
+  therapist_review: ClipboardCheck,
+  measurement_quality: Activity,
+  equity_access: UsersRound,
+};
+
 function formatAge(seconds, locale) {
   const units =
     seconds >= 86400
@@ -160,6 +169,59 @@ function WorkflowRail({ stages, t }) {
             );
           })}
         </ol>
+      </div>
+    </Card>
+  );
+}
+
+function ClinicalGoalsPanel({ goals, t }) {
+  return (
+    <Card className="overflow-hidden" aria-labelledby="clinical-goals-title">
+      <div className="flex flex-col gap-2 border-b border-slate-200 px-5 py-4 sm:px-6">
+        <div className="flex items-center gap-3">
+          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-teal-50 text-teal-700">
+            <ListChecks size={19} />
+          </span>
+          <div>
+            <h2
+              id="clinical-goals-title"
+              className="font-extrabold text-[#071b4a]"
+            >
+              {t("workflow.clinicalGoals")}
+            </h2>
+            <p className="mt-1 text-xs text-slate-500">
+              {t("workflow.clinicalGoalsDescription")}
+            </p>
+          </div>
+        </div>
+      </div>
+      <div className="grid gap-px bg-slate-100 sm:grid-cols-2 xl:grid-cols-3">
+        {(goals || []).map((goal) => {
+          const Icon = CLINICAL_GOAL_ICONS[goal.key] || AlertTriangle;
+          const needsAttention = goal.attention_count > 0;
+          return (
+            <section key={goal.key} className="bg-white p-5">
+              <div className="flex items-start justify-between gap-3">
+                <span
+                  className={`grid h-10 w-10 shrink-0 place-items-center rounded-xl ${needsAttention ? "bg-amber-50 text-amber-700" : "bg-emerald-50 text-emerald-700"}`}
+                >
+                  <Icon size={18} />
+                </span>
+                <Badge tone={needsAttention ? "amber" : "teal"}>
+                  {needsAttention
+                    ? `${goal.attention_count} ${t("workflow.needAttention")}`
+                    : t("workflow.onTrack")}
+                </Badge>
+              </div>
+              <h3 className="mt-4 text-sm font-extrabold text-[#071b4a]">
+                {t(`workflow.goal.${goal.key}`)}
+              </h3>
+              <p className="mt-2 text-xs leading-5 text-slate-600">
+                {t(`workflow.goal.${goal.key}.recommendation`)}
+              </p>
+            </section>
+          );
+        })}
       </div>
     </Card>
   );
@@ -507,6 +569,7 @@ export default function SuperAdminWorkflowDashboard({ onNavigate }) {
         <div className="space-y-5">
           <MetricStrip metrics={data.metrics} t={t} />
           <WorkflowRail stages={data.stages} t={t} />
+          <ClinicalGoalsPanel goals={data.clinical_goals} t={t} />
           <div className="grid min-w-0 items-start gap-5 xl:grid-cols-[minmax(0,1fr)_310px]">
             <div className="min-w-0 space-y-4">
               <AttentionQueue

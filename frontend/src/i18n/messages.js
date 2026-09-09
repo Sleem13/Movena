@@ -909,6 +909,27 @@ export const MESSAGES = {
     "workflow.railTitle": "Care delivery workflow",
     "workflow.railDescription":
       "Live operational status across the patient journey",
+    "workflow.clinicalGoals": "Clinical goals",
+    "workflow.clinicalGoalsDescription":
+      "Senior physiotherapy priorities mapped to live operational signals.",
+    "workflow.goal.safety_boundaries": "Safety and clinical boundaries",
+    "workflow.goal.safety_boundaries.recommendation":
+      "Keep consent, assignment, plan context, and escalation workflow complete before real patient care proceeds.",
+    "workflow.goal.function_first": "Function-first rehabilitation",
+    "workflow.goal.function_first.recommendation":
+      "Tie each activated care plan to a patient goal, precautions, baseline measures, and therapist review date.",
+    "workflow.goal.adherence_confidence": "Adherence and confidence",
+    "workflow.goal.adherence_confidence.recommendation":
+      "Use reminders, check-ins, and appointment follow-up to catch barriers before patients quietly disengage.",
+    "workflow.goal.therapist_review": "Therapist review",
+    "workflow.goal.therapist_review.recommendation":
+      "Prioritize worsening symptoms, missing setup, payment blockers, and other exceptions for accountable human review.",
+    "workflow.goal.measurement_quality": "Measurement quality",
+    "workflow.goal.measurement_quality.recommendation":
+      "Treat movement analysis as supporting evidence and require clinician review before progression or plan change.",
+    "workflow.goal.equity_access": "Equity and access",
+    "workflow.goal.equity_access.recommendation":
+      "Keep privacy, affordability, language, device, and support barriers visible in operational follow-up.",
     "workflow.stage.account_consent": "Account & consent",
     "workflow.stage.therapist_assignment": "Therapist assignment",
     "workflow.stage.care_plan": "Care plan",
@@ -2094,6 +2115,27 @@ export const MESSAGES = {
     "workflow.metric.paid_orders": "الطلبات المدفوعة",
     "workflow.railTitle": "سير تقديم الرعاية",
     "workflow.railDescription": "الحالة التشغيلية المباشرة عبر رحلة المريض",
+    "workflow.clinicalGoals": "الأهداف السريرية",
+    "workflow.clinicalGoalsDescription":
+      "أولويات العلاج الطبيعي العليا مرتبطة بإشارات تشغيلية مباشرة.",
+    "workflow.goal.safety_boundaries": "السلامة والحدود السريرية",
+    "workflow.goal.safety_boundaries.recommendation":
+      "أكمل الموافقة والإسناد وسياق الخطة ومسار التصعيد قبل بدء رعاية مرضى حقيقية.",
+    "workflow.goal.function_first": "تأهيل قائم على الوظيفة",
+    "workflow.goal.function_first.recommendation":
+      "اربط كل خطة مفعلة بهدف المريض والاحتياطات ومقاييس البداية وموعد مراجعة المعالج.",
+    "workflow.goal.adherence_confidence": "الالتزام والثقة",
+    "workflow.goal.adherence_confidence.recommendation":
+      "استخدم التذكيرات والتسجيلات والمتابعة لاكتشاف العوائق قبل انقطاع المريض بهدوء.",
+    "workflow.goal.therapist_review": "مراجعة المعالج",
+    "workflow.goal.therapist_review.recommendation":
+      "أعط الأولوية للأعراض المتزايدة ونواقص الإعداد وعوائق الدفع والاستثناءات التي تحتاج مراجعة بشرية مسؤولة.",
+    "workflow.goal.measurement_quality": "جودة القياس",
+    "workflow.goal.measurement_quality.recommendation":
+      "تعامل مع تحليل الحركة كدليل مساعد واشترط مراجعة المعالج قبل التقدم أو تغيير الخطة.",
+    "workflow.goal.equity_access": "الإنصاف والوصول",
+    "workflow.goal.equity_access.recommendation":
+      "أبقِ عوائق الخصوصية والتكلفة واللغة والجهاز والدعم ظاهرة في المتابعة التشغيلية.",
     "workflow.stage.account_consent": "الحساب والموافقة",
     "workflow.stage.therapist_assignment": "إسناد المعالج",
     "workflow.stage.care_plan": "خطة الرعاية",

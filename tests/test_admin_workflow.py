@@ -102,6 +102,11 @@ def test_workflow_snapshot_is_operational_and_deidentified(workflow_db: Session)
     assert stages["account_consent"]["attention_count"] == 1
     assert stages["therapist_assignment"]["attention_count"] == 1
     assert snapshot["privacy_requests"]["deletion"] == 1
+    goals = {goal["key"]: goal for goal in snapshot["clinical_goals"]}
+    assert goals["safety_boundaries"]["status"] == "attention"
+    assert goals["safety_boundaries"]["attention_count"] == 2
+    assert goals["function_first"]["status"] == "on_track"
+    assert goals["therapist_review"]["attention_count"] >= 2
     assert snapshot["attention_queue"][0]["type"] == "privacy_request"
     assert snapshot["attention_queue"][0]["priority"] == "high"
     recovery = next(item for item in snapshot["attention_queue"] if item["type"] == "password_recovery")

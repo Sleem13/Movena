@@ -58,6 +58,14 @@ def _stage(key: str, total: int, attention_count: int) -> dict:
     }
 
 
+def _clinical_goal(key: str, attention_count: int) -> dict:
+    return {
+        "key": key,
+        "attention_count": attention_count,
+        "status": "attention" if attention_count else "on_track",
+    }
+
+
 def build_admin_workflow(
     db: Session, *, actor_user_id: str | None = None,
     now: datetime | None = None, queue_limit: int = 25,
@@ -240,6 +248,14 @@ def build_admin_workflow(
             _stage("appointment", upcoming_count, without_appointment),
             _stage("payment", paid_orders, payment_attention),
             _stage("follow_up", shared_reports, completed_without_report),
+        ],
+        "clinical_goals": [
+            _clinical_goal("safety_boundaries", missing_consent + unassigned + without_plan),
+            _clinical_goal("function_first", without_plan),
+            _clinical_goal("adherence_confidence", without_appointment),
+            _clinical_goal("therapist_review", len(queue)),
+            _clinical_goal("measurement_quality", completed_without_report),
+            _clinical_goal("equity_access", pending_privacy + payment_attention),
         ],
         "attention_queue": queue[:queue_limit],
         "today": {

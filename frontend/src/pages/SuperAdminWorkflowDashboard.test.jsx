@@ -33,6 +33,14 @@ const snapshot = {
     { key: "payment", total: 18, attention_count: 1, status: "attention" },
     { key: "follow_up", total: 12, attention_count: 0, status: "on_track" },
   ],
+  clinical_goals: [
+    { key: "safety_boundaries", attention_count: 3, status: "attention" },
+    { key: "function_first", attention_count: 1, status: "attention" },
+    { key: "adherence_confidence", attention_count: 0, status: "on_track" },
+    { key: "therapist_review", attention_count: 2, status: "attention" },
+    { key: "measurement_quality", attention_count: 0, status: "on_track" },
+    { key: "equity_access", attention_count: 2, status: "attention" },
+  ],
   attention_queue: [
     {
       id: "assignment:1",
@@ -89,6 +97,8 @@ it("renders the de-identified operational workflow and filters exceptions", asyn
     await screen.findByRole("heading", { name: "Operations Dashboard" }),
   ).toBeInTheDocument();
   expect(screen.getByText("81")).toBeInTheDocument();
+  expect(screen.getByText("Clinical goals")).toBeInTheDocument();
+  expect(screen.getByText("Safety and clinical boundaries")).toBeInTheDocument();
   expect(screen.getByText("Patient …cbeef001")).toBeInTheDocument();
   expect(screen.queryByText(/Ahmed|Mona|Sarah/)).not.toBeInTheDocument();
 

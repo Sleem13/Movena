@@ -363,7 +363,6 @@ export default function UploadSquat(props) {
               compact
             />
           ) : null}
-          <UploadCard {...props} onSubmit={requestAnalysis} />
           <details className="group rounded-[14px] border border-clinical-line bg-white shadow-panel">
             <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between px-5 text-sm font-bold text-clinical-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400">
               {t("upload.advancedOptions")}
@@ -384,6 +383,7 @@ export default function UploadSquat(props) {
               />
             </div>
           </details>
+          <UploadCard {...props} onSubmit={requestAnalysis} />
         </div>
         {desktopLayout && selected ? (
           <CameraGuide exercise={props.exercise} metadata={selected} />

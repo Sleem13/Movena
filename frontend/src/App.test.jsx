@@ -174,6 +174,12 @@ describe("Squat Analyzer healthcare dashboard", () => {
     openUpload();
     expect(screen.getByText("Squat video upload")).toBeInTheDocument();
     expect(screen.getByText(/MP4, MOV, AVI, MKV, or WEBM/)).toBeInTheDocument();
+    expect(
+      screen
+        .getByText("Advanced options")
+        .compareDocumentPosition(screen.getByText("Squat video upload")) &
+        Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
     expect(screen.getByLabelText(/choose a squat exercise video/i)).toHaveAttribute("accept", ".mp4,.mov,.avi,.mkv,.webm");
     expect(screen.getByText("Analysis options")).toBeInTheDocument();
     expect(screen.getByLabelText("Annotated video")).not.toBeChecked();

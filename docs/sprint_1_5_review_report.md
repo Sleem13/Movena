@@ -1,7 +1,7 @@
 # Sprint 1.5 Review Report
 
 Review date: 2026-07-10  
-Reviewed workspace: `C:\Users\Admin\Documents\GitHub\PysioVision-AI`
+Reviewed workspace: project checkout
 
 ## 1. Executive Summary
 
@@ -9,7 +9,7 @@ Movena is **Conditionally Ready after local environment reset and dependency ins
 
 Two conditions prevent an unconditional readiness decision in this checkout:
 
-1. **Environment issue: broken/mixed virtual environment paths.** Pandas cannot import `dateutil.tz`, while the `pytest.exe` launcher points to the obsolete interpreter `D:\AI tools project\venv\Scripts\python.exe`. The active environment is incomplete and inconsistent with the repository requirements, so full test collection and FastAPI startup cannot be trusted until it is replaced.
+1. **Environment issue: broken/mixed virtual environment paths.** Pandas cannot import `dateutil.tz`, while the `pytest.exe` launcher points to an obsolete external interpreter. The active environment is incomplete and inconsistent with the repository requirements, so full test collection and FastAPI startup cannot be trusted until it is replaced.
 2. The raw UCI, Kaggle, custom-video, and sample-video folders contain no files other than `.gitkeep`, so real dataset preparation and end-to-end video analysis cannot be validated here.
 
 This differs from the previously reported machine/path where the UCI and Kaggle folders had files. Because raw data is intentionally ignored by Git, that difference is expected when moving between workspaces, but it must be resolved locally before data-dependent validation.
@@ -136,7 +136,7 @@ Requested root command: `python -m pytest`
 
 Result in the active environment: collection failed. Eight tests were collected before interruption, one pandas-dependent test module was skipped, and backend collection failed because the installed Pydantic/`annotated-types` packages are inconsistent. The same environment also lacks FastAPI and MediaPipe, and pandas cannot import because `dateutil.tz` is missing. This environment does not match the pinned backend requirements.
 
-Launcher inspection confirms the mixed-environment diagnosis: the current shell resolves Python and its first pytest launcher under `D:\AI tools\venv\`, while the reported fatal pytest launcher embeds the older `D:\AI tools project\venv\Scripts\python.exe` path. Neither is the required project-local `C:\Users\Admin\Documents\GitHub\PysioVision-AI\.venv\Scripts\python.exe`.
+Launcher inspection confirms the mixed-environment diagnosis: the current shell resolves Python and its first pytest launcher under an external virtual environment, while the reported fatal pytest launcher embeds an older external path. Neither is the required project-local `.venv\Scripts\python.exe`.
 
 Secondary isolated checks using a compatible bundled runtime:
 
@@ -166,7 +166,7 @@ Existing tests correctly avoid real raw datasets and large files. Critical missi
 
 ### P0 blocker
 
-- **Environment issue: broken/mixed virtual environment paths.** The pandas import is missing `dateutil.tz`, and the Windows pytest launcher embeds the obsolete path `D:\AI tools project\venv\Scripts\python.exe`. Create a new project-local `.venv`, install `requirements-dev.txt`, and run tests with `python -m pytest`; do not diagnose repository failures from the mixed environment.
+- **Environment issue: broken/mixed virtual environment paths.** The pandas import is missing `dateutil.tz`, and the Windows pytest launcher embeds an obsolete external interpreter path. Create a new project-local `.venv`, install `requirements-dev.txt`, and run tests with `python -m pytest`; do not diagnose repository failures from the mixed environment.
 - **Required local validation data is absent in this checkout.** Restore licensed UCI/Kaggle data locally and add at least one consented or synthetic squat video. Do not commit these files.
 
 ### P1 important

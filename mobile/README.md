@@ -165,7 +165,7 @@ The `preview-staging` profile creates an internally distributed APK, uses the de
 Run these exact PowerShell commands manually:
 
 ```powershell
-Set-Location C:\Users\Admin\Documents\GitHub\Movena\mobile
+Set-Location mobile
 
 npm ci
 npx expo install --check
@@ -199,7 +199,7 @@ Open the printed EAS build URL on the phone, download the APK, permit installati
 The local Gradle build requires the Android SDK path and Android Studio's bundled JDK. Run the commands in this order:
 
 ```powershell
-Set-Location C:\Users\Admin\Documents\GitHub\Movena\mobile
+Set-Location mobile
 
 $env:ANDROID_HOME = "$env:LOCALAPPDATA\Android\Sdk"
 $env:ANDROID_SDK_ROOT = $env:ANDROID_HOME
@@ -223,7 +223,7 @@ mobile/android/app/build/outputs/apk/debug/app-debug.apk
 The `android/` directory is generated native output in this managed Expo project. After copying the APK elsewhere, it can be removed:
 
 ```powershell
-Set-Location C:\Users\Admin\Documents\GitHub\Movena\mobile
+Set-Location mobile
 Remove-Item -LiteralPath android -Recurse -Force
 ```
 
@@ -232,7 +232,7 @@ Remove-Item -LiteralPath android -Recurse -Force
 The current `preview` profile contains a LAN backend address. Confirm that `mobile/eas.json` contains the current computer IP before running this profile.
 
 ```powershell
-Set-Location C:\Users\Admin\Documents\GitHub\Movena\mobile
+Set-Location mobile
 npx eas-cli build --platform android --profile preview --non-interactive --wait
 ```
 
@@ -243,7 +243,7 @@ This APK works only while the phone can reach that LAN address and the local bac
 Use this build when native-module debugging or Expo development-client features are required:
 
 ```powershell
-Set-Location C:\Users\Admin\Documents\GitHub\Movena\mobile
+Set-Location mobile
 npx eas-cli build --platform android --profile development --non-interactive --wait
 ```
 
@@ -258,7 +258,7 @@ npx expo start --dev-client --clear
 Google Play uses an Android App Bundle (`.aab`), not the internal APK profile. Before building, configure the production EAS public variables:
 
 ```powershell
-Set-Location C:\Users\Admin\Documents\GitHub\Movena\mobile
+Set-Location mobile
 $env:PHYSIOVISION_PRODUCTION_API = "https://api.movena.ai"
 npx eas-cli env:create --environment production --name EXPO_PUBLIC_API_BASE_URL --value $env:PHYSIOVISION_PRODUCTION_API --visibility plaintext
 npx eas-cli env:list --environment production
