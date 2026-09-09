@@ -139,6 +139,7 @@ class ExercisePlanStatusUpdate(BaseModel):
 
 
 class ExercisePlanDetail(BaseModel):
+    created_by_name: str | None = None
     plan_id: str
     patient_id: str
     created_by_user_id: str | None = None

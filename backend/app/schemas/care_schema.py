@@ -16,6 +16,8 @@ ExerciseResponseState = Literal["not_assessed", "within_reported_tolerance", "cl
 
 
 class CarePlanItem(BaseModel):
+    plan_title: str | None = None
+    created_by_name: str | None = None
     item_id: str
     exercise_id: str
     sets: int
@@ -276,6 +278,7 @@ class RefundCreate(BaseModel):
 class AssignmentCreate(BaseModel):
     therapist_user_id: str
     patient_id: str
+    reason: str | None = Field(None, max_length=1000)
 
 
 class AssignmentDetail(AssignmentCreate):

@@ -60,6 +60,7 @@ function legacyWorkspaceSectionsFor(user) {
         labelKey: "nav.myRehabilitation",
         items: [
           { id: "care", labelKey: "nav.todaysPlan", icon: CalendarHeart },
+          { id: "careTeam", labelKey: "nav.careTeam", icon: Users },
           { id: "recoveryCoaching", labelKey: "nav.recoveryCoaching", icon: HeartHandshake },
           { id: "exercises", labelKey: "nav.myExercises", icon: Dumbbell },
           { id: "analyze", labelKey: "nav.aiExerciseCoach", icon: UploadCloud },
@@ -181,6 +182,8 @@ function workspaceSectionsFor(user) {
     { id: "profile", labelKey: "nav.account", icon: User },
   ];
   const primaryIds = new Set(items.map((item) => item.id));
+  if (["admin", "super_admin"].includes(user?.role)) sections[0].items.push({ id: "adminAssignments", labelKey: "nav.assignments", icon: Users });
+  if (user?.role === "therapist") sections[0].items.push({ id: "careTeam", labelKey: "nav.connections", icon: HeartHandshake });
   return [
     { labelKey: "nav.overview", items },
     { labelKey: "nav.moreTools", secondary: true, items: sections.flatMap((section) => section.items).filter((item) => !primaryIds.has(item.id)) },
@@ -197,6 +200,8 @@ function roleHome(user) {
 const workspacePages = new Set([
   "workspace",
   "care",
+  "careTeam",
+  "adminAssignments",
   "analyze",
   "history",
   "therapist",

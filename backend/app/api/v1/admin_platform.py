@@ -23,6 +23,7 @@ from app.schemas.care_schema import (
 from app.schemas.admin_workflow_schema import AdminWorkflowResponse
 from app.services.admin_workflow_service import build_admin_workflow
 from app.services.care_service import audit_event, ensure_assignment
+from app.services.connection_service import activate, fail
 from app.services.paymob_service import PaymentProviderError, refund_transaction
 
 router = APIRouter(
@@ -49,14 +50,9 @@ def error(code: str, message: str, status_code: int) -> JSONResponse:
 def assign(
     data: AssignmentCreate, actor: User = Depends(require_admin), db: Session = Depends(get_db),
 ):
-    therapist = db.scalar(select(User).where(
-        User.user_id == data.therapist_user_id, User.role == "therapist", User.is_active.is_(True),
-    ))
-    patient = db.scalar(select(PatientProfile).where(PatientProfile.patient_id == data.patient_id))
-    if therapist is None or patient is None:
-        return error("ASSIGNMENT_TARGET_NOT_FOUND", "Active therapist or patient was not found.", 404)
-    row = ensure_assignment(db, therapist.user_id, patient.patient_id, actor.user_id)
-    audit_event(db, actor.user_id, "patient.assigned", "assignment", row.assignment_id, data.model_dump())
+    if not data.reason or not data.reason.strip():
+        fail("An administrative reason is required.", status=422)
+    row = activate(db, data.therapist_user_id, data.patient_id, actor, "admin", data.reason.strip())
     db.commit(); db.refresh(row)
     return row
 

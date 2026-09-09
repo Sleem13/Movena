@@ -2,6 +2,8 @@ export const PAGE_PATHS = {
   home: "/",
   workspace: "/workspace",
   care: "/care",
+  careTeam: "/care-team",
+  adminAssignments: "/admin/assignments",
   exercises: "/exercises",
   analyze: "/analyze",
   results: "/results",
@@ -23,6 +25,7 @@ export const PAGE_PATHS = {
 };
 
 export function pageForPath(path, realtimeCoachingEnabled) {
+  if (path === "/admin/assignments") return "adminAssignments";
   if (path.startsWith("/therapist/patients")) return "therapistPatients";
   if (path.startsWith("/therapist")) return "therapist";
   if (path.startsWith("/admin/users")) return "adminUsers";
@@ -37,6 +40,7 @@ export function pageForPath(path, realtimeCoachingEnabled) {
 }
 
 export function landingPageForRole(user) {
+  if (user?.role === "patient" && typeof sessionStorage !== "undefined" && sessionStorage.getItem("movena_care_invitation")) return "careTeam";
   if (user?.role === "patient") return "care";
   if (user?.role === "therapist") return "therapist";
   if (user?.role === "super_admin") return "adminWorkflow";

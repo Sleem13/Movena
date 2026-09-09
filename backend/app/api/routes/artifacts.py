@@ -40,6 +40,19 @@ def overlay_file_or_404(overlay_id: str):
 
 
 def authorize_artifact(artifact_id: str, kind: str, user, expires: int | None, signature: str | None, db: Session | None = None) -> None:
+    normalized = artifact_id.removesuffix(".webm").removesuffix(".mp4").removesuffix(".pdf")
+    if db is not None:
+        field = AnalysisSession.report_id if kind == "report" else AnalysisSession.overlay_id
+        linked = db.scalar(select(AnalysisSession).where(field == normalized, AnalysisSession.patient_id.is_not(None)))
+        progress = db.scalar(select(ProgressReport).where(ProgressReport.artifact_id == normalized)) if kind == "report" else None
+        if linked or progress:
+            patient_id = linked.patient_id if linked else progress.patient_id
+            permitted = user is not None and user_can_access_patient(db, user, patient_id)
+            if progress and user and user.role == "patient" and not progress.shared_with_patient:
+                permitted = False
+            if not permitted:
+                raise AuthError(403, "ARTIFACT_ACCESS_DENIED", "An active care connection or patient ownership is required.")
+            return
     if not get_settings().require_auth_for_analysis:
         return
     normalized = artifact_id.removesuffix(".webm").removesuffix(".mp4").removesuffix(".pdf")

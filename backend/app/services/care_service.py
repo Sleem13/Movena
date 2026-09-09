@@ -51,7 +51,8 @@ def patient_for_user(db: Session, user_id: str) -> PatientProfile | None:
 
 
 def therapist_can_access_patient(db: Session, therapist_user_id: str, patient_id: str) -> bool:
-    return db.scalar(select(TherapistPatientAssignment.id).where(
+    return db.scalar(select(TherapistPatientAssignment.id).join(User, User.user_id == TherapistPatientAssignment.therapist_user_id).where(
+        User.role == "therapist", User.is_active.is_(True), User.account_status == "active",
         TherapistPatientAssignment.therapist_user_id == therapist_user_id,
         TherapistPatientAssignment.patient_id == patient_id,
         TherapistPatientAssignment.status == "active",
@@ -62,19 +63,33 @@ def user_can_access_patient(db: Session, user: User, patient_id: str) -> bool:
     if user.role in {UserRole.super_admin.value, UserRole.admin.value}:
         return True
     if user.role == UserRole.therapist.value:
-        if therapist_can_access_patient(db, user.user_id, patient_id):
-            return True
-        # Preserve access to pre-account demo records only. Real patient
-        # accounts always require an explicit active assignment.
-        legacy_profile = db.scalar(select(PatientProfile).where(
-            PatientProfile.patient_id == patient_id,
-            PatientProfile.user_id.is_(None),
-        ))
-        return legacy_profile is not None
+        return therapist_can_access_patient(db, user.user_id, patient_id)
     if user.role == UserRole.patient.value:
         profile = patient_for_user(db, user.user_id)
         return profile is not None and profile.patient_id == patient_id
     return False
+
+
+def accessible_session_filter(user: User):
+    if user.role in {"admin", "super_admin"}:
+        from sqlalchemy import true
+        return true()
+    own_unlinked = and_(AnalysisSession.patient_id.is_(None), AnalysisSession.owner_user_id == user.user_id)
+    if user.role == "therapist":
+        patients = select(TherapistPatientAssignment.patient_id).where(
+            TherapistPatientAssignment.therapist_user_id == user.user_id,
+            TherapistPatientAssignment.status == "active")
+        return or_(own_unlinked, AnalysisSession.patient_id.in_(patients))
+    if user.role == "patient":
+        patients = select(PatientProfile.patient_id).where(PatientProfile.user_id == user.user_id)
+        return or_(own_unlinked, AnalysisSession.patient_id.in_(patients))
+    return own_unlinked
+
+
+def user_can_access_session(db: Session, user: User, row: AnalysisSession) -> bool:
+    if row.patient_id:
+        return user_can_access_patient(db, user, row.patient_id)
+    return user.role in {"admin", "super_admin"} or row.owner_user_id == user.user_id
 
 
 def list_patients_for_therapist(db: Session, actor: User) -> list[PatientProfile]:
@@ -148,12 +163,14 @@ def appointment_summary(row: Appointment, now: datetime | None = None) -> Appoin
 
 
 def patient_today(db: Session, patient: PatientProfile, day: date) -> PatientTodayResponse:
-    plan = db.scalar(select(ExercisePlan).where(
+    plans = list(db.scalars(select(ExercisePlan).where(
         ExercisePlan.patient_id == patient.patient_id,
         ExercisePlan.status == "active",
         or_(ExercisePlan.start_date.is_(None), func.date(ExercisePlan.start_date) <= day),
         or_(ExercisePlan.end_date.is_(None), func.date(ExercisePlan.end_date) >= day),
-    ).options(selectinload(ExercisePlan.items)).order_by(ExercisePlan.created_at.desc()))
+    ).options(selectinload(ExercisePlan.items)).order_by(ExercisePlan.created_at.desc())).all())
+    plan = plans[0] if plans else None
+    authors = {u.user_id: u.full_name or u.email for u in db.scalars(select(User).where(User.user_id.in_([p.created_by_user_id for p in plans])))}
     entries = {
         row.plan_item_id: row
         for row in db.scalars(select(AdherenceEntry).where(
@@ -162,7 +179,7 @@ def patient_today(db: Session, patient: PatientProfile, day: date) -> PatientTod
         )).all()
     }
     items: list[CarePlanItem] = []
-    for item in plan.items if plan else []:
+    for source_plan, item in ((p, i) for p in plans for i in p.items):
         try:
             schedule_days = json.loads(item.schedule_days_json or "[]")
         except json.JSONDecodeError:
@@ -171,6 +188,7 @@ def patient_today(db: Session, patient: PatientProfile, day: date) -> PatientTod
             continue
         entry = entries.get(item.item_id)
         items.append(CarePlanItem(
+            plan_title=source_plan.title, created_by_name=authors.get(source_plan.created_by_user_id),
             item_id=item.item_id, exercise_id=item.exercise_id, sets=item.sets,
             reps=item.reps, duration_minutes=item.duration_minutes,
             rest_interval_seconds=item.rest_interval_seconds, tempo=item.tempo,

@@ -193,6 +193,8 @@ export function LimitationsCard({ limitations = [] }) {
 
 export function ExportActions({ report }) {
   const { t } = useLocale();
+  const [downloadError, setDownloadError] = useState(false);
+  const [downloading, setDownloading] = useState(false);
   const reportUrl = artifactUrl(report.report_download_url);
   const overlayUrl = artifactUrl(report.overlay_download_url);
   function exportJson() {
@@ -205,7 +207,20 @@ export function ExportActions({ report }) {
     URL.revokeObjectURL(url);
   }
   const exerciseId = report.exercise_id || report.exercise;
-  return <div className="flex flex-wrap gap-2">{reportUrl && <Button as="a" href={reportUrl} download={artifactFilename(exerciseId, "report")}><FileText size={16} aria-hidden="true" />{t("results.downloadPdf")}</Button>}{overlayUrl && <Button as="a" variant="secondary" href={overlayUrl} download={artifactFilename(exerciseId, "overlay")}><Download size={16} aria-hidden="true" />{t("results.downloadOverlay")}</Button>}<Button variant="secondary" type="button" onClick={exportJson}><FileJson size={16} aria-hidden="true" />{t("results.exportJson")}</Button></div>;
+  async function download(event, url, kind) {
+    event.preventDefault();
+    if (downloading) return;
+    setDownloading(true); setDownloadError(false);
+    try {
+      const blob = await getArtifactBlob(url);
+      const objectUrl = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = objectUrl; link.download = artifactFilename(exerciseId, kind); link.click();
+      setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
+    } catch { setDownloadError(true); }
+    finally { setDownloading(false); }
+  }
+  return <div className="flex flex-wrap gap-2">{reportUrl && <Button as="a" href={reportUrl} onClick={(event) => download(event, reportUrl, "report")} aria-disabled={downloading} download={artifactFilename(exerciseId, "report")}><FileText size={16} aria-hidden="true" />{t("results.downloadPdf")}</Button>}{overlayUrl && <Button as="a" variant="secondary" href={overlayUrl} onClick={(event) => download(event, overlayUrl, "overlay")} aria-disabled={downloading} download={artifactFilename(exerciseId, "overlay")}><Download size={16} aria-hidden="true" />{t("results.downloadOverlay")}</Button>}<Button variant="secondary" type="button" onClick={exportJson}><FileJson size={16} aria-hidden="true" />{t("results.exportJson")}</Button>{downloadError && <Alert>{t("results.artifactExpired")}</Alert>}</div>;
 }
 
 export function RejectedAnalysisCard({ report, onAnalyzeAnother }) {

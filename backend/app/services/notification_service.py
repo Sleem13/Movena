@@ -21,7 +21,20 @@ from app.db.models import (
     utc_now,
 )
 from app.schemas.auth_schema import UserRole
-from app.services.care_service import create_notification
+from app.services.care_service import create_notification, therapist_can_access_patient
+
+
+def notification_accessible(db, row, user):
+    if user.role != "therapist":
+        return True
+    path = (row.action_url or "").split("?")[0].split("/")
+    if len(path) >= 4 and path[1:3] == ["therapist", "patients"]:
+        return therapist_can_access_patient(db, user.user_id, path[3])
+    if (row.dedup_key or "").startswith("appointment:"):
+        appointment_id = row.dedup_key.split(":")[1]
+        appointment = db.scalar(select(Appointment).where(Appointment.appointment_id == appointment_id))
+        return bool(appointment and therapist_can_access_patient(db, user.user_id, appointment.patient_id))
+    return True
 from app.services.email_service import EmailDeliveryError, send_care_notification_email
 
 
@@ -82,6 +95,8 @@ def enqueue_due_appointment_reminders(db: Session, now: datetime | None = None) 
             Appointment.starts_at <= target + timedelta(minutes=tolerance_minutes),
         )).all()
         for appointment in rows:
+            if not therapist_can_access_patient(db, appointment.therapist_user_id, appointment.patient_id):
+                continue
             patient = db.scalar(select(PatientProfile).where(PatientProfile.patient_id == appointment.patient_id))
             recipients = [appointment.therapist_user_id]
             if patient and patient.user_id:
@@ -218,6 +233,9 @@ def deliver_pending_emails(db: Session, now: datetime | None = None, limit: int 
     for row in rows:
         user = db.scalar(select(User).where(User.user_id == row.user_id))
         if user is None or not user.email:
+            row.email_required = False
+            continue
+        if not user.is_active or user.account_status != "active" or not notification_accessible(db, row, user):
             row.email_required = False
             continue
         try:

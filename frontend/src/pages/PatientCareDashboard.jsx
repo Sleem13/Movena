@@ -387,6 +387,7 @@ export default function PatientCareDashboard({
                       <h3 className="font-bold text-slate-900">
                         {item.exercise_id.replaceAll("_", " ")}
                       </h3>
+                      {item.created_by_name && <p className="mt-1 text-xs text-slate-500">{item.plan_title} · {item.created_by_name}</p>}
                       <p className="mt-1 text-sm text-slate-500">
                         {item.sets} × {item.reps}
                         {item.duration_minutes

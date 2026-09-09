@@ -3,7 +3,7 @@
 from uuid import uuid4
 
 from fastapi import APIRouter, Depends, File, Query, UploadFile, status
-from app.api.dependencies.auth import get_current_user
+from app.api.dependencies.auth import get_current_user, analysis_current_user
 from app.api.routes.squat_analysis import error_response
 from app.db.models import User
 from app.schemas.analysis_job_schema import AnalysisJobCancelResponse, AnalysisJobResponse
@@ -22,7 +22,7 @@ from app.services.upload_validation_service import UploadValidationError
 router = APIRouter(prefix="/api/v1/analysis-jobs", tags=["analysis jobs"])
 
 
-@router.post("/{exercise_id}", response_model=AnalysisJobResponse, status_code=status.HTTP_202_ACCEPTED)
+@router.post("/{exercise_id}", response_model=AnalysisJobResponse, status_code=status.HTTP_202_ACCEPTED, dependencies=[Depends(analysis_current_user)])
 async def create_job(
     exercise_id: str,
     video: UploadFile = File(...),

@@ -72,7 +72,14 @@ require_therapist = require_any_role({UserRole.therapist, UserRole.admin})
 require_patient_or_therapist = require_any_role({UserRole.patient, UserRole.therapist, UserRole.admin})
 
 
-def analysis_current_user(user: User | None = Depends(optional_current_user)) -> User | None:
+def analysis_current_user(user: User | None = Depends(optional_current_user), patient_id: str | None = None,
+                          save_session: bool = False, db: Session = Depends(get_db)) -> User | None:
+    if patient_id:
+        from app.services.care_service import user_can_access_patient
+        if user is None or not user_can_access_patient(db, user, patient_id):
+            raise AuthError(403, "PATIENT_ACCESS_DENIED", "An active care connection or patient ownership is required.")
+        if not save_session:
+            raise AuthError(422, "PATIENT_SESSION_REQUIRED", "Patient-linked analysis must be saved to its clinical record.")
     if get_settings().require_auth_for_analysis and user is None:
         raise AuthError(401, "AUTH_REQUIRED", "Please log in to analyze a video.")
     return user

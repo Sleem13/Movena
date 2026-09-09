@@ -24,6 +24,8 @@ import {
   PAGE_PATHS,
 } from "./config/navigation.js";
 import { analyzeExerciseVideo, getExercises, getMlModelReadiness } from "./services/api.js";
+import { pendingInvitation } from "./services/connectionsApi.js";
+const CareConnections = lazy(() => import("./pages/CareConnections.jsx"));
 
 const TherapistDashboard = lazy(() => import("./pages/TherapistDashboard.jsx"));
 const PatientCareDashboard = lazy(
@@ -96,6 +98,7 @@ function LazyPage({ children }) {
 }
 
 function initialPage() {
+  pendingInvitation();
   return pageForPath(window.location.pathname, ENABLE_REALTIME_COACHING_SPIKE);
 }
 
@@ -474,6 +477,7 @@ function AppContent() {
         ) : (
           <WorkspaceOverview onNavigate={navigate} />
         ))}
+      {["careTeam", "adminAssignments"].includes(page) && <LazyPage><CareConnections key={user?.user_id || "guest"} onNavigate={navigate} /></LazyPage>}
       {page === "about" && <About onStart={() => navigate("analyze")} />}
       {page === "login" && (
         <Login

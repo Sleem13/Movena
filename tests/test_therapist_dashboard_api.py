@@ -16,6 +16,10 @@ from types import SimpleNamespace
 def test_dashboard_and_patient_crud_api(tmp_path):
     engine = create_database_engine(f"sqlite:///{(tmp_path / 'therapist.db').as_posix()}")
     Base.metadata.create_all(engine); factory = sessionmaker(bind=engine, expire_on_commit=False)
+    from app.db.models import User
+    with factory() as seed:
+        seed.add(User(user_id="therapist", email="therapist@example.com", password_hash="test", role="therapist", is_active=True, account_status="active"))
+        seed.commit()
     def override():
         db = factory()
         try: yield db

@@ -17,7 +17,7 @@ from app.core.config import database_url_from_environment, normalize_database_ur
 DEFAULT_DATABASE_PATH = BACKEND_ROOT / "movena_dev.db"
 DEFAULT_DATABASE_URL = f"sqlite:///{DEFAULT_DATABASE_PATH.as_posix()}"
 DATABASE_URL = database_url_from_environment(DEFAULT_DATABASE_URL)
-LATEST_SCHEMA_REVISION = "0006_coaching_follow_up"
+LATEST_SCHEMA_REVISION = "0008_care_connections"
 
 
 class Base(DeclarativeBase):
@@ -74,6 +74,16 @@ def init_db(bind: Engine | None = None) -> None:
     from app.db import models  # noqa: F401 - registers model metadata
     target = bind or engine
     Base.metadata.create_all(target)
+    if target.dialect.name == "sqlite":
+        columns = {c["name"] for c in inspect(target).get_columns("therapist_patient_assignments")}
+        for name, definition in {
+            "source": "VARCHAR(24) NOT NULL DEFAULT 'legacy'",
+            "ended_at": "TIMESTAMP NULL", "ended_by_user_id": "VARCHAR(36) NULL",
+            "end_reason": "TEXT NULL",
+        }.items():
+            if name not in columns:
+                with target.begin() as connection:
+                    connection.execute(text(f"ALTER TABLE therapist_patient_assignments ADD COLUMN {name} {definition}"))
     if "users" in inspect(target).get_table_names():
         user_columns = {column["name"] for column in inspect(target).get_columns("users")}
         user_additions = {

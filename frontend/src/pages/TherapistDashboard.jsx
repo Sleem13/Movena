@@ -381,6 +381,7 @@ export function ExerciseResponseReview({ patientId, entry, onReviewed }) {
     return (
       <div>
         <Badge tone="teal">Reviewed</Badge>
+        {entry.reviewed_by_name && <p className="mt-1 text-xs text-slate-500">{entry.reviewed_by_name}</p>}
         {entry.review_disposition ? (
           <p className="mt-1 text-[11px] text-slate-500">
             {entry.review_disposition.replaceAll("_", " ")}
@@ -734,6 +735,7 @@ export default function TherapistDashboard({ onNavigate }) {
         </div>
       ) : view === "patients" ? (
         <div className="grid gap-5 lg:grid-cols-[340px_1fr]">
+          <div className="flex flex-wrap gap-3 lg:col-span-2"><Button onClick={() => onNavigate("careTeam")}><Users size={18} />{t("nav.connections")}</Button></div>
           <Card className="p-5">
             <h2 className="font-bold">{t("therapist.createProfile")}</h2>
             <p className="mt-2 text-xs leading-5 text-slate-500">
@@ -935,6 +937,7 @@ export default function TherapistDashboard({ onNavigate }) {
             </Card>
           </div>
           <ExercisePlanManager
+            currentUser={user}
             patientId={detail.patient_id}
             plans={plans}
             onPlansChange={setPlans}

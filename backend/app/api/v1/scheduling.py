@@ -70,7 +70,7 @@ def book(
             return error("PATIENT_ACCESS_DENIED", "You can only book your own appointments.", 403)
         if not therapist_can_access_patient(db, data.therapist_user_id, data.patient_id):
             return error("THERAPIST_NOT_ASSIGNED", "Choose a therapist assigned to your care.", 403)
-    elif actor.role == "therapist" and not therapist_can_access_patient(db, actor.user_id, data.patient_id):
+    elif actor.role == "therapist" and (actor.user_id != data.therapist_user_id or not therapist_can_access_patient(db, actor.user_id, data.patient_id)):
         return error("PATIENT_ACCESS_DENIED", "This patient is not assigned to you.", 403)
     if db.scalar(select(PatientProfile.patient_id).where(PatientProfile.patient_id == data.patient_id)) is None:
         return error("PATIENT_NOT_FOUND", "Patient profile was not found.", 404)
@@ -89,7 +89,9 @@ def join(
     if row is None:
         return error("APPOINTMENT_NOT_FOUND", "Appointment was not found.", 404)
     is_therapist = actor.user_id == row.therapist_user_id
-    if not is_therapist and not user_can_access_patient(db, actor, row.patient_id):
+    if actor.role == "therapist" and not is_therapist:
+        return error("APPOINTMENT_ACCESS_DENIED", "This appointment belongs to another therapist.", 403)
+    if not user_can_access_patient(db, actor, row.patient_id):
         return error("APPOINTMENT_ACCESS_DENIED", "You cannot join this appointment.", 403)
     if row.status not in {"scheduled", "confirmed"}:
         return error("APPOINTMENT_NOT_JOINABLE", "This appointment cannot be joined.", 409)
@@ -115,7 +117,9 @@ def update_appointment(
     if row is None:
         return error("APPOINTMENT_NOT_FOUND", "Appointment was not found.", 404)
     is_therapist = actor.user_id == row.therapist_user_id
-    if not is_therapist and not user_can_access_patient(db, actor, row.patient_id):
+    if actor.role == "therapist" and not is_therapist:
+        return error("APPOINTMENT_ACCESS_DENIED", "This appointment belongs to another therapist.", 403)
+    if not user_can_access_patient(db, actor, row.patient_id):
         return error("APPOINTMENT_ACCESS_DENIED", "You cannot change this appointment.", 403)
     if data.status == "cancelled" and actor.role == "patient":
         starts = row.starts_at if row.starts_at.tzinfo else row.starts_at.replace(tzinfo=timezone.utc)

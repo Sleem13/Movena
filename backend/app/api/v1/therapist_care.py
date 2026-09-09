@@ -26,6 +26,7 @@ from app.services.care_service import (
     notification_summary, user_can_access_patient,
 )
 from app.services.progress_report_service import generate_progress_report
+from app.services.notification_service import notification_accessible
 
 router = APIRouter(
     prefix="/api/v1/therapist", tags=["therapist-care"],
@@ -67,7 +68,7 @@ def appointments(actor: User = Depends(require_therapist), db: Session = Depends
     if actor.role == "therapist":
         statement = statement.where(Appointment.therapist_user_id == actor.user_id)
     rows = db.scalars(statement.order_by(Appointment.starts_at.desc()).limit(200)).all()
-    return [appointment_summary(row) for row in rows]
+    return [appointment_summary(row) for row in rows if user_can_access_patient(db, actor, row.patient_id)]
 
 
 @router.get("/adherence-alerts", response_model=list[NotificationSummary])
@@ -76,7 +77,7 @@ def adherence_alerts(actor: User = Depends(require_therapist), db: Session = Dep
         Notification.user_id == actor.user_id,
         Notification.kind.in_(["high_pain", "low_adherence", "exercise_response_follow_up"]),
     ).order_by(Notification.created_at.desc()).limit(100)).all()
-    return [notification_summary(row) for row in rows]
+    return [notification_summary(row) for row in rows if notification_accessible(db, row, actor)]
 
 
 @router.get("/patients/{patient_id}/adherence")
@@ -106,6 +107,7 @@ def patient_adherence(
         "clinician_review_required": row.clinician_review_required,
         "reviewed_at": row.reviewed_at,
         "reviewed_by_user_id": row.reviewed_by_user_id,
+        "reviewed_by_name": db.scalar(select(User.full_name).where(User.user_id == row.reviewed_by_user_id)) if row.reviewed_by_user_id else None,
         "review_disposition": row.review_disposition,
         "review_note": row.review_note,
         "analysis_session_id": row.analysis_session_id,
@@ -151,6 +153,8 @@ def create_session_note(
     appointment = db.scalar(select(Appointment).where(Appointment.appointment_id == appointment_id))
     if appointment is None:
         return error("APPOINTMENT_NOT_FOUND", "Appointment was not found.", 404)
+    if not user_can_access_patient(db, actor, appointment.patient_id):
+        return error("PATIENT_ACCESS_DENIED", "An active care connection is required.", 403)
     if actor.role == "therapist" and appointment.therapist_user_id != actor.user_id:
         return error("APPOINTMENT_ACCESS_DENIED", "This appointment is not assigned to you.", 403)
     row = ClinicalSessionNote(

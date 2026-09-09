@@ -14,13 +14,20 @@ from app.schemas.analysis_schema import AnalysisResponse
 from app.schemas.patient_schema import PatientCreate
 from app.services.session_persistence_service import save_analysis_session
 from app.api.dependencies.auth import get_current_user
+from app.db.models import User
+from app.services.care_service import ensure_assignment
 from types import SimpleNamespace
 
 
 def test_assign_list_and_progress_api_with_clean_invalid_ids(tmp_path):
     engine = create_database_engine(f"sqlite:///{(tmp_path / 'patient_sessions.db').as_posix()}")
     Base.metadata.create_all(engine); factory = sessionmaker(bind=engine, expire_on_commit=False)
-    seed = factory(); patient = create_patient_profile(seed, PatientCreate(display_name="Demo")); saved = save_analysis_session(AnalysisResponse(total_reps=3), db=seed)
+    seed = factory()
+    seed.add(User(user_id="therapist", email="therapist@example.com", password_hash="test", role="therapist", is_active=True, account_status="active"))
+    seed.commit()
+    patient = create_patient_profile(seed, PatientCreate(display_name="Demo"))
+    ensure_assignment(seed, "therapist", patient.patient_id, "therapist"); seed.commit()
+    saved = save_analysis_session(AnalysisResponse(total_reps=3), db=seed, owner_user_id="therapist")
     def override():
         db = factory()
         try: yield db

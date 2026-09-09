@@ -426,6 +426,27 @@ class TherapistPatientAssignment(Base):
     status: Mapped[str] = mapped_column(String(24), default="active", index=True, nullable=False)
     assigned_by_user_id: Mapped[str | None] = mapped_column(String(36), index=True)
     assigned_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now, nullable=False)
+    source: Mapped[str] = mapped_column(String(24), default="legacy", server_default="legacy", nullable=False)
+    ended_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    ended_by_user_id: Mapped[str | None] = mapped_column(String(36))
+    end_reason: Mapped[str | None] = mapped_column(Text)
+
+
+class CareInvitation(Base):
+    __tablename__ = "care_invitations"
+    __table_args__ = (UniqueConstraint("therapist_user_id", "email", name="uq_care_invitation_recipient"),)
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    invitation_id: Mapped[str] = mapped_column(String(36), unique=True, nullable=False)
+    therapist_user_id: Mapped[str] = mapped_column(ForeignKey("users.user_id"), index=True, nullable=False)
+    email: Mapped[str] = mapped_column(String(320), index=True, nullable=False)
+    patient_id: Mapped[str | None] = mapped_column(ForeignKey("patient_profiles.patient_id"))
+    token_hash: Mapped[str | None] = mapped_column(String(64), unique=True)
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    status: Mapped[str] = mapped_column(String(24), default="pending", nullable=False)
+    delivery_status: Mapped[str] = mapped_column(String(24), default="pending", nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now, nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now, onupdate=utc_now, nullable=False)
 
 
 class AdherenceEntry(Base):

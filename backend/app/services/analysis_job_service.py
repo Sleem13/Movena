@@ -139,6 +139,10 @@ def get_owned_job(job_id: str, user: User) -> AnalysisJob | None:
             return None
         if row.owner_user_id != user.user_id and user.role != "super_admin":
             return None
+        from app.services.care_service import user_can_access_patient
+        patient_id = json.loads(row.options_json or "{}").get("patient_id")
+        if patient_id and not user_can_access_patient(db, user, patient_id):
+            return None
         db.expunge(row)
         return row
 

@@ -3,6 +3,7 @@
 from fastapi import APIRouter, Depends, status
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
+from sqlalchemy import select
 
 from app.db.crud import (
     assign_session_to_patient, create_exercise_plan, create_patient_profile, delete_patient_profile,
@@ -103,6 +104,9 @@ def remove_patient(
 ):
     if not user_can_access_patient(db, actor, patient_id):
         return error("PATIENT_ACCESS_DENIED", "This patient is not assigned to you.", 403)
+    profile = get_patient_profile(db, patient_id)
+    if actor.role == "therapist" and profile and profile.user_id:
+        return error("CLINICAL_RECORD_PRESERVED", "End the care connection instead of deleting this patient.", 403)
     if not delete_patient_profile(db, patient_id):
         return error("PATIENT_NOT_FOUND", "Patient profile was not found.")
     return SessionDeleteResponse(session_id=patient_id)
@@ -129,8 +133,12 @@ def assign_session(
     if get_patient_profile(db, patient_id) is None:
         return error("PATIENT_NOT_FOUND", "Patient profile was not found.")
     from app.db.crud import get_session
-    if get_session(db, session_id) is None:
+    from app.services.care_service import user_can_access_session
+    session = get_session(db, session_id)
+    if session is None:
         return error("SESSION_NOT_FOUND", "Saved session was not found.")
+    if not user_can_access_session(db, actor, session) or (session.patient_id and session.patient_id != patient_id):
+        return error("SESSION_ACCESS_DENIED", "This session cannot be assigned to this patient.", 403)
     return to_summary(assign_session_to_patient(db, patient_id, session_id))
 
 
@@ -193,6 +201,10 @@ def patch_patient_exercise_plan(
         return error("PATIENT_ACCESS_DENIED", "This patient is not assigned to you.", 403)
     if get_patient_profile(db, patient_id) is None:
         return error("PATIENT_NOT_FOUND", "Patient profile was not found.")
+    from app.db.models import ExercisePlan
+    plan = db.scalar(select(ExercisePlan).where(ExercisePlan.plan_id == plan_id, ExercisePlan.patient_id == patient_id))
+    if plan and actor.role == "therapist" and plan.created_by_user_id != actor.user_id:
+        return error("PLAN_AUTHOR_REQUIRED", "Only the author or an administrator can change this plan.", 403)
     row = update_exercise_plan_status(db, patient_id, plan_id, data.status)
     if row is None:
         return error("EXERCISE_PLAN_NOT_FOUND", "Exercise plan was not found.")

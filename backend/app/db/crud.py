@@ -166,7 +166,12 @@ def list_patient_sessions(db: Session, patient_id: str) -> list[AnalysisSession]
 
 
 def to_exercise_plan_detail(row: ExercisePlan) -> ExercisePlanDetail:
+    from sqlalchemy.orm import object_session
+    from app.db.models import User
+    db = object_session(row)
+    author = db.scalar(select(User).where(User.user_id == row.created_by_user_id)) if db and row.created_by_user_id else None
     return ExercisePlanDetail(
+        created_by_name=(author.full_name or author.email) if author else None,
         plan_id=row.plan_id,
         patient_id=row.patient_id,
         created_by_user_id=row.created_by_user_id,
@@ -207,6 +212,7 @@ def create_exercise_plan(
     db.execute(update(ExercisePlan).where(
         ExercisePlan.patient_id == patient_id,
         ExercisePlan.status == "active",
+        ExercisePlan.created_by_user_id == created_by_user_id,
     ).values(status="paused"))
     plan = ExercisePlan(
         plan_id=str(uuid4()), patient_id=patient_id, created_by_user_id=created_by_user_id,

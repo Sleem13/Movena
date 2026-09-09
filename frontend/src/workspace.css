@@ -143,3 +143,21 @@
 
 [data-theme="dark"] .workspace-sidebar nav button[aria-current="page"] { background: #183757; color: #a6caff; }
 [data-theme="dark"] .exercise-availability > span { background: #114344; color: #a2efeb; }
+.care-connections input:not([type="checkbox"]), .care-connections select, .connection-dialog textarea {
+  width: 100%; min-width: 0; min-height: 44px; border: 1px solid #cbd5e1;
+  border-radius: 6px; padding: 10px 12px; background: white; color: #182230;
+}
+.connection-admin-form { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; align-items: end; }
+.connection-admin-form label { display: grid; gap: 8px; font-size: 14px; }
+.connection-admin-form .connection-checkbox { display: flex; align-items: center; min-height: 44px; }
+.connection-search { display: flex; align-items: center; gap: 8px; }
+.connection-row { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 20px 0; }
+.connection-tab { min-height: 44px; padding: 10px 16px; border-bottom: 2px solid transparent; font-size: 14px; }
+.connection-tab.is-active { border-color: #1463ed; color: #1463ed; font-weight: 650; }
+.connection-dialog { width: min(480px, calc(100% - 32px)); max-height: calc(100dvh - 32px); overflow: auto; border: 1px solid #cbd5e1; border-radius: 8px; padding: 24px; color: #182230; }
+.connection-dialog::backdrop { background: #11182780; }
+.dark .care-connections input:not([type="checkbox"]), .dark .care-connections select, .dark .connection-dialog, .dark .connection-dialog textarea { background: #20242b; color: #f3f4f6; border-color: #4b5563; }
+@media (max-width: 700px) {
+  .connection-admin-form { grid-template-columns: minmax(0, 1fr); }
+  .connection-row { align-items: start; flex-direction: column; gap: 12px; }
+}
