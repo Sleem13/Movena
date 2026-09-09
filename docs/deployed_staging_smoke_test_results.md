@@ -1,5 +1,24 @@
 # Deployed Staging Smoke-Test Results
 
+## Fresh Deployment Diagnosis — 2026-09-09
+
+- GitHub `main` was at `f92db5e` during this check.
+- `https://physio-vision-ai.vercel.app` returned HTTP 200 and served the Movena-branded frontend bundle.
+- The Vercel bundle was still built against `https://name-physiovision-api-staging.onrender.com`.
+- `https://name-physiovision-api-staging.onrender.com/health` returned HTTP 200 with staging enabled, database OK, artifacts OK, authentication required, public demo disabled, and `exercise_recognition=false`.
+- `https://name-physiovision-api-staging.onrender.com/api/v1/exercises` returned gait, static balance, shoulder flexion, and hammer curl as supported exercises.
+- Unauthenticated route checks for `/api/v1/analyze/gait`, `/api/v1/analyze/balance`, `/api/v1/analyze/shoulder-flexion`, and `/api/v1/analyze/hammer-curl` returned HTTP 401, confirming the new routes are mounted and protected.
+- `https://name-physiovision-api-staging.onrender.com/api/v1/recognition/models` returned HTTP 404 because the deployed `ENABLE_EXERCISE_RECOGNITION` flag is off.
+- `https://name-movena-api-staging.onrender.com` returned HTTP 404 and should not be treated as the live backend until the provider hostname exists.
+- `https://d139746brwkxwp.cloudfront.net` served an older PhysioVision-branded frontend bundle and returned HTTP 503 for `/health`, `/ready`, and API paths while the AWS backend was unavailable or suspended.
+
+Immediate deployment actions:
+
+1. Enable `ENABLE_EXERCISE_RECOGNITION=true` in the active backend provider environment and redeploy the backend.
+2. Rebuild the frontend with the intended active API URL. For the current Vercel staging site, use `VITE_API_BASE_URL=https://name-physiovision-api-staging.onrender.com`.
+3. If CloudFront is the intended staging surface, run the AWS deploy workflow after the workflow state key fix and verify `https://d139746brwkxwp.cloudfront.net/ready` returns HTTP 200.
+4. Recheck CORS with the actual browser frontend origin before upload testing.
+
 Render HTTPS staging and Supabase PostgreSQL are now reachable. The results below record direct checks performed on 2026-07-19; unexecuted auth/upload/artifact and device scenarios remain blocked.
 
 ## Gate-closure check — 2026-07-19

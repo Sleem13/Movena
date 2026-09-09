@@ -33,15 +33,29 @@ function ExercisePickerDialog({ exercises, onChoose, onClose }) {
 
   useEffect(() => {
     const previousOverflow = document.body.style.overflow;
+    const previousFocus = document.activeElement;
     document.body.style.overflow = "hidden";
     dialogRef.current?.focus();
     function closeOnEscape(event) {
       if (event.key === "Escape") onClose();
+      if (event.key === "Tab") {
+        const buttons = [...dialogRef.current.querySelectorAll('button:not([disabled])')];
+        const first = buttons[0];
+        const last = buttons[buttons.length - 1];
+        if (event.shiftKey && (document.activeElement === first || document.activeElement === dialogRef.current)) {
+          event.preventDefault();
+          last?.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first?.focus();
+        }
+      }
     }
     document.addEventListener("keydown", closeOnEscape);
     return () => {
       document.body.style.overflow = previousOverflow;
       document.removeEventListener("keydown", closeOnEscape);
+      if (previousFocus?.isConnected) previousFocus.focus();
     };
   }, [onClose]);
 
@@ -56,16 +70,16 @@ function ExercisePickerDialog({ exercises, onChoose, onClose }) {
         aria-modal="true"
         aria-labelledby="exercise-picker-title"
         tabIndex={-1}
-        className="my-auto w-full max-w-3xl overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-[0_30px_90px_rgba(7,20,38,0.28)] outline-none"
+        className="my-auto w-full max-w-3xl overflow-hidden rounded-lg border border-slate-200 bg-white shadow-xl outline-none"
         onMouseDown={(event) => event.stopPropagation()}
       >
-        <div className="flex items-start justify-between gap-4 border-b border-slate-200 bg-gradient-to-r from-white via-blue-50/40 to-teal-50/40 p-6 sm:p-7">
+        <div className="flex items-start justify-between gap-4 border-b border-slate-200 p-5 sm:p-6">
           <div className="flex gap-4">
-            <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-blue-600 text-white shadow-lg shadow-blue-200">
+            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-clinical-mint text-clinical-teal">
               <Dumbbell size={23} aria-hidden="true" />
             </span>
             <div>
-              <p className="text-xs font-bold uppercase tracking-[0.14em] text-clinical-teal">
+              <p className="sr-only">
                 {t("upload.pickerEyebrow")}
               </p>
               <h2
@@ -88,7 +102,7 @@ function ExercisePickerDialog({ exercises, onChoose, onClose }) {
             <X size={19} />
           </button>
         </div>
-        <div className="grid max-h-[60vh] gap-3 overflow-y-auto p-5 sm:grid-cols-2 sm:p-6">
+        <div className="grid max-h-[60vh] gap-2 overflow-y-auto p-4 sm:grid-cols-2 sm:p-5">
           {exercises.map((exercise) => {
             const text = exerciseText(exercise.exercise_id);
             return (
@@ -96,7 +110,7 @@ function ExercisePickerDialog({ exercises, onChoose, onClose }) {
                 key={exercise.exercise_id}
                 type="button"
                 onClick={() => onChoose(exercise.exercise_id)}
-                className="group flex min-h-28 items-start gap-4 rounded-2xl border border-slate-200 bg-white p-4 text-start transition hover:-translate-y-0.5 hover:border-blue-300 hover:bg-blue-50/40 hover:shadow-lg hover:shadow-blue-100 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-blue-100"
+                className="group flex min-h-24 items-start gap-3 rounded-lg border border-slate-200 bg-white p-4 text-start transition hover:border-blue-300 hover:bg-blue-50/40 focus-visible:ring-2 focus-visible:ring-blue-100"
               >
                 <span className="mt-0.5 grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-slate-100 text-slate-500 transition group-hover:bg-blue-600 group-hover:text-white">
                   <Dumbbell size={18} />
@@ -276,7 +290,7 @@ export default function UploadSquat(props) {
               ]}
             />
             {selected ? (
-              <div className="mt-4 grid gap-3 rounded-xl bg-blue-50 p-4 text-sm sm:grid-cols-2">
+              <div className="mt-4 grid gap-4 border-t border-clinical-line pt-4 text-sm sm:grid-cols-2">
                 <div>
                   <p className="text-xs font-bold uppercase text-clinical-blue">
                     {t("upload.recommendedView")}

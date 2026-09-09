@@ -110,29 +110,28 @@ export default function CameraGuide({ exercise = "bodyweight_squat", metadata, c
   const landmarks = metadata?.required_landmarks?.join(", ");
 
   const content = <>
-      <div className="bg-gradient-to-br from-clinical-navy to-clinical-blue p-6 text-white">
+      <div className="border-b border-clinical-line p-5 text-clinical-ink">
         <div className="flex items-center gap-3">
-          <span className="grid h-11 w-11 place-items-center rounded-xl bg-white/15">
+          <span className="grid h-10 w-10 place-items-center rounded-lg bg-clinical-mint text-clinical-teal">
             <Camera size={22} aria-hidden="true" />
           </span>
           <div>
-            <p className="text-xs font-semibold uppercase tracking-widest text-blue-100">{t("camera.recordingTips")}</p>
-            <h2 className="mt-1 text-xl font-bold">{t("camera.title")}</h2>
+            <h2 className="text-lg font-bold">{t("camera.title")}</h2>
           </div>
         </div>
         {metadata && (
-          <p className="mt-4 text-sm text-blue-50">
+          <p className="mt-4 text-sm leading-6 text-slate-600">
             <strong>{metadata.recommended_camera_view}.</strong> {t("camera.visible", { landmarks })}
           </p>
         )}
-        <div className="mt-6 grid grid-cols-2 gap-3">
-          <div className="rounded-xl bg-white/10 p-3">
+        <div className="mt-5 grid grid-cols-2 gap-4 text-clinical-teal">
+          <div>
             <ScanLine size={18} aria-hidden="true" />
-            <p className="mt-2 text-xs leading-5 text-blue-50">{t("camera.frame")}</p>
+            <p className="mt-2 text-xs leading-5 text-slate-600">{t("camera.frame")}</p>
           </div>
-          <div className="rounded-xl bg-white/10 p-3">
+          <div>
             <Lightbulb size={18} aria-hidden="true" />
-            <p className="mt-2 text-xs leading-5 text-blue-50">{t("camera.lighting")}</p>
+            <p className="mt-2 text-xs leading-5 text-slate-600">{t("camera.lighting")}</p>
           </div>
         </div>
       </div>
@@ -149,7 +148,7 @@ export default function CameraGuide({ exercise = "bodyweight_squat", metadata, c
       </ul>
   </>;
 
-  if (compact) return <details className="group overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+  if (compact) return <details className="group overflow-hidden rounded-lg border border-slate-200 bg-white">
     <summary className="flex min-h-16 cursor-pointer list-none items-center gap-3 px-4 font-bold text-clinical-ink marker:hidden">
       <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-blue-50 text-clinical-blue"><Camera size={20} aria-hidden="true" /></span>
       <span className="flex-1">{t("camera.title")}</span>

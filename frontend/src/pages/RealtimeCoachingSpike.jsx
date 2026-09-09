@@ -78,7 +78,7 @@ export function summarizeFrame(canvas) {
 }
 
 export async function readOptionalLandmarkSummary(videoElement, localExtractor) {
-  const extractor = localExtractor || window.physioVisionLandmarkExtractor;
+  const extractor = localExtractor || window.movenaLandmarkExtractor || window.physioVisionLandmarkExtractor;
   if (!extractor || typeof extractor.estimate !== "function") {
     return { enabled: false, landmarkCount: 0, averageConfidence: null };
   }
@@ -245,7 +245,7 @@ export default function RealtimeCoachingSpike({ onConfirmSuggestion }) {
     if (landmarkExtractorRef.current) return true;
     setLandmarkStatus("loading");
     try {
-      landmarkExtractorRef.current = window.physioVisionLandmarkExtractor || await getLocalPoseLandmarkExtractor();
+      landmarkExtractorRef.current = window.movenaLandmarkExtractor || window.physioVisionLandmarkExtractor || await getLocalPoseLandmarkExtractor();
       setLandmarkStatus("ready");
       return true;
     } catch {

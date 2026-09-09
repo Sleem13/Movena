@@ -10,10 +10,7 @@ export const BRAND = Object.freeze({
     canvas: "#f5f8fc",
   }),
   assets: Object.freeze({
-    mark: "/icons/icon-192.png",
-    wordmarkFallback: "/brand-wordmark-420.png",
-    wordmarkWebp: "/brand-wordmark-420.webp",
-    wordmarkWebp2x: "/brand-wordmark-840.webp",
+    mark: "/movena-mark.png",
     manifest: "/manifest.webmanifest",
   }),
 });

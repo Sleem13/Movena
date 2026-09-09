@@ -5,14 +5,26 @@ services:
       - "8000:8000"
     environment:
       APP_ENV: development
-      DATABASE_URL: sqlite:////app/backend/data/physiovision_dev.db
+      DATABASE_URL: sqlite:////app/backend/data/movena_dev.db
       APP_VERSION: 0.12.0
       CORS_ALLOWED_ORIGINS: http://localhost:5173,http://127.0.0.1:5173,http://localhost:3000,http://127.0.0.1:3000
       ARTIFACT_RETENTION_HOURS: 24
     volumes:
       - ./backend/artifacts:/app/backend/artifacts
-      - physiovision_data:/app/backend/data
+      - movena_data:/app/backend/data
+      - physiovision_data:/app/backend/legacy-data:ro
+    command: >
+      sh -c "if [ ! -f /app/backend/data/movena_dev.db ] && [ -f /app/backend/legacy-data/physiovision_dev.db ]; then
+      for suffix in '' '-wal' '-shm'; do
+      if [ -f \"/app/backend/legacy-data/physiovision_dev.db$$suffix\" ]; then
+      cp \"/app/backend/legacy-data/physiovision_dev.db$$suffix\" \"/app/backend/data/movena_dev.db$$suffix\";
+      fi;
+      done;
+      fi;
+      cd /app && python -m alembic -c /app/alembic.ini upgrade head &&
+      cd /app/backend && exec python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --no-access-log"
     restart: unless-stopped
 
 volumes:
+  movena_data:
   physiovision_data:

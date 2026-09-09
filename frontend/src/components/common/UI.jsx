@@ -2,15 +2,15 @@ import { AlertCircle, Inbox, LoaderCircle } from "lucide-react";
 
 export function Button({ as: Component = "button", variant = "primary", className = "", children, ...props }) {
   const styles = {
-    primary: "bg-clinical-blue text-white shadow-[0_5px_14px_rgba(37,99,235,0.16)] hover:bg-blue-700 hover:shadow-[0_8px_18px_rgba(37,99,235,0.2)] active:scale-[0.98]",
+    primary: "bg-clinical-blue text-white hover:bg-blue-700 active:scale-[0.98]",
     secondary: "border border-clinical-line bg-white text-clinical-ink shadow-sm hover:border-blue-300 hover:bg-clinical-sky active:scale-[0.98]",
     ghost: "text-slate-600 hover:bg-slate-100 hover:text-clinical-ink",
   };
-  return <Component className={`inline-flex min-h-10 items-center justify-center gap-2 rounded-[11px] px-4 text-sm font-semibold transition duration-200 ease-out disabled:scale-100 disabled:cursor-not-allowed disabled:opacity-50 ${styles[variant]} ${className}`} {...props}>{children}</Component>;
+  return <Component className={`ui-button inline-flex min-h-11 items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition duration-150 ease-out disabled:scale-100 disabled:cursor-not-allowed disabled:opacity-50 ${styles[variant]} ${className}`} {...props}>{children}</Component>;
 }
 
 export function Card({ as: Component = "section", className = "", children, ...props }) {
-  return <Component className={`surface-card rounded-[14px] border border-clinical-line bg-white shadow-panel ${className}`} {...props}>{children}</Component>;
+  return <Component className={`surface-card min-w-0 rounded-lg border border-clinical-line bg-white ${className}`} {...props}>{children}</Component>;
 }
 
 export function Badge({ tone = "blue", children, className = "" }) {

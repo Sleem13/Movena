@@ -37,32 +37,32 @@
 }
 
 :root {
-  --color-ink: 7 27 74;
+  --color-ink: 29 38 48;
   --color-blue: 37 99 235;
   --color-teal: 15 143 131;
   --color-sky: 241 246 255;
   --color-mint: 232 248 244;
   --color-line: 219 228 239;
-  --color-panel: 247 250 255;
+  --color-panel: 246 248 249;
   --brand-ink: #071b4a;
   --brand-blue: #2563eb;
   --brand-teal: #0f8f83;
   --surface-root: #ffffff;
   --surface: #ffffff;
   --surface-elevated: #ffffff;
-  --surface-soft: #f7faff;
+  --surface-soft: #f6f8f9;
   --surface-muted: #f1f5f9;
-  --text: #071b4a;
-  --text-body: #334155;
-  --text-muted: #64748b;
-  --line: #dbe4ef;
+  --text: #1d2630;
+  --text-body: #43505e;
+  --text-muted: #617080;
+  --line: #dce2e7;
   --line-strong: #cbd5e1;
   --focus-ring: rgba(37, 99, 235, 0.24);
   --chart-grid: #dbe4ef;
   --chart-label: #64748b;
   --chart-track: #e8eef3;
   --chart-point: #ffffff;
-  --panel-shadow: 0 10px 30px rgba(7, 27, 74, 0.055);
+  --panel-shadow: 0 2px 6px rgba(29, 38, 48, 0.035);
   color: var(--text-body);
   background: var(--surface-root);
   font-family:
@@ -86,6 +86,7 @@ body {
 }
 
 * {
+  letter-spacing: 0 !important;
   scrollbar-color: #b8c8d8 transparent;
   scrollbar-width: thin;
 }
@@ -185,7 +186,7 @@ button, a, input, select, textarea, label {
 .workspace select,
 .workspace textarea {
   min-height: 2.75rem;
-  border-radius: 11px;
+  border-radius: 8px;
   border-color: var(--line);
   background-color: var(--surface-elevated);
   color: var(--text);
@@ -254,7 +255,7 @@ button, a, input, select, textarea, label {
 
 @media (min-width: 1024px) {
   [dir="rtl"] .workspace {
-    padding-right: 252px !important;
+    padding-right: 282px !important;
     padding-left: 0 !important;
   }
 

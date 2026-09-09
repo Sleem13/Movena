@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "PhysioVision Unified Sample Metadata",
+  "title": "Movena Unified Sample Metadata",
   "type": "object",
   "required": ["sample_id", "dataset_name", "source_path", "file_path", "modality", "exercise_id", "processing_status", "requires_manual_review"],
   "properties": {

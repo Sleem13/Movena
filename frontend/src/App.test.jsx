@@ -223,7 +223,7 @@ describe("Squat Analyzer healthcare dashboard", () => {
     render(<App />);
     expect(await screen.findByRole("heading", { name: /Welcome back, admin/i })).toBeInTheDocument();
     expect(screen.getAllByRole("button", { name: "Movement check" })).toHaveLength(2);
-    expect(screen.getAllByRole("button", { name: "Patient caseload" })).toHaveLength(2);
+    expect(screen.getAllByRole("button", { name: "Caseload" })).toHaveLength(2);
     expect(screen.queryByRole("button", { name: "Users & access" })).not.toBeInTheDocument();
     expect(screen.getByText("Platform readiness")).toBeInTheDocument();
   });
@@ -232,20 +232,24 @@ describe("Squat Analyzer healthcare dashboard", () => {
     render(<App />);
     fireEvent.click(screen.getAllByRole("button", { name: "Open care workspace" }).at(-1));
     fireEvent.click(screen.getByRole("button", { name: "Exercise library" }));
-    expect(await screen.findByText("Supported exercises")).toBeInTheDocument();
+    expect(await screen.findByText("Available exercises")).toBeInTheDocument();
     expect(screen.getByText("Bodyweight Squat")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Next exercises" }));
     expect(screen.getByText("Hip Abduction")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Next exercises" }));
     expect(screen.getByText("Walking Gait Screen")).toBeInTheDocument();
     expect(screen.getByText("Static Balance Screen")).toBeInTheDocument();
-    expect(screen.getAllByText("Planned — not available yet")).toHaveLength(4);
-    expect(screen.getAllByRole("button", { name: "Not available" })[0]).toBeDisabled();
+    fireEvent.click(screen.getByText("Research and planned exercises"));
+    const planned = within(screen.getByRole("region", { name: "Planned exercises" }));
+    expect(planned.getAllByRole("button", { name: "Not available" })).toHaveLength(4);
+    expect(planned.getAllByRole("button", { name: "Not available" })[0]).toBeDisabled();
   });
 
   it("filters the exercise library by search text and availability", async () => {
     render(<App />);
     fireEvent.click(screen.getAllByRole("button", { name: "Open care workspace" }).at(-1));
     fireEvent.click(screen.getByRole("button", { name: "Exercise library" }));
-    expect(await screen.findByText("Supported exercises")).toBeInTheDocument();
+    expect(await screen.findByText("Available exercises")).toBeInTheDocument();
     fireEvent.change(screen.getByLabelText("Search exercises"), { target: { value: "shoulder" } });
     chooseSelectOption("Availability", "Supported only");
     expect(screen.getByText("3 exercises match your filters.")).toBeInTheDocument();
@@ -254,19 +258,21 @@ describe("Squat Analyzer healthcare dashboard", () => {
     expect(screen.getByText("Shoulder Press")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Clear exercise filters" }));
     expect(screen.getByText("16 exercises match your filters.")).toBeInTheDocument();
-    expect(screen.getByText("Shoulder Flexion")).toBeInTheDocument();
+    expect(screen.getByText("Bodyweight Squat")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Previous exercises" })).toBeDisabled();
   });
 
   it("opens Analyze from an exercise card with exercise-specific guidance", async () => {
     render(<App />);
     fireEvent.click(screen.getAllByRole("button", { name: "Open care workspace" }).at(-1));
     fireEvent.click(screen.getByRole("button", { name: "Exercise library" }));
-    const cards = await screen.findAllByRole("button", { name: /Analyze this exercise/i });
-    fireEvent.click(cards[3]);
+    fireEvent.change(await screen.findByRole("searchbox"), { target: { value: "shoulder abduction" } });
+    const shoulderCard = screen.getByRole("heading", { name: "Shoulder Abduction" }).closest("article");
+    fireEvent.click(within(shoulderCard).getByRole("button", { name: /Analyze this exercise/i }));
     expect(screen.getByLabelText("Exercise selector")).toHaveTextContent("Shoulder Abduction");
     expect(screen.getByText("Front view preferred.")).toBeInTheDocument();
     expect(screen.getByText(/raise the arm outward through a comfortable range/i)).toBeInTheDocument();
-    expect(screen.getByText("Recording tips")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Camera placement guide" })).toBeInTheDocument();
   });
 
   it("carries a recognized video into analysis without a second upload", async () => {
@@ -562,6 +568,7 @@ describe("Squat Analyzer healthcare dashboard", () => {
   it("opens the integrated RehabRL decision-support workspace", async () => {
     window.history.replaceState({}, "", "/workspace");
     render(<App />);
+    fireEvent.click(screen.getByText("More tools", { exact: true }));
     fireEvent.click(screen.getByRole("button", { name: "RehabRL Decision Support" }));
     expect(await screen.findByRole("heading", { name: "Rehabilitation planning workspace" })).toBeInTheDocument();
     expect(screen.getByText("Double Dueling DQN")).toBeInTheDocument();
@@ -578,6 +585,11 @@ describe("Squat Analyzer healthcare dashboard", () => {
 
     const dialog = screen.getByRole("dialog", { name: "Which exercise is shown?" });
     expect(dialog).toBeInTheDocument();
+    const pickerButtons = within(dialog).getAllByRole("button");
+    fireEvent.keyDown(dialog, { key: "Tab", shiftKey: true });
+    expect(pickerButtons.at(-1)).toHaveFocus();
+    fireEvent.keyDown(pickerButtons.at(-1), { key: "Tab" });
+    expect(pickerButtons[0]).toHaveFocus();
     fireEvent.click(within(dialog).getByRole("button", { name: /Bodyweight Squat/i }));
 
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();

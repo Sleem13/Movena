@@ -1,4 +1,4 @@
-name: Deploy PhysioVision to AWS
+name: Deploy Movena to AWS
 
 on:
   workflow_dispatch:
@@ -20,7 +20,7 @@ permissions:
   id-token: write
 
 concurrency:
-  group: physiovision-staging-deploy
+  group: movena-staging-deploy
   cancel-in-progress: false
 
 env:
@@ -67,7 +67,7 @@ jobs:
         with:
           role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
-          role-session-name: physiovision-${{ github.run_id }}
+          role-session-name: movena-${{ github.run_id }}
           role-duration-seconds: 7200
       - uses: hashicorp/setup-terraform@v3
         with:
@@ -76,7 +76,7 @@ jobs:
         run: >-
           terraform -chdir=infra/aws init -reconfigure
           -backend-config="bucket=${{ vars.TF_STATE_BUCKET }}"
-          -backend-config="key=physiovision/staging/terraform.tfstate"
+          -backend-config="key=movena/staging/terraform.tfstate"
           -backend-config="region=${{ env.AWS_REGION }}"
           -backend-config="encrypt=true"
           -backend-config="use_lockfile=true"
@@ -110,14 +110,14 @@ jobs:
         env:
           IMAGE: ${{ steps.ecr.outputs.repository }}:${{ github.sha }}
         run: >-
-          terraform -chdir=infra/aws plan -out=physiovision.tfplan
+          terraform -chdir=infra/aws plan -out=movena.tfplan
           -var="aws_region=${{ env.AWS_REGION }}"
           -var="environment=${{ env.ENVIRONMENT }}"
           -var="app_version=${{ github.sha }}"
           -var="app_secret_arn=${{ vars.APP_SECRET_ARN }}"
           -var="backend_image=$IMAGE"
       - name: Apply infrastructure
-        run: terraform -chdir=infra/aws apply -auto-approve physiovision.tfplan
+        run: terraform -chdir=infra/aws apply -auto-approve movena.tfplan
       - id: infra
         name: Read deployment outputs
         shell: bash

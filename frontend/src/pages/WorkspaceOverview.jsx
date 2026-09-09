@@ -89,13 +89,15 @@ export default function WorkspaceOverview({ onNavigate }) {
 
   return (
     <main>
-      <div>
+      <div className="workspace-overview-header">
+        <div>
         <h1 className="text-3xl font-bold tracking-[-0.03em] text-[#071b4a] sm:text-4xl">
           {t("workspace.greeting", { name: displayName })}
         </h1>
         <p className="mt-2.5 text-[15px] text-slate-600 sm:text-base">
           {t("workspace.subtitle")}
         </p>
+        </div>
         <div className="mt-5 flex flex-wrap gap-3">
           <Button
             onClick={() => onNavigate("analyze")}
@@ -125,7 +127,7 @@ export default function WorkspaceOverview({ onNavigate }) {
       ) : null}
       <div className="mt-8 grid gap-5 xl:grid-cols-[minmax(0,1fr)_355px]">
         <section
-          className="overflow-hidden rounded-xl border border-[#dce3ee] bg-white"
+          className="overflow-hidden rounded-lg border border-clinical-line bg-white"
           aria-labelledby="recent-sessions-heading"
         >
           <div className="flex items-center justify-between px-5 py-5">
@@ -239,7 +241,7 @@ export default function WorkspaceOverview({ onNavigate }) {
         </section>
 
         <aside
-          className="rounded-xl border border-[#dce3ee] bg-white p-6"
+          className="workspace-overview-section border-s border-clinical-line ps-6"
           aria-labelledby="workspace-status-heading"
         >
           <h2
@@ -280,7 +282,7 @@ export default function WorkspaceOverview({ onNavigate }) {
       </div>
 
       <section
-        className="mt-5 rounded-xl border border-[#dce3ee] bg-white px-5 py-5 sm:px-6"
+        className="mt-8 border-t border-clinical-line py-6"
         aria-labelledby="workflow-heading"
       >
         <h2

@@ -1,11 +1,15 @@
 import { useEffect, useRef, useState } from "react";
 import {
   ArrowRight,
+  ArrowLeft,
   BarChart3,
   BrainCircuit,
   CalendarHeart,
   ChevronRight,
   ClipboardList,
+  ClipboardCheck,
+  MessageSquareText,
+  MoreHorizontal,
   Dumbbell,
   History,
   HeartHandshake,
@@ -49,7 +53,7 @@ const movementSupport = [
   },
 ];
 
-function workspaceSectionsFor(user) {
+function legacyWorkspaceSectionsFor(user) {
   if (user?.role === "patient")
     return [
       {
@@ -164,6 +168,25 @@ function workspaceSectionsFor(user) {
   ];
 }
 
+function workspaceSectionsFor(user) {
+  const sections = legacyWorkspaceSectionsFor(user);
+  if (user?.role === "patient") return sections;
+  const items = [
+    { id: roleHome(user), labelKey: "nav.overview", icon: Home },
+    { id: "therapistPatients", labelKey: "nav.caseload", icon: Users },
+    { id: "history", labelKey: "nav.movementReviews", icon: BarChart3 },
+    { id: "exercises", labelKey: "nav.exerciseLibrary", icon: Dumbbell },
+    { id: "analyze", labelKey: "nav.movementCheck", icon: ClipboardCheck },
+    { id: "recoveryCoaching", labelKey: "nav.recoveryShort", icon: MessageSquareText },
+    { id: "profile", labelKey: "nav.account", icon: User },
+  ];
+  const primaryIds = new Set(items.map((item) => item.id));
+  return [
+    { labelKey: "nav.overview", items },
+    { labelKey: "nav.moreTools", secondary: true, items: sections.flatMap((section) => section.items).filter((item) => !primaryIds.has(item.id)) },
+  ];
+}
+
 function roleHome(user) {
   if (user?.role === "patient") return "care";
   if (user?.role === "therapist") return "therapist";
@@ -200,8 +223,6 @@ function visibleItems(items, user, hasReport) {
 
 function Brand({
   compact = false,
-  forceLabel = false,
-  prominent = false,
   onClick,
 }) {
   return (
@@ -210,20 +231,7 @@ function Brand({
       className="group min-w-0 rounded-xl text-left transition hover:opacity-90"
       aria-label="Movena home"
     >
-      {compact ? (
-        <BrandLogo compact />
-      ) : (
-        <>
-          <BrandLogo
-            compact
-            className={forceLabel || prominent ? "hidden" : "sm:hidden"}
-          />
-          <BrandLogo
-            className={forceLabel || prominent ? "" : "hidden sm:inline-flex"}
-            imageClassName={prominent ? "w-[210px]" : "w-[180px] lg:w-[210px]"}
-          />
-        </>
-      )}
+      <BrandLogo compact={compact} />
     </button>
   );
 }
@@ -233,7 +241,7 @@ export function Navbar({ currentPage, hasReport, onNavigate, user }) {
   const landing = currentPage === "home";
   const accessPlatform = () => onNavigate(user ? roleHome(user) : "register");
   return (
-    <header className="sticky top-0 z-30 border-b border-slate-200/80 bg-white/95 backdrop-blur-xl">
+    <header className="public-topbar sticky top-0 z-30 border-b border-slate-200/80 bg-white/95 backdrop-blur-xl">
       <nav
         aria-label="Primary navigation"
         className="mx-auto flex min-h-[5rem] max-w-[1400px] items-center justify-between gap-4 px-5 sm:px-8 lg:px-12"
@@ -272,14 +280,15 @@ export function Navbar({ currentPage, hasReport, onNavigate, user }) {
           )}
           <ThemeSelector />
           <LanguageSelector />
-          <button
+          {currentPage !== "login" ? <button
             aria-label={user ? t("nav.profile") : t("nav.login")}
+            title={user ? t("nav.profile") : t("nav.login")}
             onClick={() => onNavigate(user ? "profile" : "login")}
-            className="hidden min-h-11 shrink-0 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3.5 text-sm font-bold text-clinical-ink transition hover:border-blue-200 hover:bg-clinical-sky xl:inline-flex"
+            className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-3 text-sm font-semibold text-clinical-ink transition hover:border-blue-200 hover:bg-clinical-sky"
           >
             {user ? <User size={17} /> : <LogIn size={17} />}
-            <span>{user ? t("nav.profile") : t("nav.login")}</span>
-          </button>
+            <span className="hidden sm:inline">{user ? t("nav.profile") : t("nav.login")}</span>
+          </button> : null}
           <button
             type="button"
             onClick={accessPlatform}
@@ -304,13 +313,14 @@ function WorkspaceNav({
 }) {
   const { t } = useLocale();
   return (
-    <nav className="mt-6 space-y-5" aria-label="Workspace navigation">
+    <nav className="reference-navigation mt-6 space-y-5" aria-label="Workspace navigation">
       {workspaceSectionsFor(user).map((section) => {
         const items = visibleItems(section.items, user, hasReport);
         if (!items.length) return null;
+        const Section = section.secondary ? "details" : "div";
         return (
-          <div key={section.labelKey}>
-            {!collapsed ? (
+          <Section key={section.labelKey} className={section.secondary ? "workspace-more-tools" : ""} {...(section.secondary ? { open: items.some((item) => item.id === currentPage) || undefined } : {})}>
+            {section.secondary ? <summary title={t(section.labelKey)}><MoreHorizontal size={22} /><span className={collapsed ? "sr-only" : ""}>{t(section.labelKey)}</span></summary> : user?.role === "patient" && !collapsed ? (
               <p className="mb-2 px-3 text-[11px] font-bold uppercase tracking-[0.14em] text-slate-400">
                 {t(section.labelKey)}
               </p>
@@ -330,10 +340,7 @@ function WorkspaceNav({
                     title={collapsed ? t(labelKey) : undefined}
                     className={`group relative flex min-h-11 w-full items-center gap-3 rounded-[11px] px-3 text-left text-sm font-semibold transition ${active ? "bg-blue-50 text-blue-700 shadow-[inset_0_0_0_1px_rgba(37,99,235,0.08)]" : "text-slate-600 hover:bg-slate-50 hover:text-[#071b4a]"}`}
                   >
-                    {active ? (
-                      <span className="absolute -left-3 top-2 h-7 w-1 rounded-r-full bg-blue-600" />
-                    ) : null}
-                    <Icon size={19} strokeWidth={1.9} className="shrink-0" />
+                    <Icon size={24} strokeWidth={1.7} className="shrink-0" />
                     {!collapsed ? (
                       <span className="truncate">{t(labelKey)}</span>
                     ) : null}
@@ -341,7 +348,7 @@ function WorkspaceNav({
                 );
               })}
             </div>
-          </div>
+          </Section>
         );
       })}
     </nav>
@@ -361,15 +368,16 @@ function Sidebar({
 }) {
   const { t } = useLocale();
   const inner = (
-    <div className="flex h-full flex-col px-3.5 py-5">
+    <div className="flex h-full flex-col overflow-y-auto px-3.5 py-5">
       <div
         className={`flex items-center justify-between ${collapsed ? "px-0" : "px-1"}`}
       >
         <Brand
           compact={collapsed && !mobileOpen}
-          forceLabel={mobileOpen}
-          prominent={!collapsed || mobileOpen}
-          onClick={() => onNavigate(roleHome(user))}
+          onClick={() => {
+            onNavigate(roleHome(user));
+            setMobileOpen(false);
+          }}
         />
         {mobileOpen ? (
           <button
@@ -386,23 +394,23 @@ function Sidebar({
         hasReport={hasReport}
         onNavigate={onNavigate}
         user={user}
-        collapsed={collapsed}
+        collapsed={collapsed && !mobileOpen}
         closeMobile={() => setMobileOpen(false)}
       />
-      <button
+      {!mobileOpen ? <button
         onClick={() => setCollapsed((value) => !value)}
         className="mt-auto hidden min-h-11 items-center gap-3 rounded-xl px-3 text-sm font-semibold text-slate-500 transition hover:bg-slate-50 hover:text-[#071b4a] lg:flex"
         aria-label={collapsed ? t("nav.expand") : t("nav.collapse")}
       >
         {collapsed ? <PanelLeftOpen size={19} /> : <PanelLeftClose size={19} />}
         {!collapsed ? <span>{t("nav.collapse")}</span> : null}
-      </button>
+      </button> : null}
     </div>
   );
   return (
     <>
       <aside
-        className={`workspace-sidebar fixed inset-y-0 left-0 z-40 hidden border-r border-clinical-line bg-white transition-[width] duration-200 lg:block ${collapsed ? "w-[80px]" : "w-[252px]"}`}
+        className={`workspace-sidebar fixed inset-y-0 left-0 z-40 hidden border-r border-clinical-line bg-white transition-[width] duration-200 lg:block ${collapsed ? "w-[80px]" : "w-[282px]"}`}
       >
         {inner}
       </aside>
@@ -440,15 +448,18 @@ function friendlyRole(role, t) {
   return t(roles[role] || "role.user");
 }
 
-function WorkspaceTopbar({ user, onNavigate, onOpenMenu }) {
+function WorkspaceTopbar({ user, currentPage, hasReport, onNavigate, onOpenMenu, menuButtonRef }) {
   const { t } = useLocale();
   const { logout } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
+  const currentItem = workspaceSectionsFor(user)
+    .flatMap((section) => visibleItems(section.items, user, hasReport))
+    .find((item) => item.id === currentPage);
   const menuRef = useRef(null);
   const displayName =
     user?.full_name ||
     user?.email?.split("@")[0] ||
-    t("profile.developmentUser");
+    t("nav.login");
   const initials = displayName
     .split(/\s+/)
     .map((part) => part[0])
@@ -481,34 +492,40 @@ function WorkspaceTopbar({ user, onNavigate, onOpenMenu }) {
     onNavigate("home");
   }
   return (
-    <header className="sticky top-0 z-30 flex h-[68px] items-center justify-between border-b border-clinical-line bg-white/95 px-4 backdrop-blur-xl sm:px-6">
+    <header className="workspace-topbar sticky top-0 z-30 flex h-[60px] items-center justify-between border-b border-clinical-line bg-white/95 px-4 backdrop-blur-xl sm:px-6">
       <button
+        ref={menuButtonRef}
         className="grid h-11 w-11 place-items-center rounded-xl text-slate-600 hover:bg-slate-100 lg:hidden"
         onClick={onOpenMenu}
         aria-label={t("nav.openMenu")}
       >
         <Menu size={22} />
       </button>
-      <div className="hidden lg:block" />
+      <div className="workspace-location hidden min-w-0 items-center gap-2 text-sm sm:flex">
+        <button type="button" onClick={() => onNavigate(roleHome(user))} aria-label={t("nav.home")} title={t("nav.home")} className="grid h-10 w-10 shrink-0 place-items-center rounded-lg text-slate-500 hover:bg-slate-100">
+          <ArrowLeft size={18} className="rtl:rotate-180" />
+        </button>
+        <span className="truncate font-medium text-slate-600">{currentItem ? t(currentItem.labelKey) : t("nav.overview")}</span>
+      </div>
       <div className="flex items-center gap-2 sm:gap-3">
         <ThemeSelector />
         <span className="hidden h-7 w-px bg-slate-200 sm:block" />
         <div className="relative" ref={menuRef}>
           <button
             type="button"
-            aria-haspopup="menu"
+            aria-haspopup={user ? "menu" : undefined}
             aria-expanded={menuOpen}
-            onClick={() => setMenuOpen((value) => !value)}
+            onClick={() => user ? setMenuOpen((value) => !value) : onNavigate("login")}
             className="flex min-h-11 items-center gap-2.5 rounded-xl px-2 text-sm text-[#071b4a] transition hover:bg-slate-50"
           >
             <span className="grid h-9 w-9 place-items-center rounded-full bg-[#071b4a] text-xs font-bold tracking-wide text-white">
-              {initials || <User size={18} />}
+              {user ? initials : <User size={18} />}
             </span>
             <span className="hidden max-w-44 text-left sm:block">
               <span className="block truncate font-semibold leading-4">
                 {displayName}
               </span>
-              <span className="mt-0.5 block text-[11px] font-medium text-slate-500">
+              <span className="sr-only">
                 {friendlyRole(user?.role, t)}
               </span>
             </span>
@@ -620,14 +637,14 @@ function MobileWorkspaceNav({ currentPage, onNavigate, user }) {
 
 export function PageHeader({ eyebrow, title, description, actions }) {
   return (
-    <div className="mb-7 flex flex-col gap-4 border-b border-slate-200 pb-6 lg:flex-row lg:items-end lg:justify-between">
-      <div>
+    <div className="workspace-page-header mb-6 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+      <div className="min-w-0">
         {eyebrow ? (
-          <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.14em] text-teal-700">
+          <p className="sr-only">
             {eyebrow}
           </p>
         ) : null}
-        <h1 className="text-balance text-[1.75rem] font-bold leading-tight tracking-[-0.025em] text-[#071b4a] sm:text-[2rem]">
+        <h1 className="text-balance text-[1.75rem] font-bold leading-tight text-clinical-ink">
           {title}
         </h1>
         {description ? (
@@ -636,7 +653,7 @@ export function PageHeader({ eyebrow, title, description, actions }) {
           </p>
         ) : null}
       </div>
-      {actions ? <div className="shrink-0">{actions}</div> : null}
+      {actions ? <div className="flex min-w-0 flex-wrap gap-2">{actions}</div> : null}
     </div>
   );
 }
@@ -652,10 +669,13 @@ export default function AppShell({
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const mobilePanelRef = useRef(null);
-  const workspace = Boolean(user) && workspacePages.has(currentPage);
+  const menuButtonRef = useRef(null);
+  const workspace = (Boolean(user) || currentPage === "exercises") && workspacePages.has(currentPage);
+  const navigateWorkspace = (destination) => onNavigate(!user && destination !== "exercises" ? "login" : destination);
   useEffect(() => {
     if (!mobileOpen) return undefined;
     const previousOverflow = document.body.style.overflow;
+    const previousFocus = document.activeElement;
     document.body.style.overflow = "hidden";
     mobilePanelRef.current?.focus();
     function handleKeyDown(event) {
@@ -663,13 +683,13 @@ export default function AppShell({
       if (event.key !== "Tab") return;
       const focusable = [
         ...(mobilePanelRef.current?.querySelectorAll(
-          'button:not([disabled]), a[href], select:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])',
+          'button:not([disabled]), a[href], summary, select:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])',
         ) || []),
-      ];
+      ].filter((element) => element.matches("summary") || !element.closest("details:not([open])"));
       if (!focusable.length) return;
       const first = focusable[0];
       const last = focusable[focusable.length - 1];
-      if (event.shiftKey && document.activeElement === first) {
+      if (event.shiftKey && (document.activeElement === first || document.activeElement === mobilePanelRef.current)) {
         event.preventDefault();
         last.focus();
       } else if (!event.shiftKey && document.activeElement === last) {
@@ -681,17 +701,19 @@ export default function AppShell({
     return () => {
       document.body.style.overflow = previousOverflow;
       document.removeEventListener("keydown", handleKeyDown);
+      if (previousFocus?.isConnected) previousFocus.focus();
     };
   }, [mobileOpen]);
   if (workspace)
     return (
       <div
-        className={`workspace min-h-screen bg-clinical-panel text-[#071b4a] ${collapsed ? "lg:pl-[80px]" : "lg:pl-[252px]"}`}
+        className={`workspace min-h-screen bg-clinical-panel text-[#071b4a] ${collapsed ? "lg:pl-[80px]" : "lg:pl-[282px]"}`}
       >
+        <a className="skip-link" href="#workspace-content">{t("nav.skipContent")}</a>
         <Sidebar
           currentPage={currentPage}
           hasReport={hasReport}
-          onNavigate={onNavigate}
+          onNavigate={navigateWorkspace}
           user={user}
           collapsed={collapsed}
           setCollapsed={setCollapsed}
@@ -702,16 +724,19 @@ export default function AppShell({
         <div className="min-w-0">
           <WorkspaceTopbar
             user={user}
-            onNavigate={onNavigate}
+            currentPage={currentPage}
+            hasReport={hasReport}
+            menuButtonRef={menuButtonRef}
+            onNavigate={navigateWorkspace}
             onOpenMenu={() => setMobileOpen(true)}
           />
-          <div key={currentPage} className="app-page pb-24 lg:pb-0">
+          <div key={currentPage} id="workspace-content" tabIndex={-1} className="app-page pb-24 lg:pb-0">
             {children}
           </div>
         </div>
         <MobileWorkspaceNav
           currentPage={currentPage}
-          onNavigate={onNavigate}
+          onNavigate={navigateWorkspace}
           user={user}
         />
       </div>
@@ -724,7 +749,7 @@ export default function AppShell({
         onNavigate={onNavigate}
         user={user}
       />
-      <div key={currentPage} className="app-page flex-1">
+      <div key={currentPage} className={`app-page flex-1 ${["home", "login", "register", "forgotPassword", "resetPassword", "verifyEmail"].includes(currentPage) ? "" : "public-content"}`}>
         {children}
       </div>
       <footer className="mt-auto border-t border-slate-200 bg-white">

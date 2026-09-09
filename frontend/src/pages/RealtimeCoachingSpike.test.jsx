@@ -72,20 +72,35 @@ describe("RealtimeCoachingSpike", () => {
     expect(summarizeFrame(canvas)).toMatchObject({ brightness: 150, visibilityProxy: 100 });
   });
 
-  it("uses an optional local landmark extractor only when present", async () => {
+  it("uses the Movena browser landmark extractor when present", async () => {
+    delete window.movenaLandmarkExtractor;
     delete window.physioVisionLandmarkExtractor;
     await expect(readOptionalLandmarkSummary({})).resolves.toEqual({
       enabled: false,
       landmarkCount: 0,
       averageConfidence: null,
     });
-    window.physioVisionLandmarkExtractor = {
+    window.movenaLandmarkExtractor = {
       estimate: vi.fn().mockResolvedValue({ landmarks: [{ visibility: 0.8 }, { score: 0.6 }] }),
     };
     await expect(readOptionalLandmarkSummary({})).resolves.toMatchObject({
       enabled: true,
       landmarkCount: 2,
       averageConfidence: 0.7,
+      hands: [],
+    });
+    delete window.movenaLandmarkExtractor;
+  });
+
+  it("keeps the deprecated PhysioVision extractor global as a compatibility alias", async () => {
+    delete window.movenaLandmarkExtractor;
+    window.physioVisionLandmarkExtractor = {
+      estimate: vi.fn().mockResolvedValue({ landmarks: [{ visibility: 0.9 }] }),
+    };
+    await expect(readOptionalLandmarkSummary({})).resolves.toMatchObject({
+      enabled: true,
+      landmarkCount: 1,
+      averageConfidence: 0.9,
       hands: [],
     });
     delete window.physioVisionLandmarkExtractor;
