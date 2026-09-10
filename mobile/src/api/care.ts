@@ -179,7 +179,11 @@ export const respondToInvitation = (id: string, action: "accept" | "decline") =>
 export const invitePatient = (email: string) => apiRequest<CareInvitation>("/api/v1/care-invitations", { method: "POST", body: JSON.stringify({ email }) }, true);
 export const getPatients = () => apiRequest<PatientSummary[]>("/api/v1/therapist/patients", {}, true);
 export const getPatient = (id: string) => apiRequest<PatientDetail>(`/api/v1/therapist/patients/${encodeURIComponent(id)}`, {}, true);
-export const getPatientAdherence = (id: string) => apiRequest<AdherenceResponse[]>(`/api/v1/therapist/patients/${encodeURIComponent(id)}/adherence`, {}, true);
+export const getPatientAdherence = async (id: string): Promise<AdherenceResponse[]> => {
+  const rows = await apiRequest<Omit<AdherenceResponse, "patient_id">[]>(`/api/v1/therapist/patients/${encodeURIComponent(id)}/adherence`, {}, true);
+  // The endpoint scopes these rows by patient but omits that ID from each response.
+  return rows.map((row) => ({ ...row, patient_id: id }));
+};
 export const acknowledgeResponse = (patientId: string, adherenceId: string, payload: object) => apiRequest(`/api/v1/therapist/patients/${encodeURIComponent(patientId)}/adherence/${encodeURIComponent(adherenceId)}/acknowledge`, { method: "POST", body: JSON.stringify(payload) }, true);
 export const getTherapistAppointments = () => apiRequest<TherapistAppointment[]>("/api/v1/therapist/appointments", {}, true);
 export const getCoachingDashboard = (patientId?: string) => apiRequest<CoachingDashboard>(`/api/v1/recovery-coaching/dashboard${patientId ? `?patient_id=${encodeURIComponent(patientId)}` : ""}`, {}, true);

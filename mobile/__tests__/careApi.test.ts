@@ -15,10 +15,27 @@ test("loads the patient-owned Today contract", async () => {
 test("uses role-scoped care endpoints", async () => {
   await getConnections();
   await getPatients();
+  mockedApiRequest.mockResolvedValueOnce([]);
   await getPatientAdherence("patient 1");
   expect(mockedApiRequest).toHaveBeenNthCalledWith(1, "/api/v1/connections", {}, true);
   expect(mockedApiRequest).toHaveBeenNthCalledWith(2, "/api/v1/therapist/patients", {}, true);
   expect(mockedApiRequest).toHaveBeenNthCalledWith(3, "/api/v1/therapist/patients/patient%201/adherence", {}, true);
+});
+
+test("carries the scoped patient ID from adherence retrieval into acknowledgement", async () => {
+  mockedApiRequest.mockResolvedValueOnce([{
+    adherence_id: "response/1", plan_item_id: "item-1", scheduled_date: "2026-09-10",
+    completion_status: "partial", clinician_review_required: true, reviewed_at: null,
+    symptom_flags: ["pain_increase"],
+  }]);
+  const [response] = await getPatientAdherence("patient/1");
+  await acknowledgeResponse(response.patient_id, response.adherence_id, {
+    disposition: "contacted_patient", clinician_attestation: true,
+  });
+  expect(mockedApiRequest).toHaveBeenLastCalledWith(
+    "/api/v1/therapist/patients/patient%2F1/adherence/response%2F1/acknowledge",
+    expect.objectContaining({ method: "POST" }), true,
+  );
 });
 
 test("sends explicit invitation and clinical review actions", async () => {

@@ -1,6 +1,5 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
-import Ionicons from "@expo/vector-icons/Ionicons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { AppShell, BrandHeader } from "@/src/components/AppShell";
 import { CareAccess, Check, Choice, Field, NavRow, careStyles } from "@/src/components/CareUI";
@@ -43,7 +42,7 @@ function TodayContent() {
   const save = async () => {
     if (!selected || !data) return;
     try {
-      const payload = { plan_item_id: selected.item_id, scheduled_date: data.date, completion_status: form.completion_status, pain_before: optionalScore(form.pain_before, "Pain before", 0, 10), pain_after: optionalScore(form.pain_after, "Pain after", 0, 10), difficulty: optionalScore(form.difficulty, "Difficulty", 1, 5), fatigue: optionalScore(form.fatigue, "Fatigue", 1, 5), perceived_exertion: optionalScore(form.perceived_exertion, "Effort", 0, 10), symptoms_changed: form.symptoms_changed, stopped_due_to_symptoms: form.stopped_due_to_symptoms, symptom_flags: form.symptom_flags, safety_acknowledged: form.safety_acknowledged, note: form.note.trim() || null, analysis_session_id: params.analysisSessionId || selected.analysis_session_id || null };
+      const payload = { plan_item_id: selected.item_id, scheduled_date: data.date, completion_status: form.completion_status, pain_before: optionalScore(form.pain_before, "Pain before", 0, 10), pain_after: optionalScore(form.pain_after, "Pain after", 0, 10), difficulty: optionalScore(form.difficulty, "Difficulty", 1, 5), fatigue: optionalScore(form.fatigue, "Fatigue", 1, 5), perceived_exertion: optionalScore(form.perceived_exertion, "Effort", 0, 10), symptoms_changed: form.symptoms_changed, stopped_due_to_symptoms: form.stopped_due_to_symptoms, symptom_flags: form.symptom_flags, safety_acknowledged: form.safety_acknowledged, note: form.note.trim() || null, analysis_session_id: (params.planItemId === selected.item_id ? params.analysisSessionId : null) || selected.analysis_session_id || null };
       if (hasSymptoms && !form.safety_acknowledged) throw new Error("Confirm the safety message before saving symptoms.");
       setBusy(true); const response = await logAdherence(payload, submitKey.current);
       const result = response as { supportive_instruction?: string; clinician_review_required?: boolean };
@@ -59,7 +58,14 @@ function TodayContent() {
     {data ? <>
       <View style={styles.summary}><Text style={styles.summaryTitle}>Your daily plan</Text><Text style={styles.summaryText}>{completed} of {data.plan_items.length} exercises checked in</Text><View accessibilityRole="progressbar" accessibilityValue={{ min: 0, max: data.plan_items.length, now: completed }} style={styles.track}><View style={[styles.bar, { width: `${Math.round(progress * 100)}%` }]} /></View></View>
       <View style={careStyles.section}><Heading>Prescribed exercises</Heading>
-        {data.plan_items.length ? data.plan_items.map((item, index) => <View key={item.item_id} style={styles.exerciseRow}><View style={styles.number}><Text style={styles.numberText}>{index + 1}</Text></View><View style={careStyles.flex}><Text style={careStyles.rowTitle}>{exerciseName(item.exercise_id)}</Text><Text style={careStyles.detail}>{item.sets} sets × {item.reps} reps{item.duration_minutes ? ` · ${item.duration_minutes} min` : ""}</Text>{item.created_by_name ? <Text style={styles.therapist}>From {item.created_by_name}</Text> : null}{item.precautions ? <Text style={styles.precaution}>Precaution: {item.precautions}</Text> : null}</View>{item.completion_status ? <StatusBadge label={completionLabel(item.completion_status)} tone={item.clinician_review_required ? "warning" : "success"} /> : <Pressable accessibilityRole="button" onPress={() => open(item)} style={styles.checkIn}><Text style={styles.checkInText}>Check in</Text></Pressable>}</View>) : <EmptyState title="Rest day" message="No exercises are scheduled today." />}
+        {data.plan_items.length ? data.plan_items.map((item, index) => <View key={item.item_id} style={styles.exerciseRow}><View style={styles.number}><Text style={styles.numberText}>{index + 1}</Text></View><View style={careStyles.flex}><Text style={careStyles.rowTitle}>{exerciseName(item.exercise_id)}</Text><Text style={careStyles.detail}>{item.sets} sets × {item.reps} reps{item.duration_minutes ? ` · ${item.duration_minutes} min` : ""}</Text>{item.created_by_name ? <Text style={styles.therapist}>From {item.created_by_name}</Text> : null}{item.precautions ? <Text style={styles.precaution}>Precaution: {item.precautions}</Text> : null}
+          {!item.completion_status && (item.requires_ai_analysis || item.requested_media_upload) ? (
+            <PrimaryButton title="Open movement check" secondary onPress={() => router.push({
+              pathname: "/upload/[id]",
+              params: { id: item.exercise_id, planItemId: item.item_id, scheduledDate: data.date },
+            })} />
+          ) : null}
+        </View>{item.completion_status ? <StatusBadge label={completionLabel(item.completion_status)} tone={item.clinician_review_required ? "warning" : "success"} /> : <Pressable accessibilityRole="button" onPress={() => open(item)} style={styles.checkIn}><Text style={styles.checkInText}>Check in</Text></Pressable>}</View>) : <EmptyState title="Rest day" message="No exercises are scheduled today." />}
       </View>
       <NavRow title="Movement check" detail="Record an exercise for review" icon="videocam-outline" onPress={() => router.push("/identify")} />
       <View style={careStyles.section}><Heading>Next appointment</Heading><NavRow title={data.upcoming_appointment ? new Date(data.upcoming_appointment.starts_at).toLocaleString() : "No appointment scheduled"} detail={data.upcoming_appointment?.delivery_mode === "video" ? "Private video appointment" : undefined} icon="calendar-outline" onPress={() => router.push("/appointments")} /></View>
