@@ -4,6 +4,7 @@ import {
   Bell,
   CalendarDays,
   CheckCircle2,
+  ChevronRight,
   Clock3,
   CreditCard,
   HeartPulse,
@@ -131,6 +132,13 @@ function formatDate(value, locale) {
     : "—";
 }
 
+function formatCalendarDay(value, locale) {
+  if (!value) return "—";
+  return new Intl.DateTimeFormat(locale === "ar" ? "ar-EG" : "en-GB", {
+    weekday: "long", month: "long", day: "numeric",
+  }).format(new Date(`${value}T12:00:00`));
+}
+
 export default function PatientCareDashboard({
   onAnalyzeAssigned,
   pendingAnalysis,
@@ -144,6 +152,7 @@ export default function PatientCareDashboard({
   const [notifications, setNotifications] = useState([]);
   const [catalog, setCatalog] = useState({ services: [], packages: [] });
   const [selected, setSelected] = useState(null);
+  const [expandedItemId, setExpandedItemId] = useState(null);
   const [form, setForm] = useState({
     completion_status: "completed",
     pain_before: "",
@@ -171,6 +180,7 @@ export default function PatientCareDashboard({
   const completedToday =
     today?.plan_items?.filter((item) => item.completion_status === "completed")
       .length || 0;
+  const checkedInToday = today?.plan_items?.filter((item) => item.completion_status).length || 0;
   const openCheckIn = (item) => {
     setResponseNotice(null);
     setSelected(item);
@@ -202,6 +212,7 @@ export default function PatientCareDashboard({
         listCatalog(),
       ]);
       setToday(day);
+      setExpandedItemId((current) => current || day.plan_items?.find((item) => !item.completion_status)?.item_id || day.plan_items?.[0]?.item_id || null);
       setAppointments(appts);
       setNotifications(notices);
       setCatalog(products);
@@ -338,7 +349,7 @@ export default function PatientCareDashboard({
       </main>
     );
   return (
-    <main className="mx-auto max-w-[1500px] px-4 py-7 sm:px-6 lg:px-9">
+    <main className="patient-care-page mx-auto max-w-[1400px] px-4 py-7 sm:px-6 lg:px-9">
       <PageHeader
         title={
           locale === "ar"
@@ -363,27 +374,36 @@ export default function PatientCareDashboard({
           {responseNotice.supportive_instruction}
         </Alert>
       ) : null}
+      <section className="care-progress-summary" aria-label={locale === "ar" ? "تقدم اليوم" : "Today's check-in progress"}>
+        <div>
+          <p className="care-progress-title">{checkedInToday} {locale === "ar" ? `من ${today?.plan_items?.length || 0} تم تسجيلها` : `of ${today?.plan_items?.length || 0} checked in`}</p>
+          <p className="care-progress-detail">{completedToday} {locale === "ar" ? "مكتملة بالكامل" : "fully completed"}</p>
+        </div>
+        <strong>{today?.plan_items?.length ? Math.round((checkedInToday / today.plan_items.length) * 100) : 0}%</strong>
+        <div className="care-progress-track" role="progressbar" aria-valuemin="0" aria-valuemax={today?.plan_items?.length || 0} aria-valuenow={checkedInToday}>
+          <span style={{ width: `${today?.plan_items?.length ? (checkedInToday / today.plan_items.length) * 100 : 0}%` }} />
+        </div>
+      </section>
       <div className="grid gap-5 xl:grid-cols-[minmax(0,1.6fr)_minmax(300px,.75fr)]">
         <div className="patient-care-primary min-w-0 flex flex-col gap-5">
-          <Card className="overflow-hidden">
+          <Card className="care-plan-panel overflow-hidden">
             <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
               <h2 className="flex items-center gap-2 font-bold text-clinical-ink">
                 <HeartPulse size={19} className="text-teal-600" />
                 {c.program}
               </h2>
-              <Badge tone="teal">{today?.date}</Badge>
+              <span className="text-sm font-semibold text-slate-500">{formatCalendarDay(today?.date, locale)}</span>
             </div>
             <div className="divide-y divide-slate-100">
               {today?.plan_items?.length ? (
                 today.plan_items.map((item) => (
-                  <div
+                  <article
                     key={item.item_id}
-                    className="flex flex-col gap-3 px-5 py-4 sm:flex-row sm:items-center"
+                    className={`care-plan-item ${expandedItemId === item.item_id ? "is-expanded" : ""}`}
                   >
-                    <div className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-teal-50 text-teal-700">
-                      <Play size={18} />
-                    </div>
-                    <div className="min-w-0 flex-1">
+                    <button type="button" className="care-plan-summary" aria-expanded={expandedItemId === item.item_id} onClick={() => setExpandedItemId((current) => current === item.item_id ? null : item.item_id)}>
+                    <span className={`care-plan-number ${item.completion_status ? "is-checked" : ""}`}>{item.completion_status ? <CheckCircle2 size={20} /> : <Play size={17} />}</span>
+                    <span className="min-w-0 flex-1 text-start">
                       <h3 className="font-bold text-slate-900">
                         {item.exercise_id.replaceAll("_", " ")}
                       </h3>
@@ -404,13 +424,13 @@ export default function PatientCareDashboard({
                           ? ` · target ${item.target_score}/100`
                           : ""}
                       </p>
-                      {item.instructions ? (
-                        <p className="mt-1 text-xs leading-5 text-slate-600">
-                          {item.instructions}
-                        </p>
-                      ) : null}
-                    </div>
-                    <div className="flex flex-wrap gap-2">
+                    </span>
+                    <ChevronRight className={`care-plan-chevron ${expandedItemId === item.item_id ? "is-open" : ""}`} size={19} />
+                    </button>
+                    {expandedItemId === item.item_id ? <div className="care-plan-details">
+                      {item.instructions ? <div><strong>{locale === "ar" ? "التعليمات" : "Instructions"}</strong><p>{item.instructions}</p></div> : null}
+                      {item.precautions ? <div className="care-plan-precaution"><strong>{locale === "ar" ? "احتياط" : "Precaution"}</strong><p>{item.precautions}</p></div> : null}
+                    <div className="flex flex-wrap gap-2 pt-1">
                       {onAnalyzeAssigned &&
                       (item.requires_ai_analysis ||
                         item.requested_media_upload) ? (
@@ -435,7 +455,8 @@ export default function PatientCareDashboard({
                         </Button>
                       )}
                     </div>
-                  </div>
+                    </div> : null}
+                  </article>
                 ))
               ) : (
                 <div className="p-5">
@@ -638,14 +659,13 @@ export default function PatientCareDashboard({
                   {c.adherence}
                 </p>
                 <p className="mt-2 text-2xl font-extrabold text-[#071b4a]">
-                  {today?.adherence_percent_7d ?? 0}%
+                  {today?.adherence_percent_7d == null ? (locale === "ar" ? "غير متاح" : "Not available") : `${today.adherence_percent_7d}%`}
                 </p>
               </div>
               <div className="rounded-xl bg-teal-50 p-4">
                 <p className="text-xs font-semibold text-teal-700">{c.pain}</p>
                 <p className="mt-2 text-2xl font-extrabold text-[#071b4a]">
-                  {today?.average_pain_7d ?? "—"}
-                  <span className="text-sm">/10</span>
+                  {today?.average_pain_7d == null ? (locale === "ar" ? "غير متاح" : "Not available") : <>{today.average_pain_7d}<span className="text-sm">/10</span></>}
                 </p>
               </div>
             </div>

@@ -24,11 +24,11 @@ export const SafetyNotice = () => <Card tone="warning"><Heading>Safety reminder<
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.background }, scroll: { paddingBottom: 36 }, content: { padding: 20, gap: 16 },
-  card: { backgroundColor: colors.card, borderColor: colors.border, borderWidth: 1, borderRadius: 18, padding: 18, gap: 10 },
-  warningCard: { backgroundColor: colors.paleAmber, borderColor: "#FDE68A" }, blueCard: { backgroundColor: colors.paleBlue, borderColor: "#BFDBFE" },
+  card: { backgroundColor: colors.card, borderColor: colors.border, borderWidth: 1, borderRadius: 16, padding: 18, gap: 10 },
+  warningCard: { backgroundColor: colors.paleAmber, borderColor: "#F0D79C" }, blueCard: { backgroundColor: colors.paleBlue, borderColor: "#C9D9FA" },
   title: { fontSize: 30, fontWeight: "800", color: colors.text, lineHeight: 36 }, heading: { fontSize: 18, fontWeight: "700", color: colors.text },
   body: { fontSize: 15, lineHeight: 22, color: colors.text }, muted: { color: colors.muted },
-  button: { minHeight: 48, borderRadius: 14, backgroundColor: colors.primary, alignItems: "center", justifyContent: "center", paddingHorizontal: 18, marginTop: 4 },
+  button: { minHeight: 48, borderRadius: 12, backgroundColor: colors.primary, alignItems: "center", justifyContent: "center", paddingHorizontal: 18, marginTop: 4 },
   secondaryButton: { backgroundColor: colors.card, borderWidth: 1, borderColor: colors.border }, buttonText: { color: "white", fontWeight: "700", fontSize: 15 }, secondaryText: { color: colors.text },
   disabled: { opacity: 0.45 }, pressed: { opacity: 0.8 }, badge: { alignSelf: "flex-start", borderRadius: 999, paddingVertical: 5, paddingHorizontal: 10 }, badgeText: { color: colors.text, fontWeight: "700", fontSize: 12 },
   row: { flexDirection: "row", alignItems: "center", gap: 10 },

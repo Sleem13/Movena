@@ -65,11 +65,11 @@ export function BottomNavigation({ active }: { active: MainTab }) {
 
 const styles = StyleSheet.create({
   shell: { flex: 1, backgroundColor: colors.background }, scroll: { flex: 1 }, scrollContent: { paddingBottom: 26 },
-  content: { flexGrow: 1, paddingHorizontal: 20, paddingTop: 18, gap: 24, width: "100%", maxWidth: 680, alignSelf: "center" },
+  content: { flexGrow: 1, paddingHorizontal: 20, paddingTop: 20, gap: 22, width: "100%", maxWidth: 720, alignSelf: "center" },
   header: { gap: 8 }, brandRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 20 },
-  brand: { flex: 1, alignItems: "flex-start", justifyContent: "center" }, wordmark: { fontSize: 27, lineHeight: 34, fontWeight: "800", letterSpacing: -1, color: colors.text }, initials: { fontSize: 15, color: colors.text, fontWeight: "600" },
+  brand: { flex: 1, alignItems: "flex-start", justifyContent: "center" }, wordmark: { fontSize: 26, lineHeight: 34, fontWeight: "800", letterSpacing: -0.8, color: colors.text }, initials: { fontSize: 15, color: colors.text, fontWeight: "700" },
   profile: { width: 44, height: 44, borderRadius: 22, borderWidth: 1, borderColor: colors.border, alignItems: "center", justifyContent: "center", backgroundColor: colors.card },
-  pageTitle: { color: colors.text, fontSize: 30, lineHeight: 37, fontWeight: "800", letterSpacing: -0.6 }, subtitle: { color: colors.muted, fontSize: 16, lineHeight: 24, maxWidth: 520 },
+  pageTitle: { color: colors.text, fontSize: 30, lineHeight: 37, fontWeight: "800", letterSpacing: -0.7 }, subtitle: { color: colors.muted, fontSize: 16, lineHeight: 24, maxWidth: 540 },
   nav: { minHeight: 76, paddingBottom: 8, paddingTop: 7, paddingHorizontal: 6, borderTopWidth: 1, borderTopColor: colors.border, backgroundColor: colors.card, flexDirection: "row", alignItems: "center", justifyContent: "space-around" },
   navItem: { flex: 1, minHeight: 58, alignItems: "center", justifyContent: "center", gap: 3 }, navIcon: { width: 40, height: 32, borderRadius: 16, alignItems: "center", justifyContent: "center" }, navIconSelected: { backgroundColor: colors.paleBlue },
   navLabel: { color: "#475569", fontSize: 11, fontWeight: "600" }, navLabelSelected: { color: colors.primary, fontWeight: "800" }, pressed: { opacity: 0.68 },

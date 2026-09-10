@@ -8,6 +8,13 @@ export function localDay() {
   const date = new Date();
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 }
+export const calendarDate = (value: string) => new Date(`${value}T12:00:00`);
+export const linkedAnalysisForItem = (routeItemId: string | undefined, routeSessionId: string | undefined, item: Pick<PlanItem, "item_id" | "analysis_session_id">) =>
+  (routeItemId === item.item_id ? routeSessionId : null) || item.analysis_session_id || null;
+export function reviewCountFromResults<T extends Pick<PlanItem, "clinician_review_required" | "reviewed_at">>(results: PromiseSettledResult<T[]>[]) {
+  if (results.some((result) => result.status === "rejected")) return null;
+  return results.flatMap((result) => result.status === "fulfilled" ? result.value : []).filter(needsReview).length;
+}
 export function optionalScore(value: string, label: string, min: number, max: number) {
   if (!value.trim()) return null;
   const number = Number(value);
