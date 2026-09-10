@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Movena",
-    "slug": "movena-mobile",
+    "slug": "physiovision-ai-mobile",
     "version": "0.28.0",
     "icon": "./assets/images/icon.png",
     "orientation": "portrait",

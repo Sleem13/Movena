@@ -2,7 +2,7 @@
 
 | Field | Result |
 |---|---|
-| EAS project | `@selim97/movena-mobile` |
+| EAS project | `@selim97/physiovision-ai-mobile` (app display name: Movena) |
 | Profile | `preview-staging` |
 | Command | `eas build --profile preview-staging --platform android` |
 | Distribution | Internal APK |

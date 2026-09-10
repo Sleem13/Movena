@@ -162,6 +162,25 @@ Do not continue to EAS if TypeScript, tests, dependency checks, or the Android b
 
 The `preview-staging` profile creates an internally distributed APK, uses the deployed HTTPS backend, includes the Movena icon/splash assets, and automatically increments Android `versionCode`.
 
+### EAS project identity
+
+The existing EAS project is `@selim97/physiovision-ai-mobile`, linked by
+`extra.eas.projectId` (`3161d775-09da-468e-b97d-f678ca583c4c`) in `app.json`.
+Keep `expo.slug` as `physiovision-ai-mobile` while using that project. The
+installed app's display name is controlled separately by `expo.name` (`Movena`).
+Changing the local slug during a rebrand without renaming the linked project
+causes EAS to stop with `Project config: Slug for project identified by
+"extra.eas.projectId" ... does not match the "slug" field ...`.
+
+If this error appears, verify the linked project with `npx eas-cli project:info`
+after logging in. Keep its slug and ID aligned; do not create a replacement
+project to resolve a display-name change.
+
+After committing and pushing a configuration fix, start a new
+`preview-staging.yml` workflow run from the updated `main` commit. Re-running
+the old failed run can use the old commit and repeat the error. The EAS GitHub
+project base directory for this repository is `mobile`.
+
 Run these exact PowerShell commands manually:
 
 ```powershell
