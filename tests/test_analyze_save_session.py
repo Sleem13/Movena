@@ -1,7 +1,9 @@
 import sys
 from pathlib import Path
 from types import SimpleNamespace
+from unittest.mock import Mock
 
+import pytest
 from fastapi.testclient import TestClient
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -77,20 +79,24 @@ def test_session_save_failure_does_not_break_analysis(monkeypatch, tmp_path):
     assert "Session could not be saved." in response.json()["validation_warnings"]
 
 
-def test_analyze_can_pass_patient_id_and_invalid_profile_warning(monkeypatch, tmp_path):
-    setup_route(monkeypatch, tmp_path, "squat_analysis")
-    captured = {}
-    def save(*_args, **kwargs):
-        captured.update(kwargs)
-        return SimpleNamespace(session_id="saved-unassigned", patient_assignment_warning=True)
-    monkeypatch.setattr("app.api.routes.squat_analysis.save_analysis_session", save)
+@pytest.mark.parametrize("route,endpoint", [
+    ("squat_analysis", "squat"),
+    ("sit_to_stand_analysis", "sit-to-stand"),
+])
+def test_anonymous_patient_linked_analysis_is_rejected(monkeypatch, tmp_path, route, endpoint):
+    setup_route(monkeypatch, tmp_path, route)
+    extract = Mock()
+    save = Mock()
+    monkeypatch.setattr(f"app.api.routes.{route}.extract_pose_landmarks", extract)
+    monkeypatch.setattr(f"app.api.routes.{route}.save_analysis_session", save)
     response = client.post(
-        "/api/v1/analyze/squat?save_session=true&patient_id=missing-profile",
+        f"/api/v1/analyze/{endpoint}?save_session=true&patient_id=missing-profile",
         files={"video": ("a.mp4", b"video", "video/mp4")},
     )
-    assert response.status_code == 200
-    assert captured["patient_id"] == "missing-profile"
-    assert "Patient profile was not found; session was saved unassigned." in response.json()["validation_warnings"]
+    assert response.status_code == 403
+    assert response.json()["error_code"] == "PATIENT_ACCESS_DENIED"
+    extract.assert_not_called()
+    save.assert_not_called()
 
 
 def test_authenticated_save_attaches_owner(monkeypatch, tmp_path):
