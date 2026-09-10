@@ -7,7 +7,19 @@ const POSES = [
   "heel_raise", "lunge", "step_up", "hip_flexion",
 ];
 
+export const GUIDE_POSES = [
+  "heel_raise", "lunge", "step_up",
+  "hip_flexion", "ankle_pumps", "heel_slide",
+  "quad_set", "straight_leg_raise", "glute_bridge",
+];
+
 export default function ExerciseIllustration({ exerciseId, label, supported }) {
+  const guideIndex = GUIDE_POSES.indexOf(exerciseId);
+  if (guideIndex >= 0) return <div role="img" aria-label={label} className="exercise-illustration" style={{
+    backgroundImage: "url('/exercise-guides-avatars.png')",
+    backgroundSize: "300% 300%",
+    backgroundPosition: `${(guideIndex % 3) * 50}% ${Math.floor(guideIndex / 3) * 50}%`,
+  }} />;
   const index = POSES.indexOf(exerciseId);
   if (index < 0) return <ExercisePoseGraph exerciseId={exerciseId} label={label} supported={supported} />;
   return <div role="img" aria-label={label} className="exercise-illustration" style={{

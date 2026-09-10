@@ -50,11 +50,11 @@ function ExerciseCard({ exercise, onAnalyze }) {
       <div
         className="exercise-media"
       >
-        {exercise.guidance_available ? <PersonStanding size={64} aria-hidden="true" /> : <ExerciseIllustration
+        <ExerciseIllustration
           exerciseId={exercise.exercise_id}
           label={`${exercise.display_name} ${t("exercises.posePreview")}`}
           supported={supported}
-        />}
+        />
       </div>
       <div className="exercise-card-body flex flex-1 flex-col">
         <div className="exercise-availability">
