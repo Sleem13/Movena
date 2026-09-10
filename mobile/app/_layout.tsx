@@ -25,9 +25,14 @@ export default function RootLayout() {
           <Stack.Screen name="identify" options={main} />
           <Stack.Screen name="history" options={main} />
       <Stack.Screen name="more" options={main} />
-      <Stack.Screen name="today" options={{ title: "Today's plan" }} />
-      <Stack.Screen name="appointments" options={{ title: "Appointments" }} />
-      <Stack.Screen name="notifications" options={{ title: "Notifications" }} />
+      <Stack.Screen name="today" options={main} />
+      <Stack.Screen name="patients" options={main} />
+      <Stack.Screen name="patient/[id]" options={main} />
+      <Stack.Screen name="review" options={main} />
+      <Stack.Screen name="care-team" options={main} />
+      <Stack.Screen name="goals" options={main} />
+      <Stack.Screen name="appointments" options={main} />
+      <Stack.Screen name="notifications" options={main} />
       <Stack.Screen name="billing" options={{ title: "Sessions & packages" }} />
           <Stack.Screen name="exercise/[id]" options={{ title: "Exercise" }} />
           <Stack.Screen

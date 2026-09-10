@@ -21,7 +21,7 @@ export default function LoginScreen() {
     const validationError = validateLoginInput(email, password);
     if (validationError) { setAuthError(validationError); return; }
     setBusy(true); setAuthError("");
-    try { await signIn(email.trim(), password); router.replace("/profile"); }
+    try { await signIn(email.trim(), password); router.replace("/"); }
     catch (requestError) { setAuthError(authRequestErrorMessage(requestError as Error & { code?: string }, "login")); }
     finally { setBusy(false); }
   }

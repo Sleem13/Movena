@@ -1,37 +1,46 @@
 import type { PropsWithChildren } from "react";
-import { Image, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { colors } from "@/src/config/theme";
 import { BRAND } from "@/src/config/brand";
+import { useAuth } from "@/src/context/AuthContext";
+import { initials, isTherapist } from "@/src/utils/care";
 
-export type MainTab = "today" | "coach" | "progress" | "appointments" | "more";
+export type MainTab = "today" | "coach" | "progress" | "appointments" | "more" | "team" | "patients" | "review";
 
-const tabs: { key: MainTab; label: string; icon: keyof typeof Ionicons.glyphMap; route: "/today" | "/identify" | "/history" | "/appointments" | "/more" }[] = [
-  { key: "today", label: "Today", icon: "calendar-outline", route: "/today" },
-  { key: "coach", label: "Coach", icon: "scan-outline", route: "/identify" },
+type Tab = { key: MainTab; label: string; icon: keyof typeof Ionicons.glyphMap; route: string };
+const patientTabs: Tab[] = [
+  { key: "today", label: "Today", icon: "home-outline", route: "/today" },
   { key: "progress", label: "Progress", icon: "trending-up-outline", route: "/history" },
-  { key: "appointments", label: "Appointments", icon: "videocam-outline", route: "/appointments" },
-  { key: "more", label: "More", icon: "ellipsis-horizontal-circle-outline", route: "/more" },
+  { key: "team", label: "Care team", icon: "people-outline", route: "/care-team" },
+  { key: "more", label: "Account", icon: "person-outline", route: "/more" },
+];
+const therapistTabs: Tab[] = [
+  { key: "patients", label: "Patients", icon: "people-outline", route: "/patients" },
+  { key: "review", label: "Review", icon: "document-text-outline", route: "/review" },
+  { key: "appointments", label: "Schedule", icon: "calendar-outline", route: "/appointments" },
+  { key: "more", label: "Account", icon: "person-outline", route: "/more" },
 ];
 
 export function AppShell({ children, active, scroll = true }: PropsWithChildren<{ active: MainTab; scroll?: boolean }>) {
   const content = <View style={styles.content}>{children}</View>;
   return <SafeAreaView style={styles.shell} edges={["top", "left", "right", "bottom"]}>
-    {scroll ? <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>{content}</ScrollView> : content}
+    {scroll ? <ScrollView style={styles.scroll} keyboardShouldPersistTaps="handled" contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>{content}</ScrollView> : content}
     <BottomNavigation active={active} />
   </SafeAreaView>;
 }
 
 export function BrandHeader({ title, subtitle }: { title?: string; subtitle?: string }) {
   const router = useRouter();
+  const { user } = useAuth();
   return <View style={styles.header}>
     <View style={styles.brandRow}>
-      <View style={styles.brand} accessibilityRole="image" accessibilityLabel={BRAND.accessibilityLabel}><Image source={BRAND.assets.wordmark} style={styles.wordmark} resizeMode="contain" /></View>
+      <View style={styles.brand}><Text accessibilityLabel={BRAND.name} style={styles.wordmark}>{BRAND.name}</Text></View>
       <Pressable accessibilityRole="button" accessibilityLabel="Open profile" onPress={() => router.push("/profile")} style={({ pressed }) => [styles.profile, pressed && styles.pressed]}>
-        <Ionicons name="person-outline" size={22} color={colors.text} />
+        {user?.full_name ? <Text style={styles.initials}>{initials(user.full_name)}</Text> : <Ionicons name="person-outline" size={22} color={colors.text} />}
       </Pressable>
     </View>
     {title ? <Text style={styles.pageTitle}>{title}</Text> : null}
@@ -41,8 +50,12 @@ export function BrandHeader({ title, subtitle }: { title?: string; subtitle?: st
 
 export function BottomNavigation({ active }: { active: MainTab }) {
   const router = useRouter();
+  const { user } = useAuth();
+  const therapist = isTherapist(user?.role);
+  const tabs = therapist ? therapistTabs : patientTabs;
+  const selectedTab = active === "coach" ? (therapist ? "patients" : "today") : !therapist && active === "appointments" ? "team" : therapist && active === "team" ? "patients" : active;
   return <View style={styles.nav}>{tabs.map((tab) => {
-    const selected = active === tab.key;
+    const selected = selectedTab === tab.key;
     return <Pressable key={tab.key} accessibilityRole="button" accessibilityState={{ selected }} accessibilityLabel={tab.label} onPress={() => router.replace(tab.route as never)} style={({ pressed }) => [styles.navItem, pressed && styles.pressed]}>
       <View style={[styles.navIcon, selected && styles.navIconSelected]}><Ionicons name={tab.icon} size={23} color={selected ? colors.primary : "#475569"} /></View>
       <Text style={[styles.navLabel, selected && styles.navLabelSelected]}>{tab.label}</Text>
@@ -52,11 +65,11 @@ export function BottomNavigation({ active }: { active: MainTab }) {
 
 const styles = StyleSheet.create({
   shell: { flex: 1, backgroundColor: colors.background }, scroll: { flex: 1 }, scrollContent: { paddingBottom: 26 },
-  content: { flexGrow: 1, paddingHorizontal: 20, paddingTop: 14, gap: 18 },
-  header: { gap: 8 }, brandRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 8 },
-  brand: { flex: 1, alignItems: "flex-start", justifyContent: "center" }, wordmark: { width: 230, height: 77 },
+  content: { flexGrow: 1, paddingHorizontal: 20, paddingTop: 18, gap: 24, width: "100%", maxWidth: 680, alignSelf: "center" },
+  header: { gap: 8 }, brandRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 20 },
+  brand: { flex: 1, alignItems: "flex-start", justifyContent: "center" }, wordmark: { fontSize: 27, lineHeight: 34, fontWeight: "800", letterSpacing: -1, color: colors.text }, initials: { fontSize: 15, color: colors.text, fontWeight: "600" },
   profile: { width: 44, height: 44, borderRadius: 22, borderWidth: 1, borderColor: colors.border, alignItems: "center", justifyContent: "center", backgroundColor: colors.card },
-  pageTitle: { color: colors.text, fontSize: 32, lineHeight: 38, fontWeight: "800", letterSpacing: -0.6 }, subtitle: { color: colors.muted, fontSize: 15, lineHeight: 22, maxWidth: 520 },
+  pageTitle: { color: colors.text, fontSize: 30, lineHeight: 37, fontWeight: "800", letterSpacing: -0.6 }, subtitle: { color: colors.muted, fontSize: 16, lineHeight: 24, maxWidth: 520 },
   nav: { minHeight: 76, paddingBottom: 8, paddingTop: 7, paddingHorizontal: 6, borderTopWidth: 1, borderTopColor: colors.border, backgroundColor: colors.card, flexDirection: "row", alignItems: "center", justifyContent: "space-around" },
   navItem: { flex: 1, minHeight: 58, alignItems: "center", justifyContent: "center", gap: 3 }, navIcon: { width: 40, height: 32, borderRadius: 16, alignItems: "center", justifyContent: "center" }, navIconSelected: { backgroundColor: colors.paleBlue },
   navLabel: { color: "#475569", fontSize: 11, fontWeight: "600" }, navLabelSelected: { color: colors.primary, fontWeight: "800" }, pressed: { opacity: 0.68 },
