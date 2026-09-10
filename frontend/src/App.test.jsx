@@ -245,10 +245,10 @@ describe("Squat Analyzer healthcare dashboard", () => {
     fireEvent.click(screen.getByRole("button", { name: "Next exercises" }));
     expect(screen.getByText("Walking Gait Screen")).toBeInTheDocument();
     expect(screen.getByText("Static Balance Screen")).toBeInTheDocument();
-    fireEvent.click(screen.getByText("Research and planned exercises"));
-    const planned = within(screen.getByRole("region", { name: "Planned exercises" }));
-    expect(planned.getAllByRole("button", { name: "Not available" })).toHaveLength(4);
-    expect(planned.getAllByRole("button", { name: "Not available" })[0]).toBeDisabled();
+    fireEvent.click(screen.getByText("Exercise guides and planned coverage"));
+    const guides = within(screen.getByRole("region", { name: "Exercise guides" }));
+    expect(guides.getAllByText("View instructions")).toHaveLength(9);
+    expect(guides.queryByRole("button", { name: "Analyze this exercise" })).not.toBeInTheDocument();
   });
 
   it("filters the exercise library by search text and availability", async () => {
@@ -263,7 +263,7 @@ describe("Squat Analyzer healthcare dashboard", () => {
     expect(screen.getByText("Shoulder Flexion")).toBeInTheDocument();
     expect(screen.getByText("Shoulder Press")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Clear exercise filters" }));
-    expect(screen.getByText("16 exercises match your filters.")).toBeInTheDocument();
+    expect(screen.getByText("21 exercises match your filters.")).toBeInTheDocument();
     expect(screen.getByText("Bodyweight Squat")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Previous exercises" })).toBeDisabled();
   });

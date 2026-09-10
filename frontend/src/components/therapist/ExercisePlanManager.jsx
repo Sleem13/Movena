@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { CheckCircle2, ClipboardList, Pause, Play, Plus, Trash2 } from "lucide-react";
-import { SUPPORTED_EXERCISES } from "../../data/exercises.js";
+import { PRESCRIBABLE_EXERCISES, SUPPORTED_EXERCISES } from "../../data/exercises.js";
 import { createPatientExercisePlan, updatePatientExercisePlanStatus } from "../../services/api.js";
 import { useLocale } from "../../i18n/LocaleContext.jsx";
 import Select from "../common/Select.jsx";
@@ -10,20 +10,20 @@ const fieldClass = "min-h-11 w-full rounded-[11px] border border-clinical-line b
 const newItem = () => ({ exercise_id: "bodyweight_squat", sets: 3, reps: 8, days_per_week: 3, schedule_days: [0, 2, 4], duration_minutes: "", rest_interval_seconds: 60, tempo: "", target_rom_degrees: "", target_score: "", instructions: "", precautions: "", requested_media_upload: false, requires_ai_analysis: false });
 
 export default function ExercisePlanManager({ patientId, plans, onPlansChange, currentUser }) {
-  const { t, exerciseText } = useLocale();
+  const { t, exerciseText, locale } = useLocale();
   const [title, setTitle] = useState("");
   const [notes, setNotes] = useState("");
   const [items, setItems] = useState([newItem()]);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
-  const exerciseOptions = useMemo(() => SUPPORTED_EXERCISES.map((exercise) => ({
+  const exerciseOptions = useMemo(() => PRESCRIBABLE_EXERCISES.map((exercise) => ({
     value: exercise.exercise_id,
     label: exerciseText(exercise.exercise_id).name,
   })), [exerciseText]);
 
   function updateItem(index, field, value) {
     setItems((current) => current.map((item, itemIndex) => (
-      itemIndex === index ? { ...item, [field]: value } : item
+      itemIndex === index ? { ...item, [field]: value, ...(field === "exercise_id" ? { requires_ai_analysis: false, requested_media_upload: false } : {}) } : item
     )));
   }
 
@@ -84,6 +84,12 @@ export default function ExercisePlanManager({ patientId, plans, onPlansChange, c
           {items.map((item, index) => <div key={index} className="rounded-xl border border-clinical-line bg-slate-50/70 p-3">
             <div className="flex items-center justify-between gap-2"><p className="text-xs font-bold text-clinical-ink">{t("therapist.planExercise", { count: index + 1 })}</p>{items.length > 1 ? <button type="button" className="rounded-lg p-2 text-slate-400 transition hover:bg-red-50 hover:text-red-600" aria-label={t("therapist.removeExercise")} onClick={() => setItems((current) => current.filter((_, itemIndex) => itemIndex !== index))}><Trash2 size={16} /></button> : null}</div>
             <Select ariaLabel={t("therapist.exercise")} className="mt-2" options={exerciseOptions} value={item.exercise_id} onChange={(value) => updateItem(index, "exercise_id", value)} />
+            {PRESCRIBABLE_EXERCISES.find((entry) => entry.exercise_id === item.exercise_id)?.instructions?.length ? <div className="mt-2 text-sm"><p>{exerciseText(item.exercise_id).pattern} {exerciseText(item.exercise_id).safety}</p><Button type="button" variant="secondary" onClick={() => {
+              const guide = PRESCRIBABLE_EXERCISES.find((entry) => entry.exercise_id === item.exercise_id);
+              const content = locale === "ar" ? guide.localized_ar : guide;
+              updateItem(index, "instructions", content.instructions.join(" "));
+              updateItem(index, "precautions", content.safety_notes || exerciseText(item.exercise_id).safety);
+            }}>{locale === "ar" ? "استخدام تعليمات الدليل" : "Use guide instructions"}</Button><p>{locale === "ar" ? "راجع الجرعة والاحتياطات قبل حفظ الخطة." : "Review dosage and precautions before saving the plan."}</p></div> : null}
             <div className="mt-3 grid grid-cols-3 gap-2">
               {["sets", "reps", "days_per_week"].map((field) => <label key={field}><span className="mb-1 block text-[11px] font-semibold text-slate-500">{t(`therapist.${field}`)}</span><input type="number" className={fieldClass} min="1" max={field === "days_per_week" ? "7" : field === "sets" ? "20" : "100"} value={item[field]} onChange={(event) => updateItem(index, field, event.target.value)} required /></label>)}
             </div>
@@ -93,7 +99,7 @@ export default function ExercisePlanManager({ patientId, plans, onPlansChange, c
             <div className="mt-3 grid grid-cols-2 gap-2"><label><span className="mb-1 block text-[11px] font-semibold text-slate-500">Target ROM (degrees)</span><input type="number" className={fieldClass} min="0" max="360" value={item.target_rom_degrees} onChange={(event) => updateItem(index, "target_rom_degrees", event.target.value)} /></label><label><span className="mb-1 block text-[11px] font-semibold text-slate-500">Target score</span><input type="number" className={fieldClass} min="0" max="100" value={item.target_score} onChange={(event) => updateItem(index, "target_score", event.target.value)} /></label></div>
             <label className="mt-3 block"><span className="mb-1 block text-[11px] font-semibold text-slate-500">{t("therapist.instructions")}</span><input className={fieldClass} value={item.instructions} onChange={(event) => updateItem(index, "instructions", event.target.value)} maxLength={1000} /></label>
             <label className="mt-3 block"><span className="mb-1 block text-[11px] font-semibold text-slate-500">Precautions</span><input className={fieldClass} value={item.precautions} onChange={(event) => updateItem(index, "precautions", event.target.value)} maxLength={1000} /></label>
-            <div className="mt-3 flex flex-wrap gap-4 text-xs font-semibold text-slate-600"><label className="flex items-center gap-2"><input type="checkbox" checked={item.requested_media_upload} onChange={(event) => updateItem(index, "requested_media_upload", event.target.checked)} />Request video</label><label className="flex items-center gap-2"><input type="checkbox" checked={item.requires_ai_analysis} onChange={(event) => updateItem(index, "requires_ai_analysis", event.target.checked)} />Require Movena analysis</label></div>
+            <div className="mt-3 flex flex-wrap gap-4 text-xs font-semibold text-slate-600"><label className="flex items-center gap-2"><input type="checkbox" disabled={!SUPPORTED_EXERCISES.some((entry) => entry.exercise_id === item.exercise_id)} checked={item.requested_media_upload} onChange={(event) => updateItem(index, "requested_media_upload", event.target.checked)} />Request video</label><label className="flex items-center gap-2"><input type="checkbox" disabled={!SUPPORTED_EXERCISES.some((entry) => entry.exercise_id === item.exercise_id)} checked={item.requires_ai_analysis} onChange={(event) => updateItem(index, "requires_ai_analysis", event.target.checked)} />Require Movena analysis</label></div>
           </div>)}
         </div>
         <Button type="button" variant="secondary" className="w-full" onClick={() => setItems((current) => [...current, newItem()])}><Plus size={16} />{t("therapist.addExercise")}</Button>

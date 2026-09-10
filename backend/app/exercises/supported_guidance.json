@@ -1,0 +1,254 @@
+{
+  "bodyweight_squat": {
+    "instructions": [
+      "Stand with feet comfortably apart and support nearby.",
+      "Bend hips and knees within your allowed range, keeping heels down.",
+      "Return upright smoothly; do not force depth."
+    ],
+    "source_urls": [
+      "https://www.nhs.uk/live-well/exercise/strength-exercises/"
+    ],
+    "dosage_guidance": "Use your therapist's prescribed repetitions, sets, rest and range. Recording examples are not a treatment dose.",
+    "reference_note": "References explain exercise technique, not validation of Movena scores. Variations or assistance may not be reliably assessed by video.",
+    "localized_ar": {
+      "instructions": [
+        "قف مع تباعد مريح للقدمين ودعامة قريبة.",
+        "اثن الوركين والركبتين ضمن المدى المسموح مع إبقاء الكعبين على الأرض.",
+        "عد للوقوف بسلاسة دون إجبار نفسك على النزول العميق."
+      ],
+      "dosage_guidance": "اتبع التكرارات والمجموعات والراحة ومدى الحركة التي يصفها المعالج؛ أمثلة التصوير ليست جرعة علاجية.",
+      "reference_note": "تشرح المراجع طريقة التمرين ولا تثبت صحة درجات موفينا؛ قد لا يقيم الفيديو الأوضاع المعدلة أو المساعدة بدقة."
+    }
+  },
+  "sit_to_stand": {
+    "instructions": [
+      "Use a firm chair that cannot slide; place feet beneath your knees.",
+      "Lean forward and stand, using prescribed hand support.",
+      "Reach back if needed and lower slowly to sitting."
+    ],
+    "source_urls": [
+      "https://www.nhs.uk/live-well/exercise/strength-exercises/"
+    ],
+    "dosage_guidance": "Use your therapist's prescribed repetitions, sets, rest and range. Recording examples are not a treatment dose.",
+    "reference_note": "References explain exercise technique, not validation of Movena scores. Variations or assistance may not be reliably assessed by video.",
+    "localized_ar": {
+      "instructions": [
+        "استخدم كرسيًا ثابتًا لا ينزلق وضع القدمين أسفل الركبتين.",
+        "مل للأمام وقف باستخدام دعم اليدين الموصوف لك.",
+        "استند بيديك عند الحاجة واخفض جسمك ببطء للجلوس."
+      ],
+      "dosage_guidance": "اتبع التكرارات والمجموعات والراحة ومدى الحركة التي يصفها المعالج؛ أمثلة التصوير ليست جرعة علاجية.",
+      "reference_note": "تشرح المراجع طريقة التمرين ولا تثبت صحة درجات موفينا؛ قد لا يقيم الفيديو الأوضاع المعدلة أو المساعدة بدقة."
+    }
+  },
+  "knee_extension": {
+    "instructions": [
+      "Sit upright with the thigh supported.",
+      "Straighten one knee within your prescribed range without leaning backward.",
+      "Lower slowly; follow any postoperative movement limits."
+    ],
+    "source_urls": [
+      "https://www.uclh.nhs.uk/patients-and-visitors/patient-information-pages/home-exercises-improve-strength-and-balance-following-hospital-admission"
+    ],
+    "dosage_guidance": "Use your therapist's prescribed repetitions, sets, rest and range. Recording examples are not a treatment dose.",
+    "reference_note": "References explain exercise technique, not validation of Movena scores. Variations or assistance may not be reliably assessed by video.",
+    "localized_ar": {
+      "instructions": [
+        "اجلس منتصبًا مع دعم الفخذ.",
+        "افرد ركبة واحدة ضمن المدى الموصوف دون الميل للخلف.",
+        "اخفض الساق ببطء والتزم بحدود الحركة بعد الجراحة."
+      ],
+      "dosage_guidance": "اتبع التكرارات والمجموعات والراحة ومدى الحركة التي يصفها المعالج؛ أمثلة التصوير ليست جرعة علاجية.",
+      "reference_note": "تشرح المراجع طريقة التمرين ولا تثبت صحة درجات موفينا؛ قد لا يقيم الفيديو الأوضاع المعدلة أو المساعدة بدقة."
+    }
+  },
+  "hip_abduction": {
+    "instructions": [
+      "Stand holding a fixed support.",
+      "Move one leg sideways, keeping the trunk upright and toes forward.",
+      "Bring the leg back slowly without swinging."
+    ],
+    "source_urls": [
+      "https://www.uclh.nhs.uk/patients-and-visitors/patient-information-pages/home-exercises-improve-strength-and-balance-following-hospital-admission"
+    ],
+    "dosage_guidance": "Use your therapist's prescribed repetitions, sets, rest and range. Recording examples are not a treatment dose.",
+    "reference_note": "References explain exercise technique, not validation of Movena scores. Variations or assistance may not be reliably assessed by video.",
+    "localized_ar": {
+      "instructions": [
+        "قف مستندًا إلى دعامة ثابتة.",
+        "حرّك ساقًا إلى الجانب مع استقامة الجذع واتجاه الأصابع للأمام.",
+        "أعد الساق ببطء دون تأرجح."
+      ],
+      "dosage_guidance": "اتبع التكرارات والمجموعات والراحة ومدى الحركة التي يصفها المعالج؛ أمثلة التصوير ليست جرعة علاجية.",
+      "reference_note": "تشرح المراجع طريقة التمرين ولا تثبت صحة درجات موفينا؛ قد لا يقيم الفيديو الأوضاع المعدلة أو المساعدة بدقة."
+    }
+  },
+  "shoulder_abduction": {
+    "instructions": [
+      "Begin with the arm at your side and shoulder relaxed.",
+      "Lift the arm sideways only within the range cleared by your therapist.",
+      "Lower slowly; avoid leaning sideways or forcing through pain."
+    ],
+    "source_urls": [
+      "https://www.orthoinfo.org/recovery/shoulder-surgery-exercise-guide/?wmode=opaque"
+    ],
+    "dosage_guidance": "Use your therapist's prescribed repetitions, sets, rest and range. Recording examples are not a treatment dose.",
+    "reference_note": "References explain exercise technique, not validation of Movena scores. Variations or assistance may not be reliably assessed by video.",
+    "localized_ar": {
+      "instructions": [
+        "ابدأ والذراع بجانبك والكتف مسترخية.",
+        "ارفع الذراع جانبًا ضمن المدى الذي يسمح به معالجك فقط.",
+        "اخفضها ببطء وتجنب الميل جانبًا أو تجاوز الألم بالقوة."
+      ],
+      "dosage_guidance": "اتبع التكرارات والمجموعات والراحة ومدى الحركة التي يصفها المعالج؛ أمثلة التصوير ليست جرعة علاجية.",
+      "reference_note": "تشرح المراجع طريقة التمرين ولا تثبت صحة درجات موفينا؛ قد لا يقيم الفيديو الأوضاع المعدلة أو المساعدة بدقة."
+    }
+  },
+  "shoulder_flexion": {
+    "instructions": [
+      "Sit or stand upright with your arm relaxed.",
+      "Raise the arm forward within your therapist-approved range.",
+      "Return slowly without arching your back; use assistance only as prescribed."
+    ],
+    "source_urls": [
+      "https://www.torbayandsouthdevon.nhs.uk/services/physiotherapy/support-videos/torbay-shoulder-exercise-programme/"
+    ],
+    "dosage_guidance": "Use your therapist's prescribed repetitions, sets, rest and range. Recording examples are not a treatment dose.",
+    "reference_note": "References explain exercise technique, not validation of Movena scores. Variations or assistance may not be reliably assessed by video.",
+    "localized_ar": {
+      "instructions": [
+        "اجلس أو قف منتصبًا مع إرخاء الذراع.",
+        "ارفع الذراع للأمام ضمن المدى الذي يسمح به معالجك.",
+        "عد ببطء دون تقويس الظهر واستخدم المساعدة فقط حسب الوصفة."
+      ],
+      "dosage_guidance": "اتبع التكرارات والمجموعات والراحة ومدى الحركة التي يصفها المعالج؛ أمثلة التصوير ليست جرعة علاجية.",
+      "reference_note": "تشرح المراجع طريقة التمرين ولا تثبت صحة درجات موفينا؛ قد لا يقيم الفيديو الأوضاع المعدلة أو المساعدة بدقة."
+    }
+  },
+  "walking_gait_screen": {
+    "instructions": [
+      "Choose a clear, level path and supportive footwear.",
+      "Walk at your usual comfortable pace with your prescribed aid or assistance.",
+      "Stop safely if unsteady; do not remove support to improve the recording."
+    ],
+    "source_urls": [
+      "https://www.nhs.uk/live-well/exercise/walking-for-health/"
+    ],
+    "dosage_guidance": "Use your therapist's prescribed repetitions, sets, rest and range. Recording examples are not a treatment dose.",
+    "reference_note": "References explain exercise technique, not validation of Movena scores. Variations or assistance may not be reliably assessed by video.",
+    "localized_ar": {
+      "instructions": [
+        "اختر مسارًا مستويًا خاليًا من العوائق وحذاءً داعمًا.",
+        "امش بسرعتك المعتادة والمريحة مع وسيلة المساعدة أو الدعم الموصوف.",
+        "توقف بأمان عند عدم الاتزان ولا تتخل عن الدعم لتحسين التصوير."
+      ],
+      "dosage_guidance": "اتبع التكرارات والمجموعات والراحة ومدى الحركة التي يصفها المعالج؛ أمثلة التصوير ليست جرعة علاجية.",
+      "reference_note": "تشرح المراجع طريقة التمرين ولا تثبت صحة درجات موفينا؛ قد لا يقيم الفيديو الأوضاع المعدلة أو المساعدة بدقة."
+    }
+  },
+  "balance": {
+    "instructions": [
+      "Stand beside a stable support with eyes open.",
+      "Use the stance and assistance chosen by your therapist; breathe normally.",
+      "Hold only as prescribed and use support immediately if unsteady."
+    ],
+    "source_urls": [
+      "https://www.nhs.uk/live-well/exercise/balance-exercises/"
+    ],
+    "dosage_guidance": "Use your therapist's prescribed repetitions, sets, rest and range. Recording examples are not a treatment dose.",
+    "reference_note": "References explain exercise technique, not validation of Movena scores. Variations or assistance may not be reliably assessed by video.",
+    "localized_ar": {
+      "instructions": [
+        "قف بجوار دعامة ثابتة مع إبقاء العينين مفتوحتين.",
+        "استخدم وضع الوقوف والمساعدة اللذين يحددهما المعالج وتنفس طبيعيًا.",
+        "اثبت للمدة الموصوفة فقط واستند فورًا عند عدم الاتزان."
+      ],
+      "dosage_guidance": "اتبع التكرارات والمجموعات والراحة ومدى الحركة التي يصفها المعالج؛ أمثلة التصوير ليست جرعة علاجية.",
+      "reference_note": "تشرح المراجع طريقة التمرين ولا تثبت صحة درجات موفينا؛ قد لا يقيم الفيديو الأوضاع المعدلة أو المساعدة بدقة."
+    }
+  },
+  "push_up": {
+    "instructions": [
+      "Choose the wall, knee-supported or floor variation cleared for you.",
+      "Keep the trunk aligned while bending the elbows to lower comfortably.",
+      "Push back smoothly without sagging or holding your breath."
+    ],
+    "source_urls": [
+      "https://www.mayoclinic.org/healthy-lifestyle/fitness/multimedia/modified-pushup/vid-20084674"
+    ],
+    "dosage_guidance": "Use your therapist's prescribed repetitions, sets, rest and range. Recording examples are not a treatment dose.",
+    "reference_note": "References explain exercise technique, not validation of Movena scores. Variations or assistance may not be reliably assessed by video.",
+    "localized_ar": {
+      "instructions": [
+        "اختر الأداء على الحائط أو الركبتين أو الأرض حسب ما يسمح به معالجك.",
+        "حافظ على استقامة الجذع واثن المرفقين للنزول ضمن الراحة.",
+        "ادفع للعودة بسلاسة دون هبوط الجذع أو حبس النفس."
+      ],
+      "dosage_guidance": "اتبع التكرارات والمجموعات والراحة ومدى الحركة التي يصفها المعالج؛ أمثلة التصوير ليست جرعة علاجية.",
+      "reference_note": "تشرح المراجع طريقة التمرين ولا تثبت صحة درجات موفينا؛ قد لا يقيم الفيديو الأوضاع المعدلة أو المساعدة بدقة."
+    }
+  },
+  "shoulder_press": {
+    "instructions": [
+      "Use a stable position and only a clinician-approved load or unloaded practice.",
+      "Begin with bent elbows and press upward within your allowed range.",
+      "Lower under control; avoid arching the back or shrugging."
+    ],
+    "source_urls": [
+      "https://www.acefitness.org/resources/everyone/exercise-library/186/seated-shoulder-press/"
+    ],
+    "dosage_guidance": "Use your therapist's prescribed repetitions, sets, rest and range. Recording examples are not a treatment dose.",
+    "reference_note": "References explain exercise technique, not validation of Movena scores. Variations or assistance may not be reliably assessed by video.",
+    "localized_ar": {
+      "instructions": [
+        "استخدم وضعًا ثابتًا وحملًا يوافق عليه المعالج أو تدرب دون أوزان.",
+        "ابدأ بمرفقين مثنيين وادفع للأعلى ضمن المدى المسموح.",
+        "اخفض بتحكم وتجنب تقويس الظهر أو رفع الكتفين."
+      ],
+      "dosage_guidance": "اتبع التكرارات والمجموعات والراحة ومدى الحركة التي يصفها المعالج؛ أمثلة التصوير ليست جرعة علاجية.",
+      "reference_note": "تشرح المراجع طريقة التمرين ولا تثبت صحة درجات موفينا؛ قد لا يقيم الفيديو الأوضاع المعدلة أو المساعدة بدقة."
+    }
+  },
+  "bicep_curl": {
+    "instructions": [
+      "Keep the upper arm close to your side with palm facing forward.",
+      "Bend the elbow without swinging the trunk or lifting the shoulder.",
+      "Lower slowly, using only the load approved for you."
+    ],
+    "source_urls": [
+      "https://www.orthoinfo.org/recovery/rotator-cuff-and-shoulder-conditioning-program/"
+    ],
+    "dosage_guidance": "Use your therapist's prescribed repetitions, sets, rest and range. Recording examples are not a treatment dose.",
+    "reference_note": "References explain exercise technique, not validation of Movena scores. Variations or assistance may not be reliably assessed by video.",
+    "localized_ar": {
+      "instructions": [
+        "أبق العضد قريبًا من جانبك وراحة اليد للأمام.",
+        "اثن المرفق دون تأرجح الجذع أو رفع الكتف.",
+        "اخفض ببطء باستخدام الحمل المسموح لك فقط."
+      ],
+      "dosage_guidance": "اتبع التكرارات والمجموعات والراحة ومدى الحركة التي يصفها المعالج؛ أمثلة التصوير ليست جرعة علاجية.",
+      "reference_note": "تشرح المراجع طريقة التمرين ولا تثبت صحة درجات موفينا؛ قد لا يقيم الفيديو الأوضاع المعدلة أو المساعدة بدقة."
+    }
+  },
+  "hammer_curl": {
+    "instructions": [
+      "Keep the arms beside you, palms inward and wrists straight.",
+      "Bend the elbows while maintaining the thumb-up grip.",
+      "Lower slowly without swinging; use only an approved load."
+    ],
+    "source_urls": [
+      "https://www.acefitness.org/resources/everyone/exercise-library/10/hammer-curl/"
+    ],
+    "dosage_guidance": "Use your therapist's prescribed repetitions, sets, rest and range. Recording examples are not a treatment dose.",
+    "reference_note": "References explain exercise technique, not validation of Movena scores. Variations or assistance may not be reliably assessed by video.",
+    "localized_ar": {
+      "instructions": [
+        "أبق الذراعين بجانبك وراحتي اليدين للداخل والرسغين مستقيمين.",
+        "اثن المرفقين مع الحفاظ على الإبهامين للأعلى.",
+        "اخفض ببطء دون تأرجح واستخدم حملًا مسموحًا فقط."
+      ],
+      "dosage_guidance": "اتبع التكرارات والمجموعات والراحة ومدى الحركة التي يصفها المعالج؛ أمثلة التصوير ليست جرعة علاجية.",
+      "reference_note": "تشرح المراجع طريقة التمرين ولا تثبت صحة درجات موفينا؛ قد لا يقيم الفيديو الأوضاع المعدلة أو المساعدة بدقة."
+    }
+  }
+}

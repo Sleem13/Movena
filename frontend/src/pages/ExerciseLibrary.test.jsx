@@ -6,6 +6,16 @@ import { EXERCISES } from "../data/exercises.js";
 vi.mock("../context/AuthContext.jsx", () => ({ useAuth: () => ({ user: { role: "admin" } }) }));
 
 describe("exercise discovery", () => {
+  it("shows supported exercise instructions and a reference without losing its analysis action", () => {
+    const onAnalyze = vi.fn();
+    render(<ExerciseLibrary exercises={EXERCISES} onAnalyze={onAnalyze} />);
+    fireEvent.change(screen.getByRole("searchbox"), { target: { value: "bodyweight squat" } });
+    fireEvent.click(screen.getByText("View instructions"));
+    expect(screen.getByRole("list")).toHaveTextContent("do not force depth");
+    expect(screen.getByRole("link", { name: /Exercise reference/ })).toHaveAttribute("href", "https://www.nhs.uk/live-well/exercise/strength-exercises/");
+    fireEvent.click(screen.getByRole("button", { name: "Analyze this exercise" }));
+    expect(onAnalyze).toHaveBeenCalledWith("bodyweight_squat");
+  });
   it("pages through every available exercise and resets pagination when filtering", () => {
     render(<ExerciseLibrary exercises={EXERCISES} onAnalyze={vi.fn()} />);
     const available = within(screen.getByRole("region", { name: "Available exercises" }));
@@ -29,7 +39,10 @@ describe("exercise discovery", () => {
     expect(container.querySelector("details")).not.toHaveAttribute("open");
     fireEvent.change(screen.getByRole("searchbox"), { target: { value: "lunge" } });
     expect(container.querySelector("details")).toHaveAttribute("open");
-    expect(screen.getByRole("button", { name: "Not available" })).toBeDisabled();
+    fireEvent.click(screen.getByText("View instructions"));
+    expect(within(screen.getByRole("list")).getByText(/Use stable support and place one foot/)).toBeInTheDocument();
+    expect(screen.getByText(/Exercise guide · no AI analysis/)).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Analyze this exercise" })).not.toBeInTheDocument();
     expect(onAnalyze).not.toHaveBeenCalled();
     expect(screen.getByRole("status")).toHaveTextContent("1 exercise");
   });

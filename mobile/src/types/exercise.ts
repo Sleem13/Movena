@@ -12,4 +12,9 @@ export type ExerciseMetadata = {
   endpoint_path: string | null;
   ml_model_status: string;
   recognition_status: string;
+  guidance_available?: boolean;
+  instructions?: string[];
+  dosage_guidance?: string | null;
+  reference_note?: string | null;
+  source_urls?: string[];
 };

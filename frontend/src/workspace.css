@@ -81,6 +81,8 @@
 .exercise-media { margin: 12px 12px 0; display: grid; place-items: center; aspect-ratio: 1.72; border-radius: 6px; overflow: hidden; background: #e9eef1; }
 .exercise-illustration { width: 86%; aspect-ratio: 1.5; background-image: url('/exercise-illustrations-male.png'); background-size: 400% 400%; background-repeat: no-repeat; }
 .exercise-card-body { padding: 12px 16px 16px; }
+.exercise-responsive-grid { grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); }
+.exercise-card, .exercise-card-body { min-width: 0; overflow-wrap: anywhere; }
 .exercise-card h2 { margin-top: 8px; font-size: 24px; font-weight: 700; line-height: 1.2; }
 .exercise-availability > span { border-radius: 20px; padding: 5px 9px; gap: 7px; background: var(--positive-soft); color: var(--positive); --tw-ring-color: transparent; }
 .supported-check path { stroke: white; }

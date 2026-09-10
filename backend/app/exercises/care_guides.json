@@ -1,0 +1,344 @@
+[
+  {
+    "exercise_id": "heel_raise",
+    "display_name": "Supported Heel Raise",
+    "supported_in_app": false,
+    "guidance_available": true,
+    "body_region": "Ankle and calf",
+    "exercise_family": "Calf strengthening",
+    "recommended_camera_view": "No automated movement check available",
+    "required_landmarks": [],
+    "movement_description": "Hold a fixed counter with both feet flat.",
+    "expected_movement_pattern": "Lift both heels slowly, then lower with control.",
+    "instructions": [
+      "Hold a fixed counter with both feet flat.",
+      "Lift both heels slowly, then lower with control."
+    ],
+    "safety_notes": "Follow weight-bearing restrictions; avoid an unsupported single-leg variation.",
+    "dosage_guidance": "Follow your therapist's sets, repetitions, hold time, rest and frequency. This guide is not a prescription.",
+    "endpoint_path": null,
+    "ml_model_status": "not_applicable",
+    "recognition_status": "guidance_only",
+    "source_urls": [
+      "https://www.nhs.uk/live-well/exercise/strength-exercises/"
+    ],
+    "localized_ar": {
+      "display_name": "رفع الكعبين مع الاستناد",
+      "body_region": "الكاحل وربلة الساق",
+      "exercise_family": "تقوية ربلة الساق",
+      "recommended_camera_view": "لا يتوفر فحص آلي للحركة",
+      "movement_description": "استند إلى سطح ثابت وضع القدمين على الأرض.",
+      "expected_movement_pattern": "ارفع الكعبين ببطء ثم اخفضهما بتحكم.",
+      "instructions": [
+        "استند إلى سطح ثابت وضع القدمين على الأرض.",
+        "ارفع الكعبين ببطء ثم اخفضهما بتحكم."
+      ],
+      "safety_notes": "التزم بقيود تحميل الوزن وتجنب الأداء على ساق واحدة دون استناد.",
+      "dosage_guidance": "اتبع المجموعات والتكرارات ومدة الثبات والراحة والتكرار الأسبوعي التي يحددها معالجك؛ هذا الدليل ليس وصفة علاجية."
+    }
+  },
+  {
+    "exercise_id": "lunge",
+    "display_name": "Supported Static Lunge",
+    "supported_in_app": false,
+    "guidance_available": true,
+    "body_region": "Hip and knee",
+    "exercise_family": "Split-stance strengthening",
+    "recommended_camera_view": "No automated movement check available",
+    "required_landmarks": [],
+    "movement_description": "Use stable support and place one foot ahead of the other.",
+    "expected_movement_pattern": "Bend both knees a little, keeping the front heel down; return upright.",
+    "instructions": [
+      "Use stable support and place one foot ahead of the other.",
+      "Bend both knees a little, keeping the front heel down; return upright."
+    ],
+    "safety_notes": "Use only when your therapist has cleared split-stance loading; avoid deep or walking lunges.",
+    "dosage_guidance": "Follow your therapist's sets, repetitions, hold time, rest and frequency. This guide is not a prescription.",
+    "endpoint_path": null,
+    "ml_model_status": "not_applicable",
+    "recognition_status": "guidance_only",
+    "source_urls": [
+      "https://www.nhs.uk/live-well/exercise/knee-exercises-for-runners/"
+    ],
+    "localized_ar": {
+      "display_name": "اندفاع ثابت مع الاستناد",
+      "body_region": "الورك والركبة",
+      "exercise_family": "تقوية في وضع الخطوة",
+      "recommended_camera_view": "لا يتوفر فحص آلي للحركة",
+      "movement_description": "استند إلى دعامة ثابتة وضع قدمًا أمام الأخرى.",
+      "expected_movement_pattern": "اثن الركبتين قليلًا مع إبقاء الكعب الأمامي على الأرض ثم عد للوقوف.",
+      "instructions": [
+        "استند إلى دعامة ثابتة وضع قدمًا أمام الأخرى.",
+        "اثن الركبتين قليلًا مع إبقاء الكعب الأمامي على الأرض ثم عد للوقوف."
+      ],
+      "safety_notes": "يُستخدم بعد موافقة المعالج على التحميل في وضع الخطوة؛ تجنب الاندفاع العميق أو المتحرك.",
+      "dosage_guidance": "اتبع المجموعات والتكرارات ومدة الثبات والراحة والتكرار الأسبوعي التي يحددها معالجك؛ هذا الدليل ليس وصفة علاجية."
+    }
+  },
+  {
+    "exercise_id": "step_up",
+    "display_name": "Supported Step-Up",
+    "supported_in_app": false,
+    "guidance_available": true,
+    "body_region": "Hip and knee",
+    "exercise_family": "Functional strengthening",
+    "recommended_camera_view": "No automated movement check available",
+    "required_landmarks": [],
+    "movement_description": "Use a low, secure step beside a rail.",
+    "expected_movement_pattern": "Place the whole lead foot on the step, rise, then step down slowly.",
+    "instructions": [
+      "Use a low, secure step beside a rail.",
+      "Place the whole lead foot on the step, rise, then step down slowly."
+    ],
+    "safety_notes": "Your therapist chooses step height and leading leg. Do not use a loose stool.",
+    "dosage_guidance": "Follow your therapist's sets, repetitions, hold time, rest and frequency. This guide is not a prescription.",
+    "endpoint_path": null,
+    "ml_model_status": "not_applicable",
+    "recognition_status": "guidance_only",
+    "source_urls": [
+      "https://www.orthoinfo.org/staying-healthy/knee-exercises?webid=2FDEE455"
+    ],
+    "localized_ar": {
+      "display_name": "صعود درجة مع الاستناد",
+      "body_region": "الورك والركبة",
+      "exercise_family": "تقوية وظيفية",
+      "recommended_camera_view": "لا يتوفر فحص آلي للحركة",
+      "movement_description": "استخدم درجة منخفضة وثابتة بجانب درابزين.",
+      "expected_movement_pattern": "ضع القدم الأمامية كاملة على الدرجة واصعد ثم انزل ببطء.",
+      "instructions": [
+        "استخدم درجة منخفضة وثابتة بجانب درابزين.",
+        "ضع القدم الأمامية كاملة على الدرجة واصعد ثم انزل ببطء."
+      ],
+      "safety_notes": "يحدد المعالج ارتفاع الدرجة والساق التي تبدأ بها؛ لا تستخدم مقعدًا غير ثابت.",
+      "dosage_guidance": "اتبع المجموعات والتكرارات ومدة الثبات والراحة والتكرار الأسبوعي التي يحددها معالجك؛ هذا الدليل ليس وصفة علاجية."
+    }
+  },
+  {
+    "exercise_id": "hip_flexion",
+    "display_name": "Seated Hip March",
+    "supported_in_app": false,
+    "guidance_available": true,
+    "body_region": "Hip",
+    "exercise_family": "Seated mobility",
+    "recommended_camera_view": "No automated movement check available",
+    "required_landmarks": [],
+    "movement_description": "Sit upright in a firm chair with feet supported.",
+    "expected_movement_pattern": "Lift one bent knee within your allowed range; lower and alternate.",
+    "instructions": [
+      "Sit upright in a firm chair with feet supported.",
+      "Lift one bent knee within your allowed range; lower and alternate."
+    ],
+    "safety_notes": "Respect any hip flexion limit after surgery; avoid leaning backward.",
+    "dosage_guidance": "Follow your therapist's sets, repetitions, hold time, rest and frequency. This guide is not a prescription.",
+    "endpoint_path": null,
+    "ml_model_status": "not_applicable",
+    "recognition_status": "guidance_only",
+    "source_urls": [
+      "https://www.nhs.uk/live-well/exercise/sitting-exercises/"
+    ],
+    "localized_ar": {
+      "display_name": "رفع الركبة في الجلوس",
+      "body_region": "الورك",
+      "exercise_family": "حركة في الجلوس",
+      "recommended_camera_view": "لا يتوفر فحص آلي للحركة",
+      "movement_description": "اجلس منتصبًا على كرسي ثابت مع دعم القدمين.",
+      "expected_movement_pattern": "ارفع ركبة مثنية ضمن المدى المسموح ثم اخفضها وبدّل الساق.",
+      "instructions": [
+        "اجلس منتصبًا على كرسي ثابت مع دعم القدمين.",
+        "ارفع ركبة مثنية ضمن المدى المسموح ثم اخفضها وبدّل الساق."
+      ],
+      "safety_notes": "التزم بحدود ثني الورك بعد الجراحة وتجنب الميل للخلف.",
+      "dosage_guidance": "اتبع المجموعات والتكرارات ومدة الثبات والراحة والتكرار الأسبوعي التي يحددها معالجك؛ هذا الدليل ليس وصفة علاجية."
+    }
+  },
+  {
+    "exercise_id": "ankle_pumps",
+    "display_name": "Ankle Pumps",
+    "supported_in_app": false,
+    "guidance_available": true,
+    "body_region": "Ankle",
+    "exercise_family": "Gentle mobility",
+    "recommended_camera_view": "No automated movement check available",
+    "required_landmarks": [],
+    "movement_description": "Sit or lie with the leg supported.",
+    "expected_movement_pattern": "Move the foot toward you and away without forcing the range.",
+    "instructions": [
+      "Sit or lie with the leg supported.",
+      "Move the foot toward you and away without forcing the range."
+    ],
+    "safety_notes": "Follow ankle immobilization restrictions. New calf swelling or pain needs medical assessment.",
+    "dosage_guidance": "Follow your therapist's sets, repetitions, hold time, rest and frequency. This guide is not a prescription.",
+    "endpoint_path": null,
+    "ml_model_status": "not_applicable",
+    "recognition_status": "guidance_only",
+    "source_urls": [
+      "https://www.orthoinfo.org/recovery/total-knee-replacement-exercise-guide/"
+    ],
+    "localized_ar": {
+      "display_name": "تحريك الكاحل",
+      "body_region": "الكاحل",
+      "exercise_family": "حركة لطيفة",
+      "recommended_camera_view": "لا يتوفر فحص آلي للحركة",
+      "movement_description": "اجلس أو استلق مع دعم الساق.",
+      "expected_movement_pattern": "حرّك القدم نحوك ثم بعيدًا عنك دون إجبارها على مدى مؤلم.",
+      "instructions": [
+        "اجلس أو استلق مع دعم الساق.",
+        "حرّك القدم نحوك ثم بعيدًا عنك دون إجبارها على مدى مؤلم."
+      ],
+      "safety_notes": "التزم بتعليمات تثبيت الكاحل؛ الألم أو التورم الجديد في الربلة يحتاج تقييمًا طبيًا.",
+      "dosage_guidance": "اتبع المجموعات والتكرارات ومدة الثبات والراحة والتكرار الأسبوعي التي يحددها معالجك؛ هذا الدليل ليس وصفة علاجية."
+    }
+  },
+  {
+    "exercise_id": "heel_slide",
+    "display_name": "Heel Slide",
+    "supported_in_app": false,
+    "guidance_available": true,
+    "body_region": "Knee",
+    "exercise_family": "Knee mobility",
+    "recommended_camera_view": "No automated movement check available",
+    "required_landmarks": [],
+    "movement_description": "Lie on your back with the heel supported.",
+    "expected_movement_pattern": "Slide the heel toward your buttock within the allowed range, then slide back.",
+    "instructions": [
+      "Lie on your back with the heel supported.",
+      "Slide the heel toward your buttock within the allowed range, then slide back."
+    ],
+    "safety_notes": "Follow knee-bending limits after surgery; do not force a stiff joint.",
+    "dosage_guidance": "Follow your therapist's sets, repetitions, hold time, rest and frequency. This guide is not a prescription.",
+    "endpoint_path": null,
+    "ml_model_status": "not_applicable",
+    "recognition_status": "guidance_only",
+    "source_urls": [
+      "https://www.orthoinfo.org/recovery/total-knee-replacement-exercise-guide/"
+    ],
+    "localized_ar": {
+      "display_name": "سحب الكعب",
+      "body_region": "الركبة",
+      "exercise_family": "حركة الركبة",
+      "recommended_camera_view": "لا يتوفر فحص آلي للحركة",
+      "movement_description": "استلق على ظهرك مع دعم الكعب.",
+      "expected_movement_pattern": "اسحب الكعب باتجاه المقعدة ضمن المدى المسموح ثم أعده.",
+      "instructions": [
+        "استلق على ظهرك مع دعم الكعب.",
+        "اسحب الكعب باتجاه المقعدة ضمن المدى المسموح ثم أعده."
+      ],
+      "safety_notes": "التزم بحدود ثني الركبة بعد الجراحة ولا تجبر المفصل المتيبس.",
+      "dosage_guidance": "اتبع المجموعات والتكرارات ومدة الثبات والراحة والتكرار الأسبوعي التي يحددها معالجك؛ هذا الدليل ليس وصفة علاجية."
+    }
+  },
+  {
+    "exercise_id": "quad_set",
+    "display_name": "Quadriceps Set",
+    "supported_in_app": false,
+    "guidance_available": true,
+    "body_region": "Knee",
+    "exercise_family": "Isometric activation",
+    "recommended_camera_view": "No automated movement check available",
+    "required_landmarks": [],
+    "movement_description": "Rest the leg on a bed with the knee straight within comfort.",
+    "expected_movement_pattern": "Tighten the front thigh, gently press the knee down, then relax.",
+    "instructions": [
+      "Rest the leg on a bed with the knee straight within comfort.",
+      "Tighten the front thigh, gently press the knee down, then relax."
+    ],
+    "safety_notes": "Use the hold time prescribed by your therapist; breathe normally.",
+    "dosage_guidance": "Follow your therapist's sets, repetitions, hold time, rest and frequency. This guide is not a prescription.",
+    "endpoint_path": null,
+    "ml_model_status": "not_applicable",
+    "recognition_status": "guidance_only",
+    "source_urls": [
+      "https://www.orthoinfo.org/recovery/total-knee-replacement-exercise-guide/"
+    ],
+    "localized_ar": {
+      "display_name": "شد عضلة الفخذ الأمامية",
+      "body_region": "الركبة",
+      "exercise_family": "تنشيط عضلي ثابت",
+      "recommended_camera_view": "لا يتوفر فحص آلي للحركة",
+      "movement_description": "ضع الساق على السرير مع فرد الركبة ضمن حدود الراحة.",
+      "expected_movement_pattern": "شد عضلة الفخذ الأمامية واضغط الركبة برفق للأسفل ثم استرخ.",
+      "instructions": [
+        "ضع الساق على السرير مع فرد الركبة ضمن حدود الراحة.",
+        "شد عضلة الفخذ الأمامية واضغط الركبة برفق للأسفل ثم استرخ."
+      ],
+      "safety_notes": "التزم بمدة الثبات التي يحددها المعالج وتنفس بصورة طبيعية.",
+      "dosage_guidance": "اتبع المجموعات والتكرارات ومدة الثبات والراحة والتكرار الأسبوعي التي يحددها معالجك؛ هذا الدليل ليس وصفة علاجية."
+    }
+  },
+  {
+    "exercise_id": "straight_leg_raise",
+    "display_name": "Straight-Leg Raise",
+    "supported_in_app": false,
+    "guidance_available": true,
+    "body_region": "Hip and knee",
+    "exercise_family": "Thigh strengthening",
+    "recommended_camera_view": "No automated movement check available",
+    "required_landmarks": [],
+    "movement_description": "Lie on your back with the other knee bent.",
+    "expected_movement_pattern": "Tighten the working thigh, lift the straight leg a short distance, then lower slowly.",
+    "instructions": [
+      "Lie on your back with the other knee bent.",
+      "Tighten the working thigh, lift the straight leg a short distance, then lower slowly."
+    ],
+    "safety_notes": "If the knee bends during lifting, stop and ask your therapist for a modification.",
+    "dosage_guidance": "Follow your therapist's sets, repetitions, hold time, rest and frequency. This guide is not a prescription.",
+    "endpoint_path": null,
+    "ml_model_status": "not_applicable",
+    "recognition_status": "guidance_only",
+    "source_urls": [
+      "https://www.orthoinfo.org/recovery/knee-conditioning-program/"
+    ],
+    "localized_ar": {
+      "display_name": "رفع الساق مستقيمة",
+      "body_region": "الورك والركبة",
+      "exercise_family": "تقوية الفخذ",
+      "recommended_camera_view": "لا يتوفر فحص آلي للحركة",
+      "movement_description": "استلق على ظهرك مع ثني الركبة الأخرى.",
+      "expected_movement_pattern": "شد عضلة الفخذ وارفع الساق المستقيمة مسافة قصيرة ثم اخفضها ببطء.",
+      "instructions": [
+        "استلق على ظهرك مع ثني الركبة الأخرى.",
+        "شد عضلة الفخذ وارفع الساق المستقيمة مسافة قصيرة ثم اخفضها ببطء."
+      ],
+      "safety_notes": "إذا انثنت الركبة أثناء الرفع فتوقف واطلب من المعالج تعديل التمرين.",
+      "dosage_guidance": "اتبع المجموعات والتكرارات ومدة الثبات والراحة والتكرار الأسبوعي التي يحددها معالجك؛ هذا الدليل ليس وصفة علاجية."
+    }
+  },
+  {
+    "exercise_id": "glute_bridge",
+    "display_name": "Glute Bridge",
+    "supported_in_app": false,
+    "guidance_available": true,
+    "body_region": "Hip and trunk",
+    "exercise_family": "Hip strengthening",
+    "recommended_camera_view": "No automated movement check available",
+    "required_landmarks": [],
+    "movement_description": "Lie on your back with knees bent and feet supported.",
+    "expected_movement_pattern": "Tighten the buttocks, lift the pelvis comfortably, then lower slowly.",
+    "instructions": [
+      "Lie on your back with knees bent and feet supported.",
+      "Tighten the buttocks, lift the pelvis comfortably, then lower slowly."
+    ],
+    "safety_notes": "Avoid arching the lower back or holding your breath. Follow hip and spine precautions.",
+    "dosage_guidance": "Follow your therapist's sets, repetitions, hold time, rest and frequency. This guide is not a prescription.",
+    "endpoint_path": null,
+    "ml_model_status": "not_applicable",
+    "recognition_status": "guidance_only",
+    "source_urls": [
+      "https://www.southtees.nhs.uk/resources/shoulder-bridge/"
+    ],
+    "localized_ar": {
+      "display_name": "رفع الحوض",
+      "body_region": "الورك والجذع",
+      "exercise_family": "تقوية الورك",
+      "recommended_camera_view": "لا يتوفر فحص آلي للحركة",
+      "movement_description": "استلق على ظهرك مع ثني الركبتين ودعم القدمين.",
+      "expected_movement_pattern": "شد عضلات المقعدة وارفع الحوض ضمن الراحة ثم اخفضه ببطء.",
+      "instructions": [
+        "استلق على ظهرك مع ثني الركبتين ودعم القدمين.",
+        "شد عضلات المقعدة وارفع الحوض ضمن الراحة ثم اخفضه ببطء."
+      ],
+      "safety_notes": "تجنب تقويس أسفل الظهر أو حبس النفس والتزم باحتياطات الورك والعمود الفقري.",
+      "dosage_guidance": "اتبع المجموعات والتكرارات ومدة الثبات والراحة والتكرار الأسبوعي التي يحددها معالجك؛ هذا الدليل ليس وصفة علاجية."
+    }
+  }
+]

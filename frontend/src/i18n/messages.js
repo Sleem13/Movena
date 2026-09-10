@@ -1,3 +1,5 @@
+import careGuides from "../../../backend/app/exercises/care_guides.json";
+
 export const DEFAULT_LOCALE = "en";
 export const LOCALE_STORAGE_KEY = "movena_locale";
 
@@ -2784,6 +2786,11 @@ export function translate(locale, key, values) {
 }
 
 export function getExerciseText(exerciseId, locale = DEFAULT_LOCALE) {
+  const guide = careGuides.find((item) => item.exercise_id === exerciseId);
+  if (guide) {
+    const text = locale === "ar" ? guide.localized_ar : guide;
+    return { name: text.display_name, short: text.display_name, bodyRegion: text.body_region, family: text.exercise_family, cameraView: text.recommended_camera_view, landmarks: [], description: text.movement_description, pattern: text.expected_movement_pattern, safety: text.safety_notes };
+  }
   const entry = exerciseText[exerciseId];
   if (entry) return entry[locale] || entry[DEFAULT_LOCALE];
   const label = String(exerciseId || "movement").replaceAll("_", " ");

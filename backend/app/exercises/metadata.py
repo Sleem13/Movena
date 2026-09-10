@@ -2,7 +2,10 @@
 
 from __future__ import annotations
 
-from pydantic import BaseModel
+import json
+from pathlib import Path
+
+from pydantic import BaseModel, Field
 
 
 OPTIONAL_ML_SECOND_OPINION = "optional_experimental_second_opinion"
@@ -22,6 +25,12 @@ class ExerciseMetadata(BaseModel):
     endpoint_path: str | None = None
     ml_model_status: str = "experimental_not_applicable"
     recognition_status: str = "experimental_manual_selection_required"
+    guidance_available: bool = False
+    instructions: list[str] = Field(default_factory=list)
+    dosage_guidance: str | None = None
+    reference_note: str | None = None
+    source_urls: list[str] = Field(default_factory=list)
+    localized_ar: dict = Field(default_factory=dict)
 
 
 _SUPPORTED = (
@@ -148,27 +157,16 @@ _COACHING_CANDIDATES = (
     ),
 )
 
-_PLANNED_IDS = ("heel_raise", "lunge", "step_up", "hip_flexion")
 _PLANNED = tuple(
-    ExerciseMetadata(
-        exercise_id=exercise_id,
-        display_name=exercise_id.replace("_", " ").title(),
-        supported_in_app=False,
-        body_region="Planned",
-        exercise_family="Planned exercise",
-        recommended_camera_view="To be validated",
-        required_landmarks=[],
-        movement_description="Planned exercise coverage; no working analyzer is available yet.",
-        expected_movement_pattern="Not available for analysis.",
-        safety_notes="Do not use Movena to analyze this exercise yet.",
-        endpoint_path=None,
-        ml_model_status="not_applicable",
-        recognition_status="planned_not_available",
-    )
-    for exercise_id in _PLANNED_IDS
+    ExerciseMetadata.model_validate(item)
+    for item in json.loads(Path(__file__).with_name("care_guides.json").read_text(encoding="utf-8"))
 )
 
-EXERCISE_METADATA = _SUPPORTED + _COACHING_CANDIDATES + _PLANNED
+_GUIDANCE = json.loads(Path(__file__).with_name("supported_guidance.json").read_text(encoding="utf-8"))
+EXERCISE_METADATA = tuple(
+    ExerciseMetadata.model_validate({**item.model_dump(), **_GUIDANCE[item.exercise_id]})
+    for item in _SUPPORTED + _COACHING_CANDIDATES
+) + _PLANNED
 EXERCISE_METADATA_BY_ID = {item.exercise_id: item for item in EXERCISE_METADATA}
 
 

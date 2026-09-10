@@ -4,9 +4,10 @@ import type { ExerciseMetadata } from "@/src/types/exercise";
 import { colors } from "@/src/config/theme";
 
 export function ExerciseCard({ exercise, onPress }: { exercise: ExerciseMetadata; onPress: () => void }) {
-  return <Pressable accessibilityRole="button" accessibilityState={{ disabled: !exercise.supported_in_app }} disabled={!exercise.supported_in_app} onPress={onPress} style={({ pressed }) => [styles.card, !exercise.supported_in_app && styles.disabled, pressed && styles.pressed]}>
-    <View style={styles.icon}><Ionicons name={exercise.supported_in_app ? "fitness-outline" : "lock-closed-outline"} size={25} color={exercise.supported_in_app ? colors.primary : colors.muted} /></View>
-    <View style={styles.content}><View style={styles.top}><Text style={styles.name}>{exercise.display_name}</Text><Text style={[styles.status, exercise.supported_in_app && styles.available]}>{exercise.supported_in_app ? "Available" : "Coming later"}</Text></View><Text style={styles.meta}>{exercise.body_region} · {exercise.exercise_family}</Text><Text numberOfLines={2} style={styles.description}>{exercise.movement_description}</Text></View>
+  const available = exercise.supported_in_app || exercise.guidance_available;
+  return <Pressable accessibilityRole="button" accessibilityState={{ disabled: !available }} disabled={!available} onPress={onPress} style={({ pressed }) => [styles.card, !available && styles.disabled, pressed && styles.pressed]}>
+    <View style={styles.icon}><Ionicons name={exercise.guidance_available ? "book-outline" : exercise.supported_in_app ? "fitness-outline" : "lock-closed-outline"} size={25} color={available ? colors.primary : colors.muted} /></View>
+    <View style={styles.content}><View style={styles.top}><Text style={styles.name}>{exercise.display_name}</Text><Text style={[styles.status, available && styles.available]}>{exercise.guidance_available ? "Exercise guide · no AI analysis" : exercise.supported_in_app ? "Available" : "Coming later"}</Text></View><Text style={styles.meta}>{exercise.body_region} · {exercise.exercise_family}</Text><Text numberOfLines={2} style={styles.description}>{exercise.movement_description}</Text></View>
     <Ionicons name="chevron-forward" size={20} color={exercise.supported_in_app ? colors.text : colors.muted} />
   </Pressable>;
 }

@@ -10,7 +10,11 @@ describe("analysis endpoint mapping", () => {
     ["push_up", "/api/v1/analyze/push-up"],
     ["shoulder_press", "/api/v1/analyze/shoulder-press"],
     ["bicep_curl", "/api/v1/analyze/bicep-curl"],
+    ["shoulder_flexion", "/api/v1/analyze/shoulder-flexion"],
+    ["hammer_curl", "/api/v1/analyze/hammer-curl"],
+    ["walking_gait_screen", "/api/v1/analyze/gait"],
+    ["balance", "/api/v1/analyze/balance"],
   ])("maps %s", (exercise, endpoint) => expect(getAnalysisEndpoint(exercise)).toBe(endpoint));
 
-  it("rejects a planned exercise", () => expect(() => getAnalysisEndpoint("heel_raise")).toThrow("planned"));
+  test.each(["heel_raise", "lunge", "step_up", "hip_flexion", "ankle_pumps", "heel_slide", "quad_set", "straight_leg_raise", "glute_bridge"])("rejects guide-only analysis for %s", (id) => expect(() => getAnalysisEndpoint(id)).toThrow("not available"));
 });

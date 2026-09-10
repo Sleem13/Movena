@@ -18,7 +18,7 @@ export default function ExerciseLibraryScreen() {
   const load = useCallback(() => { setLoading(true); setError(""); getExercises().then(setItems).catch((requestError) => setError(requestError.message)).finally(() => setLoading(false)); }, []);
   useEffect(load, [load]);
   useFocusEffect(useCallback(() => { analysis.setVideo(null); analysis.setResult(null); }, [analysis]));
-  const visibleItems = useMemo(() => filter === "available" ? items.filter((item) => item.supported_in_app) : items, [filter, items]);
+  const visibleItems = useMemo(() => filter === "available" ? items.filter((item) => item.supported_in_app || item.guidance_available) : items, [filter, items]);
   const open = (item: ExerciseMetadata) => { analysis.setExercise(item); router.push({ pathname: "/exercise/[id]", params: { id: item.exercise_id } }); };
   return <AppShell active="coach">
     <BrandHeader title="Exercise library" subtitle="Explore supported exercises or open a Movena movement check." />

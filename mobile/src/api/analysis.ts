@@ -13,11 +13,15 @@ export const ANALYSIS_ENDPOINTS: Record<string, string> = {
   push_up: "/api/v1/analyze/push-up",
   shoulder_press: "/api/v1/analyze/shoulder-press",
   bicep_curl: "/api/v1/analyze/bicep-curl",
+  shoulder_flexion: "/api/v1/analyze/shoulder-flexion",
+  hammer_curl: "/api/v1/analyze/hammer-curl",
+  walking_gait_screen: "/api/v1/analyze/gait",
+  balance: "/api/v1/analyze/balance",
 };
 
 export function getAnalysisEndpoint(exerciseId: string): string {
   const endpoint = ANALYSIS_ENDPOINTS[exerciseId];
-  if (!endpoint) throw new ApiError("This exercise is planned and cannot be analyzed yet.", "EXERCISE_NOT_SUPPORTED");
+  if (!endpoint) throw new ApiError("Automated analysis is not available for this exercise.", "EXERCISE_NOT_SUPPORTED");
   return endpoint;
 }
 

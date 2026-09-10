@@ -12,13 +12,15 @@ import {
 } from "lucide-react";
 import { Badge, Button, Card, EmptyState } from "../components/common/UI.jsx";
 import Select from "../components/common/Select.jsx";
+import ExerciseInstructions from "../components/exercises/ExerciseInstructions.jsx";
 import ExerciseIllustration from "../components/exercises/ExerciseIllustration.jsx";
 import { useMemo, useState } from "react";
 import { PageHeader } from "../components/layout/AppShell.jsx";
 import { useLocale } from "../i18n/LocaleContext.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
 
-function localizeExercise(exercise, exerciseText) {
+function localizeExercise(exercise, exerciseText, locale) {
+  if (exercise.guidance_available) return locale === "ar" ? { ...exercise, ...exercise.localized_ar } : exercise;
   if (exercise.recognition_status === "experimental_candidate_data_available")
     return exercise;
   const text = exerciseText(exercise.exercise_id);
@@ -30,11 +32,12 @@ function localizeExercise(exercise, exerciseText) {
     recommended_camera_view: text.cameraView,
     movement_description: text.description,
     safety_notes: text.safety,
+    ...(locale === "ar" ? exercise.localized_ar : {}),
   };
 }
 
 function ExerciseCard({ exercise, onAnalyze }) {
-  const { t } = useLocale();
+  const { t, locale } = useLocale();
   const { user } = useAuth();
   const supported = exercise.supported_in_app;
   const recognitionCandidate =
@@ -47,11 +50,11 @@ function ExerciseCard({ exercise, onAnalyze }) {
       <div
         className="exercise-media"
       >
-        <ExerciseIllustration
+        {exercise.guidance_available ? <PersonStanding size={64} aria-hidden="true" /> : <ExerciseIllustration
           exerciseId={exercise.exercise_id}
           label={`${exercise.display_name} ${t("exercises.posePreview")}`}
           supported={supported}
-        />
+        />}
       </div>
       <div className="exercise-card-body flex flex-1 flex-col">
         <div className="exercise-availability">
@@ -59,7 +62,7 @@ function ExerciseCard({ exercise, onAnalyze }) {
             tone={supported ? "teal" : recognitionCandidate ? "blue" : "slate"}
           >
             {supported ? <CircleCheck size={16} fill="currentColor" className="supported-check" /> : null}
-            {supported
+            {exercise.guidance_available ? (locale === "ar" ? "دليل تمرين · دون تحليل آلي" : "Exercise guide · no AI analysis") : supported
               ? t("status.supported")
               : recognitionCandidate
                 ? t("status.recognitionResearch")
@@ -71,7 +74,7 @@ function ExerciseCard({ exercise, onAnalyze }) {
         </h2>
         <div className="exercise-metadata">
           <span><PersonStanding size={20} aria-hidden="true" />{exercise.body_region}</span>
-          <span><Camera size={20} aria-hidden="true" />{exercise.recommended_camera_view}</span>
+          {!exercise.guidance_available ? <span><Camera size={20} aria-hidden="true" />{exercise.recommended_camera_view}</span> : null}
         </div>
         <p className="mt-3 text-sm leading-6 text-slate-600">
           {exercise.movement_description}
@@ -81,6 +84,7 @@ function ExerciseCard({ exercise, onAnalyze }) {
           <div><p className="mb-1 font-semibold text-clinical-ink">{t("upload.safety")}</p><p>{exercise.safety_notes}</p></div>
         </div>
         <div className="mt-auto pt-5">
+          <ExerciseInstructions exercise={exercise} />
           {supported ? (
             <Button
               className="w-full"
@@ -93,7 +97,7 @@ function ExerciseCard({ exercise, onAnalyze }) {
                   : t("exercises.analyzeThis")}
               <ArrowRight size={16} />
             </Button>
-          ) : (
+          ) : exercise.guidance_available ? null : (
             <Button className="w-full" variant="secondary" disabled>
               <Clock3 size={16} />
               {t("status.notAvailable")}
@@ -106,21 +110,21 @@ function ExerciseCard({ exercise, onAnalyze }) {
 }
 
 export default function ExerciseLibrary({ exercises, onAnalyze }) {
-  const { t, exerciseText } = useLocale();
+  const { t, exerciseText, locale } = useLocale();
   const [query, setQuery] = useState("");
   const [availability, setAvailability] = useState("all");
   const [bodyRegion, setBodyRegion] = useState("all");
   const [page, setPage] = useState(0);
   const translatedExercises = useMemo(
-    () => exercises.map((item) => localizeExercise(item, exerciseText)),
-    [exerciseText, exercises],
+    () => exercises.map((item) => localizeExercise(item, exerciseText, locale)),
+    [exerciseText, exercises, locale],
   );
   const bodyRegions = useMemo(
     () =>
       Array.from(
         new Set(
           translatedExercises
-            .filter((item) => item.supported_in_app)
+            .filter((item) => item.supported_in_app || item.guidance_available)
             .map((item) => item.body_region),
         ),
       ).sort(),
@@ -206,7 +210,7 @@ export default function ExerciseLibrary({ exercises, onAnalyze }) {
             options={[
               { value: "all", label: t("exercises.allAvailability") },
               { value: "supported", label: t("exercises.supportedOnly") },
-              { value: "planned", label: t("exercises.plannedOnly") },
+              { value: "planned", label: locale === "ar" ? "أدلة دون تحليل" : "Guides / no analysis" },
             ]}
           />
           <Select
@@ -273,7 +277,7 @@ export default function ExerciseLibrary({ exercises, onAnalyze }) {
               </nav> : null}
             </div>
             {supported.length ? (
-              <div className="mt-5 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+              <div className="exercise-responsive-grid mt-5 grid gap-5">
                 {visibleExercises.map((item) => (
                   <ExerciseCard
                     key={item.exercise_id}
@@ -294,11 +298,10 @@ export default function ExerciseLibrary({ exercises, onAnalyze }) {
             className="research-disclosure"
             open={hasActiveFilters ? true : undefined}
           >
-            <summary><ChevronRight size={18} /><span>{t("exercises.researchAndPlanned")}</span></summary>
+            <summary><ChevronRight size={18} /><span>{locale === "ar" ? "أدلة التمارين والتغطية المخطط لها" : "Exercise guides and planned coverage"}</span></summary>
             <div className="my-5 border-s-2 border-teal-600 ps-4">
-              <h3 className="text-sm font-semibold text-clinical-ink">{t("exercises.researchTitle")}</h3>
-              <p className="mt-1 max-w-3xl text-sm leading-6 text-slate-600">{t("exercises.researchDescription")}</p>
-              <div className="mt-2"><Badge tone="blue">{t("exercises.researchBadge")}</Badge></div>
+              <h3 className="text-sm font-semibold text-clinical-ink">{locale === "ar" ? "إرشادات لخطة معالجك" : "Guidance for your therapist's plan"}</h3>
+              <p className="mt-1 max-w-3xl text-sm leading-6 text-slate-600">{locale === "ar" ? "يمكن قراءة الأدلة واستخدام التمارين في خطة المعالج؛ لا يتوفر لها تحليل آلي." : "Read the guides and use these exercises in therapist-assigned plans. Automated analysis is not available for these movements."}</p>
             </div>
           <section
             className="mt-5"
@@ -310,18 +313,18 @@ export default function ExerciseLibrary({ exercises, onAnalyze }) {
                   id="planned-exercises"
                   className="text-xl font-bold text-clinical-ink"
                 >
-                  {t("exercises.plannedTitle")}
+                  {locale === "ar" ? "أدلة التمارين" : "Exercise guides"}
                 </h2>
                 <p className="mt-1 text-sm text-slate-500">
-                  {t("exercises.plannedDescription")}
+                  {locale === "ar" ? "يحدد المعالج الجرعة والاحتياطات المناسبة لك." : "Your therapist selects the appropriate dosage and precautions."}
                 </p>
               </div>
               <Badge tone="slate">
-                {t("exercises.plannedCount", { count: planned.length })}
+                {planned.length}
               </Badge>
             </div>
             {planned.length ? (
-              <div className="mt-5 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+              <div className="exercise-responsive-grid mt-5 grid gap-5">
                 {planned.map((item) => (
                   <ExerciseCard
                     key={item.exercise_id}

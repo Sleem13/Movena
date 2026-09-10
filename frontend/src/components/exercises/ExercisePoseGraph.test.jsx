@@ -6,10 +6,10 @@ import ExercisePoseGraph, { EXERCISE_POSE_GRAPHS, getPoseMetrics } from "./Exerc
 
 
 describe("ExercisePoseGraph", () => {
-  it("defines a distinct movement graph for every exercise in the library", () => {
-    expect(Object.keys(EXERCISE_POSE_GRAPHS).sort()).toEqual(
-      EXERCISES.map((exercise) => exercise.exercise_id).sort(),
-    );
+  it("defines a movement graph for every analyzer-backed exercise", () => {
+    for (const exercise of EXERCISES.filter((item) => item.supported_in_app)) {
+      expect(EXERCISE_POSE_GRAPHS[exercise.exercise_id]).toBeDefined();
+    }
   });
 
   it("renders an accessible, exercise-addressable SVG", () => {
