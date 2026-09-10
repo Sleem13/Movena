@@ -6,6 +6,17 @@ from configparser import ConfigParser
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 
+def test_container_model_directories_are_included_in_build_context():
+    dockerfile = (PROJECT_ROOT / "Dockerfile").read_text(encoding="utf-8")
+    ignore_rules = (PROJECT_ROOT / ".dockerignore").read_text(encoding="utf-8").splitlines()
+
+    for source in re.findall(r"^COPY (models/\S+) ", dockerfile, re.MULTILINE):
+        assert (PROJECT_ROOT / source).is_dir()
+        assert f"!{source}" in ignore_rules
+        assert f"!{source}/**" in ignore_rules
+        assert ignore_rules.index(f"!{source}/**") > ignore_rules.index("models/*")
+
+
 def test_container_applies_migrations_before_starting_api():
     dockerfile = (PROJECT_ROOT / "Dockerfile").read_text(encoding="utf-8")
 

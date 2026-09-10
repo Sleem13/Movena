@@ -9,6 +9,8 @@ data
 models/*
 !models/recognition
 !models/recognition/**
+!models/form_quality
+!models/form_quality/**
 docs
 scripts
 tests
