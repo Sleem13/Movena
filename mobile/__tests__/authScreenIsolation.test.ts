@@ -7,7 +7,7 @@ const registerSource = fs.readFileSync(path.join(process.cwd(), "app/register.ts
 const uploadSource = fs.readFileSync(path.join(process.cwd(), "app/upload/[id].tsx"), "utf8");
 
 describe("auth and upload warning isolation", () => {
-  it("does not render the missing-video warning on Create Demo Account", () => {
+  it("does not render the missing-video warning on patient registration", () => {
     expect(registerSource).not.toContain(MISSING_VIDEO_MESSAGE);
     expect(registerSource).toContain("authError");
     expect(registerSource).not.toContain("uploadError");
@@ -26,7 +26,7 @@ describe("auth and upload warning isolation", () => {
     expect(uploadSource).toContain("uploadError");
   });
 
-  it("does not leak an upload backend error after returning to Create Demo Account", () => {
+  it("does not leak an upload backend error after returning to patient registration", () => {
     const message = authRequestErrorMessage({ code: "MISSING_FILE", message: MISSING_VIDEO_MESSAGE }, "create");
     expect(message).toMatch(/account creation failed/i);
     expect(message).not.toMatch(/video|analysis/i);

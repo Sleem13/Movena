@@ -15,10 +15,10 @@ describe("external beta launch-candidate safety", () => {
   });
 
   it("keeps limitations and beta boundaries visible", () => {
-    const onboarding = fs.readFileSync(path.join(process.cwd(), "app/index.tsx"), "utf8");
+    const onboarding = fs.readFileSync(path.join(process.cwd(), "app/more.tsx"), "utf8");
     const limitations = fs.readFileSync(path.join(process.cwd(), "app/limitations.tsx"), "utf8");
     expect(onboarding).toContain("Invite-only beta launch candidate · not public");
-    expect(onboarding).toContain("Read Known Limitations");
+    expect(onboarding).toContain("Known limitations");
     expect(limitations).toContain("Never upload real patients");
     expect(limitations).toContain("not for diagnosis, treatment prescription");
   });

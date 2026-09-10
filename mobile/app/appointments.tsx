@@ -13,20 +13,29 @@ import {
 } from "@/src/components/UI";
 import {
   getAppointments,
+  getTherapistAppointments,
   joinAppointment,
   type Appointment,
 } from "@/src/api/care";
+import { useAuth } from "@/src/context/AuthContext";
+import { CareAccess } from "@/src/components/CareUI";
+import { isTherapist } from "@/src/utils/care";
 
 export default function AppointmentsScreen() {
+  return <CareAccess active="appointments"><AppointmentsContent /></CareAccess>;
+}
+function AppointmentsContent() {
+  const { user } = useAuth();
+  const therapist = isTherapist(user?.role);
   const [rows, setRows] = useState<Appointment[]>([]);
   const [busy, setBusy] = useState(true);
   const [error, setError] = useState("");
   useEffect(() => {
-    getAppointments()
+    (therapist ? getTherapistAppointments() : getAppointments())
       .then(setRows)
       .catch((e) => setError(e instanceof Error ? e.message : "Could not load appointments."))
       .finally(() => setBusy(false));
-  }, []);
+  }, [therapist]);
   const join = async (row: Appointment) => {
     try {
       const data = await joinAppointment(row.appointment_id);
@@ -41,11 +50,11 @@ export default function AppointmentsScreen() {
     <AppShell active="appointments">
       <BrandHeader
         title="Appointments"
-        subtitle="Times are shown in your device timezone."
+        subtitle={therapist ? "Your patient schedule in device time." : "Times are shown in your device timezone."}
       />
       {busy ? <Loading /> : null}
       {error ? <ErrorState message={error} /> : null}
-      {!busy && !rows.length ? (
+      {!busy && !error && !rows.length ? (
         <EmptyState
           title="No appointments"
           message="Your confirmed sessions will appear here."
@@ -59,7 +68,7 @@ export default function AppointmentsScreen() {
             />
             <Heading>{new Date(row.starts_at).toLocaleString()}</Heading>
             <Body muted>
-              {row.delivery_mode === "video"
+              {therapist ? "Patient appointment · " : ""}{row.delivery_mode === "video"
                 ? "Private video session · not recorded"
                 : "In-person session"}
             </Body>

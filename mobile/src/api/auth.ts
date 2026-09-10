@@ -8,7 +8,7 @@ export async function login(email: string, password: string): Promise<User> {
   return response.user;
 }
 
-export const register = (payload: { email: string; password: string; full_name?: string; role?: string }) => apiRequest<User>("/api/v1/auth/register", { method: "POST", body: JSON.stringify({ ...payload, role: payload.role || "researcher_demo" }) });
+export const register = (payload: { username: string; email: string; password: string; full_name: string; accepted_terms: boolean; accepted_privacy: boolean }) => apiRequest<User>("/api/v1/auth/register", { method: "POST", body: JSON.stringify({ ...payload, role: "patient" }) });
 export const getCurrentUser = () => apiRequest<User>("/api/v1/auth/me", {}, true);
 export const resendVerification = (email: string) => apiRequest<{ status: string; message: string }>("/api/v1/auth/resend-verification", { method: "POST", body: JSON.stringify({ email }) });
 export const requestPasswordReset = (email: string) => apiRequest<{ status: string; message: string }>("/api/v1/auth/forgot-password", { method: "POST", body: JSON.stringify({ email }) });

@@ -5,15 +5,17 @@ import { AppShell, BrandHeader } from "@/src/components/AppShell";
 import { ActionRow, SectionTitle } from "@/src/components/GuidedUI";
 import { colors } from "@/src/config/theme";
 import { useAuth } from "@/src/context/AuthContext";
+import { isTherapist } from "@/src/utils/care";
 
 export default function MoreScreen() {
   const router = useRouter();
   const { user } = useAuth();
+  const therapist = isTherapist(user?.role);
   return (
     <AppShell active="more">
       <BrandHeader
-        title="More"
-        subtitle="Account, support, and app information."
+        title="Account"
+        subtitle={user ? `${user.full_name || user.email} · ${therapist ? "Therapist" : user.role === "patient" ? "Patient" : "Team"} workspace` : "Account, support, and app information."}
       />
       <View style={styles.section}>
         <SectionTitle>Account</SectionTitle>
@@ -24,15 +26,17 @@ export default function MoreScreen() {
           onPress={() => router.push(user ? "/profile" : "/login")}
         />
       </View>
-      <View style={styles.section}>
-        <SectionTitle>Rehabilitation</SectionTitle>
+      {user && ["patient", "therapist"].includes(user.role) ? <View style={styles.section}>
+        <SectionTitle>{therapist ? "Clinical workspace" : "Your care"}</SectionTitle>
         <ActionRow
-          title="Today"
-          detail="Your prescribed exercises and daily check-in"
-          icon="calendar-outline"
-          onPress={() => router.push("/today" as never)}
+          title={therapist ? "Connected patients" : "Today's plan"}
+          detail={therapist ? "Plans, goals, and patient check-ins" : "Prescribed exercises and daily check-in"}
+          icon={therapist ? "people-outline" : "calendar-outline"}
+          onPress={() => router.push(therapist ? "/patients" : "/today" as never)}
         />
-        <ActionRow
+        {therapist ? <ActionRow title="Review queue" detail="Responses requiring clinical follow-up" icon="document-text-outline" onPress={() => router.push("/review")} /> : <ActionRow title="Recovery goals" detail="Progress toward what matters to you" icon="flag-outline" onPress={() => router.push("/goals")} />}
+        <ActionRow title={therapist ? "Care connections" : "Your care team"} detail={therapist ? "Invite and connect patients" : "Therapists connected to your care"} icon="people-circle-outline" onPress={() => router.push("/care-team")} />
+        {!therapist ? <><ActionRow
           title="Appointments"
           detail="Book and join private video sessions"
           icon="videocam-outline"
@@ -49,8 +53,8 @@ export default function MoreScreen() {
           detail="Pay securely in EGP"
           icon="card-outline"
           onPress={() => router.push("/billing" as never)}
-        />
-      </View>
+        /></> : null}
+      </View> : null}
       <View style={styles.section}>
         <SectionTitle>Help and settings</SectionTitle>
         <ActionRow
@@ -72,6 +76,7 @@ export default function MoreScreen() {
           Movement intelligence inside your rehabilitation journey.
         </Text>
         <Text style={styles.version}>Version 0.28.0</Text>
+        <Text style={styles.version}>Invite-only beta launch candidate · not public</Text>
       </View>
     </AppShell>
   );
