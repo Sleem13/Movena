@@ -65,7 +65,7 @@ def test_rehabilitation_migration_adopts_existing_postgres_foreign_keys():
     assert 'if "fk_analysis_sessions_plan_item" not in analysis_foreign_keys:' in migration
 
 
-def test_staging_is_suspended_outside_cairo_working_hours():
+def test_staging_schedules_are_opt_in_and_deployments_leave_service_available():
     terraform = (PROJECT_ROOT / "infra" / "aws" / "main.tf").read_text(encoding="utf-8")
     workflow = (PROJECT_ROOT / ".github" / "workflows" / "deploy-aws.yml").read_text(
         encoding="utf-8"
@@ -80,5 +80,11 @@ def test_staging_is_suspended_outside_cairo_working_hours():
     assert 'arn      = "arn:aws:scheduler:::aws-sdk:ecs:updateService"' in terraform
     assert 'DesiredCount = 0' in terraform
     assert "- name: Ensure staging is awake for deployment" in workflow
-    assert "- name: Restore scheduled staging state" in workflow
-    assert "TZ=Africa/Cairo date" in workflow
+    assert "Restore scheduled staging state" not in workflow
+    assert "stop-db-instance" not in workflow
+    assert "--desired-count 0" not in workflow
+    assert 'TF_VAR_enable_staging_schedule: "false"' in workflow
+    variables = (PROJECT_ROOT / "infra" / "aws" / "variables.tf").read_text(encoding="utf-8")
+    schedule = variables.split('variable "enable_staging_schedule" {', 1)[1].split("}", 1)[0]
+    assert re.search(r'default\s*=\s*false', schedule)
+    assert "var.desired_count >= 1 && floor(var.desired_count) == var.desired_count" in variables

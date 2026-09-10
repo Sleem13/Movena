@@ -9,7 +9,7 @@ This stack deploys the current application without rewriting its analysis pipeli
 - EFS provides encrypted persistent storage for temporary reports and annotated overlays.
 - Secrets Manager injects the JWT and protected administrator credentials at runtime.
 - CloudWatch receives container logs and ECS Container Insights.
-- EventBridge Scheduler suspends staging ECS and RDS outside Cairo weekday working hours.
+- The API and database stay running at all hours. EventBridge downtime schedules are disabled by default.
 
 The initial deployment defaults to `staging`. Production mode is intentionally blocked by the application until SMTP delivery is configured.
 
@@ -81,7 +81,8 @@ Do not change `Environment` to `production` until all of these are complete:
 ## Operational notes
 
 - The default task size is 2 vCPU / 4 GiB because pose analysis is CPU-heavy.
-- Staging starts its database at 07:45 and ECS service at 08:00 Monday-Friday, then stops ECS at 20:00 and RDS at 20:15 every day (`Africa/Cairo`). The static frontend remains available, but API features are unavailable while staging is suspended. Deployments temporarily wake the stack and restore the scheduled state afterward.
+- Leave `enable_staging_schedule = false` and `desired_count = 1` (or higher) for availability at any hour. GitHub Actions explicitly disables schedules, starts a previously stopped database, and leaves the backend running after deployment. Applying the configuration removes existing Terraform-managed schedules; removing a schedule alone does not start an already stopped database. Check for stale `terraform.tfvars` overrides before applying.
+- Disposable staging can explicitly opt into the old Cairo weekday schedule with `enable_staging_schedule = true` through a manual Terraform deployment. This deliberately makes the API unavailable overnight and on weekends and is incompatible with the always-available deployment workflow.
 - The stack deliberately avoids a NAT Gateway: Fargate tasks use public IPs with no inbound access except through the ALB security group. RDS remains in private subnets.
 - The ALB accepts traffic only from the AWS-managed CloudFront origin-facing prefix list.
 - Artifacts remain protected by application authorization/signatures and expire according to application retention settings.

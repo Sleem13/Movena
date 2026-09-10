@@ -4,6 +4,8 @@ app_version         = "1.0.0"
 app_secret_arn      = "arn:aws:secretsmanager:eu-central-1:123456789012:secret:physiovision/staging/app-example"
 email_delivery_mode = "console"
 protect_data        = true
+enable_staging_schedule = false
+desired_count           = 1
 
 # Production requires verified SMTP/SES settings in the app secret:
 # email_delivery_mode = "smtp"

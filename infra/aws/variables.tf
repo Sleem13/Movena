@@ -82,12 +82,17 @@ variable "ecs_memory" {
 variable "desired_count" {
   type    = number
   default = 1
+
+  validation {
+    condition     = var.desired_count >= 1 && floor(var.desired_count) == var.desired_count
+    error_message = "Keep at least one API task running; desired_count must be a positive integer."
+  }
 }
 
 variable "enable_staging_schedule" {
-  description = "Suspend staging compute and database resources outside weekday working hours."
+  description = "Opt-in downtime for disposable staging only. Leave false for availability at any hour."
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "staging_schedule_timezone" {
