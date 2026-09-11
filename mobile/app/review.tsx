@@ -10,7 +10,7 @@ import { completionLabel, needsReview } from "@/src/utils/care";
 type ReviewItem = AdherenceResponse & { patient_name: string };
 const dispositions = [["contacted_patient", "Contacted patient"], ["plan_modified", "Plan modified"], ["appointment_scheduled", "Appointment scheduled"], ["referred_for_medical_review", "Medical review"], ["reviewed_no_change", "Reviewed, no change"]] as const;
 export default function ReviewScreen() {
-  return <CareAccess roles={["therapist"]} active="review"><ReviewContent /></CareAccess>;
+  return <CareAccess roles={["therapist", "admin", "super_admin"]} active="review"><ReviewContent /></CareAccess>;
 }
 function ReviewContent() {
   const [selectedId, setSelectedId] = useState<string | null>(null);

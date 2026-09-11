@@ -19,15 +19,15 @@ import {
 } from "@/src/api/care";
 import { useAuth } from "@/src/context/AuthContext";
 import { CareAccess } from "@/src/components/CareUI";
-import { isTherapist } from "@/src/utils/care";
+import { isClinicalStaff } from "@/src/utils/care";
 import { useCareResource } from "@/src/hooks/useCareResource";
 
 export default function AppointmentsScreen() {
-  return <CareAccess active="appointments"><AppointmentsContent /></CareAccess>;
+  return <CareAccess roles={["patient", "therapist", "admin", "super_admin"]} active="appointments"><AppointmentsContent /></CareAccess>;
 }
 function AppointmentsContent() {
   const { user } = useAuth();
-  const therapist = isTherapist(user?.role);
+  const therapist = isClinicalStaff(user?.role);
   const fetchAppointments = useCallback(() => therapist ? getTherapistAppointments() : getAppointments(), [therapist]);
   const { data, loading: busy, error, reload } = useCareResource(fetchAppointments);
   const rows = data ?? [];

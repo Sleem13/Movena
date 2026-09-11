@@ -50,6 +50,23 @@ def patient_for_user(db: Session, user_id: str) -> PatientProfile | None:
     return db.scalar(select(PatientProfile).where(PatientProfile.user_id == user_id))
 
 
+def ensure_patient_profile(db: Session, user: User) -> tuple[PatientProfile, bool]:
+    """Repair the invariant that every patient account owns one patient profile."""
+    profile = patient_for_user(db, user.user_id)
+    if profile is not None:
+        return profile, False
+    profile = PatientProfile(
+        patient_id=str(uuid4()),
+        user_id=user.user_id,
+        display_name=user.full_name or user.username or user.email.split("@", 1)[0] or "Patient",
+        preferred_locale="ar",
+        timezone_name="Africa/Cairo",
+    )
+    db.add(profile)
+    db.flush()
+    return profile, True
+
+
 def therapist_can_access_patient(db: Session, therapist_user_id: str, patient_id: str) -> bool:
     return db.scalar(select(TherapistPatientAssignment.id).join(User, User.user_id == TherapistPatientAssignment.therapist_user_id).where(
         User.role == "therapist", User.is_active.is_(True), User.account_status == "active",

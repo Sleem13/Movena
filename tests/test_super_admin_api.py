@@ -4,7 +4,7 @@ from sqlalchemy.orm import sessionmaker
 
 from app.core.security import create_access_token, get_password_hash
 from app.db.database import Base, create_database_engine, get_db
-from app.db.models import AuditLog, User
+from app.db.models import AuditLog, PatientProfile, User
 from app.main import app
 from app.services.admin_seed_service import seed_admin, seed_super_admin
 import pytest
@@ -87,6 +87,16 @@ def test_super_admin_manages_accounts_and_protected_account_is_immutable(tmp_pat
         assert logged.status_code == 200
         assert logged.json()["user"]["email"] == "therapist@example.com"
 
+        changed_role = client.patch(
+            f"/api/v1/admin/users/{created.json()['user_id']}/role",
+            headers=root_headers,
+            json={"role": "patient", "reason": "Correct account workspace"},
+        )
+        assert changed_role.status_code == 200
+        session = factory()
+        assert session.scalar(select(PatientProfile).where(PatientProfile.user_id == created.json()["user_id"])) is not None
+        session.close()
+
         duplicate = client.post(
             "/api/v1/admin/users",
             headers=root_headers,
@@ -99,6 +109,17 @@ def test_super_admin_manages_accounts_and_protected_account_is_immutable(tmp_pat
             },
         )
         assert duplicate.status_code == 409
+
+        repaired = client.get(
+            "/api/v1/patient/today",
+            headers={"Authorization": f"Bearer {create_access_token('patient-1', 'patient')}"},
+        )
+        assert repaired.status_code == 200
+        session = factory()
+        repaired_profile = session.scalar(select(PatientProfile).where(PatientProfile.user_id == "patient-1"))
+        assert repaired_profile is not None
+        assert repaired_profile.display_name == "patient"
+        session.close()
 
         paused = client.patch(
             "/api/v1/admin/users/patient-1/status",

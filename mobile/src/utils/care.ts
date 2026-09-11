@@ -1,7 +1,17 @@
 import type { PlanItem } from "@/src/api/care";
 
 export const isTherapist = (role?: string) => role === "therapist";
-export const homeRoute = (role?: string) => isTherapist(role) ? "/patients" : "/today";
+export const isAdministrator = (role?: string) => role === "admin" || role === "super_admin";
+export const isClinicalStaff = (role?: string) => isTherapist(role) || isAdministrator(role);
+export const homeRoute = (role?: string) => role === "patient" ? "/today" : isClinicalStaff(role) ? "/patients" : "/more";
+export const roleLabel = (role?: string) => ({
+  patient: "Patient",
+  therapist: "Therapist",
+  admin: "Administrator",
+  super_admin: "Super administrator",
+  support: "Support",
+  researcher: "Researcher",
+}[role || ""] || "Team member");
 export const exerciseName = (id: string) => id.replaceAll("_", " ").replace(/^\w/, (letter) => letter.toUpperCase());
 export const initials = (name: string) => name.trim().split(/\s+/).slice(0, 2).map((part) => part[0]).join("").toUpperCase();
 export function localDay() {

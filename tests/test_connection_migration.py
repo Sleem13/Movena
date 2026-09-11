@@ -4,7 +4,8 @@ from alembic import command
 from alembic.config import Config
 from sqlalchemy import create_engine, inspect, text
 
-from app.db.models import Base
+from app.db.models import Base, User
+from sqlalchemy.orm import Session
 
 
 def test_fresh_and_existing_connection_migration(tmp_path, monkeypatch):
@@ -17,6 +18,9 @@ def test_fresh_and_existing_connection_migration(tmp_path, monkeypatch):
         cfg.set_main_option("script_location", str(root / "backend/alembic"))
         if existing:
             Base.metadata.create_all(engine)
+            with Session(engine) as session:
+                session.add(User(user_id="patient-without-profile", username="legacy.patient", email="legacy@example.com", password_hash="hash", full_name="Legacy Patient", role="patient"))
+                session.commit()
             with engine.begin() as connection:
                 connection.execute(text("DROP TABLE care_invitations"))
                 for name in ("source", "ended_at", "ended_by_user_id", "end_reason"):
@@ -27,8 +31,9 @@ def test_fresh_and_existing_connection_migration(tmp_path, monkeypatch):
         assert "care_invitations" in inspect(engine).get_table_names()
         assert {"source", "ended_at", "end_reason"} <= {c["name"] for c in inspect(engine).get_columns("therapist_patient_assignments")}
         with engine.connect() as connection:
-            assert connection.scalar(text("SELECT version_num FROM alembic_version")) == "0008_care_connections"
+            assert connection.scalar(text("SELECT version_num FROM alembic_version")) == "0009_patient_profile_repair"
             if existing:
                 assert connection.execute(text("SELECT assignment_id, status, source FROM therapist_patient_assignments")).one() == ("old", "active", "legacy")
+                assert connection.execute(text("SELECT user_id, display_name FROM patient_profiles WHERE user_id = 'patient-without-profile'")).one() == ("patient-without-profile", "Legacy Patient")
         command.upgrade(cfg, "head")
         engine.dispose()

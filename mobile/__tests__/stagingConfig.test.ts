@@ -18,7 +18,7 @@ describe("mobile staging configuration", () => {
   it("ships the Movena app identity and approved visual assets", () => {
     const config = JSON.parse(fs.readFileSync(path.join(process.cwd(), "app.json"), "utf8"));
     expect(config.expo.name).toBe("Movena");
-    expect(config.expo.version).toBe("0.29.0");
+    expect(config.expo.version).toBe("0.30.0");
     expect(config.expo.icon).toBe("./assets/images/icon.png");
     expect(config.expo.android.adaptiveIcon.foregroundImage).toBe("./assets/images/adaptive-icon.png");
     expect(config.expo.plugins).toContainEqual(expect.arrayContaining(["expo-splash-screen", expect.objectContaining({ image: "./assets/images/splash-icon.png" })]));

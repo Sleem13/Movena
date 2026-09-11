@@ -7,5 +7,5 @@ import { homeRoute } from "@/src/utils/care";
 export default function HomeScreen() {
   const { user, loading } = useAuth();
   if (loading) return <AppShell active="today"><Loading label="Opening Movena" /></AppShell>;
-  return <Redirect href={user && !["patient", "therapist"].includes(user.role) ? "/more" : homeRoute(user?.role)} />;
+  return <Redirect href={user ? homeRoute(user.role) : "/today"} />;
 }

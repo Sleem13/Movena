@@ -27,6 +27,7 @@ from app.schemas.admin_schema import (
     ManagedUserSummary,
 )
 from app.schemas.auth_schema import UserRole
+from app.services.care_service import ensure_patient_profile
 
 router = APIRouter(
     prefix="/api/v1/admin/users",
@@ -177,6 +178,8 @@ def update_role(user_id: str, data: AccountRoleUpdate, actor: User = Depends(req
     previous = target.role
     target.role = data.role.value
     target.permissions_json = permissions_json_for_role(target.role)
+    if target.role == UserRole.patient.value:
+        ensure_patient_profile(db, target)
     if previous != target.role:
         target.token_version += 1
     audit(db, actor, "user.role_changed", target, {"from": previous, "to": target.role, "reason": data.reason})

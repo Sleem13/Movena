@@ -21,7 +21,7 @@ from app.schemas.care_schema import (
     PatientTodayResponse, PatientHealthProfileUpdate, ConsentUpdate, DataRightsRequestCreate,
 )
 from app.services.care_service import (
-    appointment_summary, notification_summary, patient_for_user, patient_today,
+    appointment_summary, audit_event, ensure_patient_profile, notification_summary, patient_today,
     record_adherence,
 )
 
@@ -36,9 +36,11 @@ def error(code: str, message: str, status_code: int) -> JSONResponse:
 
 
 def current_profile(db: Session, user: User) -> PatientProfile | JSONResponse:
-    profile = patient_for_user(db, user.user_id)
-    if profile is None:
-        return error("PATIENT_PROFILE_REQUIRED", "Your patient profile has not been provisioned.", 409)
+    profile, created = ensure_patient_profile(db, user)
+    if created:
+        audit_event(db, user.user_id, "patient.profile_repaired", "patient_profile", profile.patient_id)
+        db.commit()
+        db.refresh(profile)
     return profile
 
 

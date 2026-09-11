@@ -9,7 +9,7 @@ import { useCareResource } from "@/src/hooks/useCareResource";
 import { completionLabel } from "@/src/utils/care";
 
 type PatientWorkspace = { patient: PatientDetail; adherence: AdherenceResponse[]; coaching: CoachingDashboard };
-export default function PatientScreen() { return <CareAccess roles={["therapist"]} active="patients"><PatientContent /></CareAccess>; }
+export default function PatientScreen() { return <CareAccess roles={["therapist", "admin", "super_admin"]} active="patients"><PatientContent /></CareAccess>; }
 function PatientContent() {
   const router = useRouter(); const { id = "" } = useLocalSearchParams<{ id: string }>();
   const fetchPatient = useCallback(async (): Promise<PatientWorkspace> => { const [patient, adherence, coaching] = await Promise.all([getPatient(id), getPatientAdherence(id), getCoachingDashboard(id)]); return { patient, adherence, coaching }; }, [id]);

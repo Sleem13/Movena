@@ -1,9 +1,14 @@
-import { calendarDate, completionLabel, exerciseName, homeRoute, initials, linkedAnalysisForItem, needsReview, optionalScore, reviewCountFromResults } from "@/src/utils/care";
+import { calendarDate, completionLabel, exerciseName, homeRoute, initials, isClinicalStaff, linkedAnalysisForItem, needsReview, optionalScore, reviewCountFromResults, roleLabel } from "@/src/utils/care";
 
 describe("role-aware care helpers", () => {
   test("routes patients and therapists into focused workspaces", () => {
     expect(homeRoute("patient")).toBe("/today");
     expect(homeRoute("therapist")).toBe("/patients");
+    expect(homeRoute("admin")).toBe("/patients");
+    expect(homeRoute("super_admin")).toBe("/patients");
+    expect(homeRoute("support")).toBe("/more");
+    expect(isClinicalStaff("admin")).toBe(true);
+    expect(roleLabel("super_admin")).toBe("Super administrator");
   });
 
   test("formats patient-facing labels", () => {

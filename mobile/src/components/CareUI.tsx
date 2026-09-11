@@ -1,18 +1,19 @@
 import { Fragment, type PropsWithChildren } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View, type TextInputProps } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { useRouter } from "expo-router";
+import { Redirect, useRouter } from "expo-router";
 import { useAuth } from "@/src/context/AuthContext";
 import { AppShell, BrandHeader, type MainTab } from "./AppShell";
-import { Body, Loading, PrimaryButton } from "./UI";
+import { Loading, PrimaryButton } from "./UI";
 import { colors } from "@/src/config/theme";
+import { homeRoute } from "@/src/utils/care";
 
 export function CareAccess({ children, roles = ["patient", "therapist"], active = "today" }: PropsWithChildren<{ roles?: string[]; active?: MainTab }>) {
   const { user, loading } = useAuth();
   const router = useRouter();
   if (loading) return <AppShell active={active}><Loading label="Opening your workspace" /></AppShell>;
   if (!user) return <AppShell active={active}><BrandHeader title="Your care, in one place" subtitle="Log in for your plan, care team, and progress." /><PrimaryButton title="Log in" onPress={() => router.push("/login")} /><PrimaryButton title="Create account" secondary onPress={() => router.push("/register")} /><NavRow title="Explore movement checks" detail="Learn how to record an exercise" icon="videocam-outline" onPress={() => router.push("/identify")} /></AppShell>;
-  if (!roles.includes(user.role)) return <AppShell active="more"><BrandHeader title="Your workspace" /><Body>This page is for {roles.join(" or ")} accounts.</Body><PrimaryButton title="Go to my workspace" onPress={() => router.replace(user.role === "therapist" ? "/patients" : user.role === "patient" ? "/today" : "/more")} /></AppShell>;
+  if (!roles.includes(user.role)) return <Redirect href={homeRoute(user.role) as never} />;
   return <Fragment key={user.user_id}>{children}</Fragment>;
 }
 

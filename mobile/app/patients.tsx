@@ -7,20 +7,22 @@ import { CareAccess, NavRow, careStyles } from "@/src/components/CareUI";
 import { Body, Card, EmptyState, ErrorState, Heading, Loading, PrimaryButton } from "@/src/components/UI";
 import { useCareResource } from "@/src/hooks/useCareResource";
 import { colors } from "@/src/config/theme";
-import { initials, reviewCountFromResults } from "@/src/utils/care";
+import { useAuth } from "@/src/context/AuthContext";
+import { initials, isAdministrator, isTherapist, reviewCountFromResults } from "@/src/utils/care";
 
 type Workspace = { patients: PatientSummary[]; reviewCount: number | null };
-export default function PatientsScreen() { return <CareAccess roles={["therapist"]} active="patients"><PatientsContent /></CareAccess>; }
+export default function PatientsScreen() { return <CareAccess roles={["therapist", "admin", "super_admin"]} active="patients"><PatientsContent /></CareAccess>; }
 function PatientsContent() {
-  const router = useRouter(); const [query, setQuery] = useState("");
+  const router = useRouter(); const { user } = useAuth(); const [query, setQuery] = useState("");
+  const administrator = isAdministrator(user?.role); const therapist = isTherapist(user?.role);
   const fetchWorkspace = useCallback(async (): Promise<Workspace> => { const patients = await getPatients(); const responses = await Promise.allSettled(patients.map((patient) => getPatientAdherence(patient.patient_id))); return { patients, reviewCount: reviewCountFromResults(responses) }; }, []);
   const { data, loading, error, reload } = useCareResource(fetchWorkspace);
   const visible = useMemo(() => (data?.patients || []).filter((patient) => `${patient.display_name} ${patient.clinical_group || ""}`.toLowerCase().includes(query.trim().toLowerCase())), [data, query]);
-  return <AppShell active="patients"><BrandHeader title="Your patients" subtitle="Focus on the next follow-up." />
+  return <AppShell active="patients"><BrandHeader title={administrator ? "All patients" : "Your patients"} subtitle={administrator ? "Monitor care activity across the service." : "Focus on the next follow-up."} />
     {data?.reviewCount == null && data ? <Card tone="warning"><Heading>Review count unavailable</Heading><Body muted>Patient records loaded, but follow-up status could not be confirmed. Open the review queue to try again.</Body><PrimaryButton title="Open review queue" onPress={() => router.push("/review")} /></Card> : data?.reviewCount ? <Card tone="warning"><Heading>{data.reviewCount} {data.reviewCount === 1 ? "response needs" : "responses need"} review</Heading><Body muted>Review symptoms and exercise responses that need clinical follow-up.</Body><PrimaryButton title="Open review queue" onPress={() => router.push("/review")} /></Card> : null}
     <TextInput accessibilityRole="search" accessibilityLabel="Search patients" value={query} onChangeText={setQuery} placeholder="Search patients" placeholderTextColor={colors.muted} style={styles.search} />
     <View style={careStyles.section}><Heading>Connected patients</Heading>{loading ? <Loading label="Loading patients" /> : error ? <ErrorState message={error} action={<PrimaryButton title="Try again" onPress={reload} />} /> : visible.length ? visible.map((patient) => <NavRow key={patient.patient_id} initials={initials(patient.display_name)} title={patient.display_name} detail={[patient.clinical_group, patient.session_count ? `${patient.session_count} movement checks` : "View plan and check-ins"].filter(Boolean).join(" · ")} onPress={() => router.push({ pathname: "/patient/[id]", params: { id: patient.patient_id } })} />) : <EmptyState title={query ? "No matching patients" : "No connected patients"} message={query ? "Try another name or clinical group." : "Invite a patient from Care connections."} />}</View>
-    <PrimaryButton title="Care connections" secondary onPress={() => router.push("/care-team")} />
+    {therapist ? <PrimaryButton title="Care connections" secondary onPress={() => router.push("/care-team")} /> : null}
   </AppShell>;
 }
 const styles = StyleSheet.create({ search: { minHeight: 52, borderWidth: 1, borderColor: colors.border, borderRadius: 14, backgroundColor: colors.surface, color: colors.text, paddingHorizontal: 16, fontSize: 16 } });

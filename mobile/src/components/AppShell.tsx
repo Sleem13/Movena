@@ -7,7 +7,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { colors } from "@/src/config/theme";
 import { BrandLockup } from "@/src/components/UI";
 import { useAuth } from "@/src/context/AuthContext";
-import { initials, isTherapist } from "@/src/utils/care";
+import { initials, isClinicalStaff } from "@/src/utils/care";
 
 export type MainTab = "today" | "coach" | "progress" | "appointments" | "more" | "team" | "patients" | "review";
 
@@ -22,6 +22,9 @@ const therapistTabs: Tab[] = [
   { key: "patients", label: "Patients", icon: "people-outline", route: "/patients" },
   { key: "review", label: "Review", icon: "document-text-outline", route: "/review" },
   { key: "appointments", label: "Schedule", icon: "calendar-outline", route: "/appointments" },
+  { key: "more", label: "Account", icon: "person-outline", route: "/more" },
+];
+const accountTabs: Tab[] = [
   { key: "more", label: "Account", icon: "person-outline", route: "/more" },
 ];
 
@@ -51,9 +54,9 @@ export function BrandHeader({ title, subtitle }: { title?: string; subtitle?: st
 export function BottomNavigation({ active }: { active: MainTab }) {
   const router = useRouter();
   const { user } = useAuth();
-  const therapist = isTherapist(user?.role);
-  const tabs = therapist ? therapistTabs : patientTabs;
-  const selectedTab = active === "coach" ? (therapist ? "patients" : "today") : !therapist && active === "appointments" ? "team" : therapist && active === "team" ? "patients" : active;
+  const clinicalStaff = isClinicalStaff(user?.role);
+  const tabs = user?.role === "patient" ? patientTabs : clinicalStaff ? therapistTabs : accountTabs;
+  const selectedTab = active === "coach" ? (clinicalStaff ? "patients" : "today") : user?.role === "patient" && active === "appointments" ? "team" : clinicalStaff && active === "team" ? "patients" : active;
   return <View style={styles.nav}>{tabs.map((tab) => {
     const selected = selectedTab === tab.key;
     return <Pressable key={tab.key} accessibilityRole="button" accessibilityState={{ selected }} accessibilityLabel={tab.label} onPress={() => router.replace(tab.route as never)} style={({ pressed }) => [styles.navItem, pressed && styles.pressed]}>
