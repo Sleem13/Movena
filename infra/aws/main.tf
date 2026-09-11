@@ -20,6 +20,11 @@ data "aws_cloudfront_origin_request_policy" "all_viewer_except_host" {
 
 locals {
   name         = "movena-${var.environment}"
+  # The existing GitHub deploy role can manage only IAM roles whose names begin
+  # with "physiovision-". Keep that least-privilege boundary while giving the
+  # new stack distinct Movena role names; the prefix can be migrated after the
+  # deploy role policy is updated by an AWS administrator.
+  iam_name     = "physiovision-${local.name}"
   frontend_url = "https://${aws_cloudfront_distribution.app.domain_name}"
   selected_azs = slice(data.aws_availability_zones.available.names, 0, 2)
   common_environment = concat([
@@ -254,7 +259,7 @@ resource "aws_cloudwatch_log_group" "backend" {
 }
 
 resource "aws_iam_role" "ecs_execution" {
-  name               = "${local.name}-ecs-execution"
+  name               = "${local.iam_name}-ecs-execution"
   assume_role_policy = jsonencode({ Version = "2012-10-17", Statement = [{ Effect = "Allow", Principal = { Service = "ecs-tasks.amazonaws.com" }, Action = "sts:AssumeRole" }] })
 }
 
@@ -277,7 +282,7 @@ resource "aws_iam_role_policy" "ecs_secrets" {
 }
 
 resource "aws_iam_role" "ecs_task" {
-  name               = "${local.name}-ecs-task"
+  name               = "${local.iam_name}-ecs-task"
   assume_role_policy = jsonencode({ Version = "2012-10-17", Statement = [{ Effect = "Allow", Principal = { Service = "ecs-tasks.amazonaws.com" }, Action = "sts:AssumeRole" }] })
 }
 
@@ -391,7 +396,7 @@ resource "aws_ecs_service" "backend" {
 resource "aws_iam_role" "staging_scheduler" {
   count = var.environment == "staging" && var.enable_staging_schedule ? 1 : 0
 
-  name = "${local.name}-scheduler"
+  name = "${local.iam_name}-scheduler"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [{

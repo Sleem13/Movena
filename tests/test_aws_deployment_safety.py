@@ -99,3 +99,12 @@ def test_staging_schedules_are_opt_in_and_deployments_leave_service_available():
     schedule = variables.split('variable "enable_staging_schedule" {', 1)[1].split("}", 1)[0]
     assert re.search(r'default\s*=\s*false', schedule)
     assert "var.desired_count >= 1 && floor(var.desired_count) == var.desired_count" in variables
+
+
+def test_movena_roles_fit_the_existing_github_deployer_iam_boundary():
+    terraform = (PROJECT_ROOT / "infra" / "aws" / "main.tf").read_text(encoding="utf-8")
+
+    assert 'iam_name     = "physiovision-${local.name}"' in terraform
+    assert 'name               = "${local.iam_name}-ecs-execution"' in terraform
+    assert 'name               = "${local.iam_name}-ecs-task"' in terraform
+    assert 'name = "${local.iam_name}-scheduler"' in terraform
