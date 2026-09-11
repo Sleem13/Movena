@@ -1,0 +1,210 @@
+name: Migrate PhysioVision accounts to Movena
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: movena-staging-data-migration
+  cancel-in-progress: false
+
+env:
+  AWS_REGION: eu-central-1
+  RECOVERY_DATABASE: physiovision-account-recovery
+  LEGACY_SNAPSHOT: physiovision-staging-final-34616423298
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v5
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+          role-session-name: account-migration-${{ github.run_id }}
+          role-duration-seconds: 7200
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.14.8"
+      - name: Read Movena infrastructure
+        id: infra
+        shell: bash
+        run: |
+          terraform -chdir=infra/aws init -reconfigure \
+            -backend-config="bucket=${{ vars.TF_STATE_BUCKET }}" \
+            -backend-config="key=movena/staging/terraform.tfstate" \
+            -backend-config="region=${AWS_REGION}" \
+            -backend-config="encrypt=true" \
+            -backend-config="use_lockfile=true"
+          cluster=$(terraform -chdir=infra/aws output -raw ecs_cluster_name)
+          service=$(terraform -chdir=infra/aws output -raw ecs_service_name)
+          database=$(terraform -chdir=infra/aws output -raw rds_instance_identifier)
+          echo "cluster=$cluster" >> "$GITHUB_OUTPUT"
+          echo "service=$service" >> "$GITHUB_OUTPUT"
+          echo "database=$database" >> "$GITHUB_OUTPUT"
+      - name: Validate snapshot and restore an isolated recovery database
+        id: recovery
+        shell: bash
+        run: |
+          set -euo pipefail
+          aws rds describe-db-snapshots \
+            --db-snapshot-identifier "$LEGACY_SNAPSHOT" \
+            --query 'DBSnapshots[0].[Status,Engine]' --output text | grep -q '^available[[:space:]]postgres'
+          current=$(aws rds describe-db-instances \
+            --db-instance-identifier '${{ steps.infra.outputs.database }}' \
+            --query 'DBInstances[0]' --output json)
+          subnet_group=$(jq -r '.DBSubnetGroup.DBSubnetGroupName' <<<"$current")
+          security_groups=$(jq -r '[.VpcSecurityGroups[].VpcSecurityGroupId] | join(" ")' <<<"$current")
+          if ! aws rds describe-db-instances --db-instance-identifier "$RECOVERY_DATABASE" >/dev/null 2>&1; then
+            aws rds restore-db-instance-from-db-snapshot \
+              --db-instance-identifier "$RECOVERY_DATABASE" \
+              --db-snapshot-identifier "$LEGACY_SNAPSHOT" \
+              --db-instance-class db.t4g.micro \
+              --db-subnet-group-name "$subnet_group" \
+              --vpc-security-group-ids $security_groups \
+              --no-publicly-accessible \
+              --no-multi-az \
+              --no-deletion-protection >/dev/null
+          fi
+          aws rds wait db-instance-available --db-instance-identifier "$RECOVERY_DATABASE"
+          secret_arn=$(aws rds describe-db-instances --db-instance-identifier "$RECOVERY_DATABASE" \
+            --query 'DBInstances[0].MasterUserSecret.SecretArn' --output text)
+          if [ "$secret_arn" = "None" ] || [ -z "$secret_arn" ]; then
+            aws rds modify-db-instance --db-instance-identifier "$RECOVERY_DATABASE" \
+              --manage-master-user-password --apply-immediately >/dev/null
+            aws rds wait db-instance-available --db-instance-identifier "$RECOVERY_DATABASE"
+          fi
+          for attempt in {1..30}; do
+            recovery=$(aws rds describe-db-instances --db-instance-identifier "$RECOVERY_DATABASE" \
+              --query 'DBInstances[0]' --output json)
+            secret_arn=$(jq -r '.MasterUserSecret.SecretArn // empty' <<<"$recovery")
+            secret_status=$(jq -r '.MasterUserSecret.SecretStatus // empty' <<<"$recovery")
+            if [ -n "$secret_arn" ] && [ "$secret_status" = "active" ]; then break; fi
+            if [ "$attempt" -eq 30 ]; then echo "Recovery database secret did not become active" >&2; exit 1; fi
+            sleep 10
+          done
+          echo "host=$(jq -r '.Endpoint.Address' <<<"$recovery")" >> "$GITHUB_OUTPUT"
+          echo "port=$(jq -r '.Endpoint.Port' <<<"$recovery")" >> "$GITHUB_OUTPUT"
+          echo "name=$(jq -r '.DBName' <<<"$recovery")" >> "$GITHUB_OUTPUT"
+          echo "secret_arn=$secret_arn" >> "$GITHUB_OUTPUT"
+      - name: Register guarded migration task
+        id: task_definition
+        shell: bash
+        run: |
+          set -euo pipefail
+          service_json=$(aws ecs describe-services \
+            --cluster '${{ steps.infra.outputs.cluster }}' \
+            --services '${{ steps.infra.outputs.service }}' \
+            --query 'services[0]' --output json)
+          current_task_definition=$(jq -r '.taskDefinition' <<<"$service_json")
+          echo "desired_count=$(jq -r '.desiredCount' <<<"$service_json")" >> "$GITHUB_OUTPUT"
+          echo "network=$(jq -c '{awsvpcConfiguration: .networkConfiguration.awsvpcConfiguration}' <<<"$service_json")" >> "$GITHUB_OUTPUT"
+          aws ecs describe-task-definition --task-definition "$current_task_definition" \
+            --query taskDefinition --output json > /tmp/current-task-definition.json
+          execution_role_arn=$(jq -r '.executionRoleArn' /tmp/current-task-definition.json)
+          execution_role_name=${execution_role_arn##*/}
+          echo "$execution_role_name" > /tmp/execution-role-name
+          aws iam get-role-policy --role-name "$execution_role_name" --policy-name secrets \
+            --query PolicyDocument --output json > /tmp/original-secrets-policy.json
+          jq --arg recovery '${{ steps.recovery.outputs.secret_arn }}' \
+            '.Statement[0].Resource = ((.Statement[0].Resource + [$recovery]) | unique)' \
+            /tmp/original-secrets-policy.json > /tmp/migration-secrets-policy.json
+          aws iam put-role-policy --role-name "$execution_role_name" --policy-name secrets \
+            --policy-document file:///tmp/migration-secrets-policy.json
+          jq \
+            --arg host '${{ steps.recovery.outputs.host }}' \
+            --arg port '${{ steps.recovery.outputs.port }}' \
+            --arg name '${{ steps.recovery.outputs.name }}' \
+            --arg secret '${{ steps.recovery.outputs.secret_arn }}' \
+            'del(.taskDefinitionArn,.revision,.status,.requiresAttributes,.compatibilities,.registeredAt,.registeredBy)
+             | .family = "movena-staging-account-migration"
+             | .containerDefinitions[0].command = ["python", "-m", "app.scripts.migrate_legacy_database"]
+             | del(.containerDefinitions[0].healthCheck)
+             | .containerDefinitions[0].environment += [
+                 {name:"LEGACY_DATABASE_HOST",value:$host},
+                 {name:"LEGACY_DATABASE_PORT",value:$port},
+                 {name:"LEGACY_DATABASE_NAME",value:$name}
+               ]
+             | .containerDefinitions[0].secrets += [
+                 {name:"LEGACY_DATABASE_USER",valueFrom:($secret + ":username::")},
+                 {name:"LEGACY_DATABASE_PASSWORD",valueFrom:($secret + ":password::")}
+               ]' /tmp/current-task-definition.json > /tmp/migration-task-definition.json
+          task_definition=$(aws ecs register-task-definition \
+            --cli-input-json file:///tmp/migration-task-definition.json \
+            --query 'taskDefinition.taskDefinitionArn' --output text)
+          echo "task_definition=$task_definition" >> "$GITHUB_OUTPUT"
+      - name: Pause Movena and migrate the legacy database
+        id: migration
+        shell: bash
+        run: |
+          set -euo pipefail
+          cluster='${{ steps.infra.outputs.cluster }}'
+          service='${{ steps.infra.outputs.service }}'
+          aws ecs update-service --cluster "$cluster" --service "$service" --desired-count 0 >/dev/null
+          aws ecs wait services-stable --cluster "$cluster" --services "$service"
+          task_arn=$(aws ecs run-task \
+            --cluster "$cluster" \
+            --launch-type FARGATE \
+            --platform-version LATEST \
+            --task-definition '${{ steps.task_definition.outputs.task_definition }}' \
+            --network-configuration '${{ steps.task_definition.outputs.network }}' \
+            --count 1 --query 'tasks[0].taskArn' --output text)
+          if [ -z "$task_arn" ] || [ "$task_arn" = "None" ]; then
+            echo "Migration task was not started" >&2
+            exit 1
+          fi
+          echo "task_arn=$task_arn" >> "$GITHUB_OUTPUT"
+          aws ecs wait tasks-stopped --cluster "$cluster" --tasks "$task_arn"
+          task_id=${task_arn##*/}
+          aws logs get-log-events --log-group-name /ecs/movena-staging \
+            --log-stream-name "api/backend/$task_id" \
+            --query 'events[].message' --output text || true
+          exit_code=$(aws ecs describe-tasks --cluster "$cluster" --tasks "$task_arn" \
+            --query 'tasks[0].containers[0].exitCode' --output text)
+          reason=$(aws ecs describe-tasks --cluster "$cluster" --tasks "$task_arn" \
+            --query 'tasks[0].containers[0].reason' --output text)
+          if [ "$exit_code" != "0" ]; then
+            echo "Migration failed: exit=$exit_code reason=$reason" >&2
+            exit 1
+          fi
+      - name: Restore Movena service
+        if: always() && steps.task_definition.outputs.desired_count != ''
+        shell: bash
+        run: |
+          aws ecs update-service \
+            --cluster '${{ steps.infra.outputs.cluster }}' \
+            --service '${{ steps.infra.outputs.service }}' \
+            --desired-count '${{ steps.task_definition.outputs.desired_count }}' >/dev/null
+          aws ecs wait services-stable \
+            --cluster '${{ steps.infra.outputs.cluster }}' \
+            --services '${{ steps.infra.outputs.service }}'
+      - name: Restore execution-role policy
+        if: always()
+        shell: bash
+        run: |
+          if [ -s /tmp/execution-role-name ] && [ -s /tmp/original-secrets-policy.json ]; then
+            aws iam put-role-policy --role-name "$(cat /tmp/execution-role-name)" --policy-name secrets \
+              --policy-document file:///tmp/original-secrets-policy.json
+          fi
+      - name: Remove temporary recovery resources
+        if: always()
+        shell: bash
+        run: |
+          if [ -n '${{ steps.task_definition.outputs.task_definition }}' ]; then
+            aws ecs deregister-task-definition \
+              --task-definition '${{ steps.task_definition.outputs.task_definition }}' >/dev/null || true
+          fi
+          if aws rds describe-db-instances --db-instance-identifier "$RECOVERY_DATABASE" >/dev/null 2>&1; then
+            aws rds delete-db-instance --db-instance-identifier "$RECOVERY_DATABASE" \
+              --skip-final-snapshot --delete-automated-backups >/dev/null
+            aws rds wait db-instance-deleted --db-instance-identifier "$RECOVERY_DATABASE"
+          fi
+      - name: Verify Movena readiness
+        if: success()
+        shell: bash
+        run: curl --fail --silent --show-error --max-time 30 https://d1ylxhoq5y66vd.cloudfront.net/ready
