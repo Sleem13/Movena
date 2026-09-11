@@ -13,6 +13,8 @@ import os
 from collections.abc import Iterable
 
 import psycopg
+from alembic import command
+from alembic.config import Config
 from psycopg import sql
 
 
@@ -35,6 +37,28 @@ def _connection(prefix: str = "") -> psycopg.Connection:
         password=_required(f"{prefix}DATABASE_PASSWORD"),
         connect_timeout=20,
     )
+
+
+def upgrade_legacy_schema() -> None:
+    """Upgrade only the isolated snapshot copy before comparing schemas."""
+    database_keys = ("DATABASE_HOST", "DATABASE_PORT", "DATABASE_NAME", "DATABASE_USER", "DATABASE_PASSWORD")
+    previous = {key: os.environ.get(key) for key in database_keys}
+    try:
+        for key in database_keys:
+            legacy_key = f"LEGACY_{key}"
+            if key == "DATABASE_PORT":
+                os.environ[key] = os.environ.get(legacy_key, "5432")
+            else:
+                os.environ[key] = _required(legacy_key)
+        config = Config("/app/alembic.ini")
+        config.set_main_option("script_location", "/app/backend/alembic")
+        command.upgrade(config, "head")
+    finally:
+        for key, value in previous.items():
+            if value is None:
+                os.environ.pop(key, None)
+            else:
+                os.environ[key] = value
 
 
 def topological_table_order(tables: Iterable[str], dependencies: Iterable[tuple[str, str]]) -> list[str]:
@@ -171,6 +195,7 @@ def _reset_sequences(connection: psycopg.Connection, tables: Iterable[str]) -> N
 
 
 def migrate() -> dict[str, object]:
+    upgrade_legacy_schema()
     with _connection("LEGACY_") as source, _connection() as target:
         source_version = _schema_version(source)
         target_version = _schema_version(target)
