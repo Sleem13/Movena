@@ -27,7 +27,7 @@
       "environment": "preview",
       "env": {
         "EXPO_PUBLIC_APP_ENV": "staging",
-        "EXPO_PUBLIC_API_BASE_URL": "https://d139746brwkxwp.cloudfront.net"
+        "EXPO_PUBLIC_API_BASE_URL": "https://d1ylxhoq5y66vd.cloudfront.net"
       }
     },
     "production": {

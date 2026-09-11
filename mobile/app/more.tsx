@@ -1,5 +1,6 @@
 import { StyleSheet, Text, View } from "react-native";
 import { useRouter } from "expo-router";
+import Constants from "expo-constants";
 
 import { AppShell, BrandHeader } from "@/src/components/AppShell";
 import { ActionRow, SectionTitle } from "@/src/components/GuidedUI";
@@ -11,6 +12,7 @@ export default function MoreScreen() {
   const router = useRouter();
   const { user } = useAuth();
   const therapist = isTherapist(user?.role);
+  const appVersion = Constants.expoConfig?.version ?? "0.29.0";
   return (
     <AppShell active="more">
       <BrandHeader
@@ -75,7 +77,7 @@ export default function MoreScreen() {
         <Text style={styles.aboutText}>
           Movement intelligence inside your rehabilitation journey.
         </Text>
-        <Text style={styles.version}>Version 0.28.0</Text>
+        <Text style={styles.version}>Version {appVersion}</Text>
         <Text style={styles.version}>Invite-only beta launch candidate · not public</Text>
       </View>
     </AppShell>

@@ -1,5 +1,6 @@
 import type { PropsWithChildren, ReactNode } from "react";
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, Image, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { BRAND } from "@/src/config/brand";
 import { colors, DISCLAIMER } from "@/src/config/theme";
 
 export function Screen({ children, scroll = true }: PropsWithChildren<{ scroll?: boolean }>) {
@@ -10,6 +11,11 @@ export const Card = ({ children, tone = "default" }: PropsWithChildren<{ tone?: 
 export const Title = ({ children }: PropsWithChildren) => <Text style={styles.title}>{children}</Text>;
 export const Heading = ({ children }: PropsWithChildren) => <Text style={styles.heading}>{children}</Text>;
 export const Body = ({ children, muted = false }: PropsWithChildren<{ muted?: boolean }>) => <Text style={[styles.body, muted && styles.muted]}>{children}</Text>;
+export function BrandLockup({ compact = false }: { compact?: boolean }) {
+  return <View style={[styles.brandLockup, compact && styles.brandLockupCompact]}>
+    <Image accessible accessibilityRole="image" accessibilityLabel={BRAND.accessibilityLabel} source={BRAND.assets.wordmark} resizeMode="contain" style={[styles.brandImage, compact && styles.brandImageCompact]} />
+  </View>;
+}
 export function PrimaryButton({ title, onPress, disabled = false, secondary = false }: { title: string; onPress: () => void; disabled?: boolean; secondary?: boolean }) {
   return <Pressable accessibilityRole="button" accessibilityState={{ disabled }} disabled={disabled} onPress={onPress} style={({ pressed }) => [styles.button, secondary && styles.secondaryButton, disabled && styles.disabled, pressed && styles.pressed]}><Text style={[styles.buttonText, secondary && styles.secondaryText]}>{title}</Text></Pressable>;
 }
@@ -32,4 +38,8 @@ const styles = StyleSheet.create({
   secondaryButton: { backgroundColor: colors.card, borderWidth: 1, borderColor: colors.border }, buttonText: { color: "white", fontWeight: "700", fontSize: 15 }, secondaryText: { color: colors.text },
   disabled: { opacity: 0.45 }, pressed: { opacity: 0.8 }, badge: { alignSelf: "flex-start", borderRadius: 999, paddingVertical: 5, paddingHorizontal: 10 }, badgeText: { color: colors.text, fontWeight: "700", fontSize: 12 },
   row: { flexDirection: "row", alignItems: "center", gap: 10 },
+  brandLockup: { alignItems: "flex-start", justifyContent: "center", minHeight: 94, marginBottom: 2 },
+  brandLockupCompact: { minHeight: 48, marginBottom: 0 },
+  brandImage: { width: 260, height: 101, maxWidth: "100%" },
+  brandImageCompact: { width: 144, height: 56 },
 });

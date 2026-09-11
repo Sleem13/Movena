@@ -5,7 +5,7 @@ import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { colors } from "@/src/config/theme";
-import { BRAND } from "@/src/config/brand";
+import { BrandLockup } from "@/src/components/UI";
 import { useAuth } from "@/src/context/AuthContext";
 import { initials, isTherapist } from "@/src/utils/care";
 
@@ -38,7 +38,7 @@ export function BrandHeader({ title, subtitle }: { title?: string; subtitle?: st
   const { user } = useAuth();
   return <View style={styles.header}>
     <View style={styles.brandRow}>
-      <View style={styles.brand}><Text accessibilityLabel={BRAND.name} style={styles.wordmark}>{BRAND.name}</Text></View>
+      <View style={styles.brand}><BrandLockup compact /></View>
       <Pressable accessibilityRole="button" accessibilityLabel="Open profile" onPress={() => router.push("/profile")} style={({ pressed }) => [styles.profile, pressed && styles.pressed]}>
         {user?.full_name ? <Text style={styles.initials}>{initials(user.full_name)}</Text> : <Ionicons name="person-outline" size={22} color={colors.text} />}
       </Pressable>
@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
   shell: { flex: 1, backgroundColor: colors.background }, scroll: { flex: 1 }, scrollContent: { paddingBottom: 26 },
   content: { flexGrow: 1, paddingHorizontal: 20, paddingTop: 20, gap: 22, width: "100%", maxWidth: 720, alignSelf: "center" },
   header: { gap: 8 }, brandRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 20 },
-  brand: { flex: 1, alignItems: "flex-start", justifyContent: "center" }, wordmark: { fontSize: 26, lineHeight: 34, fontWeight: "800", letterSpacing: -0.8, color: colors.text }, initials: { fontSize: 15, color: colors.text, fontWeight: "700" },
+  brand: { flex: 1, alignItems: "flex-start", justifyContent: "center" }, initials: { fontSize: 15, color: colors.text, fontWeight: "700" },
   profile: { width: 44, height: 44, borderRadius: 22, borderWidth: 1, borderColor: colors.border, alignItems: "center", justifyContent: "center", backgroundColor: colors.card },
   pageTitle: { color: colors.text, fontSize: 30, lineHeight: 37, fontWeight: "800", letterSpacing: -0.7 }, subtitle: { color: colors.muted, fontSize: 16, lineHeight: 24, maxWidth: 540 },
   nav: { minHeight: 76, paddingBottom: 8, paddingTop: 7, paddingHorizontal: 6, borderTopWidth: 1, borderTopColor: colors.border, backgroundColor: colors.card, flexDirection: "row", alignItems: "center", justifyContent: "space-around" },
