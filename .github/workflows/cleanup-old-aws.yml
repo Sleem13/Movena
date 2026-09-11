@@ -63,6 +63,10 @@ jobs:
         if: ${{ inputs.execute }}
         shell: bash
         run: |
+          if ! terraform -chdir=infra/aws state list | grep -qx 'aws_db_instance.database'; then
+            echo "Old database is already absent; no additional snapshot needed."
+            exit 0
+          fi
           database=$(terraform -chdir=infra/aws output -raw rds_instance_identifier)
           snapshot="physiovision-staging-final-${GITHUB_RUN_ID}"
           aws rds create-db-snapshot --db-instance-identifier "$database" --db-snapshot-identifier "$snapshot" >/dev/null
@@ -70,37 +74,66 @@ jobs:
           echo "Retained RDS snapshot: $snapshot"
       - name: Disable old resource deletion protection
         if: ${{ inputs.execute }}
-        run: >-
-          terraform -chdir=infra/aws apply -auto-approve
-          -target=aws_db_instance.database
-          -target=aws_lb.backend
-          -var="aws_region=${AWS_REGION}"
-          -var="environment=${ENVIRONMENT}"
-          -var="app_version=retired"
-          -var="app_secret_arn=${{ vars.APP_SECRET_ARN }}"
-          -var="protect_data=false"
+        shell: bash
+        run: |
+          targets=()
+          if terraform -chdir=infra/aws state list | grep -qx 'aws_db_instance.database'; then
+            targets+=("-target=aws_db_instance.database")
+          fi
+          if terraform -chdir=infra/aws state list | grep -qx 'aws_lb.backend'; then
+            targets+=("-target=aws_lb.backend")
+          fi
+          if [ "${#targets[@]}" -eq 0 ]; then
+            echo "Old protected resources are already absent."
+            exit 0
+          fi
+          terraform -chdir=infra/aws apply -auto-approve "${targets[@]}" \
+            -var="aws_region=${AWS_REGION}" \
+            -var="environment=${ENVIRONMENT}" \
+            -var="app_version=retired" \
+            -var="app_secret_arn=${{ vars.APP_SECRET_ARN }}" \
+            -var="protect_data=false"
       - name: Empty versioned frontend bucket and container registry
         if: ${{ inputs.execute }}
         shell: bash
         run: |
-          bucket=$(terraform -chdir=infra/aws output -raw frontend_bucket)
-          repository_url=$(terraform -chdir=infra/aws output -raw ecr_repository_url)
-          repository="${repository_url#*/}"
-
-          while true; do
-            versions=$(aws s3api list-object-versions --bucket "$bucket" --max-items 1000)
-            delete_payload=$(jq -c '{Objects: ([.Versions[]?, .DeleteMarkers[]?] | map({Key: .Key, VersionId: .VersionId})), Quiet: true}' <<<"$versions")
-            count=$(jq '.Objects | length' <<<"$delete_payload")
-            if [ "$count" -eq 0 ]; then
-              break
-            fi
-            aws s3api delete-objects --bucket "$bucket" --delete "$delete_payload" >/dev/null
-          done
-
-          images=$(aws ecr list-images --repository-name "$repository" --query 'imageIds' --output json)
-          if [ "$(jq 'length' <<<"$images")" -gt 0 ]; then
-            aws ecr batch-delete-image --repository-name "$repository" --image-ids "$images" >/dev/null
+          if terraform -chdir=infra/aws state list | grep -qx 'aws_s3_bucket.frontend'; then
+            bucket=$(terraform -chdir=infra/aws output -raw frontend_bucket)
+            while true; do
+              versions=$(aws s3api list-object-versions --bucket "$bucket" --max-items 1000)
+              delete_payload=$(jq -c '{Objects: ([.Versions[]?, .DeleteMarkers[]?] | map({Key: .Key, VersionId: .VersionId})), Quiet: true}' <<<"$versions")
+              count=$(jq '.Objects | length' <<<"$delete_payload")
+              if [ "$count" -eq 0 ]; then
+                break
+              fi
+              aws s3api delete-objects --bucket "$bucket" --delete "$delete_payload" >/dev/null
+            done
           fi
+
+          if terraform -chdir=infra/aws state list | grep -qx 'aws_ecr_repository.backend'; then
+            repository_url=$(terraform -chdir=infra/aws output -raw ecr_repository_url)
+            repository="${repository_url#*/}"
+            images=$(aws ecr list-images --repository-name "$repository" --query 'imageIds' --output json)
+            if [ "$(jq 'length' <<<"$images")" -gt 0 ]; then
+              aws ecr batch-delete-image --repository-name "$repository" --image-ids "$images" >/dev/null
+            fi
+          fi
+      - name: Delete old IAM roles within the legacy deploy boundary
+        if: ${{ inputs.execute }}
+        shell: bash
+        run: |
+          for role in physiovision-staging-ecs-execution physiovision-staging-ecs-task physiovision-staging-scheduler; do
+            if ! aws iam get-role --role-name "$role" >/dev/null 2>&1; then
+              continue
+            fi
+            for policy in $(aws iam list-role-policies --role-name "$role" --query 'PolicyNames' --output text); do
+              aws iam delete-role-policy --role-name "$role" --policy-name "$policy"
+            done
+            for policy_arn in $(aws iam list-attached-role-policies --role-name "$role" --query 'AttachedPolicies[].PolicyArn' --output text); do
+              aws iam detach-role-policy --role-name "$role" --policy-arn "$policy_arn"
+            done
+            aws iam delete-role --role-name "$role"
+          done
       - name: Destroy old PhysioVision stack
         if: ${{ inputs.execute }}
         run: >-
