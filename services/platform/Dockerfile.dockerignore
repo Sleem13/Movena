@@ -1,0 +1,15 @@
+**
+!services/
+!services/platform/
+!services/platform/**
+!packages/
+!packages/contracts/
+!packages/contracts/**
+!docs/
+!docs/rebuild/
+!docs/rebuild/baseline.json
+**/__pycache__/
+**/*.sqlite3
+**/*.sqlite3-*
+**/.env
+**/.env.*

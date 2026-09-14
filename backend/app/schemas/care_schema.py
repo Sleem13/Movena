@@ -214,6 +214,7 @@ class ClinicalNoteDetail(ClinicalNoteCreate):
     therapist_user_id: str
     created_at: datetime
     updated_at: datetime
+    author_name: str | None = None
     model_config = {"from_attributes": True}
 
 

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<full-backup-content>
+    <!-- Only locale/theme preferences: never secure tokens or captured media. -->
+    <include domain="sharedpref" path="FlutterSharedPreferences.xml"/>
+</full-backup-content>

@@ -1,0 +1,4813 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Movena replacement core contracts",
+    "version": "2.0.0-alpha.1",
+    "description": "Typed initial recovery slice. Other compatibility endpoints remain inventoried in baseline.json."
+  },
+  "paths": {
+    "/api/v2/patient/appointments/{appointment_id}/session-notes": {
+      "get": {
+        "operationId": "getPatientVisitNotes",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ClinicalNoteDetail"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication expired or missing"
+          },
+          "403": {
+            "description": "Operation or object access denied"
+          },
+          "409": {
+            "description": "Conflicting or unresolved submission"
+          },
+          "422": {
+            "description": "Invalid input"
+          },
+          "503": {
+            "description": "Dependency unavailable"
+          }
+        },
+        "parameters": [
+          {
+            "name": "appointment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v2/therapist/appointments/{appointment_id}/session-notes": {
+      "get": {
+        "operationId": "getStaffVisitNotes",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ClinicalNoteDetail"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication expired or missing"
+          },
+          "403": {
+            "description": "Operation or object access denied"
+          },
+          "409": {
+            "description": "Conflicting or unresolved submission"
+          },
+          "422": {
+            "description": "Invalid input"
+          },
+          "503": {
+            "description": "Dependency unavailable"
+          }
+        },
+        "parameters": [
+          {
+            "name": "appointment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "post": {
+        "operationId": "createVisitNote",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClinicalNoteDetail"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication expired or missing"
+          },
+          "403": {
+            "description": "Operation or object access denied"
+          },
+          "409": {
+            "description": "Conflicting or unresolved submission"
+          },
+          "422": {
+            "description": "Invalid input"
+          },
+          "503": {
+            "description": "Dependency unavailable"
+          }
+        },
+        "parameters": [
+          {
+            "name": "appointment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 128
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ClinicalNoteCreate"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/sessions": {
+      "get": {
+        "operationId": "getSessionPage",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionListResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication expired or missing"
+          },
+          "403": {
+            "description": "Operation or object access denied"
+          },
+          "409": {
+            "description": "Conflicting or unresolved submission"
+          },
+          "422": {
+            "description": "Invalid input"
+          },
+          "503": {
+            "description": "Dependency unavailable"
+          }
+        },
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 200,
+              "default": 50
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Empty includes every historical outcome."
+            }
+          }
+        ]
+      }
+    },
+    "/api/v2/sessions/{session_id}": {
+      "get": {
+        "operationId": "getSession",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionDetail"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication expired or missing"
+          },
+          "403": {
+            "description": "Operation or object access denied"
+          },
+          "409": {
+            "description": "Conflicting or unresolved submission"
+          },
+          "422": {
+            "description": "Invalid input"
+          },
+          "503": {
+            "description": "Dependency unavailable"
+          }
+        },
+        "parameters": [
+          {
+            "name": "session_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v2/auth/me": {
+      "get": {
+        "operationId": "getCurrentUser",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CurrentUserResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication expired or missing"
+          },
+          "403": {
+            "description": "Operation or object access denied"
+          },
+          "409": {
+            "description": "Conflicting or unresolved submission"
+          },
+          "422": {
+            "description": "Invalid input"
+          },
+          "503": {
+            "description": "Dependency unavailable"
+          }
+        }
+      }
+    },
+    "/api/v2/auth/login": {
+      "post": {
+        "operationId": "login",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication expired or missing"
+          },
+          "403": {
+            "description": "Operation or object access denied"
+          },
+          "409": {
+            "description": "Conflicting or unresolved submission"
+          },
+          "422": {
+            "description": "Invalid input"
+          },
+          "503": {
+            "description": "Dependency unavailable"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserLoginRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/auth/register": {
+      "post": {
+        "operationId": "register",
+        "security": [],
+        "responses": {
+          "201": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserSummary"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication expired or missing"
+          },
+          "403": {
+            "description": "Operation or object access denied"
+          },
+          "409": {
+            "description": "Conflicting or unresolved submission"
+          },
+          "422": {
+            "description": "Invalid input"
+          },
+          "503": {
+            "description": "Dependency unavailable"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserRegisterRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/auth/forgot-password": {
+      "post": {
+        "operationId": "forgotPassword",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthMessageResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication expired or missing"
+          },
+          "403": {
+            "description": "Operation or object access denied"
+          },
+          "409": {
+            "description": "Conflicting or unresolved submission"
+          },
+          "422": {
+            "description": "Invalid input"
+          },
+          "503": {
+            "description": "Dependency unavailable"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmailRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/auth/reset-password": {
+      "post": {
+        "operationId": "resetPassword",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthMessageResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication expired or missing"
+          },
+          "403": {
+            "description": "Operation or object access denied"
+          },
+          "409": {
+            "description": "Conflicting or unresolved submission"
+          },
+          "422": {
+            "description": "Invalid input"
+          },
+          "503": {
+            "description": "Dependency unavailable"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PasswordResetRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/auth/verify-email": {
+      "post": {
+        "operationId": "verifyEmail",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthMessageResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication expired or missing"
+          },
+          "403": {
+            "description": "Operation or object access denied"
+          },
+          "409": {
+            "description": "Conflicting or unresolved submission"
+          },
+          "422": {
+            "description": "Invalid input"
+          },
+          "503": {
+            "description": "Dependency unavailable"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TokenRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/auth/resend-verification": {
+      "post": {
+        "operationId": "resendVerification",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthMessageResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication expired or missing"
+          },
+          "403": {
+            "description": "Operation or object access denied"
+          },
+          "409": {
+            "description": "Conflicting or unresolved submission"
+          },
+          "422": {
+            "description": "Invalid input"
+          },
+          "503": {
+            "description": "Dependency unavailable"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmailRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/patient/today": {
+      "get": {
+        "operationId": "getToday",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PatientTodayResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication expired or missing"
+          },
+          "403": {
+            "description": "Operation or object access denied"
+          },
+          "409": {
+            "description": "Conflicting or unresolved submission"
+          },
+          "422": {
+            "description": "Invalid input"
+          },
+          "503": {
+            "description": "Dependency unavailable"
+          }
+        }
+      }
+    },
+    "/api/v2/patient/health-profile": {
+      "get": {
+        "operationId": "getHealthProfile",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PatientHealthProfile"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication expired or missing"
+          },
+          "403": {
+            "description": "Operation or object access denied"
+          },
+          "409": {
+            "description": "Conflicting or unresolved submission"
+          },
+          "422": {
+            "description": "Invalid input"
+          },
+          "503": {
+            "description": "Dependency unavailable"
+          }
+        }
+      },
+      "patch": {
+        "operationId": "updateHealthProfile",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PatientHealthProfile"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication expired or missing"
+          },
+          "403": {
+            "description": "Operation or object access denied"
+          },
+          "409": {
+            "description": "Conflicting or unresolved submission"
+          },
+          "422": {
+            "description": "Invalid input"
+          },
+          "503": {
+            "description": "Dependency unavailable"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PatientHealthProfileUpdate"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/patient/consents": {
+      "get": {
+        "operationId": "getConsents",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ConsentRecord"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication expired or missing"
+          },
+          "403": {
+            "description": "Operation or object access denied"
+          },
+          "409": {
+            "description": "Conflicting or unresolved submission"
+          },
+          "422": {
+            "description": "Invalid input"
+          },
+          "503": {
+            "description": "Dependency unavailable"
+          }
+        }
+      }
+    },
+    "/api/v2/patient/notifications": {
+      "get": {
+        "operationId": "getNotifications",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/NotificationSummary"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication expired or missing"
+          },
+          "403": {
+            "description": "Operation or object access denied"
+          },
+          "409": {
+            "description": "Conflicting or unresolved submission"
+          },
+          "422": {
+            "description": "Invalid input"
+          },
+          "503": {
+            "description": "Dependency unavailable"
+          }
+        }
+      }
+    },
+    "/api/v2/patient/notifications/{notification_id}/read": {
+      "post": {
+        "operationId": "readNotification",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotificationSummary"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication expired or missing"
+          },
+          "403": {
+            "description": "Operation or object access denied"
+          },
+          "409": {
+            "description": "Conflicting or unresolved submission"
+          },
+          "422": {
+            "description": "Invalid input"
+          },
+          "503": {
+            "description": "Dependency unavailable"
+          }
+        },
+        "parameters": [
+          {
+            "name": "notification_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v2/patient/reports": {
+      "get": {
+        "operationId": "getPatientReports",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ProgressReportSummary"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication expired or missing"
+          },
+          "403": {
+            "description": "Operation or object access denied"
+          },
+          "409": {
+            "description": "Conflicting or unresolved submission"
+          },
+          "422": {
+            "description": "Invalid input"
+          },
+          "503": {
+            "description": "Dependency unavailable"
+          }
+        }
+      }
+    },
+    "/api/v2/therapist/patients/{patient_id}/reports": {
+      "post": {
+        "operationId": "createProgressReport",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProgressReportCreateResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication expired or missing"
+          },
+          "403": {
+            "description": "Operation or object access denied"
+          },
+          "409": {
+            "description": "Conflicting or unresolved submission"
+          },
+          "422": {
+            "description": "Invalid input"
+          },
+          "503": {
+            "description": "Dependency unavailable"
+          }
+        },
+        "parameters": [
+          {
+            "name": "patient_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "period_start",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "period_end",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "share_with_patient",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ]
+      }
+    },
+    "/api/v2/patient/adherence": {
+      "post": {
+        "operationId": "saveCheckIn",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdherenceDetail"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication expired or missing"
+          },
+          "403": {
+            "description": "Operation or object access denied"
+          },
+          "409": {
+            "description": "Conflicting or unresolved submission"
+          },
+          "422": {
+            "description": "Invalid input"
+          },
+          "503": {
+            "description": "Dependency unavailable"
+          }
+        },
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 128
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdherenceCreate"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/analysis-jobs/{job_id}": {
+      "get": {
+        "operationId": "getAnalysisJob",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnalysisJobResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication expired or missing"
+          },
+          "403": {
+            "description": "Operation or object access denied"
+          },
+          "409": {
+            "description": "Conflicting or unresolved submission"
+          },
+          "422": {
+            "description": "Invalid input"
+          },
+          "503": {
+            "description": "Dependency unavailable"
+          }
+        },
+        "parameters": [
+          {
+            "name": "job_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v2/analysis-jobs": {
+      "get": {
+        "operationId": "getActiveAnalysisJobs",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AnalysisJobResponse"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication expired or missing"
+          },
+          "403": {
+            "description": "Operation or object access denied"
+          },
+          "409": {
+            "description": "Conflicting or unresolved submission"
+          },
+          "422": {
+            "description": "Invalid input"
+          },
+          "503": {
+            "description": "Dependency unavailable"
+          }
+        }
+      }
+    },
+    "/api/v2/patient/appointments": {
+      "get": {
+        "operationId": "getPatientAppointments",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AppointmentSummary"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication expired or missing"
+          },
+          "403": {
+            "description": "Operation or object access denied"
+          },
+          "409": {
+            "description": "Conflicting or unresolved submission"
+          },
+          "422": {
+            "description": "Invalid input"
+          },
+          "503": {
+            "description": "Dependency unavailable"
+          }
+        }
+      }
+    },
+    "/api/v2/therapist/appointments": {
+      "get": {
+        "operationId": "getStaffAppointments",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AppointmentSummary"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication expired or missing"
+          },
+          "403": {
+            "description": "Operation or object access denied"
+          },
+          "409": {
+            "description": "Conflicting or unresolved submission"
+          },
+          "422": {
+            "description": "Invalid input"
+          },
+          "503": {
+            "description": "Dependency unavailable"
+          }
+        }
+      }
+    },
+    "/api/v2/scheduling/appointments": {
+      "post": {
+        "operationId": "bookAppointment",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppointmentSummary"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication expired or missing"
+          },
+          "403": {
+            "description": "Operation or object access denied"
+          },
+          "409": {
+            "description": "Conflicting or unresolved submission"
+          },
+          "422": {
+            "description": "Invalid input"
+          },
+          "503": {
+            "description": "Dependency unavailable"
+          }
+        },
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 128
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AppointmentCreate"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/scheduling/appointments/{appointment_id}": {
+      "patch": {
+        "operationId": "updateAppointment",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppointmentSummary"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication expired or missing"
+          },
+          "403": {
+            "description": "Operation or object access denied"
+          },
+          "409": {
+            "description": "Conflicting or unresolved submission"
+          },
+          "422": {
+            "description": "Invalid input"
+          },
+          "503": {
+            "description": "Dependency unavailable"
+          }
+        },
+        "parameters": [
+          {
+            "name": "appointment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AppointmentUpdate"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/scheduling/appointments/{appointment_id}/join": {
+      "get": {
+        "operationId": "joinAppointment",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppointmentJoinResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication expired or missing"
+          },
+          "403": {
+            "description": "Operation or object access denied"
+          },
+          "409": {
+            "description": "Conflicting or unresolved submission"
+          },
+          "422": {
+            "description": "Invalid input"
+          },
+          "503": {
+            "description": "Dependency unavailable"
+          }
+        },
+        "parameters": [
+          {
+            "name": "appointment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v2/scheduling/availability": {
+      "get": {
+        "operationId": "getAvailableSlots",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AvailabilitySlots"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication expired or missing"
+          },
+          "403": {
+            "description": "Operation or object access denied"
+          },
+          "409": {
+            "description": "Conflicting or unresolved submission"
+          },
+          "422": {
+            "description": "Invalid input"
+          },
+          "503": {
+            "description": "Dependency unavailable"
+          }
+        },
+        "parameters": [
+          {
+            "name": "therapist_user_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "day",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v2/therapist/availability": {
+      "get": {
+        "operationId": "getAvailability",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AvailabilityDetail"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication expired or missing"
+          },
+          "403": {
+            "description": "Operation or object access denied"
+          },
+          "409": {
+            "description": "Conflicting or unresolved submission"
+          },
+          "422": {
+            "description": "Invalid input"
+          },
+          "503": {
+            "description": "Dependency unavailable"
+          }
+        }
+      },
+      "post": {
+        "operationId": "addAvailability",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AvailabilityDetail"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication expired or missing"
+          },
+          "403": {
+            "description": "Operation or object access denied"
+          },
+          "409": {
+            "description": "Conflicting or unresolved submission"
+          },
+          "422": {
+            "description": "Invalid input"
+          },
+          "503": {
+            "description": "Dependency unavailable"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AvailabilityCreate"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/therapist/patients/{patient_id}/exercise-plans": {
+      "get": {
+        "operationId": "getPlans",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ExercisePlanDetail"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication expired or missing"
+          },
+          "403": {
+            "description": "Operation or object access denied"
+          },
+          "409": {
+            "description": "Conflicting or unresolved submission"
+          },
+          "422": {
+            "description": "Invalid input"
+          },
+          "503": {
+            "description": "Dependency unavailable"
+          }
+        },
+        "parameters": [
+          {
+            "name": "patient_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "post": {
+        "operationId": "createPlan",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExercisePlanDetail"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication expired or missing"
+          },
+          "403": {
+            "description": "Operation or object access denied"
+          },
+          "409": {
+            "description": "Conflicting or unresolved submission"
+          },
+          "422": {
+            "description": "Invalid input"
+          },
+          "503": {
+            "description": "Dependency unavailable"
+          }
+        },
+        "parameters": [
+          {
+            "name": "patient_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 128
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExercisePlanCreate"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/therapist/patients/{patient_id}/exercise-plans/{plan_id}": {
+      "patch": {
+        "operationId": "updatePlanStatus",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExercisePlanDetail"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication expired or missing"
+          },
+          "403": {
+            "description": "Operation or object access denied"
+          },
+          "409": {
+            "description": "Conflicting or unresolved submission"
+          },
+          "422": {
+            "description": "Invalid input"
+          },
+          "503": {
+            "description": "Dependency unavailable"
+          }
+        },
+        "parameters": [
+          {
+            "name": "patient_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "plan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExercisePlanStatusUpdate"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ClinicalNoteCreate": {
+        "properties": {
+          "summary": {
+            "maxLength": 10000,
+            "minLength": 1,
+            "title": "Summary",
+            "type": "string"
+          },
+          "recommendations": {
+            "anyOf": [
+              {
+                "maxLength": 10000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Recommendations"
+          },
+          "patient_visible": {
+            "default": false,
+            "title": "Patient Visible",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "summary"
+        ],
+        "title": "ClinicalNoteCreate",
+        "type": "object"
+      },
+      "ClinicalNoteDetail": {
+        "properties": {
+          "summary": {
+            "maxLength": 10000,
+            "minLength": 1,
+            "title": "Summary",
+            "type": "string"
+          },
+          "recommendations": {
+            "anyOf": [
+              {
+                "maxLength": 10000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Recommendations"
+          },
+          "patient_visible": {
+            "default": false,
+            "title": "Patient Visible",
+            "type": "boolean"
+          },
+          "note_id": {
+            "title": "Note Id",
+            "type": "string"
+          },
+          "appointment_id": {
+            "title": "Appointment Id",
+            "type": "string"
+          },
+          "therapist_user_id": {
+            "title": "Therapist User Id",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          },
+          "author_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Author Name"
+          }
+        },
+        "required": [
+          "summary",
+          "note_id",
+          "appointment_id",
+          "therapist_user_id",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "ClinicalNoteDetail",
+        "type": "object"
+      },
+      "SessionSummary": {
+        "properties": {
+          "session_id": {
+            "title": "Session Id",
+            "type": "string"
+          },
+          "plan_item_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Plan Item Id"
+          },
+          "exercise_id": {
+            "title": "Exercise Id",
+            "type": "string"
+          },
+          "exercise_display_name": {
+            "title": "Exercise Display Name",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "total_reps": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Total Reps"
+          },
+          "movement_score": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Movement Score"
+          },
+          "analysis_confidence_level": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Analysis Confidence Level"
+          },
+          "pose_quality_level": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Pose Quality Level"
+          },
+          "detected_issues": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Detected Issues",
+            "type": "array"
+          },
+          "report_download_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Report Download Url"
+          },
+          "overlay_preview_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Overlay Preview Url"
+          }
+        },
+        "required": [
+          "session_id",
+          "exercise_id",
+          "exercise_display_name",
+          "status",
+          "created_at"
+        ],
+        "title": "SessionSummary",
+        "type": "object"
+      },
+      "SessionListResponse": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/SessionSummary"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          },
+          "limit": {
+            "title": "Limit",
+            "type": "integer"
+          },
+          "offset": {
+            "title": "Offset",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "limit",
+          "offset"
+        ],
+        "title": "SessionListResponse",
+        "type": "object"
+      },
+      "DetectedIssueSchema": {
+        "properties": {
+          "issue_code": {
+            "title": "Issue Code",
+            "type": "string"
+          },
+          "severity": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Severity"
+          },
+          "message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Message"
+          }
+        },
+        "required": [
+          "issue_code"
+        ],
+        "title": "DetectedIssueSchema",
+        "type": "object"
+      },
+      "SessionMetricSchema": {
+        "properties": {
+          "metric_name": {
+            "title": "Metric Name",
+            "type": "string"
+          },
+          "metric_value_float": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Metric Value Float"
+          },
+          "metric_value_text": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Metric Value Text"
+          },
+          "unit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Unit"
+          }
+        },
+        "required": [
+          "metric_name"
+        ],
+        "title": "SessionMetricSchema",
+        "type": "object"
+      },
+      "SessionDetail": {
+        "properties": {
+          "session_id": {
+            "title": "Session Id",
+            "type": "string"
+          },
+          "plan_item_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Plan Item Id"
+          },
+          "exercise_id": {
+            "title": "Exercise Id",
+            "type": "string"
+          },
+          "exercise_display_name": {
+            "title": "Exercise Display Name",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "total_reps": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Total Reps"
+          },
+          "movement_score": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Movement Score"
+          },
+          "analysis_confidence_level": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Analysis Confidence Level"
+          },
+          "pose_quality_level": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Pose Quality Level"
+          },
+          "detected_issues": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Detected Issues",
+            "type": "array"
+          },
+          "report_download_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Report Download Url"
+          },
+          "overlay_preview_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Overlay Preview Url"
+          },
+          "error_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Error Code"
+          },
+          "message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Message"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          },
+          "source_filename": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Source Filename"
+          },
+          "video_duration_sec": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Video Duration Sec"
+          },
+          "rep_count_confidence": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Rep Count Confidence"
+          },
+          "analysis_confidence_score": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Analysis Confidence Score"
+          },
+          "pose_quality_score": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Pose Quality Score"
+          },
+          "summary": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Summary"
+          },
+          "limitations": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Limitations",
+            "type": "array"
+          },
+          "feedback": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Feedback",
+            "type": "array"
+          },
+          "score_breakdown": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Score Breakdown"
+          },
+          "input_validity": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Input Validity"
+          },
+          "ml_prediction": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Ml Prediction"
+          },
+          "report_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Report Id"
+          },
+          "overlay_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Overlay Id"
+          },
+          "overlay_download_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Overlay Download Url"
+          },
+          "metrics": {
+            "items": {
+              "$ref": "#/components/schemas/SessionMetricSchema"
+            },
+            "title": "Metrics",
+            "type": "array"
+          },
+          "issue_details": {
+            "items": {
+              "$ref": "#/components/schemas/DetectedIssueSchema"
+            },
+            "title": "Issue Details",
+            "type": "array"
+          }
+        },
+        "required": [
+          "session_id",
+          "exercise_id",
+          "exercise_display_name",
+          "status",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "SessionDetail",
+        "type": "object"
+      },
+      "PatientHealthProfileUpdate": {
+        "properties": {
+          "emergency_contact_name": {
+            "anyOf": [
+              {
+                "maxLength": 120,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Emergency Contact Name"
+          },
+          "emergency_contact_phone": {
+            "anyOf": [
+              {
+                "maxLength": 32,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Emergency Contact Phone"
+          },
+          "medical_summary": {
+            "anyOf": [
+              {
+                "maxLength": 5000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Medical Summary"
+          },
+          "precautions": {
+            "anyOf": [
+              {
+                "maxLength": 5000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Precautions"
+          }
+        },
+        "title": "PatientHealthProfileUpdate",
+        "type": "object"
+      },
+      "PatientHealthProfile": {
+        "properties": {
+          "emergency_contact_name": {
+            "anyOf": [
+              {
+                "maxLength": 120,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Emergency Contact Name"
+          },
+          "emergency_contact_phone": {
+            "anyOf": [
+              {
+                "maxLength": 32,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Emergency Contact Phone"
+          },
+          "medical_summary": {
+            "anyOf": [
+              {
+                "maxLength": 5000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Medical Summary"
+          },
+          "precautions": {
+            "anyOf": [
+              {
+                "maxLength": 5000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Precautions"
+          },
+          "patient_id": {
+            "title": "Patient Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "patient_id"
+        ],
+        "title": "PatientHealthProfile",
+        "type": "object"
+      },
+      "ConsentRecord": {
+        "properties": {
+          "consent_type": {
+            "title": "Consent Type",
+            "type": "string"
+          },
+          "accepted": {
+            "title": "Accepted",
+            "type": "boolean"
+          },
+          "accepted_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Accepted At"
+          },
+          "version": {
+            "title": "Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "consent_type",
+          "accepted",
+          "version"
+        ],
+        "title": "ConsentRecord",
+        "type": "object"
+      },
+      "ProgressReportSummary": {
+        "properties": {
+          "progress_report_id": {
+            "title": "Progress Report Id",
+            "type": "string"
+          },
+          "period_start": {
+            "format": "date",
+            "title": "Period Start",
+            "type": "string"
+          },
+          "period_end": {
+            "format": "date",
+            "title": "Period End",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "download_url": {
+            "title": "Download Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "progress_report_id",
+          "period_start",
+          "period_end",
+          "created_at",
+          "download_url"
+        ],
+        "title": "ProgressReportSummary",
+        "type": "object"
+      },
+      "ProgressReportCreateResponse": {
+        "properties": {
+          "progress_report_id": {
+            "title": "Progress Report Id",
+            "type": "string"
+          },
+          "download_url": {
+            "title": "Download Url",
+            "type": "string"
+          },
+          "shared_with_patient": {
+            "title": "Shared With Patient",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "progress_report_id",
+          "download_url",
+          "shared_with_patient"
+        ],
+        "title": "ProgressReportCreateResponse",
+        "type": "object"
+      },
+      "NotificationSummary": {
+        "properties": {
+          "notification_id": {
+            "title": "Notification Id",
+            "type": "string"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "body": {
+            "title": "Body",
+            "type": "string"
+          },
+          "action_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Action Url"
+          },
+          "read_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Read At"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "notification_id",
+          "kind",
+          "title",
+          "body",
+          "created_at"
+        ],
+        "title": "NotificationSummary",
+        "type": "object"
+      },
+      "ExercisePlanItemCreate": {
+        "properties": {
+          "exercise_id": {
+            "maxLength": 64,
+            "minLength": 1,
+            "title": "Exercise Id",
+            "type": "string"
+          },
+          "sets": {
+            "maximum": 20,
+            "minimum": 1,
+            "title": "Sets",
+            "type": "integer"
+          },
+          "reps": {
+            "maximum": 100,
+            "minimum": 1,
+            "title": "Reps",
+            "type": "integer"
+          },
+          "days_per_week": {
+            "maximum": 7,
+            "minimum": 1,
+            "title": "Days Per Week",
+            "type": "integer"
+          },
+          "instructions": {
+            "anyOf": [
+              {
+                "maxLength": 1000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Instructions"
+          },
+          "duration_minutes": {
+            "anyOf": [
+              {
+                "maximum": 240,
+                "minimum": 1,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Duration Minutes"
+          },
+          "rest_interval_seconds": {
+            "anyOf": [
+              {
+                "maximum": 3600,
+                "minimum": 0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Rest Interval Seconds"
+          },
+          "tempo": {
+            "anyOf": [
+              {
+                "maxLength": 64,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Tempo"
+          },
+          "precautions": {
+            "anyOf": [
+              {
+                "maxLength": 1000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Precautions"
+          },
+          "target_rom_degrees": {
+            "anyOf": [
+              {
+                "maximum": 360,
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Target Rom Degrees"
+          },
+          "target_score": {
+            "anyOf": [
+              {
+                "maximum": 100,
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Target Score"
+          },
+          "schedule_days": {
+            "items": {
+              "type": "integer"
+            },
+            "maxItems": 7,
+            "title": "Schedule Days",
+            "type": "array"
+          },
+          "requested_media_upload": {
+            "default": false,
+            "title": "Requested Media Upload",
+            "type": "boolean"
+          },
+          "requires_ai_analysis": {
+            "default": false,
+            "title": "Requires Ai Analysis",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "exercise_id",
+          "sets",
+          "reps",
+          "days_per_week"
+        ],
+        "title": "ExercisePlanItemCreate",
+        "type": "object"
+      },
+      "ExercisePlanCreate": {
+        "properties": {
+          "title": {
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Title",
+            "type": "string"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "maxLength": 2000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Notes"
+          },
+          "start_date": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Start Date"
+          },
+          "end_date": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "End Date"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ExercisePlanItemCreate"
+            },
+            "maxItems": 20,
+            "minItems": 1,
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "title",
+          "items"
+        ],
+        "title": "ExercisePlanCreate",
+        "type": "object"
+      },
+      "ExercisePlanItemDetail": {
+        "properties": {
+          "exercise_id": {
+            "maxLength": 64,
+            "minLength": 1,
+            "title": "Exercise Id",
+            "type": "string"
+          },
+          "sets": {
+            "maximum": 20,
+            "minimum": 1,
+            "title": "Sets",
+            "type": "integer"
+          },
+          "reps": {
+            "maximum": 100,
+            "minimum": 1,
+            "title": "Reps",
+            "type": "integer"
+          },
+          "days_per_week": {
+            "maximum": 7,
+            "minimum": 1,
+            "title": "Days Per Week",
+            "type": "integer"
+          },
+          "instructions": {
+            "anyOf": [
+              {
+                "maxLength": 1000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Instructions"
+          },
+          "duration_minutes": {
+            "anyOf": [
+              {
+                "maximum": 240,
+                "minimum": 1,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Duration Minutes"
+          },
+          "rest_interval_seconds": {
+            "anyOf": [
+              {
+                "maximum": 3600,
+                "minimum": 0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Rest Interval Seconds"
+          },
+          "tempo": {
+            "anyOf": [
+              {
+                "maxLength": 64,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Tempo"
+          },
+          "precautions": {
+            "anyOf": [
+              {
+                "maxLength": 1000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Precautions"
+          },
+          "target_rom_degrees": {
+            "anyOf": [
+              {
+                "maximum": 360,
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Target Rom Degrees"
+          },
+          "target_score": {
+            "anyOf": [
+              {
+                "maximum": 100,
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Target Score"
+          },
+          "schedule_days": {
+            "items": {
+              "type": "integer"
+            },
+            "maxItems": 7,
+            "title": "Schedule Days",
+            "type": "array"
+          },
+          "requested_media_upload": {
+            "default": false,
+            "title": "Requested Media Upload",
+            "type": "boolean"
+          },
+          "requires_ai_analysis": {
+            "default": false,
+            "title": "Requires Ai Analysis",
+            "type": "boolean"
+          },
+          "item_id": {
+            "title": "Item Id",
+            "type": "string"
+          },
+          "sort_order": {
+            "title": "Sort Order",
+            "type": "integer"
+          },
+          "status": {
+            "default": "active",
+            "enum": [
+              "active",
+              "replaced",
+              "completed"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "exercise_id",
+          "sets",
+          "reps",
+          "days_per_week",
+          "item_id",
+          "sort_order"
+        ],
+        "title": "ExercisePlanItemDetail",
+        "type": "object"
+      },
+      "ExercisePlanDetail": {
+        "properties": {
+          "created_by_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Created By Name"
+          },
+          "plan_id": {
+            "title": "Plan Id",
+            "type": "string"
+          },
+          "patient_id": {
+            "title": "Patient Id",
+            "type": "string"
+          },
+          "created_by_user_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Created By User Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Notes"
+          },
+          "status": {
+            "enum": [
+              "active",
+              "paused",
+              "completed"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "start_date": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Start Date"
+          },
+          "end_date": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "End Date"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ExercisePlanItemDetail"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "plan_id",
+          "patient_id",
+          "title",
+          "status",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "ExercisePlanDetail",
+        "type": "object"
+      },
+      "ExercisePlanStatusUpdate": {
+        "properties": {
+          "status": {
+            "enum": [
+              "active",
+              "paused",
+              "completed"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status"
+        ],
+        "title": "ExercisePlanStatusUpdate",
+        "type": "object"
+      },
+      "UserRole": {
+        "enum": [
+          "super_admin",
+          "admin",
+          "therapist",
+          "patient",
+          "support",
+          "researcher_demo"
+        ],
+        "title": "UserRole",
+        "type": "string"
+      },
+      "UserRegisterRequest": {
+        "properties": {
+          "username": {
+            "maxLength": 64,
+            "minLength": 3,
+            "title": "Username",
+            "type": "string"
+          },
+          "email": {
+            "title": "Email",
+            "type": "string"
+          },
+          "password": {
+            "maxLength": 128,
+            "minLength": 8,
+            "title": "Password",
+            "type": "string"
+          },
+          "full_name": {
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Full Name",
+            "type": "string"
+          },
+          "role": {
+            "$ref": "#/components/schemas/UserRole",
+            "default": "researcher_demo"
+          },
+          "accepted_terms": {
+            "default": false,
+            "title": "Accepted Terms",
+            "type": "boolean"
+          },
+          "accepted_privacy": {
+            "default": false,
+            "title": "Accepted Privacy",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "username",
+          "email",
+          "password",
+          "full_name"
+        ],
+        "title": "UserRegisterRequest",
+        "type": "object"
+      },
+      "UserSummary": {
+        "properties": {
+          "user_id": {
+            "title": "User Id",
+            "type": "string"
+          },
+          "username": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Username"
+          },
+          "email": {
+            "title": "Email",
+            "type": "string"
+          },
+          "full_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Full Name"
+          },
+          "role": {
+            "$ref": "#/components/schemas/UserRole"
+          },
+          "is_active": {
+            "title": "Is Active",
+            "type": "boolean"
+          },
+          "is_verified": {
+            "title": "Is Verified",
+            "type": "boolean"
+          },
+          "account_status": {
+            "default": "active",
+            "title": "Account Status",
+            "type": "string"
+          },
+          "is_protected": {
+            "default": false,
+            "title": "Is Protected",
+            "type": "boolean"
+          },
+          "permissions": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Permissions",
+            "type": "array"
+          }
+        },
+        "required": [
+          "user_id",
+          "email",
+          "role",
+          "is_active",
+          "is_verified"
+        ],
+        "title": "UserSummary",
+        "type": "object"
+      },
+      "EmailRequest": {
+        "properties": {
+          "email": {
+            "title": "Email",
+            "type": "string"
+          }
+        },
+        "required": [
+          "email"
+        ],
+        "title": "EmailRequest",
+        "type": "object"
+      },
+      "TokenRequest": {
+        "properties": {
+          "token": {
+            "maxLength": 512,
+            "minLength": 32,
+            "title": "Token",
+            "type": "string"
+          }
+        },
+        "required": [
+          "token"
+        ],
+        "title": "TokenRequest",
+        "type": "object"
+      },
+      "PasswordResetRequest": {
+        "properties": {
+          "token": {
+            "maxLength": 512,
+            "minLength": 32,
+            "title": "Token",
+            "type": "string"
+          },
+          "new_password": {
+            "maxLength": 128,
+            "minLength": 8,
+            "title": "New Password",
+            "type": "string"
+          }
+        },
+        "required": [
+          "token",
+          "new_password"
+        ],
+        "title": "PasswordResetRequest",
+        "type": "object"
+      },
+      "AuthMessageResponse": {
+        "properties": {
+          "status": {
+            "default": "success",
+            "title": "Status",
+            "type": "string"
+          },
+          "message": {
+            "title": "Message",
+            "type": "string"
+          }
+        },
+        "required": [
+          "message"
+        ],
+        "title": "AuthMessageResponse",
+        "type": "object"
+      },
+      "AppointmentCreate": {
+        "properties": {
+          "patient_id": {
+            "title": "Patient Id",
+            "type": "string"
+          },
+          "therapist_user_id": {
+            "title": "Therapist User Id",
+            "type": "string"
+          },
+          "service_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Service Id"
+          },
+          "starts_at": {
+            "format": "date-time",
+            "title": "Starts At",
+            "type": "string"
+          },
+          "ends_at": {
+            "format": "date-time",
+            "title": "Ends At",
+            "type": "string"
+          },
+          "delivery_mode": {
+            "default": "video",
+            "enum": [
+              "video",
+              "in_person"
+            ],
+            "title": "Delivery Mode",
+            "type": "string"
+          }
+        },
+        "required": [
+          "patient_id",
+          "therapist_user_id",
+          "starts_at",
+          "ends_at"
+        ],
+        "title": "AppointmentCreate",
+        "type": "object"
+      },
+      "AppointmentSummary": {
+        "properties": {
+          "appointment_id": {
+            "title": "Appointment Id",
+            "type": "string"
+          },
+          "patient_id": {
+            "title": "Patient Id",
+            "type": "string"
+          },
+          "therapist_user_id": {
+            "title": "Therapist User Id",
+            "type": "string"
+          },
+          "starts_at": {
+            "format": "date-time",
+            "title": "Starts At",
+            "type": "string"
+          },
+          "ends_at": {
+            "format": "date-time",
+            "title": "Ends At",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "scheduled",
+              "confirmed",
+              "completed",
+              "cancelled",
+              "no_show"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "delivery_mode": {
+            "enum": [
+              "video",
+              "in_person"
+            ],
+            "title": "Delivery Mode",
+            "type": "string"
+          },
+          "payment_status": {
+            "title": "Payment Status",
+            "type": "string"
+          },
+          "can_join": {
+            "default": false,
+            "title": "Can Join",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "appointment_id",
+          "patient_id",
+          "therapist_user_id",
+          "starts_at",
+          "ends_at",
+          "status",
+          "delivery_mode",
+          "payment_status"
+        ],
+        "title": "AppointmentSummary",
+        "type": "object"
+      },
+      "AppointmentUpdate": {
+        "properties": {
+          "starts_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Starts At"
+          },
+          "ends_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Ends At"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "enum": [
+                  "scheduled",
+                  "confirmed",
+                  "completed",
+                  "cancelled",
+                  "no_show"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "cancellation_reason": {
+            "anyOf": [
+              {
+                "maxLength": 500,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Cancellation Reason"
+          }
+        },
+        "title": "AppointmentUpdate",
+        "type": "object"
+      },
+      "AppointmentJoinResponse": {
+        "properties": {
+          "appointment_id": {
+            "title": "Appointment Id",
+            "type": "string"
+          },
+          "room_url": {
+            "title": "Room Url",
+            "type": "string"
+          },
+          "meeting_token": {
+            "title": "Meeting Token",
+            "type": "string"
+          },
+          "expires_at": {
+            "format": "date-time",
+            "title": "Expires At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "appointment_id",
+          "room_url",
+          "meeting_token",
+          "expires_at"
+        ],
+        "title": "AppointmentJoinResponse",
+        "type": "object"
+      },
+      "AvailabilityCreate": {
+        "properties": {
+          "weekday": {
+            "maximum": 6,
+            "minimum": 0,
+            "title": "Weekday",
+            "type": "integer"
+          },
+          "start_minute": {
+            "maximum": 1439,
+            "minimum": 0,
+            "title": "Start Minute",
+            "type": "integer"
+          },
+          "end_minute": {
+            "maximum": 1440,
+            "minimum": 1,
+            "title": "End Minute",
+            "type": "integer"
+          },
+          "timezone_name": {
+            "default": "Africa/Cairo",
+            "maxLength": 64,
+            "title": "Timezone Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "weekday",
+          "start_minute",
+          "end_minute"
+        ],
+        "title": "AvailabilityCreate",
+        "type": "object"
+      },
+      "AvailabilityDetail": {
+        "properties": {
+          "weekday": {
+            "maximum": 6,
+            "minimum": 0,
+            "title": "Weekday",
+            "type": "integer"
+          },
+          "start_minute": {
+            "maximum": 1439,
+            "minimum": 0,
+            "title": "Start Minute",
+            "type": "integer"
+          },
+          "end_minute": {
+            "maximum": 1440,
+            "minimum": 1,
+            "title": "End Minute",
+            "type": "integer"
+          },
+          "timezone_name": {
+            "default": "Africa/Cairo",
+            "maxLength": 64,
+            "title": "Timezone Name",
+            "type": "string"
+          },
+          "availability_id": {
+            "title": "Availability Id",
+            "type": "string"
+          },
+          "therapist_user_id": {
+            "title": "Therapist User Id",
+            "type": "string"
+          },
+          "is_active": {
+            "title": "Is Active",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "weekday",
+          "start_minute",
+          "end_minute",
+          "availability_id",
+          "therapist_user_id",
+          "is_active"
+        ],
+        "title": "AvailabilityDetail",
+        "type": "object"
+      },
+      "AppointmentSlot": {
+        "properties": {
+          "starts_at": {
+            "format": "date-time",
+            "title": "Starts At",
+            "type": "string"
+          },
+          "ends_at": {
+            "format": "date-time",
+            "title": "Ends At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "starts_at",
+          "ends_at"
+        ],
+        "title": "AppointmentSlot",
+        "type": "object"
+      },
+      "AvailabilitySlots": {
+        "properties": {
+          "therapist_user_id": {
+            "title": "Therapist User Id",
+            "type": "string"
+          },
+          "date": {
+            "format": "date",
+            "title": "Date",
+            "type": "string"
+          },
+          "slots": {
+            "items": {
+              "$ref": "#/components/schemas/AppointmentSlot"
+            },
+            "title": "Slots",
+            "type": "array"
+          }
+        },
+        "required": [
+          "therapist_user_id",
+          "date",
+          "slots"
+        ],
+        "title": "AvailabilitySlots",
+        "type": "object"
+      },
+      "CurrentUserResponse": {
+        "properties": {
+          "user_id": {
+            "title": "User Id",
+            "type": "string"
+          },
+          "username": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Username"
+          },
+          "email": {
+            "title": "Email",
+            "type": "string"
+          },
+          "full_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Full Name"
+          },
+          "role": {
+            "$ref": "#/components/schemas/UserRole"
+          },
+          "is_active": {
+            "title": "Is Active",
+            "type": "boolean"
+          },
+          "is_verified": {
+            "title": "Is Verified",
+            "type": "boolean"
+          },
+          "account_status": {
+            "default": "active",
+            "title": "Account Status",
+            "type": "string"
+          },
+          "is_protected": {
+            "default": false,
+            "title": "Is Protected",
+            "type": "boolean"
+          },
+          "permissions": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Permissions",
+            "type": "array"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "user_id",
+          "email",
+          "role",
+          "is_active",
+          "is_verified",
+          "created_at"
+        ],
+        "title": "CurrentUserResponse",
+        "type": "object"
+      },
+      "UserLoginRequest": {
+        "properties": {
+          "email": {
+            "title": "Email",
+            "type": "string"
+          },
+          "password": {
+            "title": "Password",
+            "type": "string"
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ],
+        "title": "UserLoginRequest",
+        "type": "object"
+      },
+      "TokenResponse": {
+        "properties": {
+          "access_token": {
+            "title": "Access Token",
+            "type": "string"
+          },
+          "token_type": {
+            "default": "bearer",
+            "title": "Token Type",
+            "type": "string"
+          },
+          "expires_in": {
+            "title": "Expires In",
+            "type": "integer"
+          },
+          "user": {
+            "$ref": "#/components/schemas/UserSummary"
+          }
+        },
+        "required": [
+          "access_token",
+          "expires_in",
+          "user"
+        ],
+        "title": "TokenResponse",
+        "type": "object"
+      },
+      "CarePlanItem": {
+        "properties": {
+          "plan_title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Plan Title"
+          },
+          "created_by_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Created By Name"
+          },
+          "item_id": {
+            "title": "Item Id",
+            "type": "string"
+          },
+          "exercise_id": {
+            "title": "Exercise Id",
+            "type": "string"
+          },
+          "sets": {
+            "title": "Sets",
+            "type": "integer"
+          },
+          "reps": {
+            "title": "Reps",
+            "type": "integer"
+          },
+          "duration_minutes": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Duration Minutes"
+          },
+          "rest_interval_seconds": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Rest Interval Seconds"
+          },
+          "tempo": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Tempo"
+          },
+          "instructions": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Instructions"
+          },
+          "precautions": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Precautions"
+          },
+          "target_rom_degrees": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Target Rom Degrees"
+          },
+          "target_score": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Target Score"
+          },
+          "requested_media_upload": {
+            "default": false,
+            "title": "Requested Media Upload",
+            "type": "boolean"
+          },
+          "requires_ai_analysis": {
+            "default": false,
+            "title": "Requires Ai Analysis",
+            "type": "boolean"
+          },
+          "completion_status": {
+            "anyOf": [
+              {
+                "enum": [
+                  "completed",
+                  "partial",
+                  "not_completed"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Completion Status"
+          },
+          "pain_before": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Pain Before"
+          },
+          "pain_after": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Pain After"
+          },
+          "difficulty": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Difficulty"
+          },
+          "fatigue": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Fatigue"
+          },
+          "perceived_exertion": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Perceived Exertion"
+          },
+          "symptoms_changed": {
+            "default": false,
+            "title": "Symptoms Changed",
+            "type": "boolean"
+          },
+          "stopped_due_to_symptoms": {
+            "default": false,
+            "title": "Stopped Due To Symptoms",
+            "type": "boolean"
+          },
+          "symptom_flags": {
+            "items": {
+              "enum": [
+                "pain_increase",
+                "dizziness",
+                "faintness",
+                "unusual_shortness_of_breath",
+                "chest_discomfort",
+                "new_numbness_or_weakness",
+                "instability",
+                "other"
+              ],
+              "type": "string"
+            },
+            "title": "Symptom Flags",
+            "type": "array"
+          },
+          "response_state": {
+            "default": "not_assessed",
+            "enum": [
+              "not_assessed",
+              "within_reported_tolerance",
+              "clinical_follow_up"
+            ],
+            "title": "Response State",
+            "type": "string"
+          },
+          "supportive_instruction": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Supportive Instruction"
+          },
+          "clinician_review_required": {
+            "default": false,
+            "title": "Clinician Review Required",
+            "type": "boolean"
+          },
+          "reviewed_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Reviewed At"
+          },
+          "patient_comment": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Patient Comment"
+          },
+          "analysis_session_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Analysis Session Id"
+          }
+        },
+        "required": [
+          "item_id",
+          "exercise_id",
+          "sets",
+          "reps"
+        ],
+        "title": "CarePlanItem",
+        "type": "object"
+      },
+      "PatientTodayResponse": {
+        "properties": {
+          "patient_id": {
+            "title": "Patient Id",
+            "type": "string"
+          },
+          "date": {
+            "format": "date",
+            "title": "Date",
+            "type": "string"
+          },
+          "plan_title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Plan Title"
+          },
+          "plan_items": {
+            "items": {
+              "$ref": "#/components/schemas/CarePlanItem"
+            },
+            "title": "Plan Items",
+            "type": "array"
+          },
+          "upcoming_appointment": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AppointmentSummary"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "unread_notifications": {
+            "default": 0,
+            "title": "Unread Notifications",
+            "type": "integer"
+          },
+          "adherence_percent_7d": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Adherence Percent 7D"
+          },
+          "average_pain_7d": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Average Pain 7D"
+          },
+          "completed_count_7d": {
+            "default": 0,
+            "title": "Completed Count 7D",
+            "type": "integer"
+          },
+          "partial_count_7d": {
+            "default": 0,
+            "title": "Partial Count 7D",
+            "type": "integer"
+          },
+          "missed_count_7d": {
+            "default": 0,
+            "title": "Missed Count 7D",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "patient_id",
+          "date"
+        ],
+        "title": "PatientTodayResponse",
+        "type": "object"
+      },
+      "AdherenceCreate": {
+        "properties": {
+          "plan_item_id": {
+            "title": "Plan Item Id",
+            "type": "string"
+          },
+          "scheduled_date": {
+            "format": "date",
+            "title": "Scheduled Date",
+            "type": "string"
+          },
+          "completion_status": {
+            "enum": [
+              "completed",
+              "partial",
+              "not_completed"
+            ],
+            "title": "Completion Status",
+            "type": "string"
+          },
+          "pain_before": {
+            "anyOf": [
+              {
+                "maximum": 10,
+                "minimum": 0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Pain Before"
+          },
+          "pain_after": {
+            "anyOf": [
+              {
+                "maximum": 10,
+                "minimum": 0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Pain After"
+          },
+          "difficulty": {
+            "anyOf": [
+              {
+                "maximum": 5,
+                "minimum": 1,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Difficulty"
+          },
+          "fatigue": {
+            "anyOf": [
+              {
+                "maximum": 5,
+                "minimum": 1,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Fatigue"
+          },
+          "perceived_exertion": {
+            "anyOf": [
+              {
+                "maximum": 10,
+                "minimum": 0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Perceived Exertion"
+          },
+          "symptoms_changed": {
+            "default": false,
+            "title": "Symptoms Changed",
+            "type": "boolean"
+          },
+          "stopped_due_to_symptoms": {
+            "default": false,
+            "title": "Stopped Due To Symptoms",
+            "type": "boolean"
+          },
+          "symptom_flags": {
+            "items": {
+              "enum": [
+                "pain_increase",
+                "dizziness",
+                "faintness",
+                "unusual_shortness_of_breath",
+                "chest_discomfort",
+                "new_numbness_or_weakness",
+                "instability",
+                "other"
+              ],
+              "type": "string"
+            },
+            "maxItems": 8,
+            "title": "Symptom Flags",
+            "type": "array"
+          },
+          "safety_acknowledged": {
+            "default": false,
+            "title": "Safety Acknowledged",
+            "type": "boolean"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "maxLength": 1000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Note"
+          },
+          "analysis_session_id": {
+            "anyOf": [
+              {
+                "maxLength": 36,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Analysis Session Id"
+          }
+        },
+        "required": [
+          "plan_item_id",
+          "scheduled_date",
+          "completion_status"
+        ],
+        "title": "AdherenceCreate",
+        "type": "object"
+      },
+      "AdherenceDetail": {
+        "properties": {
+          "plan_item_id": {
+            "title": "Plan Item Id",
+            "type": "string"
+          },
+          "scheduled_date": {
+            "format": "date",
+            "title": "Scheduled Date",
+            "type": "string"
+          },
+          "completion_status": {
+            "enum": [
+              "completed",
+              "partial",
+              "not_completed"
+            ],
+            "title": "Completion Status",
+            "type": "string"
+          },
+          "pain_before": {
+            "anyOf": [
+              {
+                "maximum": 10,
+                "minimum": 0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Pain Before"
+          },
+          "pain_after": {
+            "anyOf": [
+              {
+                "maximum": 10,
+                "minimum": 0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Pain After"
+          },
+          "difficulty": {
+            "anyOf": [
+              {
+                "maximum": 5,
+                "minimum": 1,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Difficulty"
+          },
+          "fatigue": {
+            "anyOf": [
+              {
+                "maximum": 5,
+                "minimum": 1,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Fatigue"
+          },
+          "perceived_exertion": {
+            "anyOf": [
+              {
+                "maximum": 10,
+                "minimum": 0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Perceived Exertion"
+          },
+          "symptoms_changed": {
+            "default": false,
+            "title": "Symptoms Changed",
+            "type": "boolean"
+          },
+          "stopped_due_to_symptoms": {
+            "default": false,
+            "title": "Stopped Due To Symptoms",
+            "type": "boolean"
+          },
+          "symptom_flags": {
+            "items": {
+              "enum": [
+                "pain_increase",
+                "dizziness",
+                "faintness",
+                "unusual_shortness_of_breath",
+                "chest_discomfort",
+                "new_numbness_or_weakness",
+                "instability",
+                "other"
+              ],
+              "type": "string"
+            },
+            "maxItems": 8,
+            "title": "Symptom Flags",
+            "type": "array"
+          },
+          "safety_acknowledged": {
+            "default": false,
+            "title": "Safety Acknowledged",
+            "type": "boolean"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "maxLength": 1000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Note"
+          },
+          "analysis_session_id": {
+            "anyOf": [
+              {
+                "maxLength": 36,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Analysis Session Id"
+          },
+          "adherence_id": {
+            "title": "Adherence Id",
+            "type": "string"
+          },
+          "patient_id": {
+            "title": "Patient Id",
+            "type": "string"
+          },
+          "alert_created": {
+            "default": false,
+            "title": "Alert Created",
+            "type": "boolean"
+          },
+          "response_state": {
+            "enum": [
+              "not_assessed",
+              "within_reported_tolerance",
+              "clinical_follow_up"
+            ],
+            "title": "Response State",
+            "type": "string"
+          },
+          "supportive_instruction": {
+            "title": "Supportive Instruction",
+            "type": "string"
+          },
+          "clinician_review_required": {
+            "title": "Clinician Review Required",
+            "type": "boolean"
+          },
+          "reviewed_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Reviewed At"
+          },
+          "reviewed_by_user_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Reviewed By User Id"
+          },
+          "review_disposition": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Review Disposition"
+          },
+          "review_note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Review Note"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "plan_item_id",
+          "scheduled_date",
+          "completion_status",
+          "adherence_id",
+          "patient_id",
+          "response_state",
+          "supportive_instruction",
+          "clinician_review_required",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "AdherenceDetail",
+        "type": "object"
+      },
+      "ExerciseResponseReview": {
+        "properties": {
+          "disposition": {
+            "enum": [
+              "contacted_patient",
+              "plan_modified",
+              "appointment_scheduled",
+              "referred_for_medical_review",
+              "reviewed_no_change"
+            ],
+            "title": "Disposition",
+            "type": "string"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "maxLength": 2000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Note"
+          },
+          "clinician_attestation": {
+            "title": "Clinician Attestation",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "disposition",
+          "clinician_attestation"
+        ],
+        "title": "ExerciseResponseReview",
+        "type": "object"
+      },
+      "AnalysisJobResponse": {
+        "properties": {
+          "job_id": {
+            "title": "Job Id",
+            "type": "string"
+          },
+          "exercise_id": {
+            "title": "Exercise Id",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "queued",
+              "running",
+              "completed",
+              "failed",
+              "cancelled"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "stage": {
+            "title": "Stage",
+            "type": "string"
+          },
+          "progress": {
+            "maximum": 100,
+            "minimum": 0,
+            "title": "Progress",
+            "type": "integer"
+          },
+          "attempts": {
+            "title": "Attempts",
+            "type": "integer"
+          },
+          "max_attempts": {
+            "title": "Max Attempts",
+            "type": "integer"
+          },
+          "cancel_requested": {
+            "default": false,
+            "title": "Cancel Requested",
+            "type": "boolean"
+          },
+          "error_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Error Code"
+          },
+          "message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Message"
+          },
+          "http_status": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Http Status"
+          },
+          "result": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Result"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "started_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Started At"
+          },
+          "completed_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Completed At"
+          },
+          "engine_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Engine Version"
+          },
+          "model_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Model Version"
+          }
+        },
+        "required": [
+          "job_id",
+          "exercise_id",
+          "status",
+          "stage",
+          "progress",
+          "attempts",
+          "max_attempts",
+          "created_at"
+        ],
+        "title": "AnalysisJobResponse",
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  }
+}

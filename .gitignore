@@ -268,3 +268,20 @@ override.tf.json
 # it contains unreviewed code, model artifacts, and exposed credentials.
 /Powered-Physiotherapy-System-master/
 /NTI-Projcet-Computer_Vision
+
+# Replacement application local runtimes and build output
+/.venv-rebuild/
+/apps/web/.next/
+/apps/web/tsconfig.tsbuildinfo
+/services/platform/*.sqlite3
+/services/platform/*.sqlite3-*
+/apps/native/.dart_tool/
+/apps/native/build/
+/apps/web/node_modules/
+!/apps/native/lib/
+!/apps/native/lib/**
+!/apps/web/src/lib/
+!/apps/web/src/lib/**
+!/apps/web/.env.example
+!/services/platform/.env.example
+/.rebuild-private/

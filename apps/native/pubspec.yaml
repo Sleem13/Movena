@@ -1,0 +1,43 @@
+name: movena_native
+description: "Movena native recovery application."
+publish_to: 'none'
+
+version: 2.0.0+1
+
+environment:
+  sdk: ^3.13.3
+
+dependencies:
+  flutter_localizations:
+    sdk: flutter
+  flutter:
+    sdk: flutter
+
+  http: ^1.6.0
+  flutter_secure_storage: ^11.1.1
+  shared_preferences: ^2.5.5
+  image_picker: ^1.2.3
+  video_player: ^2.14.0
+  url_launcher: ^6.3.2
+  intl: ^0.20.3
+  uuid: ^4.6.0
+  camera: ^0.12.1
+  app_links: 7.2.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.14.4
+
+flutter:
+
+  uses-material-design: true
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: assets/brand/icon.png
+  remove_alpha_ios: true
+  background_color_ios: "#FFFFFF"

@@ -1,0 +1,107 @@
+{
+  "source_unchanged_by_tool": true,
+  "verified": true,
+  "tables": {
+    "adherence_entries": {
+      "rows": 0
+    },
+    "analysis_jobs": {
+      "rows": 2
+    },
+    "analysis_sessions": {
+      "rows": 5
+    },
+    "appointments": {
+      "rows": 0
+    },
+    "audit_logs": {
+      "rows": 15
+    },
+    "care_invitations": {
+      "rows": 0
+    },
+    "clinical_session_notes": {
+      "rows": 0
+    },
+    "data_rights_requests": {
+      "rows": 0
+    },
+    "detected_issues": {
+      "rows": 2
+    },
+    "exercise_plan_items": {
+      "rows": 0
+    },
+    "exercise_plans": {
+      "rows": 0
+    },
+    "notifications": {
+      "rows": 0
+    },
+    "orders": {
+      "rows": 0
+    },
+    "package_offerings": {
+      "rows": 0
+    },
+    "patient_health_profiles": {
+      "rows": 0
+    },
+    "patient_profiles": {
+      "rows": 3
+    },
+    "payments": {
+      "rows": 0
+    },
+    "platform_settings": {
+      "rows": 0
+    },
+    "progress_reports": {
+      "rows": 0
+    },
+    "recognition_events": {
+      "rows": 0
+    },
+    "recovery_coaching_action_plans": {
+      "rows": 0
+    },
+    "recovery_coaching_check_ins": {
+      "rows": 2
+    },
+    "recovery_coaching_goals": {
+      "rows": 0
+    },
+    "recovery_coaching_reminder_preferences": {
+      "rows": 1
+    },
+    "refunds": {
+      "rows": 0
+    },
+    "service_offerings": {
+      "rows": 0
+    },
+    "session_metrics": {
+      "rows": 17
+    },
+    "therapist_availability": {
+      "rows": 0
+    },
+    "therapist_patient_assignments": {
+      "rows": 0
+    },
+    "uploaded_media": {
+      "rows": 2
+    },
+    "user_consents": {
+      "rows": 2
+    },
+    "users": {
+      "rows": 4
+    }
+  },
+  "foreign_key_violations": 0,
+  "integrity": "ok",
+  "domain_migration_performed": false,
+  "scope": "Local movena_dev.db backup copied to isolated restore file; no domain ownership transfer.",
+  "verified_at": "2026-09-12"
+}

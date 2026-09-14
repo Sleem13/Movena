@@ -48,6 +48,8 @@ def editable_target(db: Session, user_id: str) -> User | JSONResponse:
     target = find_user(db, user_id)
     if target is None:
         return error("USER_NOT_FOUND", "The requested user account was not found.", 404)
+    if target.identity_owner != "legacy":
+        return error("IDENTITY_OWNED_BY_PLATFORM", "This account is managed by the replacement identity service.", 409)
     if target.is_protected or target.role == UserRole.super_admin.value:
         return error("PROTECTED_ACCOUNT", "Protected super-administrator accounts cannot be modified.", 403)
     return target

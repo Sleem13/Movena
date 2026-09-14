@@ -17,7 +17,7 @@ from app.core.config import database_url_from_environment, normalize_database_ur
 DEFAULT_DATABASE_PATH = BACKEND_ROOT / "movena_dev.db"
 DEFAULT_DATABASE_URL = f"sqlite:///{DEFAULT_DATABASE_PATH.as_posix()}"
 DATABASE_URL = database_url_from_environment(DEFAULT_DATABASE_URL)
-LATEST_SCHEMA_REVISION = "0008_care_connections"
+LATEST_SCHEMA_REVISION = "0010_identity_projection"
 
 
 class Base(DeclarativeBase):
@@ -99,6 +99,7 @@ def init_db(bind: Engine | None = None) -> None:
             "reset_password_token_hash": "VARCHAR(64) NULL",
             "reset_password_expires": "TIMESTAMP NULL",
             "reset_password_sent_at": "TIMESTAMP NULL",
+            "identity_owner": "VARCHAR(16) NOT NULL DEFAULT 'legacy'",
         }
         for column, definition in user_additions.items():
             if column not in user_columns:

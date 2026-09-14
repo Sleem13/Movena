@@ -1,0 +1,17 @@
+{
+  "verified": true,
+  "accounts": 4,
+  "consents": 2,
+  "source_sha256": "5a80138d448e0243d7c40b3f5775ef36c577bb54b6d1192f4edb261b7a17c767",
+  "executed": true,
+  "token_versions_incremented": 4,
+  "ownership_after": "platform",
+  "source_opened_read_only": true,
+  "all_token_versions_advanced_once": true,
+  "all_accounts_platform_owned": true,
+  "pending_legacy_conversion_intents": 4,
+  "rollback_restored_legacy_ownership": true,
+  "source_bytes_unchanged": true,
+  "production_cutover_performed": false,
+  "legacy_conversion_endpoint_called": false
+}

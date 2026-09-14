@@ -1,0 +1,9 @@
+Django>=5.2,<5.3
+djangorestframework>=3.16,<3.17
+httpx>=0.28,<0.29
+celery[redis]>=5.5,<6
+psycopg[binary]>=3.2,<4
+drf-spectacular>=0.28,<0.30
+bcrypt>=4.2,<6
+uvicorn>=0.35,<1
+PyJWT>=2.14,<3
