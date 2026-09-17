@@ -6,6 +6,8 @@ from datetime import datetime, timezone
 
 from fastapi import APIRouter, Body, Depends, Query, status
 from fastapi.responses import JSONResponse
+from pydantic import BaseModel, Field
+from typing import Literal
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
@@ -146,6 +148,59 @@ def privacy_requests(limit: int = Query(100, ge=1, le=500), db: Session = Depend
         "request_type": row.request_type, "status": row.status,
         "details": row.details, "created_at": row.created_at,
     } for row in rows]
+
+
+class DataRightsReviewV2(BaseModel):
+    decision: Literal["approve", "reject"]
+    reason: str = Field(min_length=3, max_length=2000)
+
+
+def privacy_record(row: DataRightsRequest, account: User) -> dict:
+    return {
+        "request_id": row.request_id, "request_type": row.request_type,
+        "status": row.status, "details": row.details, "created_at": row.created_at,
+        "completed_at": row.completed_at, "reviewed_at": row.completed_at,
+        "retention_until": None, "account_id": account.user_id,
+        "account_email": account.email,
+        "account_name": account.full_name or account.username,
+    }
+
+
+@router.get("/platform/data-rights-requests")
+def privacy_requests_v2(
+    actor: User = Depends(require_super_admin), db: Session = Depends(get_db),
+):
+    rows = db.execute(select(DataRightsRequest, User).join(
+        User, User.user_id == DataRightsRequest.user_id,
+    ).order_by(DataRightsRequest.created_at.asc()).limit(500)).all()
+    return [privacy_record(row, account) for row, account in rows]
+
+
+@router.patch("/platform/data-rights-requests/{request_id}")
+def resolve_privacy_request_v2(
+    request_id: str, data: DataRightsReviewV2,
+    actor: User = Depends(require_super_admin), db: Session = Depends(get_db),
+):
+    result = db.execute(select(DataRightsRequest, User).join(
+        User, User.user_id == DataRightsRequest.user_id,
+    ).where(DataRightsRequest.request_id == request_id).with_for_update()).first()
+    if result is None:
+        return error("DATA_RIGHTS_REQUEST_NOT_FOUND", "Privacy request was not found.", 404)
+    row, account = result
+    if row.status != "pending" or account.is_protected:
+        return error("DATA_RIGHTS_REVIEW_DENIED", "This review is unavailable.", 409)
+    row.status = "approved" if data.decision == "approve" else "rejected"
+    row.resolution_note = data.reason.strip()
+    row.completed_at = datetime.now(timezone.utc)
+    if data.decision == "approve" and row.request_type == "deletion":
+        account.is_active = False
+        account.account_status = "suspended"
+        account.token_version += 1
+    audit_event(db, actor.user_id, "data_rights.reviewed", "data_rights_request", row.request_id, {
+        "request_type": row.request_type, "decision": data.decision,
+    })
+    db.commit(); db.refresh(row)
+    return privacy_record(row, account)
 
 
 @router.patch("/data-rights-requests/{request_id}")

@@ -26,6 +26,7 @@ import { PlansView } from "./care/Plans";
 import { ProgressView } from "./care/History";
 import { HealthProfileView, NotificationsView } from "./account/PatientAccount";
 import { AnalyzeView, ResultView } from "./analysis/Views";
+import { AdminDataRights, PatientDataRights } from "./account/DataRights";
 
 export function Workspace({ section }: { section: string[] }) {
   const { data: user, error, loading } = useResource<User>("auth/me");
@@ -87,6 +88,7 @@ export function Workspace({ section }: { section: string[] }) {
         plans: t("carePlans"),
         health: t("healthProfile"),
         notifications: t("notifications"),
+        "data-rights": t("dataRights"),
         "visit-notes": t("visitNotes"),
       } as Record<string, string>
     )[current] || t("details");
@@ -177,6 +179,13 @@ export function Workspace({ section }: { section: string[] }) {
           <HealthProfileView />
         ) : current === "notifications" && user.role === "patient" ? (
           <NotificationsView />
+        ) : current === "data-rights" && user.role === "patient" ? (
+          <PatientDataRights />
+        ) : current === "operations" && user.role === "super_admin" ? (
+          <>
+            <AdminDataRights />
+            <MigrationWorkspace section={current} />
+          </>
         ) : (
           <MigrationWorkspace section={current} />
         )}
@@ -207,6 +216,9 @@ function Account({ user }: { user: User }) {
             </Link>
             <Link className="secondary" href="/workspace/notifications">
               {t("notifications")}
+            </Link>
+            <Link className="secondary" href="/workspace/data-rights">
+              {t("dataRights")}
             </Link>
           </nav>
         )}

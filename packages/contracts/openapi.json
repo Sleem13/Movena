@@ -740,6 +740,199 @@
         }
       }
     },
+    "/api/v2/patient/data-rights-requests": {
+      "get": {
+        "operationId": "getDataRightsRequests",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DataRightsRecord"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication expired or missing"
+          },
+          "403": {
+            "description": "Operation or object access denied"
+          },
+          "409": {
+            "description": "Conflicting or unresolved submission"
+          },
+          "422": {
+            "description": "Invalid input"
+          },
+          "503": {
+            "description": "Dependency unavailable"
+          }
+        }
+      },
+      "post": {
+        "operationId": "createDataRightsRequest",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataRightsRecord"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication expired or missing"
+          },
+          "403": {
+            "description": "Operation or object access denied"
+          },
+          "409": {
+            "description": "Conflicting or unresolved submission"
+          },
+          "422": {
+            "description": "Invalid input"
+          },
+          "503": {
+            "description": "Dependency unavailable"
+          }
+        },
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 128
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DataRightsCreate"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/admin/platform/data-rights-requests": {
+      "get": {
+        "operationId": "getDataRightsQueue",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DataRightsRecord"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication expired or missing"
+          },
+          "403": {
+            "description": "Operation or object access denied"
+          },
+          "409": {
+            "description": "Conflicting or unresolved submission"
+          },
+          "422": {
+            "description": "Invalid input"
+          },
+          "503": {
+            "description": "Dependency unavailable"
+          }
+        }
+      }
+    },
+    "/api/v2/admin/platform/data-rights-requests/{request_id}": {
+      "patch": {
+        "operationId": "reviewDataRightsRequest",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataRightsRecord"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication expired or missing"
+          },
+          "403": {
+            "description": "Operation or object access denied"
+          },
+          "409": {
+            "description": "Conflicting or unresolved submission"
+          },
+          "422": {
+            "description": "Invalid input"
+          },
+          "503": {
+            "description": "Dependency unavailable"
+          }
+        },
+        "parameters": [
+          {
+            "name": "request_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DataRightsReview"
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v2/patient/notifications": {
       "get": {
         "operationId": "getNotifications",
@@ -2541,6 +2734,182 @@
           "shared_with_patient"
         ],
         "title": "ProgressReportCreateResponse",
+        "type": "object"
+      },
+      "DataRightsCreate": {
+        "properties": {
+          "request_type": {
+            "enum": [
+              "export",
+              "correction",
+              "deletion"
+            ],
+            "title": "Request Type",
+            "type": "string"
+          },
+          "details": {
+            "anyOf": [
+              {
+                "maxLength": 2000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Details"
+          }
+        },
+        "required": [
+          "request_type"
+        ],
+        "title": "DataRightsCreate",
+        "type": "object"
+      },
+      "DataRightsRecord": {
+        "properties": {
+          "request_id": {
+            "title": "Request Id",
+            "type": "string"
+          },
+          "request_type": {
+            "enum": [
+              "export",
+              "correction",
+              "deletion"
+            ],
+            "title": "Request Type",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "details": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Details"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "completed_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Completed At"
+          },
+          "reviewed_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Reviewed At"
+          },
+          "retention_until": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Retention Until"
+          },
+          "account_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Account Id"
+          },
+          "account_email": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Account Email"
+          },
+          "account_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Account Name"
+          }
+        },
+        "required": [
+          "request_id",
+          "request_type",
+          "status",
+          "created_at"
+        ],
+        "title": "DataRightsRecord",
+        "type": "object"
+      },
+      "DataRightsReview": {
+        "properties": {
+          "decision": {
+            "enum": [
+              "approve",
+              "reject"
+            ],
+            "title": "Decision",
+            "type": "string"
+          },
+          "reason": {
+            "maxLength": 2000,
+            "minLength": 3,
+            "title": "Reason",
+            "type": "string"
+          }
+        },
+        "required": [
+          "decision",
+          "reason"
+        ],
+        "title": "DataRightsReview",
         "type": "object"
       },
       "NotificationSummary": {

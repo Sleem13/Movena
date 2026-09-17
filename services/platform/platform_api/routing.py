@@ -29,4 +29,6 @@ def allowed(method, path):
         return False
     if method == 'GET' and re.fullmatch(r'(patient|therapist)/appointments/[^/]+/session-notes', path):
         return True  # Additive note readers; the captured v1 baseline stays immutable.
+    if re.fullmatch(r'admin/platform/data-rights-requests(?:/[^/]+)?', path) and method in {'GET', 'PATCH'}:
+        return True  # Canonical v2 alias; v1 retains its captured route for compatibility.
     return any(method == verb and expression.fullmatch(path) for verb, expression in route_patterns())

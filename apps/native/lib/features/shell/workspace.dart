@@ -10,6 +10,7 @@ import '../analysis/analyze_view.dart';
 import '../care/progress_view.dart';
 import '../scheduling/schedule_view.dart';
 import '../account/patient_account_view.dart';
+import '../account/data_rights_view.dart';
 
 class Workspace extends StatefulWidget {
   final SessionRepository session;
@@ -79,6 +80,21 @@ class _WorkspaceState extends State<Workspace> {
               ),
             ),
           ),
+          if (role == 'super_admin')
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: OutlinedButton.icon(
+                icon: const Icon(Icons.policy_outlined),
+                label: Text(p.t('dataRightsQueue')),
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) =>
+                        AdminDataRightsView(api: api, preferences: p),
+                  ),
+                ),
+              ),
+            ),
           Expanded(
             child: MigrationView(section: current, preferences: p),
           ),
@@ -169,6 +185,18 @@ class AccountView extends StatelessWidget {
                     ),
                   ),
                   child: Text(p.t('notifications')),
+                ),
+                OutlinedButton(
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => PatientDataRightsView(
+                        api: session.api,
+                        preferences: p,
+                      ),
+                    ),
+                  ),
+                  child: Text(p.t('dataRights')),
                 ),
               ],
               DropdownButtonFormField<ThemeMode>(

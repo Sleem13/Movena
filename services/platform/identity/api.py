@@ -289,8 +289,8 @@ class DataRightsAdminView(IdentityView):
             admin_service.require_super_admin(request.user.account)
         except admin_service.MutationDenied:
             return Response({'error_code':'DATA_RIGHTS_ACCESS_DENIED','message':'This queue is unavailable.'}, status=403)
-        rows = lifecycle.DataRightsRequest.objects.order_by('requested_at')[:500]
-        return Response([lifecycle.serialize(row) for row in rows])
+        rows = lifecycle.DataRightsRequest.objects.select_related('account').order_by('requested_at')[:500]
+        return Response([lifecycle.serialize(row, include_account=True) for row in rows])
 
 
 class DataRightsReviewView(IdentityView):

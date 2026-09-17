@@ -76,6 +76,8 @@ class LifecycleTests(TestCase):
         client.credentials(HTTP_AUTHORIZATION='Bearer '+admin_token)
         queue = client.get('/api/v2/admin/platform/data-rights-requests')
         self.assertEqual(len(queue.json()), 1)
+        self.assertEqual(queue.json()[0]['account_email'], self.patient.email)
+        self.assertEqual(queue.json()[0]['account_id'], self.patient.pk)
         reviewed = client.patch('/api/v2/admin/platform/data-rights-requests/'+created.json()['request_id'],
             {'decision':'approve','reason':'Identity verified'}, format='json')
         self.assertEqual(reviewed.status_code, 200)

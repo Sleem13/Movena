@@ -9,6 +9,19 @@ USER = {"user_id": "patient-one", "role": "patient", "email": "example@example.t
 
 
 class BridgeTests(TestCase):
+    def test_data_rights_submission_replays_without_a_duplicate(self):
+        self.client.credentials(HTTP_AUTHORIZATION='Bearer valid')
+        path = '/api/v2/patient/data-rights-requests'
+        body = {'request_type':'export','details':'Synthetic request'}
+        created = {'request_id':'stable-request', **body, 'status':'pending', 'created_at':'2026-09-14T00:00:00Z'}
+        with patch('platform_api.upstream.request', side_effect=[httpx.Response(200,json=USER), httpx.Response(201,json=created)]):
+            self.assertEqual(self.client.post(path, body, format='json', HTTP_IDEMPOTENCY_KEY='privacy-retry-key').status_code, 201)
+        with patch('platform_api.upstream.request', return_value=httpx.Response(200,json=USER)) as upstream:
+            replay = self.client.post(path, body, format='json', HTTP_IDEMPOTENCY_KEY='privacy-retry-key')
+            self.assertEqual(replay.json(), created)
+            self.assertEqual(replay['X-Movena-Idempotency-Replayed'], 'true')
+            self.assertEqual(upstream.call_count, 1)
+
     def test_note_replay_rechecks_current_appointment_access(self):
         self.client.credentials(HTTP_AUTHORIZATION='Bearer valid')
         path='/api/v2/therapist/appointments/visit-one/session-notes'
@@ -179,6 +192,8 @@ class BridgeTests(TestCase):
         for path in ['../auth/me', 'auth//me', 'auth/%2e%2e/me', 'auth/me?token=x', 'does-not-exist', 'checkout/webhook']:
             self.assertFalse(allowed('GET', path), path)
         self.assertTrue(allowed('GET', 'therapist/patients/patient-one'))
+        self.assertTrue(allowed('GET', 'admin/platform/data-rights-requests'))
+        self.assertTrue(allowed('PATCH', 'admin/platform/data-rights-requests/request-one'))
         self.assertFalse(allowed('DELETE', 'auth/login'))
 
     def test_health_is_not_claimed_as_upstream_readiness(self):

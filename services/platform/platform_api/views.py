@@ -60,6 +60,15 @@ class BridgeView(APIView):
         accounts.validate_request(request, path)
         care_notes.validate_request(request, path)
         receipt = None
+        if request.method == 'POST' and path == 'patient/data-rights-requests':
+            canonical = json.dumps(request.data, sort_keys=True, separators=(',', ':')).encode()
+            receipt, replay = reserve(request.user.user_id, request.headers.get('Idempotency-Key'), path,
+                                      hashlib.sha256(canonical).hexdigest())
+            if replay:
+                result = Response(receipt.response, status=receipt.status_code)
+                result['Cache-Control'] = 'no-store'
+                result['X-Movena-Idempotency-Replayed'] = 'true'
+                return result
         if request.method == 'POST' and re.fullmatch(r'therapist/(patients/[^/]+/exercise-plans|appointments/[^/]+/session-notes)', path):
             # Revoked care access must deny even an otherwise replayable receipt.
             access = upstream.request('GET', '/api/v1/' + path, token=legacy_token, principal=platform_auth)

@@ -188,6 +188,27 @@ export interface CurrentUserResponse {
   permissions?: Array<string>;
   created_at: string;
 }
+export interface DataRightsCreate {
+  request_type: "export" | "correction" | "deletion";
+  details?: string | null;
+}
+export interface DataRightsRecord {
+  request_id: string;
+  request_type: "export" | "correction" | "deletion";
+  status: string;
+  details?: string | null;
+  created_at: string;
+  completed_at?: string | null;
+  reviewed_at?: string | null;
+  retention_until?: string | null;
+  account_id?: string | null;
+  account_email?: string | null;
+  account_name?: string | null;
+}
+export interface DataRightsReview {
+  decision: "approve" | "reject";
+  reason: string;
+}
 export interface DetectedIssueSchema {
   issue_code: string;
   severity?: string | null;

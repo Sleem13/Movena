@@ -55,7 +55,11 @@ def review(actor, request_id, decision, reason, *, erasure_delay_days=30):
     row.refresh_from_db(); return row
 
 
-def serialize(row):
-    return {'request_id':str(row.pk), 'request_type':row.request_type, 'status':row.status,
+def serialize(row, *, include_account=False):
+    value = {'request_id':str(row.pk), 'request_type':row.request_type, 'status':row.status,
         'details':row.details, 'created_at':row.requested_at, 'completed_at':row.completed_at,
         'reviewed_at':row.reviewed_at, 'retention_until':row.retention_until}
+    if include_account:
+        value.update(account_id=row.account_id, account_email=row.account.email,
+            account_name=row.account.full_name or row.account.username)
+    return value

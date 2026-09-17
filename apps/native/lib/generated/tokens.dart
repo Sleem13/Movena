@@ -12,7 +12,7 @@ const designTokens = {
       "onPrimary": "#FFFFFF",
       "teal": "#087F76",
       "tint": "#EDF4FF",
-      "danger": "#B42337"
+      "danger": "#B42337",
     },
     "dark": {
       "background": "#0A1325",
@@ -24,23 +24,11 @@ const designTokens = {
       "onPrimary": "#10234B",
       "teal": "#57DCC8",
       "tint": "#203556",
-      "danger": "#FF9CA8"
-    }
+      "danger": "#FF9CA8",
+    },
   },
-  "spacing": [
-    4,
-    8,
-    12,
-    16,
-    24,
-    32,
-    48,
-    64
-  ],
-  "radius": {
-    "control": 12,
-    "panel": 20
-  },
+  "spacing": [4, 8, 12, 16, 24, 32, 48, 64],
+  "radius": {"control": 12, "panel": 20},
   "touchTarget": 48,
-  "motionMs": 160
+  "motionMs": 160,
 };

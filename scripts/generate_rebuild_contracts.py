@@ -12,7 +12,8 @@ from app.schemas.auth_schema import (CurrentUserResponse, UserLoginRequest, Toke
 from app.schemas.care_schema import (PatientTodayResponse, AdherenceCreate, AdherenceDetail, ExerciseResponseReview,
     AppointmentCreate, AppointmentSummary, AppointmentUpdate, AppointmentJoinResponse, AvailabilityCreate, AvailabilityDetail,
     PatientHealthProfileUpdate, NotificationSummary, ClinicalNoteCreate, ClinicalNoteDetail)
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
+from typing import Literal
 from datetime import date, datetime
 from app.schemas.analysis_job_schema import AnalysisJobResponse as LegacyAnalysisJobResponse
 from app.schemas.patient_schema import ExercisePlanCreate, ExercisePlanDetail, ExercisePlanStatusUpdate
@@ -54,7 +55,28 @@ class ProgressReportCreateResponse(BaseModel):
     download_url: str
     shared_with_patient: bool
 
-MODELS = [ClinicalNoteCreate, ClinicalNoteDetail, SessionListResponse, SessionDetail, PatientHealthProfileUpdate, PatientHealthProfile, ConsentRecord, ProgressReportSummary, ProgressReportCreateResponse, NotificationSummary,
+class DataRightsCreate(BaseModel):
+    request_type: Literal['export', 'correction', 'deletion']
+    details: str | None = Field(default=None, max_length=2000)
+
+class DataRightsRecord(BaseModel):
+    request_id: str
+    request_type: Literal['export', 'correction', 'deletion']
+    status: str
+    details: str | None = None
+    created_at: datetime
+    completed_at: datetime | None = None
+    reviewed_at: datetime | None = None
+    retention_until: datetime | None = None
+    account_id: str | None = None
+    account_email: str | None = None
+    account_name: str | None = None
+
+class DataRightsReview(BaseModel):
+    decision: Literal['approve', 'reject']
+    reason: str = Field(min_length=3, max_length=2000)
+
+MODELS = [ClinicalNoteCreate, ClinicalNoteDetail, SessionListResponse, SessionDetail, PatientHealthProfileUpdate, PatientHealthProfile, ConsentRecord, ProgressReportSummary, ProgressReportCreateResponse, DataRightsCreate, DataRightsRecord, DataRightsReview, NotificationSummary,
           ExercisePlanCreate, ExercisePlanDetail, ExercisePlanStatusUpdate,
           UserRegisterRequest, UserSummary, EmailRequest, TokenRequest, PasswordResetRequest, AuthMessageResponse,
           AppointmentCreate, AppointmentSummary, AppointmentUpdate, AppointmentJoinResponse,
@@ -123,6 +145,10 @@ def generate():
         ('/patient/health-profile', 'get', 'getHealthProfile', None, 'PatientHealthProfile'),
         ('/patient/health-profile', 'patch', 'updateHealthProfile', 'PatientHealthProfileUpdate', 'PatientHealthProfile'),
         ('/patient/consents', 'get', 'getConsents', None, 'ConsentRecord[]'),
+        ('/patient/data-rights-requests', 'get', 'getDataRightsRequests', None, 'DataRightsRecord[]'),
+        ('/patient/data-rights-requests', 'post', 'createDataRightsRequest', 'DataRightsCreate', 'DataRightsRecord'),
+        ('/admin/platform/data-rights-requests', 'get', 'getDataRightsQueue', None, 'DataRightsRecord[]'),
+        ('/admin/platform/data-rights-requests/{request_id}', 'patch', 'reviewDataRightsRequest', 'DataRightsReview', 'DataRightsRecord'),
         ('/patient/notifications', 'get', 'getNotifications', None, 'NotificationSummary[]'),
         ('/patient/notifications/{notification_id}/read', 'post', 'readNotification', None, 'NotificationSummary'),
         ('/patient/reports', 'get', 'getPatientReports', None, 'ProgressReportSummary[]'),
@@ -150,7 +176,7 @@ def generate():
         'status': {'type': 'string', 'description': 'Empty includes every historical outcome.'},
         'share_with_patient': {'type': 'boolean', 'default': False},
     }
-    keyed = {'saveCheckIn', 'bookAppointment', 'createPlan', 'createVisitNote'}
+    keyed = {'saveCheckIn', 'bookAppointment', 'createPlan', 'createVisitNote', 'createDataRightsRequest'}
     def response_schema(name):
         schema = {'$ref': '#/components/schemas/' + name.removesuffix('[]')}
         return {'type': 'array', 'items': schema} if name.endswith('[]') else schema
@@ -161,7 +187,7 @@ def generate():
     paths = {}
     for path, method, name, request, response in operations:
         op = {'operationId': name, 'security': [] if name in {'login','register','forgotPassword','resetPassword','verifyEmail','resendVerification'} else [{'bearerAuth': []}],
-              'responses': {'201' if name in {'register','saveCheckIn','bookAppointment','addAvailability','createPlan','createVisitNote'} else '200': {
+              'responses': {'201' if name in {'register','saveCheckIn','bookAppointment','addAvailability','createPlan','createVisitNote','createDataRightsRequest'} else '200': {
                   'description': 'Successful response', 'content': {'application/json': {'schema': response_schema(response)}}},
                   **{str(code): {'description': description} for code, description in [(401, 'Authentication expired or missing'),
                      (403, 'Operation or object access denied'), (409, 'Conflicting or unresolved submission'), (422, 'Invalid input'), (503, 'Dependency unavailable')]}}}
