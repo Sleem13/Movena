@@ -1,8 +1,9 @@
 from collections.abc import Callable
 
 import jwt
-from fastapi import Depends
-from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from fastapi import Depends, Header
+from fastapi import Request
+from fastapi.security import HTTPAuthorizationCredentials
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -12,20 +13,32 @@ from app.db.database import get_db
 from app.db.models import User
 from app.schemas.auth_schema import UserRole
 
-bearer = HTTPBearer(auto_error=False)
-
-
 class AuthError(Exception):
     def __init__(self, status_code: int, error_code: str, message: str):
         self.status_code, self.error_code, self.message = status_code, error_code, message
 
 
+def authorization_credentials(authorization: str | None = Header(default=None)) -> HTTPAuthorizationCredentials | None:
+    if authorization is None:
+        return None
+    parts = authorization.split()
+    if len(parts) != 2:
+        raise AuthError(401, "INVALID_TOKEN", "The access token is invalid.")
+    return HTTPAuthorizationCredentials(scheme=parts[0], credentials=parts[1])
+
+
 def optional_current_user(
-    credentials: HTTPAuthorizationCredentials | None = Depends(bearer),
+    request: Request,
+    credentials: HTTPAuthorizationCredentials | None = Depends(authorization_credentials),
     db: Session = Depends(get_db),
 ) -> User | None:
     if credentials is None:
         return None
+    if credentials.scheme.lower() == "movenainternal":
+        from app.services.internal_principal_service import consume_user_assertion
+        return consume_user_assertion(db, credentials.credentials, request.method, request.url.path, request.scope.get("movena_body_sha256"))
+    if credentials.scheme.lower() != "bearer":
+        raise AuthError(401, "INVALID_TOKEN", "The access token is invalid.")
     try:
         payload = decode_access_token(credentials.credentials)
     except jwt.ExpiredSignatureError as exc:

@@ -1,0 +1,34 @@
+// Generated; do not edit.
+const designTokens = {
+  "version": 1,
+  "colors": {
+    "light": {
+      "background": "#F6F9FF",
+      "surface": "#FFFFFF",
+      "text": "#10234B",
+      "muted": "#526583",
+      "border": "#DFE7F3",
+      "primary": "#246BFD",
+      "onPrimary": "#FFFFFF",
+      "teal": "#087F76",
+      "tint": "#EDF4FF",
+      "danger": "#B42337",
+    },
+    "dark": {
+      "background": "#0A1325",
+      "surface": "#13213A",
+      "text": "#EDF3FF",
+      "muted": "#ACBDD6",
+      "border": "#2D405E",
+      "primary": "#86ADFF",
+      "onPrimary": "#10234B",
+      "teal": "#57DCC8",
+      "tint": "#203556",
+      "danger": "#FF9CA8",
+    },
+  },
+  "spacing": [4, 8, 12, 16, 24, 32, 48, 64],
+  "radius": {"control": 12, "panel": 20},
+  "touchTarget": 48,
+  "motionMs": 160,
+};

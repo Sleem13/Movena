@@ -103,6 +103,10 @@ class Settings(BaseModel):
     secret_key: str = "change-me-in-production"
     access_token_expire_minutes: int = 60
     jwt_algorithm: str = "HS256"
+    internal_assertion_secret: str = ""
+    internal_assertion_issuer: str = "movena-platform"
+    internal_assertion_audience: str = "movena-legacy"
+    allow_identity_ownership_transfer: bool = False
     frontend_url: str = "http://localhost:5173"
     email_delivery_mode: str = "console"
     require_email_verification: bool = False
@@ -180,6 +184,8 @@ class Settings(BaseModel):
             secret_key=os.getenv("SECRET_KEY", "change-me-in-production"),
             access_token_expire_minutes=int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "60")),
             jwt_algorithm=os.getenv("JWT_ALGORITHM", "HS256"),
+            internal_assertion_secret=os.getenv("MOVENA_INTERNAL_ASSERTION_SECRET", ""),
+            allow_identity_ownership_transfer=_bool("MOVENA_ALLOW_IDENTITY_OWNERSHIP_TRANSFER", False),
             frontend_url=os.getenv("FRONTEND_URL", "http://localhost:5173").rstrip("/"),
             email_delivery_mode=os.getenv("EMAIL_DELIVERY_MODE", "console").strip().lower(),
             require_email_verification=_bool("REQUIRE_EMAIL_VERIFICATION", False),
@@ -242,6 +248,10 @@ class Settings(BaseModel):
         issues: list[str] = []
         if self.secret_key in INSECURE_SECRET_KEYS or len(self.secret_key) < 32:
             issues.append("SECRET_KEY must be a non-default value of at least 32 characters")
+        if self.internal_assertion_secret and len(self.internal_assertion_secret) < 32:
+            issues.append("MOVENA_INTERNAL_ASSERTION_SECRET must be at least 32 characters when enabled")
+        if self.allow_identity_ownership_transfer and len(self.internal_assertion_secret) < 32:
+            issues.append("identity ownership transfer requires MOVENA_INTERNAL_ASSERTION_SECRET")
         if not self.cors_allowed_origins or "*" in self.cors_allowed_origins:
             issues.append("CORS_ALLOWED_ORIGINS must contain explicit origins and cannot include '*'")
         if any(not origin.startswith("https://") for origin in self.effective_cors_origins):

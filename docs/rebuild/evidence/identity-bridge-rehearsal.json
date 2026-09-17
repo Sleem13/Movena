@@ -1,0 +1,9 @@
+{
+  "verified": true,
+  "imported_accounts_converted": 4,
+  "synthetic_login_succeeded": true,
+  "delegated_care_read_succeeded": true,
+  "legacy_passwords_removed": true,
+  "production_cutover_performed": false,
+  "real_account_passwords_tested": false
+}

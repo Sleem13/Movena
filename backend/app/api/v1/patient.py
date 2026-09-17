@@ -15,10 +15,11 @@ from app.db.models import (
     User, UserConsent, utc_now,
 )
 from app.services.artifact_service import build_artifact_url
+from app.services.clinical_note_service import appointment_notes
 from app.schemas.auth_schema import UserRole
 from app.schemas.care_schema import (
     AdherenceCreate, AdherenceDetail, AppointmentSummary, NotificationSummary,
-    PatientTodayResponse, PatientHealthProfileUpdate, ConsentUpdate, DataRightsRequestCreate,
+    PatientTodayResponse, PatientHealthProfileUpdate, ConsentUpdate, DataRightsRequestCreate, ClinicalNoteDetail,
 )
 from app.services.care_service import (
     appointment_summary, audit_event, ensure_patient_profile, notification_summary, patient_today,
@@ -179,6 +180,17 @@ def appointments(actor: User = Depends(require_role(UserRole.patient)), db: Sess
         Appointment.patient_id == profile.patient_id,
     ).order_by(Appointment.starts_at.desc()).limit(100)).all()
     return [appointment_summary(row) for row in rows]
+
+
+@router.get("/appointments/{appointment_id}/session-notes", response_model=list[ClinicalNoteDetail])
+def visit_notes(appointment_id: str, actor: User = Depends(require_role(UserRole.patient)), db: Session = Depends(get_db)):
+    profile = current_profile(db, actor)
+    if isinstance(profile, JSONResponse):
+        return profile
+    appointment = db.scalar(select(Appointment).where(Appointment.appointment_id == appointment_id, Appointment.patient_id == profile.patient_id))
+    if appointment is None:
+        return error("APPOINTMENT_NOT_FOUND", "Appointment was not found.", 404)
+    return appointment_notes(db, appointment_id, shared_only=True)
 
 
 @router.get("/reports")

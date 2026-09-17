@@ -1,5 +1,6 @@
 import os
 import logging
+import hashlib
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, status
@@ -24,6 +25,7 @@ from app.api.routes.exercises import router as exercises_router
 from app.api.routes.realtime_coaching import router as realtime_coaching_router
 from app.api.routes.analysis_jobs import router as analysis_jobs_router
 from app.api.routes.ml_models import router as ml_models_router
+from app.api.routes.internal_identity import router as internal_identity_router
 from app.api.routes.rehab_rl import router as rehab_rl_router
 from app.api.v1.therapist import router as therapist_router
 from app.api.v1.auth import router as auth_router
@@ -86,6 +88,14 @@ app = FastAPI(
     description="Movement-analysis API for the Movena educational MVP.",
     lifespan=lifespan,
 )
+
+
+@app.middleware("http")
+async def bind_internal_request_body(request, call_next):
+    """Hash only private signed requests so body binding does not buffer public uploads."""
+    if request.headers.get("authorization", "").lower().startswith("movenainternal "):
+        request.scope["movena_body_sha256"] = hashlib.sha256(await request.body()).hexdigest()
+    return await call_next(request)
 
 
 @app.exception_handler(RequestValidationError)
@@ -166,6 +176,7 @@ app.add_middleware(
 )
 
 app.include_router(health_router)
+app.include_router(internal_identity_router)
 app.include_router(squat_router)
 app.include_router(sit_to_stand_router)
 app.include_router(knee_extension_router)

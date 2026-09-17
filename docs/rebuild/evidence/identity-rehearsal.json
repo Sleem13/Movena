@@ -1,0 +1,18 @@
+{
+  "verified": true,
+  "accounts": 4,
+  "consents": 2,
+  "inserted": 6,
+  "persisted": true,
+  "credential_owner": "legacy",
+  "source_opened_read_only": true,
+  "all_mapped_fields_equal": true,
+  "live_authentication_changed": false,
+  "repeat_import_unchanged": true,
+  "restore_verified": true,
+  "source_bytes_unchanged": true,
+  "integrity": "ok",
+  "foreign_key_violations": 0,
+  "production_cutover_performed": false,
+  "real_account_passwords_tested": false
+}

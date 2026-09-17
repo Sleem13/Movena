@@ -1,0 +1,67 @@
+name: Replacement checks
+on:
+  pull_request:
+    paths: ['apps/**', 'services/platform/**', 'engines/recovery/**', 'packages/contracts/**', 'scripts/*rebuild*', 'backend/app/schemas/**', 'backend/app/exercises/**', 'tests/test_rebuild*', '.github/workflows/rebuild-checks.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  platform:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -r services/platform/requirements.lock
+      - run: python services/platform/manage.py check
+      - run: python services/platform/manage.py test platform_api identity
+      - run: python services/platform/manage.py makemigrations --check --dry-run
+      - run: python -m unittest discover -s engines/recovery/tests
+  web:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: apps/web/package-lock.json
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+        env:
+          NEXT_TELEMETRY_DISABLED: '1'
+  native:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        working-directory: apps/native
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.4'
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - run: flutter analyze
+      - run: flutter test
+      - if: runner.os == 'Linux'
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - if: runner.os == 'Linux'
+        run: flutter build apk --debug
+      - if: runner.os == 'Linux'
+        run: python ../../scripts/verify_rebuild_android.py
+      - if: runner.os == 'macOS'
+        run: flutter build ios --simulator --debug

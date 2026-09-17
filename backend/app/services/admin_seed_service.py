@@ -47,6 +47,8 @@ def seed_admin(
         if existing and not reset:
             return existing, False
         if existing:
+            if existing.identity_owner != "legacy":
+                raise ValueError("The configured admin email is managed by the replacement identity service.")
             if existing.is_protected or existing.role == "super_admin":
                 raise ValueError("The configured admin email belongs to a protected super-administrator account.")
             existing.password_hash = get_password_hash(password)
@@ -100,10 +102,14 @@ def seed_super_admin(
             if username_owner and username_owner.email != normalized_email:
                 raise ValueError("The configured super-admin username belongs to another account.")
         if existing and not reset:
+            if existing.identity_owner != "legacy":
+                raise ValueError("The configured super-admin email is managed by the replacement identity service.")
             if existing.role != "super_admin" or not existing.is_protected:
                 raise ValueError("The configured super-admin email belongs to an unprotected account; use --reset to promote it explicitly.")
             return existing, False
         user = existing or User(user_id=str(uuid4()), email=normalized_email, password_hash="")
+        if existing and existing.identity_owner != "legacy":
+            raise ValueError("The configured super-admin email is managed by the replacement identity service.")
         user.password_hash = get_password_hash(password)
         if normalized_username:
             user.username = normalized_username

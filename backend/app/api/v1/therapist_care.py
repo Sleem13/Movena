@@ -26,6 +26,7 @@ from app.services.care_service import (
     notification_summary, user_can_access_patient,
 )
 from app.services.progress_report_service import generate_progress_report
+from app.services.clinical_note_service import appointment_notes
 from app.services.notification_service import notification_accessible
 
 router = APIRouter(
@@ -167,6 +168,18 @@ def create_session_note(
     })
     db.commit(); db.refresh(row)
     return row
+
+
+@router.get("/appointments/{appointment_id}/session-notes", response_model=list[ClinicalNoteDetail])
+def session_notes(appointment_id: str, actor: User = Depends(require_therapist), db: Session = Depends(get_db)):
+    appointment = db.scalar(select(Appointment).where(Appointment.appointment_id == appointment_id))
+    if appointment is None:
+        return error("APPOINTMENT_NOT_FOUND", "Appointment was not found.", 404)
+    if not user_can_access_patient(db, actor, appointment.patient_id):
+        return error("PATIENT_ACCESS_DENIED", "An active care connection is required.", 403)
+    if actor.role == "therapist" and appointment.therapist_user_id != actor.user_id:
+        return error("APPOINTMENT_ACCESS_DENIED", "This appointment is not assigned to you.", 403)
+    return appointment_notes(db, appointment_id, shared_only=False)
 
 
 @router.post("/patients/{patient_id}/reports")

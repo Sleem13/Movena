@@ -1,0 +1,2101 @@
+{
+  "schema_version": 2,
+  "method": "static AST; dependency names do not prove effective object permissions; includes conditional routes, not proof of deployed availability",
+  "routes": [
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/appointments",
+      "source": "backend/app/api/v1/admin_platform.py",
+      "handler": "appointment_operations",
+      "line": 90,
+      "domain": "scheduling",
+      "dependency_guards": [
+        "get_db",
+        "require_admin"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/assignment-options",
+      "source": "backend/app/api/v1/connections.py",
+      "handler": "options",
+      "line": 123,
+      "domain": "administration",
+      "dependency_guards": [
+        "get_db",
+        "require_admin"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/assignments",
+      "source": "backend/app/api/v1/admin_platform.py",
+      "handler": "assignments",
+      "line": 61,
+      "domain": "administration",
+      "dependency_guards": [
+        "get_db",
+        "require_admin"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/assignments",
+      "source": "backend/app/api/v1/admin_platform.py",
+      "handler": "assign",
+      "line": 50,
+      "domain": "administration",
+      "dependency_guards": [
+        "get_db",
+        "require_admin"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/audit",
+      "source": "backend/app/api/v1/admin_platform.py",
+      "handler": "audit_log",
+      "line": 168,
+      "domain": "administration",
+      "dependency_guards": [
+        "get_db",
+        "require_admin"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/catalog/packages",
+      "source": "backend/app/api/v1/admin_platform.py",
+      "handler": "create_package",
+      "line": 79,
+      "domain": "commerce",
+      "dependency_guards": [
+        "get_db",
+        "require_admin"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/catalog/services",
+      "source": "backend/app/api/v1/admin_platform.py",
+      "handler": "create_service",
+      "line": 68,
+      "domain": "commerce",
+      "dependency_guards": [
+        "get_db",
+        "require_admin"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/data-rights-requests",
+      "source": "backend/app/api/v1/admin_platform.py",
+      "handler": "privacy_requests",
+      "line": 142,
+      "domain": "administration",
+      "dependency_guards": [
+        "get_db",
+        "require_admin"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/admin/data-rights-requests/{request_id}",
+      "source": "backend/app/api/v1/admin_platform.py",
+      "handler": "resolve_privacy_request",
+      "line": 152,
+      "domain": "administration",
+      "dependency_guards": [
+        "get_db",
+        "require_admin"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/metrics",
+      "source": "backend/app/api/v1/admin_platform.py",
+      "handler": "metrics",
+      "line": 178,
+      "domain": "administration",
+      "dependency_guards": [
+        "get_db",
+        "require_admin"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/payments",
+      "source": "backend/app/api/v1/admin_platform.py",
+      "handler": "payment_operations",
+      "line": 100,
+      "domain": "commerce",
+      "dependency_guards": [
+        "get_db",
+        "require_admin"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/payments/refunds",
+      "source": "backend/app/api/v1/admin_platform.py",
+      "handler": "create_refund",
+      "line": 111,
+      "domain": "commerce",
+      "dependency_guards": [
+        "get_db",
+        "require_admin"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/users",
+      "source": "backend/app/api/v1/admin.py",
+      "handler": "list_users",
+      "line": 80,
+      "domain": "administration",
+      "dependency_guards": [
+        "get_db",
+        "require_super_admin"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/users",
+      "source": "backend/app/api/v1/admin.py",
+      "handler": "create_user",
+      "line": 98,
+      "domain": "administration",
+      "dependency_guards": [
+        "get_db",
+        "require_super_admin"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v1/admin/users/{user_id}",
+      "source": "backend/app/api/v1/admin.py",
+      "handler": "delete_user",
+      "line": 203,
+      "domain": "administration",
+      "dependency_guards": [
+        "get_db",
+        "require_super_admin"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/users/{user_id}",
+      "source": "backend/app/api/v1/admin.py",
+      "handler": "user_detail",
+      "line": 132,
+      "domain": "administration",
+      "dependency_guards": [
+        "get_db",
+        "require_super_admin"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/admin/users/{user_id}/password",
+      "source": "backend/app/api/v1/admin.py",
+      "handler": "reset_password",
+      "line": 191,
+      "domain": "administration",
+      "dependency_guards": [
+        "get_db",
+        "require_super_admin"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/admin/users/{user_id}/role",
+      "source": "backend/app/api/v1/admin.py",
+      "handler": "update_role",
+      "line": 172,
+      "domain": "administration",
+      "dependency_guards": [
+        "get_db",
+        "require_super_admin"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/admin/users/{user_id}/status",
+      "source": "backend/app/api/v1/admin.py",
+      "handler": "update_status",
+      "line": 157,
+      "domain": "administration",
+      "dependency_guards": [
+        "get_db",
+        "require_super_admin"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/admin/workflow",
+      "source": "backend/app/api/v1/admin_platform.py",
+      "handler": "workflow",
+      "line": 36,
+      "domain": "administration",
+      "dependency_guards": [
+        "get_db",
+        "require_admin",
+        "require_super_admin"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/analysis-jobs/{exercise_id}",
+      "source": "backend/app/api/routes/analysis_jobs.py",
+      "handler": "create_job",
+      "line": 26,
+      "domain": "analysis",
+      "dependency_guards": [
+        "analysis_current_user",
+        "get_current_user"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/analysis-jobs/{job_id}",
+      "source": "backend/app/api/routes/analysis_jobs.py",
+      "handler": "get_job",
+      "line": 67,
+      "domain": "analysis",
+      "dependency_guards": [
+        "get_current_user"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/analysis-jobs/{job_id}/cancel",
+      "source": "backend/app/api/routes/analysis_jobs.py",
+      "handler": "cancel_job",
+      "line": 75,
+      "domain": "analysis",
+      "dependency_guards": [
+        "get_current_user"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/analyze/balance",
+      "source": "backend/app/api/routes/balance_analysis.py",
+      "handler": "analyze_balance",
+      "line": 36,
+      "domain": "analysis",
+      "dependency_guards": [
+        "analysis_current_user"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/analyze/bicep-curl",
+      "source": "backend/app/api/routes/upper_body_analysis.py",
+      "handler": "analyze_bicep_curl",
+      "line": 145,
+      "domain": "analysis",
+      "dependency_guards": [
+        "analysis_current_user"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/analyze/gait",
+      "source": "backend/app/api/routes/gait_analysis.py",
+      "handler": "analyze_gait",
+      "line": 36,
+      "domain": "analysis",
+      "dependency_guards": [
+        "analysis_current_user"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/analyze/hammer-curl",
+      "source": "backend/app/api/routes/upper_body_analysis.py",
+      "handler": "analyze_hammer_curl",
+      "line": 160,
+      "domain": "analysis",
+      "dependency_guards": [
+        "analysis_current_user"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/analyze/hip-abduction",
+      "source": "backend/app/api/routes/hip_abduction_analysis.py",
+      "handler": "analyze_hip_abduction",
+      "line": 28,
+      "domain": "analysis",
+      "dependency_guards": [
+        "analysis_current_user"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/analyze/knee-extension",
+      "source": "backend/app/api/routes/knee_extension_analysis.py",
+      "handler": "analyze_knee_extension",
+      "line": 36,
+      "domain": "analysis",
+      "dependency_guards": [
+        "analysis_current_user"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/analyze/push-up",
+      "source": "backend/app/api/routes/upper_body_analysis.py",
+      "handler": "analyze_push_up",
+      "line": 115,
+      "domain": "analysis",
+      "dependency_guards": [
+        "analysis_current_user"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/analyze/shoulder-abduction",
+      "source": "backend/app/api/routes/shoulder_abduction_analysis.py",
+      "handler": "analyze_shoulder_abduction",
+      "line": 28,
+      "domain": "analysis",
+      "dependency_guards": [
+        "analysis_current_user"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/analyze/shoulder-flexion",
+      "source": "backend/app/api/routes/upper_body_analysis.py",
+      "handler": "analyze_shoulder_flexion",
+      "line": 175,
+      "domain": "analysis",
+      "dependency_guards": [
+        "analysis_current_user"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/analyze/shoulder-press",
+      "source": "backend/app/api/routes/upper_body_analysis.py",
+      "handler": "analyze_shoulder_press",
+      "line": 130,
+      "domain": "analysis",
+      "dependency_guards": [
+        "analysis_current_user"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/analyze/sit-to-stand",
+      "source": "backend/app/api/routes/sit_to_stand_analysis.py",
+      "handler": "analyze_sit_to_stand",
+      "line": 36,
+      "domain": "analysis",
+      "dependency_guards": [
+        "analysis_current_user"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/analyze/squat",
+      "source": "backend/app/api/routes/squat_analysis.py",
+      "handler": "analyze_squat",
+      "line": 72,
+      "domain": "analysis",
+      "dependency_guards": [
+        "analysis_current_user"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/artifacts/overlays/{overlay_id}",
+      "source": "backend/app/api/routes/artifacts.py",
+      "handler": "download_overlay_legacy",
+      "line": 112,
+      "domain": "analysis",
+      "dependency_guards": [
+        "get_db",
+        "optional_current_user"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/artifacts/overlays/{overlay_id}/download",
+      "source": "backend/app/api/routes/artifacts.py",
+      "handler": "download_overlay",
+      "line": 99,
+      "domain": "analysis",
+      "dependency_guards": [
+        "get_db",
+        "optional_current_user"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/artifacts/overlays/{overlay_id}/preview",
+      "source": "backend/app/api/routes/artifacts.py",
+      "handler": "preview_overlay",
+      "line": 83,
+      "domain": "analysis",
+      "dependency_guards": [
+        "get_db",
+        "optional_current_user"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/artifacts/reports/{report_id}",
+      "source": "backend/app/api/routes/artifacts.py",
+      "handler": "download_report",
+      "line": 27,
+      "domain": "analysis",
+      "dependency_guards": [
+        "get_db",
+        "optional_current_user"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/forgot-password",
+      "source": "backend/app/api/v1/auth.py",
+      "handler": "forgot_password",
+      "line": 146,
+      "domain": "identity",
+      "dependency_guards": [
+        "get_db"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "source": "backend/app/api/v1/auth.py",
+      "handler": "login",
+      "line": 87,
+      "domain": "identity",
+      "dependency_guards": [
+        "get_db"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/logout",
+      "source": "backend/app/api/v1/auth.py",
+      "handler": "logout",
+      "line": 109,
+      "domain": "identity",
+      "dependency_guards": [
+        "get_current_user",
+        "get_db"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "source": "backend/app/api/v1/auth.py",
+      "handler": "me",
+      "line": 104,
+      "domain": "identity",
+      "dependency_guards": [
+        "get_current_user"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/register",
+      "source": "backend/app/api/v1/auth.py",
+      "handler": "register",
+      "line": 34,
+      "domain": "identity",
+      "dependency_guards": [
+        "get_db"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/resend-verification",
+      "source": "backend/app/api/v1/auth.py",
+      "handler": "resend_verification",
+      "line": 127,
+      "domain": "identity",
+      "dependency_guards": [
+        "get_db"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/reset-password",
+      "source": "backend/app/api/v1/auth.py",
+      "handler": "reset_password",
+      "line": 173,
+      "domain": "identity",
+      "dependency_guards": [
+        "get_db"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/verify-email",
+      "source": "backend/app/api/v1/auth.py",
+      "handler": "verify_email",
+      "line": 116,
+      "domain": "identity",
+      "dependency_guards": [
+        "get_db"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/care-invitations",
+      "source": "backend/app/api/v1/connections.py",
+      "handler": "invitations",
+      "line": 64,
+      "domain": "care",
+      "dependency_guards": [
+        "get_current_user",
+        "get_db"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/care-invitations",
+      "source": "backend/app/api/v1/connections.py",
+      "handler": "create",
+      "line": 78,
+      "domain": "care",
+      "dependency_guards": [
+        "get_db",
+        "require_role('therapist')"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/care-invitations/lookup",
+      "source": "backend/app/api/v1/connections.py",
+      "handler": "lookup",
+      "line": 86,
+      "domain": "care",
+      "dependency_guards": [
+        "get_db",
+        "require_role('patient')"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/care-invitations/{invitation_id}/respond",
+      "source": "backend/app/api/v1/connections.py",
+      "handler": "respond",
+      "line": 94,
+      "domain": "care",
+      "dependency_guards": [
+        "get_db",
+        "require_role('patient')"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/care-invitations/{invitation_id}/{action}",
+      "source": "backend/app/api/v1/connections.py",
+      "handler": "manage",
+      "line": 101,
+      "domain": "care",
+      "dependency_guards": [
+        "get_db",
+        "require_role('therapist')"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/catalog/packages",
+      "source": "backend/app/api/v1/catalog.py",
+      "handler": "packages",
+      "line": 22,
+      "domain": "commerce",
+      "dependency_guards": [
+        "get_db"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/catalog/services",
+      "source": "backend/app/api/v1/catalog.py",
+      "handler": "services",
+      "line": 15,
+      "domain": "commerce",
+      "dependency_guards": [
+        "get_db"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/checkout",
+      "source": "backend/app/api/v1/commerce.py",
+      "handler": "checkout",
+      "line": 32,
+      "domain": "commerce",
+      "dependency_guards": [
+        "get_db",
+        "require_role(UserRole.patient)"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/coaching/readiness",
+      "source": "backend/app/api/routes/realtime_coaching.py",
+      "handler": "coaching_readiness",
+      "line": 28,
+      "domain": "care",
+      "dependency_guards": [],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "WEBSOCKET",
+      "path": "/api/v1/coaching/stream",
+      "source": "backend/app/api/routes/realtime_coaching.py",
+      "handler": "realtime_coaching_stream",
+      "line": 56,
+      "domain": "care",
+      "dependency_guards": [],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/connections",
+      "source": "backend/app/api/v1/connections.py",
+      "handler": "connections",
+      "line": 45,
+      "domain": "care",
+      "dependency_guards": [
+        "get_current_user",
+        "get_db"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/connections/{assignment_id}/end",
+      "source": "backend/app/api/v1/connections.py",
+      "handler": "end",
+      "line": 57,
+      "domain": "care",
+      "dependency_guards": [
+        "get_current_user",
+        "get_db"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/exercises",
+      "source": "backend/app/api/routes/exercises.py",
+      "handler": "exercises",
+      "line": 13,
+      "domain": "analysis",
+      "dependency_guards": [],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/exercises/{exercise_id}",
+      "source": "backend/app/api/routes/exercises.py",
+      "handler": "exercise_detail",
+      "line": 18,
+      "domain": "analysis",
+      "dependency_guards": [],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/ml/readiness",
+      "source": "backend/app/api/routes/ml_models.py",
+      "handler": "model_readiness",
+      "line": 11,
+      "domain": "care",
+      "dependency_guards": [],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/orders",
+      "source": "backend/app/api/v1/commerce.py",
+      "handler": "orders",
+      "line": 91,
+      "domain": "care",
+      "dependency_guards": [
+        "get_current_user",
+        "get_db"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/patient/adherence",
+      "source": "backend/app/api/v1/patient.py",
+      "handler": "adherence",
+      "line": 149,
+      "domain": "care",
+      "dependency_guards": [
+        "get_db",
+        "require_role(UserRole.patient)"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/patient/appointments",
+      "source": "backend/app/api/v1/patient.py",
+      "handler": "appointments",
+      "line": 174,
+      "domain": "scheduling",
+      "dependency_guards": [
+        "get_db",
+        "require_role(UserRole.patient)"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/patient/consents",
+      "source": "backend/app/api/v1/patient.py",
+      "handler": "consents",
+      "line": 81,
+      "domain": "care",
+      "dependency_guards": [
+        "get_db",
+        "require_role(UserRole.patient)"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/patient/consents",
+      "source": "backend/app/api/v1/patient.py",
+      "handler": "update_consent",
+      "line": 90,
+      "domain": "care",
+      "dependency_guards": [
+        "get_db",
+        "require_role(UserRole.patient)"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/patient/data-rights-requests",
+      "source": "backend/app/api/v1/patient.py",
+      "handler": "data_rights_requests",
+      "line": 111,
+      "domain": "care",
+      "dependency_guards": [
+        "get_db",
+        "require_role(UserRole.patient)"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/patient/data-rights-requests",
+      "source": "backend/app/api/v1/patient.py",
+      "handler": "create_data_rights_request",
+      "line": 123,
+      "domain": "care",
+      "dependency_guards": [
+        "get_db",
+        "require_role(UserRole.patient)"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/patient/health-profile",
+      "source": "backend/app/api/v1/patient.py",
+      "handler": "health_profile",
+      "line": 48,
+      "domain": "care",
+      "dependency_guards": [
+        "get_db",
+        "require_role(UserRole.patient)"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/patient/health-profile",
+      "source": "backend/app/api/v1/patient.py",
+      "handler": "update_health_profile",
+      "line": 63,
+      "domain": "care",
+      "dependency_guards": [
+        "get_db",
+        "require_role(UserRole.patient)"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/patient/notifications",
+      "source": "backend/app/api/v1/patient.py",
+      "handler": "notifications",
+      "line": 205,
+      "domain": "notifications",
+      "dependency_guards": [
+        "get_db",
+        "require_role(UserRole.patient)"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/patient/notifications/{notification_id}/read",
+      "source": "backend/app/api/v1/patient.py",
+      "handler": "read_notification",
+      "line": 217,
+      "domain": "notifications",
+      "dependency_guards": [
+        "get_db",
+        "require_role(UserRole.patient)"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/patient/reports",
+      "source": "backend/app/api/v1/patient.py",
+      "handler": "reports",
+      "line": 185,
+      "domain": "care",
+      "dependency_guards": [
+        "get_db",
+        "require_role(UserRole.patient)"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/patient/today",
+      "source": "backend/app/api/v1/patient.py",
+      "handler": "today",
+      "line": 140,
+      "domain": "care",
+      "dependency_guards": [
+        "get_db",
+        "require_role(UserRole.patient)"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/payments/paymob/webhook",
+      "source": "backend/app/api/v1/commerce.py",
+      "handler": "paymob_webhook",
+      "line": 107,
+      "domain": "commerce",
+      "dependency_guards": [
+        "get_db"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/recognition/confirm",
+      "source": "backend/app/api/routes/exercise_recognition.py",
+      "handler": "confirm_recognition",
+      "line": 160,
+      "domain": "analysis",
+      "dependency_guards": [
+        "get_db",
+        "optional_current_user"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/recognition/exercise",
+      "source": "backend/app/api/routes/exercise_recognition.py",
+      "handler": "recognize_exercise",
+      "line": 81,
+      "domain": "analysis",
+      "dependency_guards": [
+        "get_db",
+        "optional_current_user"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/recognition/models",
+      "source": "backend/app/api/routes/exercise_recognition.py",
+      "handler": "recognition_models",
+      "line": 69,
+      "domain": "analysis",
+      "dependency_guards": [],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/recognition/video",
+      "source": "backend/app/api/routes/exercise_recognition.py",
+      "handler": "recognize_exercise_video",
+      "line": 112,
+      "domain": "analysis",
+      "dependency_guards": [
+        "get_db",
+        "optional_current_user"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/recovery-coaching/action-plans",
+      "source": "backend/app/api/v1/recovery_coaching.py",
+      "handler": "add_action_plan",
+      "line": 139,
+      "domain": "coaching",
+      "dependency_guards": [
+        "get_db",
+        "require_patient_or_therapist"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/recovery-coaching/action-plans/{action_plan_id}",
+      "source": "backend/app/api/v1/recovery_coaching.py",
+      "handler": "update_action_plan",
+      "line": 154,
+      "domain": "coaching",
+      "dependency_guards": [
+        "get_db",
+        "require_patient_or_therapist"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/recovery-coaching/check-ins",
+      "source": "backend/app/api/v1/recovery_coaching.py",
+      "handler": "add_check_in",
+      "line": 94,
+      "domain": "coaching",
+      "dependency_guards": [
+        "get_db",
+        "require_patient_or_therapist"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/recovery-coaching/check-ins/{check_in_id}/acknowledge",
+      "source": "backend/app/api/v1/recovery_coaching.py",
+      "handler": "acknowledge_check_in",
+      "line": 103,
+      "domain": "coaching",
+      "dependency_guards": [
+        "get_db",
+        "require_patient_or_therapist"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/recovery-coaching/dashboard",
+      "source": "backend/app/api/v1/recovery_coaching.py",
+      "handler": "coaching_dashboard",
+      "line": 49,
+      "domain": "coaching",
+      "dependency_guards": [
+        "get_db",
+        "require_patient_or_therapist"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/recovery-coaching/goals",
+      "source": "backend/app/api/v1/recovery_coaching.py",
+      "handler": "add_goal",
+      "line": 68,
+      "domain": "coaching",
+      "dependency_guards": [
+        "get_db",
+        "require_patient_or_therapist"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/recovery-coaching/goals/{goal_id}",
+      "source": "backend/app/api/v1/recovery_coaching.py",
+      "handler": "update_goal",
+      "line": 77,
+      "domain": "coaching",
+      "dependency_guards": [
+        "get_db",
+        "require_patient_or_therapist"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/recovery-coaching/reminder-preference",
+      "source": "backend/app/api/v1/recovery_coaching.py",
+      "handler": "save_reminder_preference",
+      "line": 129,
+      "domain": "coaching",
+      "dependency_guards": [
+        "get_db",
+        "require_patient_or_therapist"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/recovery-coaching/templates",
+      "source": "backend/app/api/v1/recovery_coaching.py",
+      "handler": "coaching_templates",
+      "line": 58,
+      "domain": "coaching",
+      "dependency_guards": [
+        "require_patient_or_therapist"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/rehab-rl/assessment",
+      "source": "backend/app/api/routes/rehab_rl.py",
+      "handler": "assessment",
+      "line": 63,
+      "domain": "care",
+      "dependency_guards": [
+        "get_db",
+        "require_therapist"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/rehab-rl/checkpoints/restore",
+      "source": "backend/app/api/routes/rehab_rl.py",
+      "handler": "restore_checkpoint",
+      "line": 117,
+      "domain": "care",
+      "dependency_guards": [
+        "require_super_admin",
+        "require_therapist"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/rehab-rl/exercises",
+      "source": "backend/app/api/routes/rehab_rl.py",
+      "handler": "exercises",
+      "line": 92,
+      "domain": "analysis",
+      "dependency_guards": [
+        "require_therapist"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/rehab-rl/governance",
+      "source": "backend/app/api/routes/rehab_rl.py",
+      "handler": "governance",
+      "line": 77,
+      "domain": "care",
+      "dependency_guards": [
+        "get_db",
+        "require_therapist"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/rehab-rl/inspector",
+      "source": "backend/app/api/routes/rehab_rl.py",
+      "handler": "inspector",
+      "line": 112,
+      "domain": "care",
+      "dependency_guards": [
+        "require_super_admin",
+        "require_therapist"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/rehab-rl/model-manifest",
+      "source": "backend/app/api/routes/rehab_rl.py",
+      "handler": "model_manifest",
+      "line": 107,
+      "domain": "care",
+      "dependency_guards": [
+        "require_therapist"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/rehab-rl/overview",
+      "source": "backend/app/api/routes/rehab_rl.py",
+      "handler": "overview",
+      "line": 58,
+      "domain": "care",
+      "dependency_guards": [
+        "require_therapist"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/rehab-rl/protocols",
+      "source": "backend/app/api/routes/rehab_rl.py",
+      "handler": "protocols",
+      "line": 97,
+      "domain": "care",
+      "dependency_guards": [
+        "require_therapist"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/rehab-rl/protocols/{condition_id}",
+      "source": "backend/app/api/routes/rehab_rl.py",
+      "handler": "protocol",
+      "line": 102,
+      "domain": "care",
+      "dependency_guards": [
+        "require_therapist"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/rehab-rl/simulate",
+      "source": "backend/app/api/routes/rehab_rl.py",
+      "handler": "simulate",
+      "line": 87,
+      "domain": "care",
+      "dependency_guards": [
+        "require_therapist"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/rehab-rl/training",
+      "source": "backend/app/api/routes/rehab_rl.py",
+      "handler": "training_status",
+      "line": 127,
+      "domain": "administration",
+      "dependency_guards": [
+        "require_super_admin",
+        "require_therapist"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/rehab-rl/training",
+      "source": "backend/app/api/routes/rehab_rl.py",
+      "handler": "start_training",
+      "line": 122,
+      "domain": "administration",
+      "dependency_guards": [
+        "require_super_admin",
+        "require_therapist"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/scheduling/appointments",
+      "source": "backend/app/api/v1/scheduling.py",
+      "handler": "book",
+      "line": 62,
+      "domain": "scheduling",
+      "dependency_guards": [
+        "get_db",
+        "require_patient_or_therapist"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/scheduling/appointments/{appointment_id}",
+      "source": "backend/app/api/v1/scheduling.py",
+      "handler": "update_appointment",
+      "line": 110,
+      "domain": "scheduling",
+      "dependency_guards": [
+        "get_current_user",
+        "get_db"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/scheduling/appointments/{appointment_id}/join",
+      "source": "backend/app/api/v1/scheduling.py",
+      "handler": "join",
+      "line": 85,
+      "domain": "scheduling",
+      "dependency_guards": [
+        "get_current_user",
+        "get_db"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/scheduling/availability",
+      "source": "backend/app/api/v1/scheduling.py",
+      "handler": "availability",
+      "line": 33,
+      "domain": "scheduling",
+      "dependency_guards": [
+        "get_db"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/sessions",
+      "source": "backend/app/api/routes/sessions.py",
+      "handler": "recent_sessions",
+      "line": 27,
+      "domain": "analysis",
+      "dependency_guards": [
+        "get_current_user",
+        "get_db"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v1/sessions/{session_id}",
+      "source": "backend/app/api/routes/sessions.py",
+      "handler": "remove_session",
+      "line": 53,
+      "domain": "analysis",
+      "dependency_guards": [
+        "get_current_user",
+        "get_db"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/sessions/{session_id}",
+      "source": "backend/app/api/routes/sessions.py",
+      "handler": "session_detail",
+      "line": 45,
+      "domain": "analysis",
+      "dependency_guards": [
+        "get_current_user",
+        "get_db"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/therapist/adherence-alerts",
+      "source": "backend/app/api/v1/therapist_care.py",
+      "handler": "adherence_alerts",
+      "line": 75,
+      "domain": "care",
+      "dependency_guards": [
+        "get_db",
+        "require_therapist"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/therapist/appointments",
+      "source": "backend/app/api/v1/therapist_care.py",
+      "handler": "appointments",
+      "line": 66,
+      "domain": "scheduling",
+      "dependency_guards": [
+        "get_db",
+        "require_therapist"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/therapist/appointments/{appointment_id}/session-notes",
+      "source": "backend/app/api/v1/therapist_care.py",
+      "handler": "create_session_note",
+      "line": 149,
+      "domain": "scheduling",
+      "dependency_guards": [
+        "get_db",
+        "require_therapist"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/therapist/availability",
+      "source": "backend/app/api/v1/therapist_care.py",
+      "handler": "list_availability",
+      "line": 54,
+      "domain": "scheduling",
+      "dependency_guards": [
+        "get_db",
+        "require_therapist"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/therapist/availability",
+      "source": "backend/app/api/v1/therapist_care.py",
+      "handler": "add_availability",
+      "line": 38,
+      "domain": "scheduling",
+      "dependency_guards": [
+        "get_db",
+        "require_therapist"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/therapist/dashboard",
+      "source": "backend/app/api/v1/therapist.py",
+      "handler": "dashboard",
+      "line": 45,
+      "domain": "care",
+      "dependency_guards": [
+        "get_db",
+        "require_therapist"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/therapist/patients",
+      "source": "backend/app/api/v1/therapist.py",
+      "handler": "patients",
+      "line": 52,
+      "domain": "care",
+      "dependency_guards": [
+        "get_db",
+        "require_therapist"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/therapist/patients",
+      "source": "backend/app/api/v1/therapist.py",
+      "handler": "create_patient",
+      "line": 57,
+      "domain": "care",
+      "dependency_guards": [
+        "get_db",
+        "require_therapist"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v1/therapist/patients/{patient_id}",
+      "source": "backend/app/api/v1/therapist.py",
+      "handler": "remove_patient",
+      "line": 102,
+      "domain": "care",
+      "dependency_guards": [
+        "get_db",
+        "require_therapist"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/therapist/patients/{patient_id}",
+      "source": "backend/app/api/v1/therapist.py",
+      "handler": "patient_detail",
+      "line": 71,
+      "domain": "care",
+      "dependency_guards": [
+        "get_db",
+        "require_therapist"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/therapist/patients/{patient_id}",
+      "source": "backend/app/api/v1/therapist.py",
+      "handler": "patch_patient",
+      "line": 86,
+      "domain": "care",
+      "dependency_guards": [
+        "get_db",
+        "require_therapist"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/therapist/patients/{patient_id}/adherence",
+      "source": "backend/app/api/v1/therapist_care.py",
+      "handler": "patient_adherence",
+      "line": 84,
+      "domain": "care",
+      "dependency_guards": [
+        "get_db",
+        "require_therapist"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/therapist/patients/{patient_id}/adherence/{adherence_id}/acknowledge",
+      "source": "backend/app/api/v1/therapist_care.py",
+      "handler": "acknowledge_adherence_response",
+      "line": 118,
+      "domain": "care",
+      "dependency_guards": [
+        "get_db",
+        "require_therapist"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/therapist/patients/{patient_id}/exercise-plans",
+      "source": "backend/app/api/v1/therapist.py",
+      "handler": "patient_exercise_plans",
+      "line": 157,
+      "domain": "care",
+      "dependency_guards": [
+        "get_db",
+        "require_therapist"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/therapist/patients/{patient_id}/exercise-plans",
+      "source": "backend/app/api/v1/therapist.py",
+      "handler": "add_patient_exercise_plan",
+      "line": 172,
+      "domain": "care",
+      "dependency_guards": [
+        "get_db",
+        "require_therapist"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/therapist/patients/{patient_id}/exercise-plans/{plan_id}",
+      "source": "backend/app/api/v1/therapist.py",
+      "handler": "patch_patient_exercise_plan",
+      "line": 193,
+      "domain": "care",
+      "dependency_guards": [
+        "get_db",
+        "require_therapist"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/therapist/patients/{patient_id}/progress",
+      "source": "backend/app/api/v1/therapist.py",
+      "handler": "patient_progress",
+      "line": 146,
+      "domain": "care",
+      "dependency_guards": [
+        "get_db",
+        "require_therapist"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/therapist/patients/{patient_id}/reports",
+      "source": "backend/app/api/v1/therapist_care.py",
+      "handler": "create_progress_report",
+      "line": 173,
+      "domain": "care",
+      "dependency_guards": [
+        "get_db",
+        "require_therapist"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/therapist/patients/{patient_id}/sessions",
+      "source": "backend/app/api/v1/therapist.py",
+      "handler": "patient_sessions",
+      "line": 116,
+      "domain": "analysis",
+      "dependency_guards": [
+        "get_db",
+        "require_therapist"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/therapist/patients/{patient_id}/sessions/{session_id}",
+      "source": "backend/app/api/v1/therapist.py",
+      "handler": "assign_session",
+      "line": 127,
+      "domain": "analysis",
+      "dependency_guards": [
+        "get_db",
+        "require_therapist"
+      ],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "GET",
+      "path": "/health",
+      "source": "backend/app/api/routes/health.py",
+      "handler": "health_check",
+      "line": 48,
+      "domain": "care",
+      "dependency_guards": [],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    },
+    {
+      "method": "GET",
+      "path": "/ready",
+      "source": "backend/app/api/routes/health.py",
+      "handler": "readiness_check",
+      "line": 53,
+      "domain": "care",
+      "dependency_guards": [],
+      "replacement_status": "legacy_authoritative",
+      "removal_gate": "Verified domain replacement on native/web, contracts, migration/restore and rollback; see README.md"
+    }
+  ],
+  "models": [
+    "AnalysisSession",
+    "AnalysisJob",
+    "User",
+    "UserConsent",
+    "AuditLog",
+    "RecognitionEvent",
+    "PatientProfile",
+    "ExercisePlan",
+    "ExercisePlanItem",
+    "SessionMetric",
+    "UploadedMedia",
+    "DetectedIssue",
+    "PatientHealthProfile",
+    "RecoveryCoachingGoal",
+    "RecoveryCoachingCheckIn",
+    "RecoveryCoachingActionPlan",
+    "RecoveryCoachingReminderPreference",
+    "TherapistPatientAssignment",
+    "CareInvitation",
+    "AdherenceEntry",
+    "TherapistAvailability",
+    "Appointment",
+    "ClinicalSessionNote",
+    "Notification",
+    "ServiceOffering",
+    "PackageOffering",
+    "Order",
+    "Payment",
+    "Refund",
+    "PlatformSetting",
+    "ProgressReport",
+    "DataRightsRequest"
+  ],
+  "foreign_keys": [
+    {
+      "model": "AnalysisSession",
+      "field": "patient_id",
+      "target": "patient_profiles.patient_id",
+      "on_delete": "SET NULL"
+    },
+    {
+      "model": "AnalysisSession",
+      "field": "plan_item_id",
+      "target": "exercise_plan_items.item_id",
+      "on_delete": "SET NULL"
+    },
+    {
+      "model": "UserConsent",
+      "field": "user_id",
+      "target": "users.user_id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "model": "PatientProfile",
+      "field": "user_id",
+      "target": "users.user_id",
+      "on_delete": "SET NULL"
+    },
+    {
+      "model": "ExercisePlan",
+      "field": "patient_id",
+      "target": "patient_profiles.patient_id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "model": "ExercisePlanItem",
+      "field": "plan_id",
+      "target": "exercise_plans.plan_id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "model": "SessionMetric",
+      "field": "session_id",
+      "target": "analysis_sessions.session_id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "model": "UploadedMedia",
+      "field": "session_id",
+      "target": "analysis_sessions.session_id",
+      "on_delete": "SET NULL"
+    },
+    {
+      "model": "DetectedIssue",
+      "field": "session_id",
+      "target": "analysis_sessions.session_id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "model": "PatientHealthProfile",
+      "field": "patient_id",
+      "target": "patient_profiles.patient_id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "model": "RecoveryCoachingGoal",
+      "field": "patient_id",
+      "target": "patient_profiles.patient_id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "model": "RecoveryCoachingCheckIn",
+      "field": "patient_id",
+      "target": "patient_profiles.patient_id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "model": "RecoveryCoachingActionPlan",
+      "field": "goal_id",
+      "target": "recovery_coaching_goals.goal_id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "model": "RecoveryCoachingActionPlan",
+      "field": "patient_id",
+      "target": "patient_profiles.patient_id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "model": "RecoveryCoachingReminderPreference",
+      "field": "patient_id",
+      "target": "patient_profiles.patient_id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "model": "TherapistPatientAssignment",
+      "field": "therapist_user_id",
+      "target": "users.user_id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "model": "TherapistPatientAssignment",
+      "field": "patient_id",
+      "target": "patient_profiles.patient_id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "model": "CareInvitation",
+      "field": "therapist_user_id",
+      "target": "users.user_id",
+      "on_delete": null
+    },
+    {
+      "model": "CareInvitation",
+      "field": "patient_id",
+      "target": "patient_profiles.patient_id",
+      "on_delete": null
+    },
+    {
+      "model": "AdherenceEntry",
+      "field": "patient_id",
+      "target": "patient_profiles.patient_id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "model": "AdherenceEntry",
+      "field": "plan_item_id",
+      "target": "exercise_plan_items.item_id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "model": "AdherenceEntry",
+      "field": "analysis_session_id",
+      "target": "analysis_sessions.session_id",
+      "on_delete": "SET NULL"
+    },
+    {
+      "model": "TherapistAvailability",
+      "field": "therapist_user_id",
+      "target": "users.user_id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "model": "Appointment",
+      "field": "patient_id",
+      "target": "patient_profiles.patient_id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "model": "Appointment",
+      "field": "therapist_user_id",
+      "target": "users.user_id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "model": "ClinicalSessionNote",
+      "field": "appointment_id",
+      "target": "appointments.appointment_id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "model": "Notification",
+      "field": "user_id",
+      "target": "users.user_id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "model": "Order",
+      "field": "user_id",
+      "target": "users.user_id",
+      "on_delete": "RESTRICT"
+    },
+    {
+      "model": "Payment",
+      "field": "order_id",
+      "target": "orders.order_id",
+      "on_delete": "RESTRICT"
+    },
+    {
+      "model": "Refund",
+      "field": "payment_id",
+      "target": "payments.payment_id",
+      "on_delete": "RESTRICT"
+    },
+    {
+      "model": "ProgressReport",
+      "field": "patient_id",
+      "target": "patient_profiles.patient_id",
+      "on_delete": "CASCADE"
+    },
+    {
+      "model": "DataRightsRequest",
+      "field": "user_id",
+      "target": "users.user_id",
+      "on_delete": "CASCADE"
+    }
+  ],
+  "model_artifacts": [
+    {
+      "path": "models/recognition/exercise_pose_gru_20260809T161346Z/model.pt",
+      "bytes": 515271,
+      "sha256": "f45b676999a11939cdce8f95fe02c689c1df6ba0f2c2c4dcc483317f3b5de086",
+      "promotion_status": "unchanged_existing_artifact"
+    },
+    {
+      "path": "models/squat_baseline/artifacts/squat_quality_baseline.pkl",
+      "bytes": 14955,
+      "sha256": "1334b21a155a005d55c46651ac505d83c82f53a93e6375fd8d1a0ce2bc216ce0",
+      "promotion_status": "unchanged_existing_artifact"
+    },
+    {
+      "path": "models/squat_baseline_v2/artifacts/squat_quality_baseline_v2.pkl",
+      "bytes": 14958,
+      "sha256": "4ea3d326c400387314bc6717af578de83b5dc07fbf6da0802e83db5f33aa6a01",
+      "promotion_status": "unchanged_existing_artifact"
+    },
+    {
+      "path": "models/zenodo_squat_baseline/artifacts/zenodo_squat_posture_baseline.pkl",
+      "bytes": 3222,
+      "sha256": "6902294103a91f5550554bf885034eb05365f8629f243e97869a0fb9feec4758",
+      "promotion_status": "unchanged_existing_artifact"
+    },
+    {
+      "path": "models/zenodo_squat_baseline/artifacts/zenodo_squat_posture_temperature_scaled_experiment.pkl",
+      "bytes": 3561,
+      "sha256": "6615bdbf5af042d6406b7d1eb149338cc89d1255dfe63fdb41184a7ba9d8ec75",
+      "promotion_status": "unchanged_existing_artifact"
+    },
+    {
+      "path": "backend/checkpoints/best_model.pt",
+      "bytes": 3945478,
+      "sha256": "e1f464d3f20d91e2425d1ed404699d9cb6f9400421975aba751edf83e940f88c",
+      "promotion_status": "unchanged_existing_artifact"
+    },
+    {
+      "path": "backend/checkpoints/best_model.pt.npy",
+      "bytes": 1160328,
+      "sha256": "d4074901858fbac52f78d18c5baee35edf864ee93984eb6fa21c69260891c47e",
+      "promotion_status": "unchanged_existing_artifact"
+    }
+  ],
+  "integration_sources": [
+    "backend/app/services/artifact_service.py",
+    "backend/app/services/email_service.py",
+    "backend/app/services/notification_service.py",
+    "backend/app/services/telemedicine_service.py"
+  ],
+  "native_routes": [
+    "_layout.tsx",
+    "appointments.tsx",
+    "billing.tsx",
+    "care-team.tsx",
+    "exercise/[id].tsx",
+    "exercises.tsx",
+    "forgot-password.tsx",
+    "goals.tsx",
+    "guidance/[id].tsx",
+    "history.tsx",
+    "identify.tsx",
+    "index.tsx",
+    "limitations.tsx",
+    "login.tsx",
+    "more.tsx",
+    "notifications.tsx",
+    "patient/[id].tsx",
+    "patients.tsx",
+    "profile.tsx",
+    "register.tsx",
+    "reset-password.tsx",
+    "result.tsx",
+    "review.tsx",
+    "safety.tsx",
+    "today.tsx",
+    "upload/[id].tsx",
+    "verify-email.tsx"
+  ],
+  "web_pages": [
+    "About",
+    "CareConnections",
+    "ExerciseLibrary",
+    "ForgotPassword",
+    "Home",
+    "Login",
+    "PatientCareDashboard",
+    "Profile",
+    "RealtimeCoachingSpike",
+    "RecoveryCoachingWorkspace",
+    "Register",
+    "RehabRlWorkspace",
+    "ResetPassword",
+    "Results",
+    "SessionHistory",
+    "SuperAdminDashboard",
+    "SuperAdminWorkflowDashboard",
+    "TherapistDashboard",
+    "UploadSquat",
+    "VerifyEmail",
+    "WorkspaceOverview"
+  ]
+}

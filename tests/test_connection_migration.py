@@ -31,7 +31,9 @@ def test_fresh_and_existing_connection_migration(tmp_path, monkeypatch):
         assert "care_invitations" in inspect(engine).get_table_names()
         assert {"source", "ended_at", "end_reason"} <= {c["name"] for c in inspect(engine).get_columns("therapist_patient_assignments")}
         with engine.connect() as connection:
-            assert connection.scalar(text("SELECT version_num FROM alembic_version")) == "0009_patient_profile_repair"
+            assert connection.scalar(text("SELECT version_num FROM alembic_version")) == "0010_identity_projection"
+            assert "identity_owner" in {c["name"] for c in inspect(engine).get_columns("users")}
+            assert "internal_principal_nonces" in inspect(engine).get_table_names()
             if existing:
                 assert connection.execute(text("SELECT assignment_id, status, source FROM therapist_patient_assignments")).one() == ("old", "active", "legacy")
                 assert connection.execute(text("SELECT user_id, display_name FROM patient_profiles WHERE user_id = 'patient-without-profile'")).one() == ("patient-without-profile", "Legacy Patient")

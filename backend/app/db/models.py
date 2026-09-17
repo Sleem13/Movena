@@ -101,6 +101,7 @@ class User(Base):
     username: Mapped[str | None] = mapped_column(String(64), unique=True, index=True)
     email: Mapped[str] = mapped_column(String(320), unique=True, index=True, nullable=False)
     password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
+    identity_owner: Mapped[str] = mapped_column(String(16), default="legacy", server_default="legacy", nullable=False)
     full_name: Mapped[str | None] = mapped_column(String(120))
     role: Mapped[str] = mapped_column(String(32), index=True, nullable=False, default="researcher_demo")
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
@@ -137,6 +138,16 @@ class UserConsent(Base):
     accepted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     version: Mapped[str] = mapped_column(String(32), nullable=False)
     notes: Mapped[str | None] = mapped_column(Text)
+
+
+class InternalPrincipalNonce(Base):
+    """Durable one-use record for a signed platform-to-legacy assertion."""
+
+    __tablename__ = "internal_principal_nonces"
+    jti: Mapped[str] = mapped_column(String(64), primary_key=True)
+    subject: Mapped[str] = mapped_column(String(64), nullable=False)
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), index=True, nullable=False)
+    consumed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
 
 
 class AuditLog(Base):

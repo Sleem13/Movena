@@ -1,0 +1,24 @@
+{
+  "artifact": "apps/native/build/app/outputs/flutter-apk/app-debug.apk",
+  "sha256": "54857552e080fdcecaf3d8a3d6ba4165e4da18b3eec883af53e3e40105572e2c",
+  "size_bytes": 196963269,
+  "checked_at": "2026-09-14T00:44:15.265876+00:00",
+  "package": "ai.movena.mobile.development",
+  "version_name": "2.0.0",
+  "version_code": "1",
+  "abis": [
+    "arm64-v8a",
+    "armeabi-v7a",
+    "x86_64"
+  ],
+  "microphone_permission": false,
+  "camera_hardware_required": false,
+  "backup_policy": "locale/theme preferences only",
+  "real_device_tested": false,
+  "release_signing_verified": false,
+  "signature_verification": {
+    "scheme": "v2",
+    "certificate_kind": "Android Debug",
+    "certificate_sha256": "677e61c422040d9555c5ea4a70d02a47bf31ced4e70cac449e56f6f65e1e1407"
+  }
+}
