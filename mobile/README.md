@@ -102,15 +102,15 @@ EXPO_PUBLIC_APP_ENV=development
 The `preview-staging` EAS profile currently uses:
 
 ```text
-https://name-movena-api-staging.onrender.com
+https://your-application.cloudfront.net
 ```
 
 Verify it before building:
 
 ```powershell
-Invoke-RestMethod https://name-movena-api-staging.onrender.com/health
-Invoke-RestMethod https://name-movena-api-staging.onrender.com/ready
-Invoke-RestMethod https://name-movena-api-staging.onrender.com/api/v1/recognition/models
+Invoke-RestMethod https://your-application.cloudfront.net/health
+Invoke-RestMethod https://your-application.cloudfront.net/ready
+Invoke-RestMethod https://your-application.cloudfront.net/api/v1/recognition/models
 ```
 
 ## Run the application for development
@@ -333,7 +333,7 @@ After changing any icon, splash screen, native plugin, Android package setting, 
 Check:
 
 ```powershell
-$env:PHYSIOVISION_API = "https://name-movena-api-staging.onrender.com"
+$env:PHYSIOVISION_API = "https://your-application.cloudfront.net"
 Invoke-RestMethod "$env:PHYSIOVISION_API/api/v1/recognition/models"
 ```
 
@@ -377,3 +377,5 @@ Movena supports exercise monitoring and coaching conversations. It does not diag
 - [Mobile staging configuration](../docs/mobile_staging_configuration.md)
 - [Internal mobile test checklist](../docs/mobile_internal_test_checklist.md)
 - [Development journey](../docs/development_journey.md)
+
+Use the current Terraform `application_url` for staging host placeholders above. See [AWS deployment](../docs/aws_api_routing.md); existing EAS project identity is preserved.

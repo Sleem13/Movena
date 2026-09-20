@@ -1,3 +1,5 @@
+# Legacy/optional deployment. AWS is authoritative; see docs/aws_api_routing.md.
+# Retain until AWS readiness and authenticated admin database access are verified.
 services:
   - type: web
     name: movena-api

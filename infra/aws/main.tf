@@ -19,7 +19,7 @@ data "aws_cloudfront_origin_request_policy" "all_viewer_except_host" {
 }
 
 locals {
-  name         = "movena-${var.environment}"
+  name = "movena-${var.environment}"
   # The existing GitHub deploy role can manage only IAM roles whose names begin
   # with "physiovision-". Keep that least-privilege boundary while giving the
   # new stack distinct Movena role names; the prefix can be migrated after the
@@ -36,7 +36,7 @@ locals {
     { name = "DATABASE_HOST", value = aws_db_instance.database.address },
     { name = "DATABASE_PORT", value = tostring(aws_db_instance.database.port) },
     { name = "DATABASE_NAME", value = aws_db_instance.database.db_name },
-    { name = "CORS_ALLOWED_ORIGINS", value = local.frontend_url },
+    { name = "CORS_ALLOWED_ORIGINS", value = join(",", concat([local.frontend_url], var.additional_cors_origins)) },
     { name = "FRONTEND_URL", value = local.frontend_url },
     { name = "REQUIRE_AUTH_FOR_ANALYSIS", value = "true" },
     { name = "ENABLE_PUBLIC_DEMO_MODE", value = "false" },

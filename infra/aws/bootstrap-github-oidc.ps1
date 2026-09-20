@@ -68,7 +68,8 @@ $iamPolicy = @{
                 "iam:ListRolePolicies", "iam:AttachRolePolicy", "iam:DetachRolePolicy", "iam:ListAttachedRolePolicies",
                 "iam:PassRole"
             )
-            Resource = "arn:aws:iam::$AccountId`:role/movena-*"
+            # Match the preserved Terraform IAM prefix; do not rename live roles.
+            Resource = "arn:aws:iam::$AccountId`:role/physiovision-movena-*"
         },
         @{
             Sid = "CreateRequiredServiceLinkedRoles"
