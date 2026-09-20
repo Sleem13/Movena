@@ -29,6 +29,7 @@ env:
   TF_INPUT: "false"
   ENVIRONMENT: staging
   TF_VAR_enable_staging_schedule: "false"
+  TF_VAR_additional_cors_origins: ${{ vars.AWS_ADDITIONAL_CORS_ORIGINS || '[]' }}
 
 jobs:
   verify:
@@ -158,8 +159,8 @@ jobs:
         run: |
           aws ecs wait services-stable --cluster "${{ steps.infra.outputs.cluster }}" --services "${{ steps.infra.outputs.service }}"
           for attempt in {1..30}; do
-            if curl --fail --silent --show-error --max-time 20 "${{ steps.infra.outputs.url }}/ready" | tee /tmp/ready.json | grep -q '"status":"ready"'; then
-              echo "PhysioVision is ready at ${{ steps.infra.outputs.url }}"
+            if curl --fail --silent --show-error --max-time 20 "${{ steps.infra.outputs.url }}/ready" | jq -e '.status == "ready"' >/dev/null; then
+              echo "Movena is ready at ${{ steps.infra.outputs.url }}"
               exit 0
             fi
             sleep 15
@@ -183,3 +184,5 @@ jobs:
           aws s3 sync frontend/dist "s3://${{ steps.infra.outputs.bucket }}" --delete --cache-control "public,max-age=31536000,immutable" --exclude "index.html"
           aws s3 cp frontend/dist/index.html "s3://${{ steps.infra.outputs.bucket }}/index.html" --cache-control "no-cache,no-store,must-revalidate" --content-type "text/html"
           aws cloudfront create-invalidation --distribution-id "${{ steps.infra.outputs.distribution }}" --paths "/*"
+      - name: Verify published CloudFront API
+        run: bash infra/aws/smoke-test.sh "${{ steps.infra.outputs.url }}"

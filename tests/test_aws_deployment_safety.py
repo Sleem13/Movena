@@ -108,3 +108,24 @@ def test_movena_roles_fit_the_existing_github_deployer_iam_boundary():
     assert 'name               = "${local.iam_name}-ecs-execution"' in terraform
     assert 'name               = "${local.iam_name}-ecs-task"' in terraform
     assert 'name = "${local.iam_name}-scheduler"' in terraform
+
+
+def test_production_web_configuration_never_defaults_to_render():
+    paths = [
+        PROJECT_ROOT / ".env.production.example",
+        PROJECT_ROOT / ".env.staging.example",
+        PROJECT_ROOT / "frontend/vercel.json",
+        PROJECT_ROOT / "frontend/vite.config.js",
+        *list((PROJECT_ROOT / "frontend").glob(".env*")),
+        PROJECT_ROOT / "frontend/src/config/apiConfig.js",
+    ]
+    for path in paths:
+        assert "onrender.com" not in path.read_text(encoding="utf-8").lower(), path
+
+
+def test_aws_workflow_injects_terraform_url_and_smokes_after_publish():
+    workflow = (PROJECT_ROOT / ".github/workflows/deploy-aws.yml").read_text(encoding="utf-8")
+    assert 'terraform -chdir=infra/aws output -raw application_url' in workflow
+    assert 'VITE_API_BASE_URL: ${{ steps.infra.outputs.url }}' in workflow
+    assert workflow.index('Wait for backend and verify readiness') < workflow.index('Build frontend for CloudFront')
+    assert workflow.index('Publish frontend') < workflow.index('bash infra/aws/smoke-test.sh')

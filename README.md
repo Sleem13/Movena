@@ -274,7 +274,7 @@ Important public client variables:
 | Variable | Consumer | Example |
 |---|---|---|
 | `VITE_API_BASE_URL` | Web | `http://127.0.0.1:8000` |
-| `EXPO_PUBLIC_API_BASE_URL` | Mobile | `https://name-movena-api-staging.onrender.com` |
+| `EXPO_PUBLIC_API_BASE_URL` | Mobile | `Terraform `application_url`` |
 | `EXPO_PUBLIC_APP_ENV` | Mobile | `development`, `staging`, or `production` |
 
 Never place server secrets in `VITE_*` or `EXPO_PUBLIC_*`. Those values are included in client builds.
@@ -353,3 +353,7 @@ See [product safety policy](docs/product_safety_policy.md), [privacy checklist](
 ## License
 
 See [LICENSE](LICENSE).
+
+## Deployment source of truth
+
+Use [AWS API routing](docs/aws_api_routing.md) for AWS, optional Vercel, IAM rename checks and verification.

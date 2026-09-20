@@ -1,3 +1,6 @@
+> Superseded deployment procedure: use [AWS API routing](aws_api_routing.md).
+> Render steps below are historical optional-provider notes.
+
 # Operational Staging Activation Plan
 
 ## Decision and current status
@@ -56,7 +59,7 @@ vercel env add VITE_API_BASE_URL preview
 vercel --yes
 ```
 
-Enter the real Render HTTPS origin when prompted for `VITE_API_BASE_URL`. Do not use localhost or `.example.invalid`.
+Enter the verified AWS Terraform application_url when prompted for `VITE_API_BASE_URL`. Do not use localhost or `.example.invalid`.
 
 5. Save the Render environment and deploy from the dashboard, or place the secret deploy-hook URL in the current shell and trigger it without printing it:
 

@@ -111,3 +111,13 @@ variable "protect_data" {
   type        = bool
   default     = true
 }
+
+variable "additional_cors_origins" {
+  description = "Explicit additional browser origins, for example a retained Vercel frontend."
+  type        = list(string)
+  default     = []
+  validation {
+    condition     = alltrue([for origin in var.additional_cors_origins : can(regex("^https://[^/?#*]+$", origin))])
+    error_message = "Additional CORS origins must be HTTPS origins without paths or wildcards."
+  }
+}

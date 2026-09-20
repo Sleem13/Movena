@@ -1,3 +1,5 @@
+> Historical observations. Current deployment instructions and verification: [AWS API routing](aws_api_routing.md).
+
 # Deployed Staging Smoke-Test Results
 
 ## Fresh Deployment Diagnosis — 2026-09-09
@@ -15,7 +17,7 @@
 Immediate deployment actions:
 
 1. Enable `ENABLE_EXERCISE_RECOGNITION=true` in the active backend provider environment and redeploy the backend.
-2. Rebuild the frontend with the intended active API URL. For the current Vercel staging site, use `VITE_API_BASE_URL=https://name-physiovision-api-staging.onrender.com`.
+2. Rebuild the frontend with the intended active API URL. Use the current Terraform `application_url`; the old Render recommendation is superseded.
 3. If CloudFront is the intended staging surface, run the AWS deploy workflow after the workflow state key fix and verify `https://d139746brwkxwp.cloudfront.net/ready` returns HTTP 200.
 4. Recheck CORS with the actual browser frontend origin before upload testing.
 

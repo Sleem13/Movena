@@ -9,20 +9,20 @@ def read_text(path: str) -> str:
     return (ROOT / path).read_text(encoding="utf-8")
 
 
-def test_render_and_staging_examples_use_movena_service_names():
+def test_legacy_render_remains_optional_and_staging_examples_use_aws():
     render_config = read_text("render.yaml")
     staging_example = read_text(".env.staging.example")
     backend_staging_example = read_text("backend/.env.staging.example")
 
     assert "name: movena-api" in render_config
     assert "physiovision-api" not in render_config
-    assert "VITE_API_BASE_URL=https://name-movena-api-staging.onrender.com" in staging_example
+    assert "VITE_API_BASE_URL=https://your-application.cloudfront.net" in staging_example
     assert "name-physiovision-api-staging" not in staging_example
     assert "name-physiovision-api-staging" not in backend_staging_example
     assert "physio-vision-ai" not in staging_example
     assert "physio-vision-ai" not in backend_staging_example
-    assert "CORS_ALLOWED_ORIGINS=https://name-movena-web-staging.onrender.com" in staging_example
-    assert "FRONTEND_URL=https://name-movena-web-staging.onrender.com" in backend_staging_example
+    assert "CORS_ALLOWED_ORIGINS=https://your-application.cloudfront.net" in staging_example
+    assert "FRONTEND_URL=https://your-application.cloudfront.net" in backend_staging_example
 
 
 def test_alembic_and_docker_prefer_movena_database_names_with_legacy_volume_compatibility():
