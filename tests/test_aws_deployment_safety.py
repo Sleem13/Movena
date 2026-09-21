@@ -110,6 +110,14 @@ def test_movena_roles_fit_the_existing_github_deployer_iam_boundary():
     assert 'name = "${local.iam_name}-scheduler"' in terraform
 
 
+def test_bootstrap_preserves_verified_immutable_oidc_subject():
+    bootstrap = (PROJECT_ROOT / "infra/aws/bootstrap-github-oidc.ps1").read_text(encoding="utf-8")
+    assert 'repo:Sleem13@236138703/Movena@1295797057' in bootstrap
+    assert '"$OidcSubjectPrefix`:ref:refs/heads/$Branch"' in bootstrap
+    assert '"repo:$Repository`:ref:refs/heads/$Branch"' not in bootstrap
+    assert 'OidcSubjectPrefix must match Repository' in bootstrap
+
+
 def test_production_web_configuration_never_defaults_to_render():
     paths = [
         PROJECT_ROOT / ".env.production.example",

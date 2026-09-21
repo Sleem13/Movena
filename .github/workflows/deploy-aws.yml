@@ -99,7 +99,8 @@ jobs:
           IMAGE: ${{ steps.ecr.outputs.repository }}:${{ github.sha }}
         run: |
           REPOSITORY="${IMAGE%:*}"
-          REPOSITORY_NAME="${REPOSITORY##*/}"
+          # Remove only the registry host; ECR repository names can contain slashes.
+          REPOSITORY_NAME="${REPOSITORY#*/}"
           if aws ecr describe-images \
             --repository-name "$REPOSITORY_NAME" \
             --image-ids "imageTag=${{ github.sha }}" >/dev/null 2>&1; then

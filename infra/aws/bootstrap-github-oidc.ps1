@@ -3,12 +3,21 @@ param(
     [string]$AccountId = "720466551087",
     [string]$Region = "eu-central-1",
     [string]$Repository = "Sleem13/Movena",
+    # Read sub_claim_prefix from GitHub's actions/oidc/customization/sub API.
+    # Renamed repositories can include immutable owner and repository IDs.
+    [ValidatePattern('^repo:[A-Za-z0-9_.-]+(?:@[0-9]+)?/[A-Za-z0-9_.-]+(?:@[0-9]+)?$')]
+    [string]$OidcSubjectPrefix = "repo:Sleem13@236138703/Movena@1295797057",
+    [ValidatePattern('^[^*?:]+$')]
     [string]$Branch = "main",
     [string]$RoleName = "MovenaGitHubDeploy",
     [string]$StateBucket = "movena-terraform-state-720466551087-eu-central-1"
 )
 
 $ErrorActionPreference = "Stop"
+
+if (($OidcSubjectPrefix -replace '@[0-9]+', '') -cne "repo:$Repository") {
+    throw "OidcSubjectPrefix must match Repository. Read the current prefix from GitHub before running bootstrap."
+}
 
 function Invoke-Aws {
     param([Parameter(ValueFromRemainingArguments = $true)][string[]]$Arguments)
@@ -51,7 +60,7 @@ $trust = @{
         Action = "sts:AssumeRoleWithWebIdentity"
         Condition = @{
             StringEquals = @{ "token.actions.githubusercontent.com:aud" = "sts.amazonaws.com" }
-            StringLike = @{ "token.actions.githubusercontent.com:sub" = "repo:$Repository`:ref:refs/heads/$Branch" }
+            StringLike = @{ "token.actions.githubusercontent.com:sub" = "$OidcSubjectPrefix`:ref:refs/heads/$Branch" }
         }
     })
 }

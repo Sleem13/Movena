@@ -1,5 +1,18 @@
 # Movena deployment source of truth
 
+## Active deployment policy (2026-09-21)
+
+AWS is the only active deployment target. Use https://d1ylxhoq5y66vd.cloudfront.net
+for both the website and API. The GitHub Actions AWS workflow publishes the frontend
+to S3/CloudFront and the backend to ECS/RDS. Vercel automatic Git deployments are
+disabled through `frontend/vercel.json` (`git.deploymentEnabled: false`); its existing
+project is retained for now. Additional Vercel CORS origins are not needed for the
+AWS site. The patient-creation fix is live and was verified with a synthetic account,
+which was paused after testing.
+
+The image reuse check preserves the full ECR repository path (`movena/backend`),
+so rerunning the same commit reuses its immutable image instead of trying to overwrite it.
+
 AWS is authoritative: Terraform `application_url` -> GitHub Actions
 `VITE_API_BASE_URL` -> CloudFront (S3 frontend, `/api/*` ALB/ECS backend) -> RDS.
 Do not copy a historical hostname into application source. Resolve the current
@@ -74,13 +87,23 @@ from Vercel works. Add exact preview origins only when needed; do not use a wild
 The bootstrap script already defaults to `Sleem13/Movena` and main-branch trust.
 That does not update live IAM. An AWS administrator must inspect the role selected
 by `AWS_DEPLOY_ROLE_ARN`: trust must permit
-`repo:Sleem13/Movena:ref:refs/heads/main`, with audience `sts.amazonaws.com`.
+the exact subject returned by GitHub's OIDC configuration plus the main-branch suffix,
+with audience `sts.amazonaws.com`. The verified immutable subject for this repository is
+`repo:Sleem13@236138703/Movena@1295797057:ref:refs/heads/main`.
 If it still trusts the old name, update that existing role. Do not create a new
 role/state bucket accidentally by accepting unrelated bootstrap defaults.
 The bootstrap inline policy now matches Terraform's preserved
 `physiovision-movena-*` names. Review existing permissions before re-running
 `bootstrap-github-oidc.ps1` with the actual account, role and state bucket.
-Live trust/permissions were not accessible in this session and remain unverified.
+On 2026-09-21 the live `PhysioVisionGitHubDeploy` role still trusted the old
+repository name. Replacing only the name was insufficient: GitHub reports
+`use_immutable_subject=true`. Updating trust to the exact immutable subject above
+restored OIDC authentication, without changing the attached permissions. Bootstrap
+now accepts `-OidcSubjectPrefix` and validates it matches `-Repository`, preventing
+a later bootstrap run from restoring the obsolete name-only trust condition.
+Check the current prefix with `gh api repos/Sleem13/Movena/actions/oidc/customization/sub`
+before reusing the script after another rename or transfer. See the
+[GitHub OIDC reference](https://docs.github.com/en/actions/reference/security/oidc#immutable-subject-claims).
 
 ## Database and administration
 
