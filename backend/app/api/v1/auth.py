@@ -53,6 +53,8 @@ def register(data: UserRegisterRequest, db: Session = Depends(get_db)):
         email_verified_at=utc_now() if not settings.require_email_verification else None,
     )
     db.add(user)
+    # Insert the parent before profile/consent rows while retaining one transaction.
+    db.flush()
     if assigned_role == UserRole.patient.value:
         db.add(PatientProfile(
             patient_id=str(uuid4()), user_id=user.user_id,

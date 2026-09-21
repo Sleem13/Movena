@@ -1,13 +1,63 @@
 from fastapi.testclient import TestClient
-from sqlalchemy import select
+from sqlalchemy import event, select
 from sqlalchemy.orm import sessionmaker
 
 from app.core.security import create_access_token, get_password_hash
+from app.core.config import get_settings
 from app.db.database import Base, create_database_engine, get_db
-from app.db.models import AuditLog, PatientProfile, User
+from app.db.models import AuditLog, PatientProfile, User, UserConsent
 from app.main import app
 from app.services.admin_seed_service import seed_admin, seed_super_admin
 import pytest
+
+
+@pytest.mark.parametrize("endpoint", ["/api/v1/admin/users", "/api/v1/auth/register"])
+def test_create_patient_with_foreign_keys_enforced(tmp_path, monkeypatch, endpoint):
+    monkeypatch.setattr(get_settings(), "require_email_verification", False)
+    engine = create_database_engine(f"sqlite:///{(tmp_path / 'patient-foreign-keys.db').as_posix()}")
+
+    @event.listens_for(engine, "connect")
+    def enforce_foreign_keys(connection, _record):
+        connection.execute("PRAGMA foreign_keys=ON")
+
+    Base.metadata.create_all(engine)
+    factory = sessionmaker(bind=engine, expire_on_commit=False, autoflush=False)
+    with factory() as db:
+        root, _ = seed_super_admin("owner@example.com", "StrongPassword123", "Owner", db=db)
+        root_id = root.user_id
+
+    def override():
+        with factory() as session:
+            yield session
+
+    app.dependency_overrides[get_db] = override
+    try:
+        client = TestClient(app)
+        response = client.post(
+            endpoint,
+            headers={"Authorization": f"Bearer {create_access_token(root_id, 'super_admin')}"},
+            json={
+                "username": "test.patient",
+                "email": "test.patient@example.com",
+                "full_name": "Test Patient",
+                "password": "AssignedPassword123",
+                "role": "patient",
+                "accepted_terms": True,
+                "accepted_privacy": True,
+            },
+        )
+        assert response.status_code == 201, response.json()
+        with factory() as db:
+            user_id = response.json()["user_id"]
+            assert db.scalar(select(User).where(User.user_id == user_id)) is not None
+            assert db.scalar(select(PatientProfile).where(PatientProfile.user_id == user_id)) is not None
+            if endpoint == "/api/v1/admin/users":
+                assert db.scalar(select(AuditLog).where(AuditLog.resource_id == user_id, AuditLog.action == "user.created")) is not None
+            else:
+                assert set(db.scalars(select(UserConsent.consent_type).where(UserConsent.user_id == user_id))) == {"terms", "privacy"}
+    finally:
+        app.dependency_overrides.pop(get_db, None)
+        engine.dispose()
 
 
 def test_super_admin_seed_requires_eight_character_password(tmp_path):
