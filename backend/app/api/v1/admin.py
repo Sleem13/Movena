@@ -118,6 +118,9 @@ def create_user(data: AdminUserCreate, actor: User = Depends(require_super_admin
         account_status="active",
     )
     db.add(target)
+    # Persist the parent before its profile; these mappers have no relationship
+    # to order their inserts. Flush keeps both writes in the same transaction.
+    db.flush()
     if target.role == UserRole.patient.value:
         db.add(PatientProfile(
             patient_id=str(uuid4()), user_id=target.user_id,
