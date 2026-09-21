@@ -1,4 +1,6 @@
 # Frontend deployment
 
-Follow [Movena deployment source of truth](aws_api_routing.md). AWS is the preferred path.
-Vercel requires an explicit AWS `VITE_API_BASE_URL`, allowed CORS origin, and rebuild.
+AWS hosts the Vite frontend in S3 behind CloudFront. Follow
+[the AWS deployment guide](aws_api_routing.md). GitHub Actions builds with the
+Terraform application URL and publishes only after the backend is ready.
+Vercel is disconnected and automatic deployments are disabled.

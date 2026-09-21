@@ -285,3 +285,6 @@ override.tf.json
 !/apps/web/.env.example
 !/services/platform/.env.example
 /.rebuild-private/
+
+# Generated legacy test database
+backend/test_physiovision.db*

@@ -9,13 +9,10 @@ def read_text(path: str) -> str:
     return (ROOT / path).read_text(encoding="utf-8")
 
 
-def test_legacy_render_remains_optional_and_staging_examples_use_aws():
-    render_config = read_text("render.yaml")
+def test_staging_examples_use_aws():
     staging_example = read_text(".env.staging.example")
     backend_staging_example = read_text("backend/.env.staging.example")
 
-    assert "name: movena-api" in render_config
-    assert "physiovision-api" not in render_config
     assert "VITE_API_BASE_URL=https://your-application.cloudfront.net" in staging_example
     assert "name-physiovision-api-staging" not in staging_example
     assert "name-physiovision-api-staging" not in backend_staging_example

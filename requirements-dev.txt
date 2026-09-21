@@ -1,4 +1,3 @@
 # Reproducible local/CI test environment; production images install requirements.txt only.
 -r requirements.txt
-httpx==0.28.1
 pytest==9.1.1

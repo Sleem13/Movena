@@ -1,15 +1,15 @@
 # Staging Secrets Configuration
 
-Configure these in Render: `APP_ENV=staging`, `APP_VERSION=0.28.0`, `DATABASE_URL`, `SECRET_KEY`, `CORS_ALLOWED_ORIGINS`, `ACCESS_TOKEN_EXPIRE_MINUTES=60`, `MAX_UPLOAD_SIZE_MB=100`, `ALLOWED_VIDEO_EXTENSIONS=mp4,mov,avi,mkv,webm`, `ARTIFACT_RETENTION_HOURS=24`, feature flags, `ENABLE_ML_SECOND_OPINION=false`, `ENABLE_PUBLIC_DEMO_MODE=false`, and `REQUIRE_AUTH_FOR_ANALYSIS=true`.
+Manage backend secrets in AWS Secrets Manager and non-secret settings in Terraform: `APP_ENV=staging`, `APP_VERSION=<deployed-commit>`, `DATABASE_URL`, `SECRET_KEY`, `CORS_ALLOWED_ORIGINS`, `ACCESS_TOKEN_EXPIRE_MINUTES=60`, `MAX_UPLOAD_SIZE_MB=100`, `ALLOWED_VIDEO_EXTENSIONS=mp4,mov,avi,mkv,webm`, `ARTIFACT_RETENTION_HOURS=24`, feature flags, `ENABLE_ML_SECOND_OPINION=false`, `ENABLE_PUBLIC_DEMO_MODE=false`, and `REQUIRE_AUTH_FOR_ANALYSIS=true`.
 
-Vercel needs public `VITE_API_BASE_URL`. EAS preview needs public `EXPO_PUBLIC_API_BASE_URL` and the profile supplies `EXPO_PUBLIC_APP_ENV=staging`. Public client variables are not secret storage.
+The AWS workflow supplies public `VITE_API_BASE_URL` from Terraform. EAS preview needs public `EXPO_PUBLIC_API_BASE_URL` and the profile supplies `EXPO_PUBLIC_APP_ENV=staging`. Public client variables are not secret storage.
 
 Generate the backend secret with a cryptographically secure provider tool and store it only in the provider. Staging startup rejects default/short secrets, wildcard/non-HTTPS CORS, public demo mode, and unauthenticated analysis.
 
 Verify without revealing values:
 
 - Confirm required variable names are present in the provider dashboard.
-- Check `/health` reports `environment=staging`, `app_version=0.28.0`, and expected feature booleans.
+- Check `/health` reports `environment=staging`, the expected deployed commit, and expected feature booleans.
 - Check an unauthenticated analysis returns `401 AUTH_REQUIRED`.
 - Never echo `DATABASE_URL`, `SECRET_KEY`, admin password, JWT, or signed artifact URL.
 
