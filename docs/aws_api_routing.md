@@ -15,9 +15,9 @@ The workflow finishes with `infra/aws/smoke-test.sh`.
 
 Push application changes to `main` to deploy. Manual workflow dispatch can redeploy
 the same commit; image reuse preserves the full ECR repository path (`movena/backend`).
-Do not run a second deployment provider for this environment. Vercel is disconnected
-from GitHub and `frontend/vercel.json` retains only the automatic-deployment opt-out.
-The obsolete Render blueprint has been removed. Existing external resources were not deleted.
+Do not run a second deployment provider for this environment. The Vercel project
+`physio-vision-ai` and its deployment configuration were deleted on 2026-09-21.
+The obsolete Render blueprint has also been removed. AWS is the sole web deployment target.
 
 ## Runtime configuration
 

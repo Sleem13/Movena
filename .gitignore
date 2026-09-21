@@ -288,3 +288,6 @@ override.tf.json
 
 # Generated legacy test database
 backend/test_physiovision.db*
+
+# Local conversation attachments are not application assets
+/.codex-remote-attachments/

@@ -1,5 +1,8 @@
 # External Beta Launch Candidate Go/No-Go
 
+> Historical evidence: provider names and deployment status below describe earlier work.
+> For the current AWS-only deployment, use [the deployment guide](aws_api_routing.md).
+
 ## Private controlled staging release decision
 
 **Decision: GO for private controlled staging release.**

@@ -1,5 +1,8 @@
 # Movena — Private Staging Release Status
 
+> Historical evidence: provider names and deployment status below describe earlier work.
+> For the current AWS-only deployment, use [the deployment guide](aws_api_routing.md).
+
 ## Release Status
 
 Decision: GO for private controlled staging release.

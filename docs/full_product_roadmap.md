@@ -1,5 +1,8 @@
 # Movena Full Product Roadmap
 
+> Historical evidence: provider names and deployment status below describe earlier work.
+> For the current AWS-only deployment, use [the deployment guide](aws_api_routing.md).
+
 ## Sprint 29E — First-Wave External Beta Execution
 
 Status: **execution assets applied / beta not started**. Target is 3–5 trusted non-clinical adults after GO, but no real invitation, consent, assignment, feedback, issue, or result exists. Sprint 30 remains blocked until genuine first-wave evidence is collected safely.

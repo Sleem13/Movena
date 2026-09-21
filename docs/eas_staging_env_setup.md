@@ -2,13 +2,13 @@
 
 ## Current status
 
-EAS authentication succeeds and the preview environment now contains `EXPO_PUBLIC_API_BASE_URL=https://name-movena-api-staging.onrender.com` plus `EXPO_PUBLIC_APP_ENV=staging`. A post-fix internal Android rebuild is in progress under build ID `a10a3920-23e3-4097-ae7a-861a61bda01d`.
+The checked-in `preview-staging` profile uses the AWS application URL. Rebuild mobile clients to pick up configuration changes; this repository check does not verify the remote EAS environment or existing installed builds.
 
 `EXPO_PUBLIC_*` values are embedded public client configuration. Never place secrets, database credentials, tokens, or private keys in them.
 
 ## Preconditions
 
-- [ ] Private Render HTTPS backend is reachable.
+- [ ] AWS HTTPS backend is reachable.
 - [ ] `/health`, `/ready`, and `/api/v1/exercises` pass against the real staging origin.
 - [ ] The backend uses exact HTTPS CORS, authenticated analysis, and disabled public demo mode.
 - [ ] The URL is not localhost, a LAN HTTP address, or `.example.invalid`.

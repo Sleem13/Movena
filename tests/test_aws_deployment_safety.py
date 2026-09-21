@@ -122,7 +122,6 @@ def test_production_web_configuration_never_defaults_to_render():
     paths = [
         PROJECT_ROOT / ".env.production.example",
         PROJECT_ROOT / ".env.staging.example",
-        PROJECT_ROOT / "frontend/vercel.json",
         PROJECT_ROOT / "frontend/vite.config.js",
         *list((PROJECT_ROOT / "frontend").glob(".env*")),
         PROJECT_ROOT / "frontend/src/config/apiConfig.js",

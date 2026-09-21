@@ -1,5 +1,8 @@
 # Deployment Readiness
 
+> Historical evidence: provider names and deployment status below describe earlier work.
+> For the current AWS-only deployment, use [the deployment guide](aws_api_routing.md).
+
 ## Sprint 28 launch-candidate gate
 
 `0.28.0-rc.1` is registered as `blocked_not_submitted`. Mobile staging/production now refuses missing, HTTP, or `.invalid` API URLs, preventing a misleading build against a development fallback. This does not supply the missing private HTTPS backend, EAS artifact, physical-device QA, deployed token/artifact/cleanup evidence, or live support contacts. Decision remains `NO-GO`.

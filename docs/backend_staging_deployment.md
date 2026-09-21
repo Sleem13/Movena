@@ -1,20 +1,14 @@
-# Backend Private Staging Deployment
+# Backend staging deployment
 
-## Render procedure
+Use [the AWS deployment workflow](aws_api_routing.md). The root Dockerfile runs
+Alembic migrations before starting FastAPI in ECS. The workflow manages the existing
+Terraform stack and publishes the website only after backend readiness succeeds.
 
-1. Create a Render Web Service from the repository using Docker and the root `Dockerfile`.
-2. Restrict team access and do not advertise the URL.
-3. Add variables from `backend/.env.staging.example` through Render secrets.
-4. Attach the Neon `DATABASE_URL`, exact Vercel HTTPS origin, and strong secret.
-5. Use the Docker command already defined; it runs Uvicorn on `0.0.0.0:8000` with access logs disabled.
-6. Configure health checking against `/ready` and one instance only while artifacts are local.
-7. Initialize schema and seed the internal admin through a one-off shell with secrets injected.
-8. Schedule `python scripts/cleanup_artifacts.py --retention-hours 24` and monitor disk usage.
+Keep database credentials, signing keys and admin credentials in AWS Secrets Manager.
+Terraform defines non-secret settings, exact allowed origins and the frontend URL.
+Do not use the retired multi-provider setup or initialize the live database with `create_all()`.
 
-The Blueprint defaults staging to `EMAIL_DELIVERY_MODE=console` so missing SMTP credentials cannot prevent the API from starting. Verification and password-reset links are written to backend logs in that mode. Before testing those flows with users, configure `FRONTEND_URL`, `EMAIL_FROM`, `SMTP_HOST`, and any provider credentials in Render, then set `EMAIL_DELIVERY_MODE=smtp`. Production still refuses to start without SMTP and an HTTPS frontend URL.
-
-The alternative private-VM rehearsal file `docker-compose.staging.yml` requires PostgreSQL, secret, and exact CORS values and binds the backend to loopback for a private reverse proxy.
-
-After deploy, validate `/health`, `/ready`, login, exercises, auth enforcement, upload validation, all five analyzers with non-identifying samples, rejected input, session ownership, signed artifact access/expiry, and cleanup. Provider deployment is currently blocked because no Render token/account configuration or Neon database URL is available.
-
-Local container status: `docker-compose.staging.yml` passed configuration validation with placeholder test values. Image build was attempted but Docker Desktop's daemon/service was stopped and could not be started from the current non-administrative session, so no new image was produced.
+Verify `/health`, `/ready`, authentication, account creation and application-specific
+flows after changes. Use synthetic records for testing and pause test accounts afterward.
+Configure SMTP before testing email delivery with users; console delivery writes links
+to restricted backend logs. Review artifact retention and access controls separately.

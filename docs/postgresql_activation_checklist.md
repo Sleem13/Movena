@@ -2,14 +2,14 @@
 
 ## Current status
 
-**Active for basic connectivity, incomplete for operational assurance.** The deployed Render service reports Supabase PostgreSQL `database_status=ok`, and `/ready` reports `database_connection=ok`. Credentials were not retrieved or exposed. Schema/account lifecycle details, TLS configuration evidence, backup/restore test, reset evidence, and data-owner approval still require a restricted operational record. No real patient data is permitted.
+**Active for basic connectivity, incomplete for operational assurance.** The deployed AWS service reports RDS PostgreSQL `database_status=ok`, and `/ready` reports `database_connection=ok`. Credentials were not retrieved or exposed. Schema/account lifecycle details, TLS configuration evidence, backup/restore test, reset evidence, and data-owner approval still require a restricted operational record. No real patient data is permitted.
 
 ## Provisioning gate
 
-- [ ] Create a dedicated staging project/branch; never connect a production or patient database.
+- [ ] Confirm the dedicated staging RDS instance in the existing Terraform state.
 - [ ] Restrict provider administration to named authorized owners.
 - [ ] Require TLS and use a connection string with `sslmode=require`.
-- [ ] Store `DATABASE_URL` only in Render/provider secret storage.
+- [ ] Store `DATABASE_URL` only in AWS Secrets Manager.
 - [ ] Confirm `DATABASE_URL` uses the dedicated staging database and Psycopg-compatible form.
 
 ```text
@@ -27,13 +27,12 @@ $env:SECRET_KEY = "<unique 32+ character staging secret>"
 $env:CORS_ALLOWED_ORIGINS = "https://<exact-staging-frontend-domain>"
 $env:REQUIRE_AUTH_FOR_ANALYSIS = "true"
 $env:ENABLE_PUBLIC_DEMO_MODE = "false"
-cd backend
-..\.venv\Scripts\python.exe -c "from app.db.database import init_db; init_db()"
+python -m alembic -c alembic.ini upgrade head
 ```
 
 - [ ] Record a sanitized schema initialization timestamp and operator.
 - [ ] Verify `/ready` reports the database as available without exposing credentials.
-- [ ] Record the current limitation: initialization uses `create_all()` rather than versioned Alembic migrations.
+- [ ] Record the applied Alembic revision; deployment runs migrations before API startup.
 
 ## Seed an administrative beta account
 

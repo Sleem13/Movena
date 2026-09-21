@@ -1,5 +1,8 @@
 # Sprint 23 — Controlled Cloud Staging Deployment
 
+> Historical evidence: provider names and deployment status below describe earlier work.
+> For the current AWS-only deployment, use [the deployment guide](aws_api_routing.md).
+
 ## Engineering outcome
 
 The repository is prepared for a controlled internal staging deployment: fail-closed staging configuration, Psycopg 3 PostgreSQL support, standardized readiness checks, internal EAS staging profile, explicit client API URLs, expiring signed artifact access, environment templates, and release-gate documentation.

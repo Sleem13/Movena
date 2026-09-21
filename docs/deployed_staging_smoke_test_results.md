@@ -1,5 +1,8 @@
 > Historical observations. Current deployment instructions and verification: [AWS API routing](aws_api_routing.md).
 
+> Historical evidence: provider names and deployment status below describe earlier work.
+> For the current AWS-only deployment, use [the deployment guide](aws_api_routing.md).
+
 # Deployed Staging Smoke-Test Results
 
 ## Fresh Deployment Diagnosis — 2026-09-09

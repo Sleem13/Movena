@@ -113,7 +113,7 @@ variable "protect_data" {
 }
 
 variable "additional_cors_origins" {
-  description = "Explicit additional browser origins, for example a retained Vercel frontend."
+  description = "Explicit additional HTTPS browser origins for separately authorized clients."
   type        = list(string)
   default     = []
   validation {

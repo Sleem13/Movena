@@ -1,5 +1,8 @@
 # Sprint 29 Execution Blockers
 
+> Historical evidence: provider names and deployment status below describe earlier work.
+> For the current AWS-only deployment, use [the deployment guide](aws_api_routing.md).
+
 ## Current decision
 
 Sprint 28 ended **NO-GO**. Sprint 29 execution assets are being completed, but the invite-only external beta has not started. There is no public release, patient onboarding, real patient data, clinical use, diagnosis/treatment claim, or promoted ML/DL feature.

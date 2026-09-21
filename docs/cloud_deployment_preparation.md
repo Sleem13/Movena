@@ -1,15 +1,15 @@
 # Cloud Deployment Preparation
 
-This is a deployment decision record, not a deployment or public-launch authorization.
+The active infrastructure is AWS. See [the deployment guide](aws_api_routing.md).
 
-## Candidate services
+## Active services
 
-| Layer | Options | Gate |
+| Layer | AWS service | Gate |
 |---|---|---|
-| FastAPI backend | Render, Railway, Fly.io, Azure App Service | HTTPS, health checks, restricted CORS, secrets, logs, upload/time limits |
-| Web frontend | Vercel, Netlify | Exact API origin and no secret-bearing client variables |
-| PostgreSQL | Neon, Supabase, Railway PostgreSQL | TLS, backups, migrations, least privilege, retention review |
-| Media/artifacts | S3-compatible storage, Supabase Storage, Cloudinary | Private objects, short-lived signed URLs, deletion/retention controls |
+| FastAPI backend | ECS Fargate behind ALB/CloudFront | HTTPS, health checks, restricted CORS, secrets, logs, upload/time limits |
+| Web frontend | S3 behind CloudFront | Exact API origin and no secret-bearing client variables |
+| PostgreSQL | RDS PostgreSQL | TLS, backups, migrations, least privilege, retention review |
+| Media/artifacts | EFS mounted into ECS | Private objects, short-lived signed URLs, deletion/retention controls |
 
 Required backend variables: `APP_ENV`, `APP_VERSION`, `DATABASE_URL`, `CORS_ALLOWED_ORIGINS`, `SECRET_KEY`, `ACCESS_TOKEN_EXPIRE_MINUTES`, `MAX_UPLOAD_SIZE_MB`, `ENABLE_SESSION_HISTORY`, `ENABLE_THERAPIST_DASHBOARD`, `ENABLE_ML_SECOND_OPINION`, `ENABLE_REPORT_GENERATION`, and `ENABLE_OVERLAY_GENERATION`. Mobile uses the public `EXPO_PUBLIC_API_BASE_URL` only.
 

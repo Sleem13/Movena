@@ -92,6 +92,6 @@ Do not change `Environment` to `production` until all of these are complete:
 
 Teardown is intentionally not automated. Disable deletion protection only after taking and verifying backups, then review a Terraform destroy plan carefully. S3 versions, ECR images, EFS data, Secrets Manager secrets, and RDS snapshots may require explicit retention or cleanup decisions.
 
-## API routing and retained Vercel
+## AWS-only API routing
 
 See [deployment source of truth](../../docs/aws_api_routing.md) for environment values, additional CORS origins, repository rename/IAM checks, verification and rollback.

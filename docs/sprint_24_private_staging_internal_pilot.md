@@ -1,5 +1,8 @@
 # Sprint 24 — Private Staging Deployment and Internal Pilot Gate
 
+> Historical evidence: provider names and deployment status below describe earlier work.
+> For the current AWS-only deployment, use [the deployment guide](aws_api_routing.md).
+
 ## Decision
 
 Sprint 24 is **conditionally complete with execution blocked**. Every requested provider, database, secret, deployment, artifact, device, smoke, privacy, and pilot document/configuration exists. Actual Render/Neon/Vercel deployment, Android EAS build, and physical-device QA were not performed because no provider/database credentials or staging API URL were available. No public release, patient data, model promotion, or clinical claim was introduced.

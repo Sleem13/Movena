@@ -1,5 +1,8 @@
 # Android Internal Build Report
 
+> Historical evidence: provider names and deployment status below describe earlier work.
+> For the current AWS-only deployment, use [the deployment guide](aws_api_routing.md).
+
 | Field | Result |
 |---|---|
 | EAS project | `@selim97/physiovision-ai-mobile` (app display name: Movena) |

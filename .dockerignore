@@ -28,3 +28,5 @@ backend/tmp/**
 *.db
 *.db-shm
 *.db-wal
+
+.codex-remote-attachments
