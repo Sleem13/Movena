@@ -3,6 +3,15 @@
 **Movement intelligence for therapist-guided recovery**<br>
 *Move better. Recover together.*
 
+[![AWS deployment](https://github.com/Sleem13/Movena/actions/workflows/deploy-aws.yml/badge.svg?branch=main)](https://github.com/Sleem13/Movena/actions/workflows/deploy-aws.yml)
+
+**[Open Movena on AWS](https://d1ylxhoq5y66vd.cloudfront.net)** · [Deployment guide](docs/aws_api_routing.md) · [Deployment history](https://github.com/Sleem13/Movena/deployments)
+
+The active staging environment runs entirely on AWS: CloudFront/S3 hosts the web
+application, ECS/Fargate runs the API, and RDS provides PostgreSQL. The former Vercel
+project has been removed. Updates to `main` deploy through GitHub Actions and publish
+an **AWS staging** deployment record after readiness and API smoke checks pass.
+
 Movena is movement intelligence for therapist-guided recovery. It combines pose estimation, exercise-specific biomechanics rules, repetition tracking, temporal exercise recognition, annotated video, reports, session history, therapist-facing care workflows, bounded recovery and lifestyle coaching, and protected RehabRL decision support across React web and Expo Android clients.
 
 The product supports movement review and coaching conversations. It does not diagnose conditions, prescribe treatment, or replace a licensed physiotherapist.

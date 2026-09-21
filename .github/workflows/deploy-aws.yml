@@ -61,6 +61,10 @@ jobs:
   deploy:
     name: Deploy staging
     needs: verify
+    permissions:
+      contents: read
+      id-token: write
+      deployments: write
     runs-on: ubuntu-latest
     timeout-minutes: 90
     steps:
@@ -187,3 +191,17 @@ jobs:
           aws cloudfront create-invalidation --distribution-id "${{ steps.infra.outputs.distribution }}" --paths "/*"
       - name: Verify published CloudFront API
         run: bash infra/aws/smoke-test.sh "${{ steps.infra.outputs.url }}"
+      - name: Publish AWS deployment to GitHub
+        env:
+          GH_TOKEN: ${{ github.token }}
+          APPLICATION_URL: ${{ steps.infra.outputs.url }}
+        run: |
+          deployment_id=$(gh api --method POST "repos/$GITHUB_REPOSITORY/deployments" --input - --jq '.id' <<JSON
+          {"ref":"$GITHUB_SHA","environment":"AWS staging","auto_merge":false,"required_contexts":[],"production_environment":false,"description":"AWS CloudFront, ECS and RDS deployment verified"}
+          JSON
+          )
+          gh api --method POST "repos/$GITHUB_REPOSITORY/deployments/$deployment_id/statuses" \
+            -f state=success \
+            -f environment_url="$APPLICATION_URL" \
+            -f log_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" \
+            -F auto_inactive=true >/dev/null
