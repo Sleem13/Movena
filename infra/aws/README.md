@@ -1,5 +1,8 @@
 # Movena on AWS
 
+> Suspended by the owner on 2026-09-24. Do not apply or start this stack until
+> explicitly authorized. See [suspension and resume procedure](../../docs/aws_suspension.md).
+
 This stack deploys the current application without rewriting its analysis pipeline:
 
 - CloudFront provides the public HTTPS application URL and proxies API/WebSocket traffic.

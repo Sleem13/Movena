@@ -1,5 +1,8 @@
 # Movena deployment source of truth
 
+> AWS staging is suspended at the owner's request from 2026-09-24. Do not deploy or
+> start resources until explicitly instructed. See [the suspension procedure](aws_suspension.md).
+
 AWS is the only active deployment target. The current website and API are at
 https://d1ylxhoq5y66vd.cloudfront.net. Resolve the authoritative URL from the
 existing remote state with `terraform -chdir=infra/aws output -raw application_url`;
