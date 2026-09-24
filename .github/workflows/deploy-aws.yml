@@ -33,6 +33,7 @@ env:
 
 jobs:
   verify:
+    if: vars.AWS_SUSPENDED != 'true'
     name: Verify application
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -59,6 +60,7 @@ jobs:
         run: npm test -- --run
 
   deploy:
+    if: vars.AWS_SUSPENDED != 'true'
     name: Deploy staging
     needs: verify
     permissions:

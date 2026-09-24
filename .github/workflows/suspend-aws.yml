@@ -1,0 +1,40 @@
+name: Keep AWS staging suspended
+
+on:
+  workflow_dispatch:
+    inputs:
+      apply:
+        description: Stop compute and public serving while preserving application data
+        type: boolean
+        default: false
+  schedule:
+    - cron: '23 * * * *'
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: movena-staging-deploy
+  cancel-in-progress: false
+
+jobs:
+  suspend:
+    if: vars.AWS_SUSPENDED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: eu-central-1
+      - name: Suspend or inspect existing staging resources
+        env:
+          APPLY: ${{ github.event_name == 'schedule' || inputs.apply }}
+        run: |
+          if [ "$APPLY" = "true" ]; then
+            python infra/aws/suspend.py --apply
+          else
+            python infra/aws/suspend.py
+          fi

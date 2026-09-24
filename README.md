@@ -1,5 +1,8 @@
 # Movena
 
+> **AWS staging suspension requested (2026-09-24).** Deployment is disabled until
+> further owner instruction. See [suspension and resume procedure](docs/aws_suspension.md).
+
 **Movement intelligence for therapist-guided recovery**<br>
 *Move better. Recover together.*
 
